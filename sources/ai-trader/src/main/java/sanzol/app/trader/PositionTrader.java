@@ -28,7 +28,7 @@ import sanzol.app.model.PositionOrder.Type;
 import sanzol.app.task.BalanceService;
 import sanzol.app.task.PriceService;
 
-public class PositionMaker
+public class PositionTrader
 {
 	public enum TestMode { TEST, PROD }
 
@@ -50,7 +50,7 @@ public class PositionMaker
 
 	// ------------------------------------------------------------------------
 
-	public PositionMaker(Position position)
+	public PositionTrader(Position position)
 	{
 		this.position = position;
 	}

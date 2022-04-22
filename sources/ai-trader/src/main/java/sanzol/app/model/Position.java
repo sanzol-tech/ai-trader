@@ -256,7 +256,7 @@ public class Position
 		sb.append(String.format("%s %s - in Price: %s - in Coins: %s", side.name(), coin.getNameLeft(), getInPriceStr(), getInCoinsStr()));
 		sb.append("\n\n");
 
-		String labels = String.format("%-3s %8s %8s %12s %12s %12s %12s %12s %12s | %12s %10s %12s %12s", "#", "TYPE", CharConstants.ARROW_UP + " %", "PRICE", "COINS", "USD", "Σ COINS", "Σ USD", "USD LOST", "AVG-PRICE", CharConstants.ARROW_UP_DOWN + " %", "TP-PRICE", "PROFIT");
+		String labels = String.format("%-3s %8s %8s %12s %12s %12s %12s %12s %12s | %12s %10s %12s %12s", "#", "TYPE", CharConstants.ARROW_UP + " %", "PRICE", "COINS", "USD", CharConstants.SIGNA + " COINS", CharConstants.SIGNA + " USD", "USD LOST", "AVG-PRICE", CharConstants.ARROW_UP_DOWN + " %", "TP-PRICE", "PROFIT");
 
 		sb.append(labels);
 		sb.append("\n");

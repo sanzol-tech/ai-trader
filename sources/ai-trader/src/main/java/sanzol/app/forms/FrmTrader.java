@@ -45,16 +45,16 @@ import sanzol.app.model.Position;
 import sanzol.app.model.Symbol;
 import sanzol.app.service.OrderBookService;
 import sanzol.app.task.PriceService;
-import sanzol.app.trader.PositionMaker;
-import sanzol.app.trader.PositionMaker.PostStyle;
-import sanzol.app.trader.PositionMaker.TestMode;
+import sanzol.app.trader.PositionTrader;
+import sanzol.app.trader.PositionTrader.PostStyle;
+import sanzol.app.trader.PositionTrader.TestMode;
 
 public class FrmTrader extends JFrame
 {
 	private static final long serialVersionUID = 1L;
 
 	private Symbol coin;
-	private PositionMaker pMaker;
+	private PositionTrader pMaker;
 
 	private static final Color COLOR_SHORT = new Color(153, 0, 0);
 	private static final Color COLOR_LONG = new Color(0, 102, 0);
@@ -256,7 +256,7 @@ public class FrmTrader extends JFrame
 		scroll.setBounds(15, 261, 1102, 330);
 		contentPane.add(scroll);
 
-		btnSearch = new JButton(CharConstants.ARROW_MAGNIFIER);
+		btnSearch = new JButton(CharConstants.MAGNIFIER);
 		btnSearch.setBackground(new Color(220, 220, 220));
 		btnSearch.setOpaque(true);
 		btnSearch.setBounds(15, 59, 106, 22);
@@ -470,7 +470,7 @@ public class FrmTrader extends JFrame
 			ERROR(Application.getError());
 
 			chkTestMode.setEnabled(true);
-			PositionMaker.TEST_MODE = TestMode.TEST;
+			PositionTrader.TEST_MODE = TestMode.TEST;
 		}
 		catch(Exception e)
 		{
@@ -668,7 +668,7 @@ public class FrmTrader extends JFrame
 			}
 
 			//------------------------------------------------------------------
-			pMaker = new PositionMaker(position);
+			pMaker = new PositionTrader(position);
 			pMaker.createShort();
 
 			//------------------------------------------------------------------
@@ -734,7 +734,7 @@ public class FrmTrader extends JFrame
 			}
 
 			//------------------------------------------------------------------
-			pMaker = new PositionMaker(position);
+			pMaker = new PositionTrader(position);
 			pMaker.createLong();
 
 			//------------------------------------------------------------------
@@ -796,7 +796,7 @@ public class FrmTrader extends JFrame
 		{
 			if (JOptionPane.showConfirmDialog(null, "Do you like post this position ?") == 0)
 			{
-				PositionMaker.TEST_MODE = chkTestMode.isSelected() ? TestMode.TEST : TestMode.PROD;
+				PositionTrader.TEST_MODE = chkTestMode.isSelected() ? TestMode.TEST : TestMode.PROD;
 
 				String result = pMaker.post(postStyle);
 				if (result != null)
@@ -809,7 +809,7 @@ public class FrmTrader extends JFrame
 				save(coin.getName() + "_" + pMaker.getPosition().getSide().name());
 
 				// -------------------------------------------------------------
-				if (PositionMaker.TEST_MODE.equals(TestMode.PROD))
+				if (PositionTrader.TEST_MODE.equals(TestMode.PROD))
 				{
 					btnPostFirst.setEnabled(false);
 					btnPostOthers.setEnabled(postStyle.equals(PostStyle.FIRST));

@@ -14,6 +14,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -28,6 +29,8 @@ import sanzol.app.config.Constants;
 import sanzol.app.model.Symbol;
 import sanzol.app.service.PositionService;
 import sanzol.app.task.PriceService;
+import sanzol.app.trader.SimpleTrader;
+import sanzol.app.trader.SimpleTrader.Side;
 import sanzol.app.util.Convert;
 
 public class FrmHammerCalc extends JFrame
@@ -57,6 +60,13 @@ public class FrmHammerCalc extends JFrame
 	private JTextField txtPnlNew;
 	private JTextField txtMarkPrice;
 
+	private JButton btnCalc05;
+	private JButton btnCalc075;
+	private JButton btnX1;
+	private JButton btnX2;
+	private JButton btnCalc;
+	private JButton btnExec;
+	
 	private JRadioButton rbShort;
 	private JRadioButton rbLong;
 	private JLabel lblArrow;
@@ -71,7 +81,7 @@ public class FrmHammerCalc extends JFrame
 	{
 		setTitle(TITLE);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 460, 380);
+		setBounds(100, 100, 460, 430);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmMain.class.getResource("/resources/hammer.png")));
 
 		contentPane = new JPanel();
@@ -97,7 +107,7 @@ public class FrmHammerCalc extends JFrame
 		contentPane.add(txtPricePosition);
 		txtPricePosition.setColumns(10);
 
-		JButton btnSearch = new JButton(CharConstants.ARROW_MAGNIFIER);
+		JButton btnSearch = new JButton(CharConstants.MAGNIFIER);
 		btnSearch.setOpaque(true);
 		btnSearch.setBackground(new Color(220, 220, 220));
 		btnSearch.setBounds(299, 24, 86, 22);
@@ -118,18 +128,6 @@ public class FrmHammerCalc extends JFrame
 		JLabel lblPosition = new JLabel("Position");
 		lblPosition.setBounds(30, 126, 67, 14);
 		contentPane.add(lblPosition);
-
-		JButton btnCalc = new JButton("Calc");
-		btnCalc.setBounds(252, 272, 86, 23);
-		btnCalc.setOpaque(true);
-		btnCalc.setBackground(new Color(220, 220, 220));
-		contentPane.add(btnCalc);
-
-		JButton btnExec = new JButton("Exec");
-		btnExec.setBounds(348, 272, 86, 23);
-		btnExec.setOpaque(true);
-		btnExec.setBackground(new Color(220, 220, 220));
-		contentPane.add(btnExec);
 
 		txtSymbolLeft = new JTextField();
 		txtSymbolLeft.setColumns(10);
@@ -173,6 +171,8 @@ public class FrmHammerCalc extends JFrame
 		contentPane.add(txtAmtResult);
 
 		txtUsdShoot = new JTextField();
+		txtUsdShoot.setFont(new Font("Tahoma", Font.BOLD, 11));
+		txtUsdShoot.setForeground(Color.RED);
 		txtUsdShoot.setEditable(false);
 		txtUsdShoot.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtUsdShoot.setColumns(10);
@@ -191,6 +191,7 @@ public class FrmHammerCalc extends JFrame
 		contentPane.add(txtUsdPosition);
 
 		txtUsdResult = new JTextField();
+		txtUsdResult.setForeground(Color.RED);
 		txtUsdResult.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtUsdResult.setEditable(false);
 		txtUsdResult.setColumns(10);
@@ -200,7 +201,7 @@ public class FrmHammerCalc extends JFrame
 		txtError = new JTextField();
 		txtError.setEditable(false);
 		txtError.setColumns(10);
-		txtError.setBounds(10, 310, 424, 20);
+		txtError.setBounds(10, 360, 424, 20);
 		contentPane.add(txtError);
 
 		txtPnlOld = new JTextField();
@@ -251,6 +252,43 @@ public class FrmHammerCalc extends JFrame
 		lblArrow.setHorizontalAlignment(SwingConstants.CENTER);
 		lblArrow.setBounds(223, 230, 48, 14);
 		contentPane.add(lblArrow);
+		
+		btnCalc05 = new JButton("x 0.5");
+		btnCalc05.setOpaque(true);
+		btnCalc05.setBackground(new Color(220, 220, 220));
+		btnCalc05.setBounds(10, 271, 70, 23);
+		contentPane.add(btnCalc05);
+
+		btnCalc075 = new JButton("x 0.75");
+		btnCalc075.setOpaque(true);
+		btnCalc075.setBackground(new Color(220, 220, 220));
+		btnCalc075.setBounds(90, 271, 70, 23);
+		contentPane.add(btnCalc075);
+		
+		btnX1 = new JButton("x 1");
+		btnX1.setOpaque(true);
+		btnX1.setBackground(new Color(220, 220, 220));
+		btnX1.setBounds(170, 271, 67, 23);
+		contentPane.add(btnX1);
+
+		btnX2 = new JButton("x 2");
+		btnX2.setOpaque(true);
+		btnX2.setBackground(new Color(220, 220, 220));
+		btnX2.setBounds(250, 271, 70, 23);
+		contentPane.add(btnX2);
+
+		btnCalc = new JButton("CALC");
+		btnCalc.setBounds(334, 271, 100, 23);
+		btnCalc.setOpaque(true);
+		btnCalc.setBackground(new Color(220, 220, 220));
+		contentPane.add(btnCalc);
+
+		btnExec = new JButton("POST ORDER");
+		btnExec.setBounds(250, 316, 184, 23);
+		btnExec.setOpaque(true);
+		btnExec.setBackground(new Color(220, 220, 220));
+		contentPane.add(btnExec);
+		
 
 		// ---------------------------------------------------------------------
 
@@ -269,9 +307,32 @@ public class FrmHammerCalc extends JFrame
 			}
 		});
 
+
+		btnCalc05.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				calc(0.5);
+			}
+		});
+		btnCalc075.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				calc(0.75);
+			}
+		});
+		btnX1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				calc(1.0);
+			}
+		});
+		btnX2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				calc(2.0);
+			}
+		});
+
+		
 		btnCalc.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				calc();
+				calc(null);
 			}
 		});
 
@@ -316,14 +377,13 @@ public class FrmHammerCalc extends JFrame
 		}
 	}
 
-	private void calc()
+	private void calc(Double x)
 	{
 		INFO("");
 		try
 		{
 			double price = PriceService.getLastPrice(coin).doubleValue();
  
-
 			// ----------------------------------------------------------
 			double pricePos = Double.valueOf(txtPricePosition.getText());
 			double amtPos = Double.valueOf(txtAmtPosition.getText());
@@ -331,14 +391,20 @@ public class FrmHammerCalc extends JFrame
 			txtUsdPosition.setText(Convert.usdToStr(usdPos));
 
 			// ----------------------------------------------------------
-			double priceNew = Double.valueOf(txtPriceShoot.getText());
-			double amtNew = Double.valueOf(txtAmtShoot.getText());
-			double usdNew = priceNew * amtNew;
-			txtUsdShoot.setText(Convert.usdToStr(usdNew));
+			if (x != null)
+			{
+				txtAmtShoot.setText(coin.coinsToStr(amtPos * x));
+			}
+			// ----------------------------------------------------------
+			
+			double priceShoot = Double.valueOf(txtPriceShoot.getText());
+			double amtShoot = Double.valueOf(txtAmtShoot.getText());
+			double usdShoot = priceShoot * amtShoot;
+			txtUsdShoot.setText(Convert.usdToStr(usdShoot));
 
 			// ----------------------------------------------------------
-			double amtResult = amtPos + amtNew;
-			double usdResult = usdPos + usdNew;
+			double amtResult = amtPos + amtShoot;
+			double usdResult = usdPos + usdShoot;
 			double priceResult = usdResult / amtResult;
 			txtPriceResult.setText(coin.priceToStr(priceResult));
 			txtAmtResult.setText(coin.coinsToStr(amtResult));
@@ -369,7 +435,25 @@ public class FrmHammerCalc extends JFrame
 
 	private void exec()
 	{
-		INFO ("Not implemented yet");
+		INFO("");
+		try
+		{
+			Side side = rbLong.isSelected() ? Side.LONG : Side.SHORT;
+			BigDecimal price = new BigDecimal(txtPriceShoot.getText());
+			BigDecimal coins = new BigDecimal(txtAmtShoot.getText());
+
+			String msg = String.format("Post order %s  /  %s  /  %s  /  %s ?", coin.getName(), side.name(), coin.priceToStr(price), coin.coinsToStr(coins));			
+			
+			if (JOptionPane.showConfirmDialog(null, msg) == 0)
+			{
+				String result = SimpleTrader.postHammerOrder(coin, side, price, coins);
+				INFO(result);
+			}
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
 	}
 
 	// ----------------------------------------------------------------------------------
