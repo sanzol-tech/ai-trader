@@ -2,6 +2,8 @@ package sanzol.app.model;
 
 import java.math.BigDecimal;
 
+import sanzol.app.config.CharConstants;
+
 public class SignalEntry
 {
 	private Symbol coin;
@@ -156,9 +158,9 @@ public class SignalEntry
 		}
 
 		if (action.startsWith("SHORT"))
-			return String.format("%-8s :  %-10s %6.2f %%   %s", coin.getNameLeft(), action, distShort, coin.priceToStr(shShock) + " → " + coin.priceToStr(price));
+			return String.format("%-8s :  %-10s %6.2f %%   %s", coin.getNameLeft(), action, distShort, coin.priceToStr(shShock) + " " + CharConstants.ARROW_RIGHT + " " + coin.priceToStr(price));
 		else
-			return String.format("%-8s :  %-10s %6.2f %%   %s", coin.getNameLeft(), action, distLong, coin.priceToStr(lgShock) + " → " + coin.priceToStr(price));
+			return String.format("%-8s :  %-10s %6.2f %%   %s", coin.getNameLeft(), action, distLong, coin.priceToStr(lgShock) + " " + CharConstants.ARROW_RIGHT + " " + coin.priceToStr(price));
 	}
 
 }

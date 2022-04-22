@@ -60,7 +60,7 @@ public class FrmShockMonitor extends JFrame
 		setMinimumSize(new Dimension(800, 600));
 		setTitle(TITLE);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmTrader.class.getResource("/resources/monitor.png")));
-	
+
 		textArea = new JTextArea();
 		textArea.setEditable(false);
 		textArea.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -74,14 +74,14 @@ public class FrmShockMonitor extends JFrame
 		txtError.setForeground(new Color(255, 0, 0));
 
 		btnCopy = new javax.swing.JButton();
-		btnCopy.setText("Copy toclipboard");
+		btnCopy.setText("Copy to clipboard");
 		btnCopy.setOpaque(true);
 		btnCopy.setBackground(new Color(220, 220, 220));
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		
+
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
