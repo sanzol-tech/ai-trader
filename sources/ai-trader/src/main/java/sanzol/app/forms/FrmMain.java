@@ -1,0 +1,703 @@
+package sanzol.app.forms;
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
+
+import javax.swing.AbstractListModel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.Timer;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+
+import org.decimal4j.util.DoubleRounder;
+
+import com.binance.client.model.trade.AccountBalance;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+
+import sanzol.app.config.Application;
+import sanzol.app.config.Config;
+import sanzol.app.config.Constants;
+import sanzol.app.config.PrivateConfig;
+import sanzol.app.model.SignalEntry;
+import sanzol.app.task.BalanceService;
+import sanzol.app.task.SignalService;
+import sanzol.app.util.Convert;
+
+public class FrmMain extends JFrame
+{
+	private static final long serialVersionUID = 1L;
+
+	private List<SignalEntry> lstShockStatus = null;
+
+	private JPanel contentPane;
+
+	private JButton btnPositions;
+	private JButton btnHammerCalc;
+	private JButton btnNewTrade;
+	private JButton btnShockMonitor;
+	private JButton btnSaveConfig;
+	private JButton btnSaveKey;
+	private JButton btnShockEditor;
+
+	private JList<String> listFavorites;
+	private JList<String> listSignals;
+
+	private JTextField txtIterations;
+	private JTextField txtPriceIncr;
+	private JTextField txtTProfit;
+	private JTextField txtBalanceStartPosition;
+	private JTextField txtDistBeforeSL;
+	private JTextField txtCoinsIncr;
+	private JTextField txtBalance;
+	private JTextField txtWithdrawal;
+	private JTextField txtFavCoins;
+	private JTextField txtError;
+
+	private JPasswordField txtSecretKey;
+	private JPasswordField txtApiKey;
+	private JTextField txtLeverage;
+	private JTextField txtBalanceMinAvailable;
+
+	public FrmMain()
+	{
+		initComponents();
+
+		try
+		{
+			pageload();
+			startTimer();
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
+	}
+
+	private void initComponents() 
+	{
+		setType(Type.POPUP);
+		setResizable(false);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 860, 610);
+		setTitle(Constants.APP_NAME);
+		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmMain.class.getResource("/resources/logo.png")));
+
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(1, 1, 1, 1));
+		contentPane.setLayout(null);
+		setContentPane(contentPane);
+
+		JPanel panelConfig = new JPanel();
+		panelConfig.setBorder(new LineBorder(new Color(184, 207, 229), 1, true));
+		panelConfig.setBounds(16, 307, 810, 114);
+		panelConfig.setLayout(null);
+		contentPane.add(panelConfig);
+
+		JPanel panelKey = new JPanel();
+		panelKey.setBorder(new LineBorder(new Color(184, 207, 229), 1, true));
+		panelKey.setBounds(16, 440, 810, 60);
+		panelKey.setLayout(null);
+		contentPane.add(panelKey);
+
+		JLabel lblNewLabel_2 = new JLabel("Api Key");
+		lblNewLabel_2.setBounds(12, 11, 80, 14);
+		panelKey.add(lblNewLabel_2);
+
+		txtApiKey = new JPasswordField();
+		txtApiKey.setBounds(12, 30, 340, 20);
+		txtApiKey.setFont(new Font("Courier New", Font.PLAIN, 8));
+		txtApiKey.setColumns(10);
+		panelKey.add(txtApiKey);
+
+		JLabel lblNewLabel_3 = new JLabel("Secret Key");
+		lblNewLabel_3.setBounds(358, 11, 80, 14);
+		panelKey.add(lblNewLabel_3);
+
+		btnPositions = new JButton("POS");
+		btnPositions.setToolTipText("Edit shock points");
+		btnPositions.setOpaque(true);
+		btnPositions.setBackground(new Color(135, 206, 235));
+		btnPositions.setBounds(16, 11, 69, 28);
+		contentPane.add(btnPositions);
+
+		txtSecretKey = new JPasswordField();
+		txtSecretKey.setBounds(358, 30, 340, 20);
+		txtSecretKey.setFont(new Font("Courier New", Font.PLAIN, 8));
+		txtSecretKey.setColumns(10);
+		panelKey.add(txtSecretKey);
+
+		btnSaveKey = new JButton("SAVE");
+		btnSaveKey.setBounds(726, 30, 72, 20);
+		panelKey.add(btnSaveKey);
+		btnSaveKey.setOpaque(true);
+		btnSaveKey.setBackground(new Color(220, 220, 220));
+
+		JLabel lblItarations = new JLabel("Iterations");
+		lblItarations.setBounds(10, 59, 90, 14);
+		lblItarations.setHorizontalAlignment(SwingConstants.LEFT);
+		panelConfig.add(lblItarations);
+
+		txtIterations = new JTextField();
+		txtIterations.setBounds(110, 55, 60, 20);
+		txtIterations.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtIterations.setColumns(10);
+		panelConfig.add(txtIterations);
+
+		txtCoinsIncr = new JTextField();
+		txtCoinsIncr.setBounds(462, 55, 60, 20);
+		txtCoinsIncr.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtCoinsIncr.setColumns(10);
+		panelConfig.add(txtCoinsIncr);
+
+		JLabel lblCoinsIncr = new JLabel("Coins Incr");
+		lblCoinsIncr.setBounds(374, 59, 80, 14);
+		lblCoinsIncr.setHorizontalAlignment(SwingConstants.RIGHT);
+		panelConfig.add(lblCoinsIncr);
+
+		txtPriceIncr = new JTextField();
+		txtPriceIncr.setBounds(286, 55, 60, 20);
+		txtPriceIncr.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtPriceIncr.setColumns(10);
+		panelConfig.add(txtPriceIncr);
+
+		JLabel lblPriceIncr = new JLabel("Price Incr");
+		lblPriceIncr.setBounds(198, 59, 80, 14);
+		lblPriceIncr.setHorizontalAlignment(SwingConstants.RIGHT);
+		panelConfig.add(lblPriceIncr);
+
+		JLabel lblTProfit = new JLabel("Take profit");
+		lblTProfit.setBounds(10, 83, 90, 14);
+		lblTProfit.setHorizontalAlignment(SwingConstants.LEFT);
+		panelConfig.add(lblTProfit);
+
+		txtTProfit = new JTextField();
+		txtTProfit.setBounds(110, 81, 60, 20);
+		txtTProfit.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtTProfit.setColumns(10);
+		panelConfig.add(txtTProfit);
+
+		txtDistBeforeSL = new JTextField();
+		txtDistBeforeSL.setBounds(638, 55, 60, 20);
+		txtDistBeforeSL.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtDistBeforeSL.setColumns(10);
+		panelConfig.add(txtDistBeforeSL);
+
+		JLabel lblDistSL = new JLabel("Last to SL");
+		lblDistSL.setBounds(550, 59, 80, 14);
+		lblDistSL.setHorizontalAlignment(SwingConstants.RIGHT);
+		panelConfig.add(lblDistSL);
+
+		JLabel lblPriceIncr_1 = new JLabel("Balance");
+		lblPriceIncr_1.setBounds(198, 83, 80, 14);
+		lblPriceIncr_1.setHorizontalAlignment(SwingConstants.RIGHT);
+		panelConfig.add(lblPriceIncr_1);
+
+		txtBalanceStartPosition = new JTextField();
+		txtBalanceStartPosition.setBounds(286, 81, 60, 20);
+		txtBalanceStartPosition.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtBalanceStartPosition.setColumns(10);
+		panelConfig.add(txtBalanceStartPosition);
+
+		txtFavCoins = new JTextField();
+		txtFavCoins.setBounds(110, 11, 588, 20);
+		txtFavCoins.setColumns(10);
+		panelConfig.add(txtFavCoins);
+
+		JLabel lblFavCoins = new JLabel("Favorite coins");
+		lblFavCoins.setHorizontalAlignment(SwingConstants.LEFT);
+		lblFavCoins.setBounds(10, 14, 90, 14);
+		panelConfig.add(lblFavCoins);
+
+		txtLeverage = new JTextField();
+		txtLeverage.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtLeverage.setBounds(638, 81, 60, 20);
+		panelConfig.add(txtLeverage);
+		txtLeverage.setColumns(10);
+
+		txtBalanceMinAvailable = new JTextField();
+		txtBalanceMinAvailable.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtBalanceMinAvailable.setBounds(462, 81, 60, 20);
+		panelConfig.add(txtBalanceMinAvailable);
+		txtBalanceMinAvailable.setColumns(10);
+
+		JLabel lblLeverage = new JLabel("Leverage");
+		lblLeverage.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblLeverage.setBounds(550, 83, 80, 14);
+		panelConfig.add(lblLeverage);
+
+		JLabel lblAvailable = new JLabel("Min available");
+		lblAvailable.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblAvailable.setBounds(374, 83, 80, 14);
+		panelConfig.add(lblAvailable);
+
+		btnSaveConfig = new JButton("SAVE");
+		btnSaveConfig.setBounds(726, 81, 72, 20);
+		panelConfig.add(btnSaveConfig);
+		btnSaveConfig.setOpaque(true);
+		btnSaveConfig.setBackground(new Color(220, 220, 220));
+
+		JLabel lblPercetSymbol = new JLabel("%");
+		lblPercetSymbol.setBounds(173, 83, 25, 14);
+		panelConfig.add(lblPercetSymbol);
+
+		JLabel lblPercetSymbol_1 = new JLabel("%");
+		lblPercetSymbol_1.setBounds(349, 59, 25, 14);
+		panelConfig.add(lblPercetSymbol_1);
+
+		JLabel lblPercetSymbol_2 = new JLabel("%");
+		lblPercetSymbol_2.setBounds(349, 83, 25, 14);
+		panelConfig.add(lblPercetSymbol_2);
+
+		JLabel lblPercetSymbol_3 = new JLabel("%");
+		lblPercetSymbol_3.setBounds(525, 59, 25, 14);
+		panelConfig.add(lblPercetSymbol_3);
+
+		JLabel lblPercetSymbol_4 = new JLabel("%");
+		lblPercetSymbol_4.setBounds(525, 83, 25, 14);
+		panelConfig.add(lblPercetSymbol_4);
+
+		JLabel lblPercetSymbol_5 = new JLabel("%");
+		lblPercetSymbol_5.setBounds(701, 59, 25, 14);
+		panelConfig.add(lblPercetSymbol_5);
+
+		JScrollPane scrollFavorites = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollFavorites.setBounds(16, 93, 140, 166);
+		contentPane.add(scrollFavorites);
+
+		listFavorites = new JList<String>();
+		listFavorites.setForeground(new Color(39, 82, 194));
+		scrollFavorites.setViewportView(listFavorites);
+
+		JScrollPane scrollSignals = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollSignals.setBounds(183, 60, 643, 220);
+		contentPane.add(scrollSignals);
+
+		listSignals = new JList<String>();
+		listSignals.setFont(new Font("Courier New", Font.PLAIN, 11));
+		listSignals.setForeground(new Color(39, 82, 194));
+		scrollSignals.setViewportView(listSignals);
+
+		btnShockMonitor = new JButton("DETAIL");
+		btnShockMonitor.setToolTipText("Monitor shock points");
+		btnShockMonitor.setOpaque(true);
+		btnShockMonitor.setBackground(new Color(220, 220, 220));
+		btnShockMonitor.setBounds(636, 21, 90, 28);
+		contentPane.add(btnShockMonitor);
+
+		txtBalance = new JTextField();
+		txtBalance.setBounds(640, 537, 86, 20);
+		txtBalance.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtBalance.setForeground(new Color(65, 105, 225));
+		txtBalance.setEditable(false);
+		txtBalance.setColumns(10);
+		contentPane.add(txtBalance);
+
+		JLabel lblBalanceL = new JLabel("Balance");
+		lblBalanceL.setBounds(640, 518, 86, 14);
+		lblBalanceL.setHorizontalAlignment(SwingConstants.RIGHT);
+		contentPane.add(lblBalanceL);
+
+		txtWithdrawal = new JTextField();
+		txtWithdrawal.setBounds(740, 537, 86, 20);
+		txtWithdrawal.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtWithdrawal.setForeground(new Color(65, 105, 225));
+		txtWithdrawal.setEditable(false);
+		txtWithdrawal.setColumns(10);
+		contentPane.add(txtWithdrawal);
+
+		JLabel lblWithdrawalL = new JLabel("Withdrawal");
+		lblWithdrawalL.setBounds(743, 518, 83, 14);
+		lblWithdrawalL.setHorizontalAlignment(SwingConstants.RIGHT);
+		contentPane.add(lblWithdrawalL);
+
+		btnNewTrade = new JButton("NEW TRADE");
+		btnNewTrade.setBounds(16, 54, 140, 28);
+		btnNewTrade.setOpaque(true);
+		btnNewTrade.setBackground(new Color(220, 220, 220));
+		contentPane.add(btnNewTrade);
+
+		JLabel lblConfig = new JLabel("Default values");
+		lblConfig.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblConfig.setBounds(16, 281, 140, 20);
+		contentPane.add(lblConfig);
+
+		txtError = new JTextField();
+		txtError.setForeground(new Color(255, 0, 0));
+		txtError.setEditable(false);
+		txtError.setBounds(16, 517, 600, 40);
+		contentPane.add(txtError);
+
+		btnShockEditor = new JButton("EDIT");
+		btnShockEditor.setToolTipText("Edit shock points");
+		btnShockEditor.setOpaque(true);
+		btnShockEditor.setBackground(new Color(220, 220, 220));
+		btnShockEditor.setBounds(736, 21, 90, 28);
+		contentPane.add(btnShockEditor);
+
+		JLabel lblSignals = new JLabel("Shock points / Signals");
+		lblSignals.setHorizontalAlignment(SwingConstants.LEFT);
+		lblSignals.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblSignals.setBounds(183, 29, 200, 20);
+		contentPane.add(lblSignals);
+
+		btnHammerCalc = new JButton("CALC");
+		btnHammerCalc.setToolTipText("Edit shock points");
+		btnHammerCalc.setOpaque(true);
+		btnHammerCalc.setBackground(new Color(135, 206, 235));
+		btnHammerCalc.setBounds(87, 11, 69, 28);
+		contentPane.add(btnHammerCalc);
+
+		listFavorites.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) 
+			{
+				@SuppressWarnings("unchecked")
+				JList<String> list = (JList<String>) e.getSource();
+				if (e.getClickCount() == 2)
+				{
+					int index = list.locationToIndex(e.getPoint());
+					String symbolLeft = (String) list.getModel().getElementAt(index);
+					FrmTrader.launch(symbolLeft, null, null);
+				}
+				
+			}
+		});
+
+		listSignals.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) 
+			{
+				@SuppressWarnings("unchecked")
+				JList<String> list = (JList<String>) e.getSource();
+				if (e.getClickCount() == 2)
+				{
+					int index = list.locationToIndex(e.getPoint());
+					tradeFromSignal(index);
+				}
+			}
+		});
+
+		btnPositions.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				showPositions();
+			}
+		});
+
+		btnHammerCalc.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				showHammerCalc();
+			}
+		});
+
+		btnShockEditor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				editShockPoints();
+			}
+		});
+
+		btnNewTrade.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				FrmTrader.launch();
+			}
+		});
+
+		btnShockMonitor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				FrmShockMonitor.launch();
+			}
+		});
+
+		btnSaveConfig.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				saveConfig();
+			}
+		});
+
+		btnSaveKey.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				saveKey();
+			}
+		});
+
+	}
+
+	private void pageload()
+	{
+		try
+		{
+			ERROR(Application.getError());
+
+			txtApiKey.setText(PrivateConfig.API_KEY);
+			txtSecretKey.setText(PrivateConfig.SECRET_KEY);
+
+			loadConfig();
+		}
+		catch(Exception e)
+		{
+			ERROR(e);
+		}
+	}
+
+	private void loadConfig() throws JsonSyntaxException, JsonIOException, FileNotFoundException
+	{
+		listFavorites.setModel(toListModel(Config.getLstFavSymbols()));
+		txtFavCoins.setText(Config.getFavorite_symbols());
+
+		txtLeverage.setText(String.valueOf(Config.getLeverage()));
+		txtIterations.setText(String.valueOf(Config.getIterations()));
+
+		txtPriceIncr.setText(dblToStrPercent(Config.getPrice_increment())); 
+		txtCoinsIncr.setText(dblToStrPercent(Config.getCoins_increment()));
+		txtDistBeforeSL.setText(dblToStrPercent(Config.getStoploss_increment()));
+		txtTProfit.setText(dblToStrPercent(Config.getTakeprofit()));
+
+		txtBalanceStartPosition.setText(dblToStrPercent(Config.getBalance_start_position()));
+		txtBalanceMinAvailable.setText(dblToStrPercent(Config.getBalance_min_available()));
+	}
+
+	private void showPositions()
+	{
+		FrmPositions.launch();
+	}
+
+	private void showHammerCalc()
+	{
+		FrmHammerCalc.launch();
+	}
+
+	private void editShockPoints()
+	{
+		FrmShockEditor.launch();
+	}
+
+	public static void launch()
+	{
+		EventQueue.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				FrmMain frame = null;
+
+				try
+				{
+					frame = new FrmMain();
+					frame.setVisible(true);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					System.exit(1);
+				}
+
+			}
+		});
+	}
+
+	private void startTimer()
+	{
+		ActionListener taskPerformer1 = new ActionListener()
+		{
+			public void actionPerformed(ActionEvent evt)
+			{
+				refresh();
+			}
+		};
+		Timer timer1 = new Timer(2000, taskPerformer1);
+		timer1.setInitialDelay(0);
+		timer1.setRepeats(true);
+		timer1.start();
+	}
+
+	private void refresh()
+	{
+		try
+		{
+			AccountBalance balance = BalanceService.getAccountBalance();
+			if (balance != null)
+			{
+				txtBalance.setText(Convert.usdToStr(balance.getBalance().doubleValue()));
+				txtWithdrawal.setText(Convert.usdToStr(balance.getWithdrawAvailable().doubleValue()));
+			}
+
+			// ----------------------------------------------------------------
+
+			loadListSignals();
+
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
+	}
+
+	// ------------------------------------------------------------------------
+
+	private void loadListSignals()
+	{
+		lstShockStatus = SignalService.getShockStatus();
+
+		AbstractListModel<String> listModel = new AbstractListModel<String>()
+		{
+			private static final long serialVersionUID = 1L;
+
+			public int getSize()
+			{
+				return lstShockStatus.size();
+			}
+
+			public String getElementAt(int index)
+			{
+				return lstShockStatus.get(index).toStringSmart();
+			}
+		};
+
+		listSignals.setModel(listModel);
+	}
+
+	private void tradeFromSignal(int index)
+	{
+		SignalEntry entry = lstShockStatus.get(index);
+
+		if (entry.getAction().startsWith("SHORT"))
+		{
+			Double price = Math.max(entry.getPrice().doubleValue(), entry.getShShock().doubleValue());
+			FrmTrader.launch(entry.getCoin().getNameLeft(), "SHORT", entry.getCoin().priceToStr(price));
+		}
+		else
+		{
+			Double price = Math.min(entry.getPrice().doubleValue(), entry.getLgShock().doubleValue());
+			FrmTrader.launch(entry.getCoin().getNameLeft(), "LONG", entry.getCoin().priceToStr(price));
+		}
+	}
+
+	// ------------------------------------------------------------------------
+
+	private void saveConfig()
+	{
+		try
+		{
+			Config.setFavorite_symbols(txtFavCoins.getText());
+
+			Config.setLeverage(txtLeverage.getText());
+			Config.setIterations(txtIterations.getText());
+
+			Config.setPrice_increment(strPercentToDbl(txtPriceIncr.getText()));
+			Config.setCoins_increment(strPercentToDbl(txtCoinsIncr.getText()));
+			Config.setStoploss_increment(strPercentToDbl(txtDistBeforeSL.getText()));
+			Config.setTakeprofit(strPercentToDbl(txtTProfit.getText()));
+
+			Config.setBalance_start_position(strPercentToDbl(txtBalanceStartPosition.getText()));
+			Config.setBalance_min_available(strPercentToDbl(txtBalanceMinAvailable.getText()));
+
+			Config.save();
+			INFO("CONFIG SAVED");
+		}
+		catch(Exception e)
+		{
+			ERROR(e);
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private void saveKey()
+	{
+		try
+		{
+			PrivateConfig.setKey(txtApiKey.getText(), txtSecretKey.getText());
+			INFO("KEY SAVED");
+		}
+		catch (IOException e)
+		{
+			ERROR(e);
+		}
+	}
+
+
+	// ------------------------------------------------------------------------
+
+	private static String dblToStrPercent(Double d)
+	{
+		if (d == null)
+			return "";
+
+		return String.valueOf(DoubleRounder.round(d * 100, 2));
+	}
+
+
+	private static Double strPercentToDbl(String str)
+	{
+		if (str == null)
+			return null;
+
+		return DoubleRounder.round(Double.valueOf(str) / 100, 4);
+	}
+
+
+	private static AbstractListModel<String> toListModel(List<String> values)
+	{
+		AbstractListModel<String> listModel = new AbstractListModel<String>()
+		{
+			private static final long serialVersionUID = 1L;
+
+			public int getSize()
+			{
+				return values.size();
+			}
+
+			public String getElementAt(int index)
+			{
+				return values.get(index);
+			}
+		};
+
+		return listModel;
+	}
+
+	// ------------------------------------------------------------------------
+
+	public void ERROR(Exception e)
+	{
+		ERROR(e.getMessage());
+	}
+
+	public void ERROR(String msg)
+	{
+		txtError.setForeground(new Color(255, 0, 0));
+		txtError.setText(" " + msg);
+	}
+
+	public void INFO(String msg)
+	{
+		txtError.setForeground(new Color(51, 107, 255));
+		txtError.setText(" " + msg);
+	}
+
+	// ------------------------------------------------------------------------
+
+	public static void main(String[] args)
+	{
+		Application.initialize();
+		Application.initializeUI();
+		launch();
+	}
+}
