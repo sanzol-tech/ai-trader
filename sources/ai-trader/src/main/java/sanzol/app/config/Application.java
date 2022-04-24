@@ -2,8 +2,7 @@ package sanzol.app.config;
 
 import javax.swing.UIManager;
 
-import com.formdev.flatlaf.FlatIntelliJLaf;
-import com.formdev.flatlaf.IntelliJTheme;
+import com.formdev.flatlaf.FlatLightLaf;
 
 import sanzol.app.forms.FrmMain;
 import sanzol.app.task.BalanceService;
@@ -43,8 +42,7 @@ public final class Application
 		try
 		{
 			//UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-			UIManager.setLookAndFeel( new FlatIntelliJLaf() );
-			//IntelliJTheme.setup( Application.class.getResourceAsStream("/resources/theme.json"));
+			UIManager.setLookAndFeel( new FlatLightLaf() );
 		}
 		catch (Exception e)
 		{
