@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Locale;
+import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -42,7 +43,10 @@ public class Symbol
 		return quantityPrecision;
 	}
 
+	// ------------------------------------------------------------------------
+
 	private static List<ExchangeInfoEntry> lstExInfEntries = null;
+
 	private static void getExInfEntries()
 	{
 		if (lstExInfEntries == null)
@@ -53,6 +57,23 @@ public class Symbol
 			lstExInfEntries = exInf.getSymbols();
 		}
 	}
+
+	public static String getAll()
+	{
+		TreeSet<String> list = new TreeSet<String>();
+		getExInfEntries();
+		for (ExchangeInfoEntry entry : lstExInfEntries)
+		{
+			if (entry.getSymbol().endsWith(Constants.DEFAULT_SYMBOL_RIGHT))
+			{
+				String symbolName = entry.getSymbol().substring(0, entry.getSymbol().length() - Constants.DEFAULT_SYMBOL_RIGHT.length());
+				list.add(symbolName);
+			}
+		}
+		return StringUtils.join(list, ",");
+	}
+
+	// ------------------------------------------------------------------------
 
 	public static Symbol getInstance(String symbolName)
 	{
@@ -137,5 +158,16 @@ public class Symbol
 	{
 		return symbolLeft + Constants.DEFAULT_SYMBOL_RIGHT;
 	}
+	
+	public static String getRightSymbol(String symbolName)
+	{
+		return symbolName.substring(0, symbolName.length() - Constants.DEFAULT_SYMBOL_RIGHT.length());
+	}	
 
+	// ------------------------------------------------------------------------
+
+	public static void main(String[] args)
+	{
+		System.out.println(getAll());
+	}	
 }

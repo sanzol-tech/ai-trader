@@ -53,6 +53,8 @@ public class FrmTrader extends JFrame
 {
 	private static final long serialVersionUID = 1L;
 
+	private static final String TITLE = Constants.APP_NAME;
+
 	private Symbol coin;
 	private PositionTrader pMaker;
 
@@ -117,7 +119,7 @@ public class FrmTrader extends JFrame
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 1152, 652);
-		setTitle(Constants.APP_NAME);
+		setTitle(TITLE);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmTrader.class.getResource("/resources/logo.png")));
 
 		contentPane = new JPanel();
@@ -600,7 +602,7 @@ public class FrmTrader extends JFrame
 		{
 			txtSymbolLeft.setText(txtSymbolLeft.getText().toUpperCase());
 			String symbol = txtSymbolLeft.getText();
-			setTitle("AI Trader - " + symbol);
+			setTitle(TITLE + " - " + symbol);
 			coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
 
 			BigDecimal price = PriceService.getLastPrice(coin);

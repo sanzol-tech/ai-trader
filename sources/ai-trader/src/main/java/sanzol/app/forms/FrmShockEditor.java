@@ -31,6 +31,7 @@ import javax.swing.border.EmptyBorder;
 import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
 import sanzol.app.task.SignalService;
+import javax.swing.JCheckBox;
 
 public class FrmShockEditor extends JFrame
 {
@@ -89,12 +90,17 @@ public class FrmShockEditor extends JFrame
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		
+		JCheckBox chkOnlyFavorites = new JCheckBox("Only favorites");
+		chkOnlyFavorites.setSelected(true);
+		
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addComponent(btnGenerate)
-					.addPreferredGap(ComponentPlacement.RELATED, 312, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(chkOnlyFavorites)
+					.addPreferredGap(ComponentPlacement.RELATED, 213, Short.MAX_VALUE)
 					.addComponent(btnSave))
 				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE)
 				.addComponent(txtError, GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE)
@@ -106,7 +112,8 @@ public class FrmShockEditor extends JFrame
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnGenerate)
-						.addComponent(btnSave))
+						.addComponent(btnSave)
+						.addComponent(chkOnlyFavorites))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(txtError, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 		);
@@ -156,11 +163,10 @@ public class FrmShockEditor extends JFrame
 			SignalService.searchShocks();
 			SignalService.saveShocks();
 			textArea.setText(SignalService.toStringShocks());
-			setTitle(TITLE + " - " + SignalService.getModified());
 
 			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
-			INFO("GENERATED !!!");
+			INFO("New points generated !");
 		}
 		catch (Exception e)
 		{
@@ -170,6 +176,7 @@ public class FrmShockEditor extends JFrame
 
 	private void load()
 	{
+		INFO("");
 		try
 		{
 			Path path = Paths.get(Constants.DEFAULT_USER_FOLDER, Constants.SHOCKPOINTS_FILENAME);
@@ -180,11 +187,11 @@ public class FrmShockEditor extends JFrame
 				textArea.setText(content);
 
 				String modified = (new SimpleDateFormat("dd/MM HH:mm")).format(new Date(path.toFile().lastModified()));
-				setTitle(TITLE + " - " + modified);
+				INFO("Last modification: " + modified);
 			}
 			else
 			{
-				setTitle(TITLE + " - n/a");
+				ERROR("Missing Points");
 			}
 		}
 		catch (Exception e)
@@ -203,7 +210,7 @@ public class FrmShockEditor extends JFrame
 
 			SignalService.loadShocks();
 
-			INFO("SAVED");
+			INFO("Saved points !");
 		}
 		catch (Exception e)
 		{
@@ -262,5 +269,4 @@ public class FrmShockEditor extends JFrame
 		Application.initializeUI();
 		launch();
 	}
-
 }

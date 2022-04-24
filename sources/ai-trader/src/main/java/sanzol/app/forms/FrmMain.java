@@ -2,6 +2,8 @@ package sanzol.app.forms;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -11,6 +13,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
@@ -40,6 +43,7 @@ import sanzol.app.config.Constants;
 import sanzol.app.config.PrivateConfig;
 import sanzol.app.model.SignalEntry;
 import sanzol.app.task.BalanceService;
+import sanzol.app.task.PriceService;
 import sanzol.app.task.SignalService;
 import sanzol.app.util.Convert;
 
@@ -52,8 +56,8 @@ public class FrmMain extends JFrame
 	private JPanel contentPane;
 
 	private JButton btnPositions;
-	private JButton btnHammerCalc;
-	private JButton btnNewTrade;
+	private JButton btnCalcOrder;
+	private JButton btnNewGrid;
 	private JButton btnShockMonitor;
 	private JButton btnSaveConfig;
 	private JButton btnSaveKey;
@@ -133,11 +137,11 @@ public class FrmMain extends JFrame
 		lblNewLabel_3.setBounds(358, 11, 80, 14);
 		panelKey.add(lblNewLabel_3);
 
-		btnPositions = new JButton("POS");
+		btnPositions = new JButton("POSITIONS");
 		btnPositions.setToolTipText("Edit shock points");
 		btnPositions.setOpaque(true);
-		btnPositions.setBackground(new Color(135, 206, 235));
-		btnPositions.setBounds(16, 11, 69, 28);
+		btnPositions.setBackground(new Color(220, 220, 220));
+		btnPositions.setBounds(294, 11, 120, 28);
 		contentPane.add(btnPositions);
 
 		txtSecretKey = new JPasswordField();
@@ -229,6 +233,7 @@ public class FrmMain extends JFrame
 		panelConfig.add(lblFavCoins);
 
 		txtLeverage = new JTextField();
+		txtLeverage.setEditable(false);
 		txtLeverage.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtLeverage.setBounds(638, 81, 60, 20);
 		panelConfig.add(txtLeverage);
@@ -281,15 +286,16 @@ public class FrmMain extends JFrame
 		panelConfig.add(lblPercetSymbol_5);
 
 		JScrollPane scrollFavorites = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollFavorites.setBounds(16, 93, 140, 166);
+		scrollFavorites.setBounds(16, 67, 140, 190);
 		contentPane.add(scrollFavorites);
 
 		listFavorites = new JList<String>();
+		listFavorites.setFont(new Font("Courier New", Font.PLAIN, 12));
 		listFavorites.setForeground(new Color(39, 82, 194));
 		scrollFavorites.setViewportView(listFavorites);
 
 		JScrollPane scrollSignals = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollSignals.setBounds(183, 60, 643, 220);
+		scrollSignals.setBounds(183, 104, 643, 180);
 		contentPane.add(scrollSignals);
 
 		listSignals = new JList<String>();
@@ -297,11 +303,11 @@ public class FrmMain extends JFrame
 		listSignals.setForeground(new Color(39, 82, 194));
 		scrollSignals.setViewportView(listSignals);
 
-		btnShockMonitor = new JButton("DETAIL");
+		btnShockMonitor = new JButton("MONITOR ALL");
 		btnShockMonitor.setToolTipText("Monitor shock points");
 		btnShockMonitor.setOpaque(true);
 		btnShockMonitor.setBackground(new Color(220, 220, 220));
-		btnShockMonitor.setBounds(636, 21, 90, 28);
+		btnShockMonitor.setBounds(556, 66, 130, 28);
 		contentPane.add(btnShockMonitor);
 
 		txtBalance = new JTextField();
@@ -330,11 +336,11 @@ public class FrmMain extends JFrame
 		lblWithdrawalL.setHorizontalAlignment(SwingConstants.RIGHT);
 		contentPane.add(lblWithdrawalL);
 
-		btnNewTrade = new JButton("NEW TRADE");
-		btnNewTrade.setBounds(16, 54, 140, 28);
-		btnNewTrade.setOpaque(true);
-		btnNewTrade.setBackground(new Color(220, 220, 220));
-		contentPane.add(btnNewTrade);
+		btnNewGrid = new JButton("NEW GRID");
+		btnNewGrid.setBounds(16, 11, 120, 28);
+		btnNewGrid.setOpaque(true);
+		btnNewGrid.setBackground(new Color(135, 206, 235));
+		contentPane.add(btnNewGrid);
 
 		JLabel lblConfig = new JLabel("Default values");
 		lblConfig.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -347,26 +353,44 @@ public class FrmMain extends JFrame
 		txtError.setBounds(16, 517, 600, 40);
 		contentPane.add(txtError);
 
-		btnShockEditor = new JButton("EDIT");
+		btnShockEditor = new JButton("EDIT POINTS");
 		btnShockEditor.setToolTipText("Edit shock points");
 		btnShockEditor.setOpaque(true);
 		btnShockEditor.setBackground(new Color(220, 220, 220));
-		btnShockEditor.setBounds(736, 21, 90, 28);
+		btnShockEditor.setBounds(696, 66, 130, 28);
 		contentPane.add(btnShockEditor);
 
 		JLabel lblSignals = new JLabel("Shock points / Signals");
 		lblSignals.setHorizontalAlignment(SwingConstants.LEFT);
 		lblSignals.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblSignals.setBounds(183, 29, 200, 20);
+		lblSignals.setBounds(184, 76, 200, 20);
 		contentPane.add(lblSignals);
 
-		btnHammerCalc = new JButton("CALC");
-		btnHammerCalc.setToolTipText("Edit shock points");
-		btnHammerCalc.setOpaque(true);
-		btnHammerCalc.setBackground(new Color(135, 206, 235));
-		btnHammerCalc.setBounds(87, 11, 69, 28);
-		contentPane.add(btnHammerCalc);
+		btnCalcOrder = new JButton("CALC ORDER");
+		btnCalcOrder.setOpaque(true);
+		btnCalcOrder.setBackground(new Color(135, 206, 235));
+		btnCalcOrder.setBounds(146, 11, 120, 28);
+		contentPane.add(btnCalcOrder);
+		
+		JLabel lblTitle = new JLabel("ai-trader on GitHub");
+		lblTitle.setForeground(new Color(0, 0, 139));
+		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lblTitle.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblTitle.setBounds(616, 15, 210, 14);
+		lblTitle.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		contentPane.add(lblTitle);
 
+		lblTitle.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					Desktop.getDesktop().browse(new URI("https://github.com/sanzol-tech/ai-trader"));
+				} catch (Exception ex) {
+					System.err.println(ex.getMessage());
+				}
+			}
+		});
+		
 		listFavorites.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) 
@@ -376,10 +400,11 @@ public class FrmMain extends JFrame
 				if (e.getClickCount() == 2)
 				{
 					int index = list.locationToIndex(e.getPoint());
-					String symbolLeft = (String) list.getModel().getElementAt(index);
+					String item = (String) list.getModel().getElementAt(index);
+					String symbolLeft = item.substring(0, item.indexOf(" "));
 					FrmTrader.launch(symbolLeft, null, null);
 				}
-				
+
 			}
 		});
 
@@ -403,9 +428,9 @@ public class FrmMain extends JFrame
 			}
 		});
 
-		btnHammerCalc.addActionListener(new ActionListener() {
+		btnCalcOrder.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				showHammerCalc();
+				showCalcOrder();
 			}
 		});
 
@@ -415,7 +440,7 @@ public class FrmMain extends JFrame
 			}
 		});
 
-		btnNewTrade.addActionListener(new ActionListener() {
+		btnNewGrid.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				FrmTrader.launch();
 			}
@@ -460,7 +485,7 @@ public class FrmMain extends JFrame
 
 	private void loadConfig() throws JsonSyntaxException, JsonIOException, FileNotFoundException
 	{
-		listFavorites.setModel(toListModel(Config.getLstFavSymbols()));
+		//listFavorites.setModel(toListModel(Config.getLstFavSymbols()));
 		txtFavCoins.setText(Config.getFavorite_symbols());
 
 		txtLeverage.setText(String.valueOf(Config.getLeverage()));
@@ -480,9 +505,9 @@ public class FrmMain extends JFrame
 		FrmPositions.launch();
 	}
 
-	private void showHammerCalc()
+	private void showCalcOrder()
 	{
-		FrmHammerCalc.launch();
+		FrmCalcOrder.launch();
 	}
 
 	private void editShockPoints()
@@ -522,7 +547,7 @@ public class FrmMain extends JFrame
 				refresh();
 			}
 		};
-		Timer timer1 = new Timer(2000, taskPerformer1);
+		Timer timer1 = new Timer(3000, taskPerformer1);
 		timer1.setInitialDelay(0);
 		timer1.setRepeats(true);
 		timer1.start();
@@ -542,7 +567,9 @@ public class FrmMain extends JFrame
 			// ----------------------------------------------------------------
 
 			loadListSignals();
-
+			
+			// ----------------------------------------------------------------
+			listFavorites.setModel(toListModel(PriceService.getSymbols(true)));			
 		}
 		catch (Exception e)
 		{
@@ -631,7 +658,6 @@ public class FrmMain extends JFrame
 			ERROR(e);
 		}
 	}
-
 
 	// ------------------------------------------------------------------------
 

@@ -21,20 +21,19 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
 import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
-import sanzol.app.service.PositionService;
-import sanzol.lib.util.BeepUtils;
+import sanzol.app.task.PositionService;
 
 public class FrmPositions extends JFrame
 {
 	private static final long serialVersionUID = 1L;
 	private static final int DEFAULT_PERIOD_MILLIS = 5000;
 	private static boolean isOpen = false;
-	private PositionService service;
 
 	private JPanel contentPane;
 
@@ -42,15 +41,14 @@ public class FrmPositions extends JFrame
 	private JTextArea textArea;
 
 	private JTextField txtError;
-
-	private JLabel lblStopLoss;
 	private JLabel lblTProfit;
-	private JTextField txtStopLoss;
 	private JTextField txtTProfit;
-	private JCheckBox chkSLRearrang;
 	private JCheckBox chkTPRearrang;
 	
 	private JButton btnSave;
+	private JLabel lblTPPercent;
+	
+	private JCheckBox chkIncludeOrders;
 
 	public FrmPositions()
 	{
@@ -58,7 +56,6 @@ public class FrmPositions extends JFrame
 
 		startTimer();
 		isOpen = true;
-		service = new PositionService();
 	}
 
 	private void initComponents() 
@@ -80,21 +77,13 @@ public class FrmPositions extends JFrame
 		txtError = new javax.swing.JTextField();
 		txtError.setEditable(false);
 		txtError.setForeground(new Color(255, 0, 0));
-		
-		lblStopLoss = new javax.swing.JLabel();
-		lblStopLoss.setText("Stop loss");
 
 		lblTProfit = new javax.swing.JLabel();
 		lblTProfit.setText("T.Profit");
 		
-		txtStopLoss = new javax.swing.JTextField();
-		txtStopLoss.setText("0");
-		
 		txtTProfit = new javax.swing.JTextField();
+		txtTProfit.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtTProfit.setText("0");
-
-		chkSLRearrang = new javax.swing.JCheckBox();
-		chkSLRearrang.setText("Rearrangement");
 
 		chkTPRearrang = new javax.swing.JCheckBox();
 		chkTPRearrang.setText("Rearrangement");
@@ -108,42 +97,44 @@ public class FrmPositions extends JFrame
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		
+		lblTPPercent = new JLabel();
+		lblTPPercent.setText("%");
+		
+		chkIncludeOrders = new JCheckBox("Include orders");
+		chkIncludeOrders.setSelected(true);
+		chkIncludeOrders.setHorizontalAlignment(SwingConstants.RIGHT);
+		
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
+			gl_contentPane.createParallelGroup(Alignment.TRAILING)
 				.addComponent(txtError, GroupLayout.DEFAULT_SIZE, 774, Short.MAX_VALUE)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblStopLoss)
-						.addComponent(lblTProfit))
-					.addGap(18)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(txtTProfit)
-						.addComponent(txtStopLoss, GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE))
-					.addGap(30)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-						.addComponent(chkTPRearrang)
-						.addComponent(chkSLRearrang))
-					.addPreferredGap(ComponentPlacement.RELATED, 429, Short.MAX_VALUE)
-					.addComponent(btnSave))
+				.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup()
+					.addComponent(lblTProfit, GroupLayout.PREFERRED_SIZE, 51, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(txtTProfit, GroupLayout.PREFERRED_SIZE, 68, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblTPPercent, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(chkTPRearrang, GroupLayout.PREFERRED_SIZE, 114, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnSave)
+					.addPreferredGap(ComponentPlacement.RELATED, 297, Short.MAX_VALUE)
+					.addComponent(chkIncludeOrders))
 				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 774, Short.MAX_VALUE)
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 279, Short.MAX_VALUE)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblStopLoss)
-						.addComponent(txtStopLoss, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(chkSLRearrang))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnSave)
 						.addComponent(lblTProfit)
 						.addComponent(txtTProfit, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(chkTPRearrang))
-					.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(lblTPPercent)
+						.addComponent(chkTPRearrang)
+						.addComponent(btnSave)
+						.addComponent(chkIncludeOrders))
+					.addGap(18)
 					.addComponent(txtError, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 		);
 
@@ -184,13 +175,7 @@ public class FrmPositions extends JFrame
 	{
 		try
 		{
-			String text = service.getPosition().toStringPositions();
-
-			if (service.wasChange())
-			{
-				BeepUtils.tone(5000, 300);
-			}
-
+			String text = PositionService.toStringPositions(chkIncludeOrders.isSelected());
 			textArea.setText(text);
 		}
 		catch (Exception e)
@@ -250,5 +235,4 @@ public class FrmPositions extends JFrame
 		Application.initializeUI();
 		launch();
 	}
-
 }

@@ -14,18 +14,20 @@ import java.util.Properties;
 public class Config
 {
 	private static final String[] FAVORITE_SYMBOLS = new String[]
-		{"1000SHIB", "ADA", "ALGO", "APE", "ATOM", "AVAX", "BAT", 
-		 "BTC", "CELO", "DASH", "DOGE", "DOT", "ETH", "FTM", "GALA", "GMT",
-		 "IOTA", "KNC", "LINK", "LUNA", "MANA", "MATIC", "NEAR", "NEO",
-		 "ONE", "RUNE", "SOL", "SUSHI", "THETA", "TRX", "UNI", "VET", "WAVES",
-		 "XRP", "XTZ", "ZEC"};
+		{"1000SHIB", "ADA", "ALGO", "ALICE", "ALPHA", "ANC", "APE", "ATOM", 
+		 "AUDIO", "AVAX", "BAT", "BCH", "BLZ", "BNB", "BTC", "BTS", "CELO", 
+		 "DASH", "DOGE", "DOT", "EGLD", "EOS", "ETH", "FIL", "FTM", "GALA", 
+		 "GMT", "HNT", "IOTA", "KAVA", "KNC", "LINA", "LINK", "LTC", "LUNA", 
+		 "MANA", "MATIC", "NEAR", "NEO", "OCEAN", "OGN", "OMG", "ONE", "PEOPLE", 
+		 "ROSE", "RUNE", "SAND", "SOL", "STORJ", "SUSHI", "THETA", "TRX", "UNI", 
+		 "VET", "WAVES", "XLM", "XMR", "XRP", "XTZ", "ZEC", "ZIL"};
 
 	private static final Integer LEVERAGE = 10;
 	private static final Integer ITERATIONS = 7;
 	private static final Double PRICE_INCREMENT = 0.02;
 	private static final Double STOPLOSS_INCREMENT = 0.03;
 	private static final Double COINS_INCREMENT = 0.40;
-	private static final Double TAKEPROFIT = 0.0075;
+	private static final Double TAKEPROFIT = 0.01;
 	private static final Double BALANCE_START_POSITION = 0.04;
 	private static final Double BALANCE_MIN_AVAILABLE = 0.15;
 

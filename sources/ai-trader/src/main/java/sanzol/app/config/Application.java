@@ -2,8 +2,12 @@ package sanzol.app.config;
 
 import javax.swing.UIManager;
 
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.IntelliJTheme;
+
 import sanzol.app.forms.FrmMain;
 import sanzol.app.task.BalanceService;
+import sanzol.app.task.PositionService;
 import sanzol.app.task.PriceService;
 import sanzol.app.task.SignalService;
 
@@ -21,9 +25,10 @@ public final class Application
 		try
 		{
 			PrivateConfig.loadKey();
-			PriceService.start();
 			Config.load();
+			PriceService.start();
 			BalanceService.start();
+			PositionService.start();
 			SignalService.start();
 		}
 		catch (Exception e)
@@ -37,7 +42,9 @@ public final class Application
 	{
 		try
 		{
-			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+			//UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+			UIManager.setLookAndFeel( new FlatIntelliJLaf() );
+			//IntelliJTheme.setup( Application.class.getResourceAsStream("/resources/theme.json"));
 		}
 		catch (Exception e)
 		{
