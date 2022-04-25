@@ -363,7 +363,7 @@ public class FrmMain extends JFrame
 		btnShockEditor.setBounds(696, 66, 130, 28);
 		contentPane.add(btnShockEditor);
 
-		JLabel lblSignals = new JLabel("Shock points / Signals");
+		JLabel lblSignals = new JLabel("Short or Long Entries");
 		lblSignals.setHorizontalAlignment(SwingConstants.LEFT);
 		lblSignals.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblSignals.setBounds(184, 76, 200, 20);
@@ -451,7 +451,7 @@ public class FrmMain extends JFrame
 
 		btnShockMonitor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmShockMonitor.launch();
+				FrmPointsMonitor.launch();
 			}
 		});
 
@@ -515,7 +515,7 @@ public class FrmMain extends JFrame
 
 	private void editShockPoints()
 	{
-		FrmShockEditor.launch();
+		FrmPointsEditor.launch();
 	}
 
 	public static void launch()

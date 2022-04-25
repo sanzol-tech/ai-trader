@@ -1,43 +1,38 @@
 package sanzol.app.forms;
 
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
 import sanzol.app.config.Application;
-import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.task.SignalService;
 
-public class FrmShockEditor extends JFrame
+public class FrmPointsMonitor extends JFrame
 {
 	private static final long serialVersionUID = 1L;
 
-	private static final String TITLE = "Shock editor";
+	private static final int DEFAULT_PERIOD_MILLIS = 2000;
+	private static final String TITLE = "Points monitor";
 
 	private static boolean isOpen = false;
 
@@ -47,28 +42,28 @@ public class FrmShockEditor extends JFrame
 	private JTextArea textArea;
 
 	private JTextField txtError;
+	
+	private JButton btnCopy;
 
-	private JButton btnGenerate;
-	private JButton btnSave;
-
-	public FrmShockEditor()
+	public FrmPointsMonitor()
 	{
 		initComponents();
 
-		load();
+		startTimer();
 		isOpen = true;
 	}
 
 	private void initComponents() 
 	{
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 480, 517);
-		setMinimumSize(new Dimension(480, 500));
+		setBounds(100, 100, 800, 578);
+		setMinimumSize(new Dimension(800, 600));
 		setTitle(TITLE);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmTrader.class.getResource("/resources/rulepen.png")));
-	
+		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmTrader.class.getResource("/resources/monitor.png")));
+
 		textArea = new JTextArea();
 		textArea.setBackground(Styles.COLOR_TEXT_AREA);
+		textArea.setEditable(false);
 		textArea.setBorder(new EmptyBorder(5, 5, 5, 5));
 		textArea.setFont(new Font("Courier New", Font.PLAIN, 12));
 
@@ -79,50 +74,36 @@ public class FrmShockEditor extends JFrame
 		txtError.setEditable(false);
 		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
 
-		btnGenerate = new JButton("GENERATE");
-		btnGenerate.setOpaque(true);
-		btnGenerate.setBackground(Styles.COLOR_BTN);
+		btnCopy = new javax.swing.JButton();
+		btnCopy.setText("Copy to clipboard");
+		btnCopy.setOpaque(true);
+		btnCopy.setBackground(Styles.COLOR_BTN);
 
-		btnSave = new JButton("SAVE");
-		btnSave.setOpaque(true);
-		btnSave.setBackground(Styles.COLOR_BTN);
-		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		
-		JCheckBox chkOnlyFavorites = new JCheckBox("Only favorites");
-		chkOnlyFavorites.setSelected(true);
-		
+
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE)
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(btnGenerate)
-							.addGap(18)
-							.addComponent(chkOnlyFavorites)
-							.addPreferredGap(ComponentPlacement.RELATED, 181, Short.MAX_VALUE)
-							.addComponent(btnSave))
-						.addComponent(txtError, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE))
+						.addComponent(scrollPane, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
+						.addComponent(txtError, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
+						.addComponent(btnCopy, Alignment.TRAILING))
 					.addContainerGap())
 		);
 		gl_contentPane.setVerticalGroup(
-			gl_contentPane.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_contentPane.createSequentialGroup()
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 472, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnSave)
-						.addComponent(btnGenerate)
-						.addComponent(chkOnlyFavorites))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(btnCopy)
+					.addGap(11)
 					.addComponent(txtError, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(7))
+					.addContainerGap())
 		);
 
 		contentPane.setLayout(gl_contentPane);
@@ -131,97 +112,52 @@ public class FrmShockEditor extends JFrame
 
 		// -----------------------------------------------------------------
 
-		addWindowListener(new WindowAdapter()
-		{
+		addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowClosed(WindowEvent e)
-			{
+			public void windowClosed(WindowEvent e) {
 				isOpen = false;
 			}
 		});
 
-		btnGenerate.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				generate();
-			}
-		});
-
-		btnSave.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				save();
+		btnCopy.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				StringSelection stringSelection = new StringSelection(textArea.getText());
+				Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+				clipboard.setContents(stringSelection, null);
 			}
 		});
 
 	}
-
+	
 	// ------------------------------------------------------------------------
 
-	private void generate()
+	private void startTimer()
 	{
-		try
+		ActionListener taskPerformer1 = new ActionListener()
 		{
-			INFO("GENERATING SHOCKPOINTS...");
-			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			public void actionPerformed(ActionEvent evt)
+			{
+				getSignals();
+			}
+		};
 
-			SignalService.searchShocks();
-			SignalService.saveShocks();
-			textArea.setText(SignalService.toStringShocks());
-
-			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-
-			INFO("New points generated !");
-		}
-		catch (Exception e)
-		{
-			ERROR(e);
-		}
+		Timer timer1 = new Timer(DEFAULT_PERIOD_MILLIS, taskPerformer1);
+		timer1.setInitialDelay(0);
+		timer1.setRepeats(true);
+		timer1.start();
 	}
 
-	private void load()
+	private void getSignals()
 	{
-		INFO("");
 		try
 		{
-			Path path = Paths.get(Constants.DEFAULT_USER_FOLDER, Constants.SHOCKPOINTS_FILENAME);
-			if (path.toFile().exists())
-			{
-				String content = new String(Files.readAllBytes(path));
-
-				textArea.setText(content);
-
-				String modified = (new SimpleDateFormat("dd/MM HH:mm")).format(new Date(path.toFile().lastModified()));
-				INFO("Last modification: " + modified);
-			}
-			else
-			{
-				ERROR("Missing Points");
-			}
+			textArea.setText(SignalService.toStringStatus());
+			INFO("Last modification: " + SignalService.getModified());
 		}
 		catch (Exception e)
 		{
 			ERROR(e);
-		}
-	}
-
-	private void save()
-	{
-		try
-		{
-			String content = textArea.getText();
-			Path path = Paths.get(Constants.DEFAULT_USER_FOLDER, Constants.SHOCKPOINTS_FILENAME);
-			Files.write(path, content.getBytes(StandardCharsets.UTF_8));
-
-			SignalService.loadShocks();
-
-			INFO("Saved points !");
-		}
-		catch (Exception e)
-		{
-			ERROR(e);
+			e.printStackTrace();
 		}
 	}
 
@@ -238,7 +174,7 @@ public class FrmShockEditor extends JFrame
 			{
 				try
 				{
-					FrmShockEditor frame = new FrmShockEditor();
+					FrmPointsMonitor frame = new FrmPointsMonitor();
 					frame.setVisible(true);
 				}
 				catch (Exception e)
@@ -276,4 +212,5 @@ public class FrmShockEditor extends JFrame
 		Application.initializeUI();
 		launch();
 	}
+
 }

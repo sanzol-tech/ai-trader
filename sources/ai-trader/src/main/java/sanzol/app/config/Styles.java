@@ -13,7 +13,7 @@ public class Styles
 	public static final Color COLOR_TEXT_LONG = new Color(0, 102, 0);
 
 	public static final Color COLOR_TEXT_ERROR = new Color(255, 0, 0);
-	public static final Color COLOR_TEXT_INFO = new Color(51, 107, 255);
+	public static final Color COLOR_TEXT_INFO = new Color(0, 74, 127);
 
 	public static final Color COLOR_TEXT_AREA = new Color(250, 250, 250);
 

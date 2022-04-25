@@ -230,7 +230,7 @@ public final class PositionService
 	{
 		StringBuilder sb = new StringBuilder();
 
-		for (Order entry : getLstOpenOrders())
+		for (Order entry : getLstOpenOrders(symbolName))
 		{
 			sb.append(String.format("%-22s %-6s %-13s %10s %14s %12s %14s\n", convertTime(entry.getUpdateTime()), entry.getSide(), entry.getType(), entry.getOrigQty(), entry.getPrice(), entry.getStopPrice(), entry.getReduceOnly() ? "R.Only" : ""));
 		}
