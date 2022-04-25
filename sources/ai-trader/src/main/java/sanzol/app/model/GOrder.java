@@ -1,44 +1,53 @@
 package sanzol.app.model;
 
+import java.math.BigDecimal;
+
 public class GOrder
 {
-	private double price;
-	private double coins;
-	private double usd;
+	private BigDecimal price;
+	private BigDecimal coins;
+	private BigDecimal usd;
 
-	public GOrder(double price, double coins, double usd)
+	public GOrder(BigDecimal price, BigDecimal coins, BigDecimal usd)
 	{
 		this.price = price;
 		this.coins = coins;
 		this.usd = usd;
 	}
 
-	public double getPrice()
+	public GOrder(BigDecimal price, BigDecimal coins)
+	{
+		this.price = price;
+		this.coins = coins;
+		this.usd = coins.multiply(price);
+	}
+
+	public BigDecimal getPrice()
 	{
 		return price;
 	}
 
-	public void setPrice(double price)
+	public void setPrice(BigDecimal price)
 	{
 		this.price = price;
 	}
 
-	public double getCoins()
+	public BigDecimal getCoins()
 	{
 		return coins;
 	}
 
-	public void setCoins(double coins)
+	public void setCoins(BigDecimal coins)
 	{
 		this.coins = coins;
 	}
 
-	public double getUsd()
+	public BigDecimal getUsd()
 	{
 		return usd;
 	}
 
-	public void setUsd(double usd)
+	public void setUsd(BigDecimal usd)
 	{
 		this.usd = usd;
 	}

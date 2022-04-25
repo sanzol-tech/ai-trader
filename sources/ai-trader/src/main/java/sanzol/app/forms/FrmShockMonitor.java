@@ -1,6 +1,5 @@
 package sanzol.app.forms;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -25,6 +24,7 @@ import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
 import sanzol.app.config.Application;
+import sanzol.app.config.Styles;
 import sanzol.app.task.SignalService;
 
 public class FrmShockMonitor extends JFrame
@@ -71,12 +71,12 @@ public class FrmShockMonitor extends JFrame
 
 		txtError = new javax.swing.JTextField();
 		txtError.setEditable(false);
-		txtError.setForeground(new Color(255, 0, 0));
+		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
 
 		btnCopy = new javax.swing.JButton();
 		btnCopy.setText("Copy to clipboard");
 		btnCopy.setOpaque(true);
-		btnCopy.setBackground(new Color(220, 220, 220));
+		btnCopy.setBackground(Styles.COLOR_BTN);
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -191,13 +191,13 @@ public class FrmShockMonitor extends JFrame
 
 	public void ERROR(String msg)
 	{
-		txtError.setForeground(new Color(255, 0, 0));
+		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
 		txtError.setText(" " + msg);
 	}
 
 	public void INFO(String msg)
 	{
-		txtError.setForeground(new Color(51, 107, 255));
+		txtError.setForeground(Styles.COLOR_TEXT_INFO);
 		txtError.setText(" " + msg);
 	}
 

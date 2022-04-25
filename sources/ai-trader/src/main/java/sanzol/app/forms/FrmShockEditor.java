@@ -1,6 +1,5 @@
 package sanzol.app.forms;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -20,6 +19,7 @@ import java.util.Date;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -30,8 +30,8 @@ import javax.swing.border.EmptyBorder;
 
 import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
+import sanzol.app.config.Styles;
 import sanzol.app.task.SignalService;
-import javax.swing.JCheckBox;
 
 public class FrmShockEditor extends JFrame
 {
@@ -76,15 +76,15 @@ public class FrmShockEditor extends JFrame
 
 		txtError = new javax.swing.JTextField();
 		txtError.setEditable(false);
-		txtError.setForeground(new Color(255, 0, 0));
+		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
 
 		btnGenerate = new JButton("GENERATE");
 		btnGenerate.setOpaque(true);
-		btnGenerate.setBackground(new Color(220, 220, 220));
+		btnGenerate.setBackground(Styles.COLOR_BTN);
 
 		btnSave = new JButton("SAVE");
 		btnSave.setOpaque(true);
-		btnSave.setBackground(new Color(220, 220, 220));
+		btnSave.setBackground(Styles.COLOR_BTN);
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -251,13 +251,13 @@ public class FrmShockEditor extends JFrame
 
 	public void ERROR(String msg)
 	{
-		txtError.setForeground(new Color(255, 0, 0));
+		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
 		txtError.setText(" " + msg);
 	}
 
 	public void INFO(String msg)
 	{
-		txtError.setForeground(new Color(51, 107, 255));
+		txtError.setForeground(Styles.COLOR_TEXT_INFO);
 		txtError.setText(" " + msg);
 	}
 

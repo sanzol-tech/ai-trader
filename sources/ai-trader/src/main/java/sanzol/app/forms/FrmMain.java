@@ -41,6 +41,7 @@ import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.PrivateConfig;
+import sanzol.app.config.Styles;
 import sanzol.app.model.SignalEntry;
 import sanzol.app.task.BalanceService;
 import sanzol.app.task.PriceService;
@@ -112,13 +113,13 @@ public class FrmMain extends JFrame
 		setContentPane(contentPane);
 
 		JPanel panelConfig = new JPanel();
-		panelConfig.setBorder(new LineBorder(new Color(184, 207, 229), 1, true));
+		panelConfig.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
 		panelConfig.setBounds(16, 307, 810, 114);
 		panelConfig.setLayout(null);
 		contentPane.add(panelConfig);
 
 		JPanel panelKey = new JPanel();
-		panelKey.setBorder(new LineBorder(new Color(184, 207, 229), 1, true));
+		panelKey.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
 		panelKey.setBounds(16, 440, 810, 60);
 		panelKey.setLayout(null);
 		contentPane.add(panelKey);
@@ -140,7 +141,7 @@ public class FrmMain extends JFrame
 		btnPositions = new JButton("POSITIONS");
 		btnPositions.setToolTipText("Edit shock points");
 		btnPositions.setOpaque(true);
-		btnPositions.setBackground(new Color(220, 220, 220));
+		btnPositions.setBackground(Styles.COLOR_BTN);
 		btnPositions.setBounds(294, 11, 120, 28);
 		contentPane.add(btnPositions);
 
@@ -154,7 +155,7 @@ public class FrmMain extends JFrame
 		btnSaveKey.setBounds(726, 30, 72, 20);
 		panelKey.add(btnSaveKey);
 		btnSaveKey.setOpaque(true);
-		btnSaveKey.setBackground(new Color(220, 220, 220));
+		btnSaveKey.setBackground(Styles.COLOR_BTN);
 
 		JLabel lblItarations = new JLabel("Iterations");
 		lblItarations.setBounds(10, 59, 90, 14);
@@ -259,7 +260,7 @@ public class FrmMain extends JFrame
 		btnSaveConfig.setBounds(726, 81, 72, 20);
 		panelConfig.add(btnSaveConfig);
 		btnSaveConfig.setOpaque(true);
-		btnSaveConfig.setBackground(new Color(220, 220, 220));
+		btnSaveConfig.setBackground(Styles.COLOR_BTN);
 
 		JLabel lblPercetSymbol = new JLabel("%");
 		lblPercetSymbol.setBounds(173, 83, 25, 14);
@@ -291,7 +292,7 @@ public class FrmMain extends JFrame
 
 		listFavorites = new JList<String>();
 		listFavorites.setFont(new Font("Courier New", Font.PLAIN, 12));
-		listFavorites.setForeground(new Color(39, 82, 194));
+		listFavorites.setForeground(Styles.COLOR_TEXT_ALT2);
 		scrollFavorites.setViewportView(listFavorites);
 
 		JScrollPane scrollSignals = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -300,20 +301,20 @@ public class FrmMain extends JFrame
 
 		listSignals = new JList<String>();
 		listSignals.setFont(new Font("Courier New", Font.PLAIN, 11));
-		listSignals.setForeground(new Color(39, 82, 194));
+		listSignals.setForeground(Styles.COLOR_TEXT_ALT2);
 		scrollSignals.setViewportView(listSignals);
 
 		btnShockMonitor = new JButton("MONITOR ALL");
 		btnShockMonitor.setToolTipText("Monitor shock points");
 		btnShockMonitor.setOpaque(true);
-		btnShockMonitor.setBackground(new Color(220, 220, 220));
+		btnShockMonitor.setBackground(Styles.COLOR_BTN);
 		btnShockMonitor.setBounds(556, 66, 130, 28);
 		contentPane.add(btnShockMonitor);
 
 		txtBalance = new JTextField();
 		txtBalance.setBounds(640, 537, 86, 20);
 		txtBalance.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtBalance.setForeground(new Color(65, 105, 225));
+		txtBalance.setForeground(Styles.COLOR_TEXT_ALT1);
 		txtBalance.setEditable(false);
 		txtBalance.setColumns(10);
 		contentPane.add(txtBalance);
@@ -326,7 +327,7 @@ public class FrmMain extends JFrame
 		txtWithdrawal = new JTextField();
 		txtWithdrawal.setBounds(740, 537, 86, 20);
 		txtWithdrawal.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtWithdrawal.setForeground(new Color(65, 105, 225));
+		txtWithdrawal.setForeground(Styles.COLOR_TEXT_ALT1);
 		txtWithdrawal.setEditable(false);
 		txtWithdrawal.setColumns(10);
 		contentPane.add(txtWithdrawal);
@@ -339,7 +340,7 @@ public class FrmMain extends JFrame
 		btnNewGrid = new JButton("NEW GRID");
 		btnNewGrid.setBounds(16, 11, 120, 28);
 		btnNewGrid.setOpaque(true);
-		btnNewGrid.setBackground(new Color(135, 206, 235));
+		btnNewGrid.setBackground(Styles.COLOR_BTN_ALT1);
 		contentPane.add(btnNewGrid);
 
 		JLabel lblConfig = new JLabel("Default values");
@@ -348,7 +349,7 @@ public class FrmMain extends JFrame
 		contentPane.add(lblConfig);
 
 		txtError = new JTextField();
-		txtError.setForeground(new Color(255, 0, 0));
+		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
 		txtError.setEditable(false);
 		txtError.setBounds(16, 517, 600, 40);
 		contentPane.add(txtError);
@@ -356,7 +357,7 @@ public class FrmMain extends JFrame
 		btnShockEditor = new JButton("EDIT POINTS");
 		btnShockEditor.setToolTipText("Edit shock points");
 		btnShockEditor.setOpaque(true);
-		btnShockEditor.setBackground(new Color(220, 220, 220));
+		btnShockEditor.setBackground(Styles.COLOR_BTN);
 		btnShockEditor.setBounds(696, 66, 130, 28);
 		contentPane.add(btnShockEditor);
 
@@ -368,7 +369,7 @@ public class FrmMain extends JFrame
 
 		btnCalcOrder = new JButton("CALC ORDER");
 		btnCalcOrder.setOpaque(true);
-		btnCalcOrder.setBackground(new Color(135, 206, 235));
+		btnCalcOrder.setBackground(Styles.COLOR_BTN_ALT1);
 		btnCalcOrder.setBounds(146, 11, 120, 28);
 		contentPane.add(btnCalcOrder);
 		
@@ -708,13 +709,13 @@ public class FrmMain extends JFrame
 
 	public void ERROR(String msg)
 	{
-		txtError.setForeground(new Color(255, 0, 0));
+		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
 		txtError.setText(" " + msg);
 	}
 
 	public void INFO(String msg)
 	{
-		txtError.setForeground(new Color(51, 107, 255));
+		txtError.setForeground(Styles.COLOR_TEXT_INFO);
 		txtError.setText(" " + msg);
 	}
 

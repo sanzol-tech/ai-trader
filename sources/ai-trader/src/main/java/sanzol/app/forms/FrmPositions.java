@@ -1,6 +1,5 @@
 package sanzol.app.forms;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -27,6 +26,7 @@ import javax.swing.border.EmptyBorder;
 
 import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
+import sanzol.app.config.Styles;
 import sanzol.app.task.PositionService;
 
 public class FrmPositions extends JFrame
@@ -76,7 +76,7 @@ public class FrmPositions extends JFrame
 
 		txtError = new javax.swing.JTextField();
 		txtError.setEditable(false);
-		txtError.setForeground(new Color(255, 0, 0));
+		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
 
 		lblTProfit = new javax.swing.JLabel();
 		lblTProfit.setText("T.Profit");
@@ -91,7 +91,7 @@ public class FrmPositions extends JFrame
 		btnSave = new javax.swing.JButton();
 		btnSave.setText("Save change");
 		btnSave.setOpaque(true);
-		btnSave.setBackground(new Color(220, 220, 220));
+		btnSave.setBackground(Styles.COLOR_BTN);
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -208,7 +208,7 @@ public class FrmPositions extends JFrame
 		});
 	}
 
-	// ------------------------------------------------------------------------
+	// -----------------------------------------------------------------------
 
 	public void ERROR(Exception e)
 	{
@@ -217,13 +217,13 @@ public class FrmPositions extends JFrame
 
 	public void ERROR(String msg)
 	{
-		txtError.setForeground(new Color(255, 0, 0));
+		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
 		txtError.setText(" " + msg);
 	}
 
 	public void INFO(String msg)
 	{
-		txtError.setForeground(new Color(51, 107, 255));
+		txtError.setForeground(Styles.COLOR_TEXT_INFO);
 		txtError.setText(" " + msg);
 	}
 

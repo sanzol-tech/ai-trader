@@ -11,6 +11,12 @@ import org.decimal4j.util.DoubleRounder;
 public class Convert
 {
 
+	public static String usdToStr(BigDecimal usd)
+	{
+		String pattern = "#0.00";
+		return new DecimalFormat(pattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(usd);
+	}
+
 	public static String usdToStr(double usd)
 	{
 		String pattern = "#0.00";

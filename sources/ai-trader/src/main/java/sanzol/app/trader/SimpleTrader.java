@@ -22,7 +22,7 @@ public class SimpleTrader
 		SHORT, LONG
 	};
 
-	public static String postHammerOrder(Symbol symbol, Side side, BigDecimal price, BigDecimal coins)
+	public static String postOrder(Symbol symbol, Side side, BigDecimal price, BigDecimal coins)
 	{
 		Order orderResult = null;
 

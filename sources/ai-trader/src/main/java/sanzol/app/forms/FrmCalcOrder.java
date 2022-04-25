@@ -26,9 +26,12 @@ import com.binance.client.model.trade.PositionRisk;
 import sanzol.app.config.Application;
 import sanzol.app.config.CharConstants;
 import sanzol.app.config.Constants;
+import sanzol.app.config.Styles;
+import sanzol.app.model.GOrder;
 import sanzol.app.model.Symbol;
 import sanzol.app.task.PositionService;
 import sanzol.app.task.PriceService;
+import sanzol.app.trader.SimpleTrader;
 import sanzol.app.trader.SimpleTrader.Side;
 import sanzol.app.util.Convert;
 
@@ -114,7 +117,7 @@ public class FrmCalcOrder extends JFrame
 
 		JButton btnSearch = new JButton(CharConstants.MAGNIFIER);
 		btnSearch.setOpaque(true);
-		btnSearch.setBackground(new Color(220, 220, 220));
+		btnSearch.setBackground(Styles.COLOR_BTN);
 		btnSearch.setBounds(299, 24, 86, 22);
 		contentPane.add(btnSearch);
 
@@ -204,6 +207,7 @@ public class FrmCalcOrder extends JFrame
 		contentPane.add(txtUsdResult);
 
 		txtError = new JTextField();
+		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
 		txtError.setEditable(false);
 		txtError.setColumns(10);
 		txtError.setBounds(10, 400, 464, 20);
@@ -260,38 +264,38 @@ public class FrmCalcOrder extends JFrame
 		
 		btnCalc05 = new JButton("x 0.5");
 		btnCalc05.setOpaque(true);
-		btnCalc05.setBackground(new Color(220, 220, 220));
+		btnCalc05.setBackground(Styles.COLOR_BTN);
 		btnCalc05.setBounds(10, 280, 70, 23);
 		contentPane.add(btnCalc05);
 
 		btnCalc075 = new JButton("x 0.75");
 		btnCalc075.setOpaque(true);
-		btnCalc075.setBackground(new Color(220, 220, 220));
+		btnCalc075.setBackground(Styles.COLOR_BTN);
 		btnCalc075.setBounds(90, 280, 70, 23);
 		contentPane.add(btnCalc075);
 		
 		btnX1 = new JButton("x 1");
 		btnX1.setOpaque(true);
-		btnX1.setBackground(new Color(220, 220, 220));
+		btnX1.setBackground(Styles.COLOR_BTN);
 		btnX1.setBounds(170, 280, 67, 23);
 		contentPane.add(btnX1);
 
 		btnX2 = new JButton("x 2");
 		btnX2.setOpaque(true);
-		btnX2.setBackground(new Color(220, 220, 220));
+		btnX2.setBackground(Styles.COLOR_BTN);
 		btnX2.setBounds(250, 280, 70, 23);
 		contentPane.add(btnX2);
 
 		btnCalc = new JButton("CALC");
 		btnCalc.setBounds(330, 280, 144, 23);
 		btnCalc.setOpaque(true);
-		btnCalc.setBackground(new Color(220, 220, 220));
+		btnCalc.setBackground(Styles.COLOR_BTN);
 		contentPane.add(btnCalc);
 
 		btnExec = new JButton("POST ORDER");
 		btnExec.setBounds(327, 334, 147, 40);
 		btnExec.setOpaque(true);
-		btnExec.setBackground(new Color(220, 220, 220));
+		btnExec.setBackground(Styles.COLOR_BTN);
 		contentPane.add(btnExec);
 		
 		txtSLPrice = new JTextField();
@@ -404,7 +408,7 @@ public class FrmCalcOrder extends JFrame
 			txtPriceShoot.setText(coin.priceToStr(mrkPrice));
 
 			// --------------------------------------------------------------
-			PositionRisk positionRisk = PositionService.getPositionRisk(symbol);
+			PositionRisk positionRisk = PositionService.getPositionRisk(coin.getName());
 
 			txtPricePosition.setText(coin.priceToStr(positionRisk.getEntryPrice()));
 
@@ -440,7 +444,7 @@ public class FrmCalcOrder extends JFrame
 				txtAmtShoot.setText(coin.coinsToStr(amtPos * x));
 			}
 			// ----------------------------------------------------------
-			
+
 			double priceShoot = Double.valueOf(txtPriceShoot.getText());
 			double amtShoot = Double.valueOf(txtAmtShoot.getText());
 			double usdShoot = priceShoot * amtShoot;
@@ -470,6 +474,12 @@ public class FrmCalcOrder extends JFrame
 				txtPnlNew.setText(Convert.dblToStrPercent(pnlNew));
 			}
 
+			// ----------------------------------------------------------
+			GOrder gOrder = PositionService.recalcSL(coin.getName(), BigDecimal.valueOf(priceShoot), BigDecimal.valueOf(amtShoot));
+			txtSLPrice.setText(coin.priceToStr(gOrder.getPrice()));
+			txtSLCoins.setText(coin.coinsToStr(gOrder.getCoins()));
+			txtSLUsd.setText(Convert.usdToStr(gOrder.getUsd()));
+
 		}
 		catch (Exception e)
 		{
@@ -487,7 +497,7 @@ public class FrmCalcOrder extends JFrame
 			BigDecimal coins = new BigDecimal(txtAmtShoot.getText());
 
 			String msg = String.format("Post order %s  /  %s  /  %s  /  %s ? *The price can be better than the selected one", coin.getName(), side.name(), coin.priceToStr(price), coin.coinsToStr(coins));			
-			
+
 			if (JOptionPane.showConfirmDialog(null, msg) == 0)
 			{
 				BigDecimal mrkPrice = PriceService.getLastPrice(coin);
@@ -497,8 +507,8 @@ public class FrmCalcOrder extends JFrame
 					price = mrkPrice;
 				}
 
-				String result = String.format("Post order %s  /  %s  /  %s  /  %s", coin.getName(), side.name(), coin.priceToStr(price), coin.coinsToStr(coins));
-				//String result = SimpleTrader.postHammerOrder(coin, side, price, coins);
+				// String result = String.format("Post order %s  /  %s  /  %s  /  %s", coin.getName(), side.name(), coin.priceToStr(price), coin.coinsToStr(coins));
+				String result = SimpleTrader.postOrder(coin, side, price, coins);
 
 				INFO(result);
 			}
@@ -544,13 +554,13 @@ public class FrmCalcOrder extends JFrame
 
 	public void ERROR(String msg)
 	{
-		txtError.setForeground(new Color(255, 0, 0));
+		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
 		txtError.setText(" " + msg);
 	}
 
 	public void INFO(String msg)
 	{
-		txtError.setForeground(new Color(51, 107, 255));
+		txtError.setForeground(Styles.COLOR_TEXT_INFO);
 		txtError.setText(" " + msg);
 	}
 

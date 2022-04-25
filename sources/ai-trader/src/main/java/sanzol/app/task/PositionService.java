@@ -1,6 +1,7 @@
 package sanzol.app.task;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -173,33 +174,25 @@ public final class PositionService
 
 	// ------------------------------------------------------------------------
 
-	public static double calcFinalPriceAvg(Symbol symbol, List<GOrder> lstGrid)
+	public static GOrder calcFinalPriceAvg(List<GOrder> lstGrid)
 	{
-		double sumCoins = 0;
-		double sumUsd = 0;
+		BigDecimal sumCoins = BigDecimal.ZERO;
+		BigDecimal sumUsd = BigDecimal.ZERO;
+
 		for (GOrder entry : lstGrid)
 		{
-			sumCoins += entry.getCoins();
-			sumUsd += entry.getUsd();
+			sumCoins = sumCoins.add(entry.getCoins());
+			sumUsd = sumUsd.add(entry.getUsd());
 		}
-		return sumUsd / sumCoins;
+
+		return new GOrder(sumUsd.divide(sumCoins, RoundingMode.HALF_UP), sumCoins, sumUsd);
 	}
 
-/* TODO
-	public static String recalcSL(String symbolName, BigDecimal price, BigDecimal coins)
+	public static GOrder recalcSL(String symbolName, BigDecimal price, BigDecimal coins)
 	{
 		List<GOrder> lstGrid = new ArrayList<GOrder>();
-		
-		lstGrid.add(new GOrder(price.doubleValue(), coins.doubleValue(), price.doubleValue() * coins.doubleValue()));
-	}
-*/
 
-	public static String recalcSL(String symbolName, BigDecimal price, BigDecimal coins)
-	{
 		String side = null;
-		double sumCoins = 0;
-		double sumUsd = 0;
-
 		if (lstPositionRisk != null && !lstPositionRisk.isEmpty())
 		{
 			for (PositionRisk entry : lstPositionRisk)
@@ -207,8 +200,7 @@ public final class PositionService
 				if (entry.getSymbol().equals(symbolName))
 				{
 					side = entry.getPositionAmt().doubleValue() < 0 ? "SELL" : "BUY";
-					sumCoins = Math.abs(entry.getPositionAmt().doubleValue());
-					sumUsd = Math.abs(entry.getPositionAmt().doubleValue()) * entry.getEntryPrice().doubleValue();
+					lstGrid.add(new GOrder(entry.getEntryPrice(), entry.getPositionAmt().abs()));
 				}
 			}
 		}
@@ -217,21 +209,19 @@ public final class PositionService
 			return null;
 
 		// -------------------------------------------------------------------
-		sumCoins += coins.doubleValue();
-		sumUsd += coins.doubleValue() * price.doubleValue();
+		lstGrid.add(new GOrder(price, coins));
 
 		// -------------------------------------------------------------------
 		for (Order entry : getLstOpenOrders())
 		{
 			if ("LIMIT".equals(entry.getType()) && side.equals(entry.getSide()))
 			{
-				sumCoins += entry.getOrigQty().doubleValue();
-				sumUsd += entry.getOrigQty().doubleValue() * entry.getPrice().doubleValue();
+				lstGrid.add(new GOrder(entry.getPrice(), entry.getOrigQty()));
 			}
 		}
-		double slPrice0 = sumUsd / sumCoins;
-		
-		return "" + slPrice0;
+
+		// -------------------------------------------------------------------
+		return calcFinalPriceAvg(lstGrid);		
 	}
 	
 	// ------------------------------------------------------------------------

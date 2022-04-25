@@ -16,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -40,6 +39,7 @@ import sanzol.app.config.Application;
 import sanzol.app.config.CharConstants;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
+import sanzol.app.config.Styles;
 import sanzol.app.model.OrderBookInfo;
 import sanzol.app.model.Position;
 import sanzol.app.model.Symbol;
@@ -58,9 +58,6 @@ public class FrmTrader extends JFrame
 	private Symbol coin;
 	private PositionTrader pMaker;
 
-	private static final Color COLOR_SHORT = new Color(153, 0, 0);
-	private static final Color COLOR_LONG = new Color(0, 102, 0);
-
 	private JPanel contentPane;
 
 	private JButton btnClean;
@@ -71,7 +68,6 @@ public class FrmTrader extends JFrame
 	private JButton btnPostFirst;
 	private JButton btnLongShock;
 	private JButton btnShortShock;
-	private JCheckBox chkTestMode;
 
 	private JRadioButton rbCoins;
 	private JRadioButton rbCoinsAuto;
@@ -129,66 +125,66 @@ public class FrmTrader extends JFrame
 		
 		btnLong = new JButton("LONG");
 		btnLong.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		btnLong.setBackground(new Color(77, 226, 142));
+		btnLong.setBackground(Styles.COLOR_BTN_LONG);
 		btnLong.setOpaque(true);
-		btnLong.setBounds(371, 91, 130, 34);
+		btnLong.setBounds(408, 102, 111, 34);
 		contentPane.add(btnLong);
 
 		btnShort = new JButton("SHORT");
 		btnShort.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		btnShort.setBackground(new Color(255, 109, 109));
+		btnShort.setBackground(Styles.COLOR_BTN_SHORT);
 		btnShort.setOpaque(true);
-		btnShort.setBounds(371, 133, 130, 34);
+		btnShort.setBounds(408, 144, 111, 34);
 		contentPane.add(btnShort);
 
 		btnLongShock = new JButton(CharConstants.ARROW_UP);
 		btnLongShock.setToolTipText("Create Long in this price");
 		btnLongShock.setOpaque(true);
-		btnLongShock.setBackground(new Color(77, 226, 142));
+		btnLongShock.setBackground(Styles.COLOR_BTN_LONG);
 		btnLongShock.setBounds(1072, 19, 46, 22);
 		contentPane.add(btnLongShock);
 
 		btnShortShock = new JButton(CharConstants.ARROW_DOWN);
 		btnShortShock.setToolTipText("Create Short in this price");
 		btnShortShock.setOpaque(true);
-		btnShortShock.setBackground(new Color(255, 109, 109));
-		btnShortShock.setBounds(790, 193, 46, 22);
+		btnShortShock.setBackground(Styles.COLOR_BTN_SHORT);
+		btnShortShock.setBounds(782, 192, 46, 22);
 		contentPane.add(btnShortShock);
 
 		btnClean = new JButton("CLEAN");
-		btnClean.setBackground(new Color(220, 220, 220));
+		btnClean.setBackground(Styles.COLOR_BTN);
 		btnClean.setOpaque(true);
 		btnClean.setBounds(257, 219, 78, 31);
 		contentPane.add(btnClean);
 
 		textPrice = new JTextField();
 		textPrice.setHorizontalAlignment(SwingConstants.RIGHT);
-		textPrice.setBounds(390, 20, 111, 20);
+		textPrice.setBounds(408, 20, 111, 20);
 		contentPane.add(textPrice);
 		textPrice.setColumns(10);
 
 		textCoins = new JTextField();
 		textCoins.setHorizontalAlignment(SwingConstants.RIGHT);
-		textCoins.setBounds(390, 51, 111, 20);
+		textCoins.setBounds(408, 51, 111, 20);
 		contentPane.add(textCoins);
 		textCoins.setColumns(10);
 
 		rbPriceNow = new JRadioButton("NOW");
-		rbPriceNow.setBounds(231, 19, 72, 23);
+		rbPriceNow.setBounds(249, 19, 72, 23);
 		contentPane.add(rbPriceNow);
 
 		rbPrice = new JRadioButton("PRICE");
 		rbPrice.setSelected(true);
-		rbPrice.setBounds(305, 19, 72, 23);
+		rbPrice.setBounds(323, 19, 72, 23);
 		contentPane.add(rbPrice);
 
 		rbCoinsAuto = new JRadioButton("AUTO");
 		rbCoinsAuto.setSelected(true);
-		rbCoinsAuto.setBounds(231, 50, 72, 23);
+		rbCoinsAuto.setBounds(249, 50, 72, 23);
 		contentPane.add(rbCoinsAuto);
 
 		rbCoins = new JRadioButton("COINS");
-		rbCoins.setBounds(305, 50, 72, 23);
+		rbCoins.setBounds(323, 50, 72, 23);
 		contentPane.add(rbCoins);
 
 		ButtonGroup bg1 = new javax.swing.ButtonGroup();
@@ -259,7 +255,7 @@ public class FrmTrader extends JFrame
 		contentPane.add(scroll);
 
 		btnSearch = new JButton(CharConstants.MAGNIFIER);
-		btnSearch.setBackground(new Color(220, 220, 220));
+		btnSearch.setBackground(Styles.COLOR_BTN);
 		btnSearch.setOpaque(true);
 		btnSearch.setBounds(15, 59, 106, 22);
 		contentPane.add(btnSearch);
@@ -268,13 +264,6 @@ public class FrmTrader extends JFrame
 		txtSymbolLeft.setBounds(15, 28, 106, 22);
 		contentPane.add(txtSymbolLeft);
 		txtSymbolLeft.setColumns(10);
-
-		chkTestMode = new JCheckBox("TEST MODE");
-		chkTestMode.setForeground(new Color(72, 61, 139));
-		chkTestMode.setHorizontalAlignment(SwingConstants.CENTER);
-		chkTestMode.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		chkTestMode.setBounds(371, 182, 130, 23);
-		contentPane.add(chkTestMode);
 
 		txtDistBeforeSL = new JTextField();
 		txtDistBeforeSL.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -299,11 +288,11 @@ public class FrmTrader extends JFrame
 		contentPane.add(lblPriceIncr_1);
 
 		scrollOBookAsk = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollOBookAsk.setBounds(565, 20, 270, 162);
+		scrollOBookAsk.setBounds(557, 19, 270, 162);
 		contentPane.add(scrollOBookAsk);
 
 		txtOBookAsk = new JTextArea();
-		txtOBookAsk.setForeground(new Color(153, 0, 0));
+		txtOBookAsk.setForeground(Styles.COLOR_TEXT_SHORT);
 		txtOBookAsk.setFont(new Font("Courier New", Font.PLAIN, 12));
 		txtOBookAsk.setEditable(false);
 		scrollOBookAsk.setViewportView(txtOBookAsk);
@@ -313,7 +302,7 @@ public class FrmTrader extends JFrame
 		contentPane.add(scrollOBookBid);
 
 		txtOBookBid = new JTextArea();
-		txtOBookBid.setForeground(new Color(0, 102, 0));
+		txtOBookBid.setForeground(Styles.COLOR_TEXT_LONG);
 		txtOBookBid.setFont(new Font("Courier New", Font.PLAIN, 12));
 		txtOBookBid.setEditable(false);
 		scrollOBookBid.setViewportView(txtOBookBid);
@@ -321,7 +310,7 @@ public class FrmTrader extends JFrame
 		txtMaxAsk = new JTextField();
 		txtMaxAsk.setForeground(new Color(220, 20, 60));
 		txtMaxAsk.setEditable(false);
-		txtMaxAsk.setBounds(565, 194, 220, 20);
+		txtMaxAsk.setBounds(557, 193, 220, 20);
 		contentPane.add(txtMaxAsk);
 		txtMaxAsk.setColumns(10);
 
@@ -334,7 +323,7 @@ public class FrmTrader extends JFrame
 
 		txtError = new JTextField();
 		txtError.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtError.setForeground(Color.RED);
+		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
 		txtError.setEditable(false);
 		txtError.setBounds(359, 229, 758, 20);
 		contentPane.add(txtError);
@@ -344,7 +333,7 @@ public class FrmTrader extends JFrame
 		btnPostFirst.setEnabled(false);
 		btnPostFirst.setToolTipText("Post only first order");
 		btnPostFirst.setOpaque(true);
-		btnPostFirst.setBackground(new Color(51, 204, 204));
+		btnPostFirst.setBackground(Styles.COLOR_BTN_ALT2);
 		btnPostFirst.setBounds(15, 219, 74, 31);
 		contentPane.add(btnPostFirst);
 
@@ -352,12 +341,12 @@ public class FrmTrader extends JFrame
 		btnPostOthers.setEnabled(false);
 		btnPostOthers.setToolTipText("Post the other orders");
 		btnPostOthers.setOpaque(true);
-		btnPostOthers.setBackground(new Color(51, 204, 204));
+		btnPostOthers.setBackground(Styles.COLOR_BTN_ALT2);
 		btnPostOthers.setBounds(99, 219, 74, 31);
 		contentPane.add(btnPostOthers);
 
 		textPriceShow = new JTextField();
-		textPriceShow.setForeground(new Color(51, 102, 153));
+		textPriceShow.setForeground(Styles.COLOR_TEXT_ALT1);
 		textPriceShow.setHorizontalAlignment(SwingConstants.CENTER);
 		textPriceShow.setFont(new Font("Tahoma", Font.BOLD, 12));
 		textPriceShow.setEditable(false);
@@ -470,8 +459,6 @@ public class FrmTrader extends JFrame
 		try
 		{
 			ERROR(Application.getError());
-
-			chkTestMode.setEnabled(true);
 			PositionTrader.TEST_MODE = TestMode.TEST;
 		}
 		catch(Exception e)
@@ -674,7 +661,7 @@ public class FrmTrader extends JFrame
 			pMaker.createShort();
 
 			//------------------------------------------------------------------
-			txtShowResult.setForeground(new Color(153, 0, 0));
+			txtShowResult.setForeground(Styles.COLOR_TEXT_SHORT);
 			txtShowResult.setText(position.toString());
 
 			btnPostFirst.setEnabled(true);
@@ -740,7 +727,7 @@ public class FrmTrader extends JFrame
 			pMaker.createLong();
 
 			//------------------------------------------------------------------
-			txtShowResult.setForeground(new Color(0, 102, 0));
+			txtShowResult.setForeground(Styles.COLOR_TEXT_LONG);
 			txtShowResult.setText(position.toString());
 
 			btnPostFirst.setEnabled(true);
@@ -798,7 +785,7 @@ public class FrmTrader extends JFrame
 		{
 			if (JOptionPane.showConfirmDialog(null, "Do you like post this position ?") == 0)
 			{
-				PositionTrader.TEST_MODE = chkTestMode.isSelected() ? TestMode.TEST : TestMode.PROD;
+				PositionTrader.TEST_MODE = TestMode.PROD;
 
 				String result = pMaker.post(postStyle);
 				if (result != null)
@@ -806,7 +793,7 @@ public class FrmTrader extends JFrame
 					ERROR(result);
 				}
 
-				txtShowResult.setForeground(pMaker.getPosition().getSide() == PositionSide.SHORT ? COLOR_SHORT : COLOR_LONG);
+				txtShowResult.setForeground(pMaker.getPosition().getSide() == PositionSide.SHORT ? Styles.COLOR_TEXT_SHORT : Styles.COLOR_TEXT_LONG);
 				txtShowResult.setText(pMaker.getPosition().toString());
 				save(coin.getName() + "_" + pMaker.getPosition().getSide().name());
 
@@ -878,13 +865,13 @@ public class FrmTrader extends JFrame
 
 	public void ERROR(String msg)
 	{
-		txtError.setForeground(new Color(255, 0, 0));
+		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
 		txtError.setText(" " + msg);
 	}
 
 	public void INFO(String msg)
 	{
-		txtError.setForeground(new Color(51, 107, 255));
+		txtError.setForeground(Styles.COLOR_TEXT_INFO);
 		txtError.setText(" " + msg);
 	}
 

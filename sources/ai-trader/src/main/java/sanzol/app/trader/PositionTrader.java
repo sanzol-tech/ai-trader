@@ -32,7 +32,7 @@ public class PositionTrader
 {
 	public enum TestMode { TEST, PROD }
 
-	public static TestMode TEST_MODE = TestMode.TEST;
+	public static TestMode TEST_MODE = TestMode.PROD;
 
 	public enum PostStyle { ALL, FIRST, OTHERS }
 
