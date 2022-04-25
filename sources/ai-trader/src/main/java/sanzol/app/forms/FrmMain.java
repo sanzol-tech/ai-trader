@@ -369,7 +369,7 @@ public class FrmMain extends JFrame
 		lblSignals.setBounds(184, 76, 200, 20);
 		contentPane.add(lblSignals);
 
-		btnCalcOrder = new JButton("CALC ORDER");
+		btnCalcOrder = new JButton("ADD ORDER");
 		btnCalcOrder.setOpaque(true);
 		btnCalcOrder.setBackground(Styles.COLOR_BTN_ALT1);
 		btnCalcOrder.setBounds(146, 11, 120, 28);
@@ -510,7 +510,7 @@ public class FrmMain extends JFrame
 
 	private void showCalcOrder()
 	{
-		FrmCalcOrder.launch();
+		FrmAddOrder.launch();
 	}
 
 	private void editShockPoints()

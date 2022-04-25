@@ -24,6 +24,7 @@ import com.binance.client.model.trade.Order;
 import com.binance.client.model.trade.PositionRisk;
 
 import sanzol.app.config.Application;
+import sanzol.app.config.Config;
 import sanzol.app.config.PrivateConfig;
 import sanzol.app.model.GOrder;
 import sanzol.app.model.Symbol;
@@ -83,12 +84,10 @@ public final class PositionService
 		return list;
 	}
 
-
 	public static String getErrorMessage()
 	{
 		return errorMessage;
 	}
-
 
 	public static boolean wasChange()
 	{
@@ -100,7 +99,6 @@ public final class PositionService
 		return false;
 	}
 
-	
 	public static void start()
 	{
 		if (isStarted)
@@ -120,7 +118,6 @@ public final class PositionService
 
 		isStarted = true;
 	}
-
 
 	private static void getPositions()
 	{
@@ -156,7 +153,6 @@ public final class PositionService
 		}
 	}
 
-	
 	private static void verifyAmountChange()
 	{
 		if (lstPositionRisk != null && lstPositionRisk.isEmpty())
@@ -174,56 +170,74 @@ public final class PositionService
 
 	// ------------------------------------------------------------------------
 
-	public static GOrder calcFinalPriceAvg(List<GOrder> lstGrid)
+	public static Map<String, GOrder> calc(Symbol coin, String posSide, BigDecimal posPrice, BigDecimal posAmt, BigDecimal shootPrice, BigDecimal shootAmt) throws Exception 
 	{
-		BigDecimal sumCoins = BigDecimal.ZERO;
-		BigDecimal sumUsd = BigDecimal.ZERO;
+		Map<String, GOrder> mapPosition = new HashMap<String, GOrder>();
 
-		for (GOrder entry : lstGrid)
+		// --- POSITION -------------------------------------------------------
+		PositionRisk positionRisk = PositionService.getPositionRisk(coin.getName());
+		boolean positionExists = (positionRisk != null && positionRisk.getPositionAmt().compareTo(BigDecimal.ZERO) != 0); 
+		if (positionExists)
 		{
-			sumCoins = sumCoins.add(entry.getCoins());
-			sumUsd = sumUsd.add(entry.getUsd());
+			posSide = positionRisk.getPositionAmt().doubleValue() < 0 ? "SELL" : "BUY";
+			posPrice = positionRisk.getEntryPrice();
+			posAmt = positionRisk.getPositionAmt().abs();
+
+			mapPosition.put("POS", new GOrder(posPrice, posAmt));
 		}
 
-		return new GOrder(sumUsd.divide(sumCoins, RoundingMode.HALF_UP), sumCoins, sumUsd);
-	}
+		// --- SHOOT ----------------------------------------------------------
+		mapPosition.put("SHOOT", new GOrder(shootPrice, shootAmt));
 
-	public static GOrder recalcSL(String symbolName, BigDecimal price, BigDecimal coins)
-	{
-		List<GOrder> lstGrid = new ArrayList<GOrder>();
+		// --- RESULT ---------------------------------------------------------
+		BigDecimal resultAmt = posAmt.add(shootAmt);
+		BigDecimal resultUsd = posPrice.multiply(posAmt).add(shootPrice.multiply(shootAmt));
+		BigDecimal resultPrice = resultUsd.divide(resultAmt, RoundingMode.HALF_UP);
+		mapPosition.put("RESULT", new GOrder(resultPrice, resultAmt, resultUsd));
 
-		String side = null;
-		if (lstPositionRisk != null && !lstPositionRisk.isEmpty())
+		// --- OTHERS ---------------------------------------------------------
+		if (positionExists)
 		{
-			for (PositionRisk entry : lstPositionRisk)
+			for (Order entry : PositionService.getLstOpenOrders(coin.getName()))
 			{
-				if (entry.getSymbol().equals(symbolName))
+				if ("LIMIT".equals(entry.getType()) && posSide.equals(entry.getSide()))
 				{
-					side = entry.getPositionAmt().doubleValue() < 0 ? "SELL" : "BUY";
-					lstGrid.add(new GOrder(entry.getEntryPrice(), entry.getPositionAmt().abs()));
+					mapPosition.put("OTHERS", new GOrder(entry.getPrice(), entry.getOrigQty()));
 				}
-			}
+			}		
 		}
 
-		if (side == null)
-			return null;
+		// --- STOP LOSS ------------------------------------------------------
+		BigDecimal slAmt = resultAmt;
+		BigDecimal slPrice = resultPrice.multiply(BigDecimal.valueOf(1 - Config.getStoploss_increment()));
+		mapPosition.put("SL", new GOrder(slPrice, slAmt));
 
-		// -------------------------------------------------------------------
-		lstGrid.add(new GOrder(price, coins));
+		// --- TAKE PROFIT ----------------------------------------------------
+		BigDecimal tpAmt = resultAmt;
+		BigDecimal tpPrice = resultPrice.multiply(BigDecimal.valueOf(1 + Config.getTakeprofit()));
+		mapPosition.put("TP", new GOrder(tpPrice, tpAmt));
 
-		// -------------------------------------------------------------------
-		for (Order entry : getLstOpenOrders())
+		// --- DISTANCES ------------------------------------------------------
+		BigDecimal mrkPrice = PriceService.getLastPrice(coin);
+
+		if ("BUY".equals(posSide))
 		{
-			if ("LIMIT".equals(entry.getType()) && side.equals(entry.getSide()))
-			{
-				lstGrid.add(new GOrder(entry.getPrice(), entry.getOrigQty()));
-			}
+			BigDecimal posDist = BigDecimal.ONE.subtract(posPrice.divide(mrkPrice, RoundingMode.HALF_UP));
+			mapPosition.get("POS").setDist(posDist);
+			BigDecimal resultDist = BigDecimal.ONE.subtract(resultPrice.divide(mrkPrice, RoundingMode.HALF_UP));
+			mapPosition.get("RESULT").setDist(resultDist);
 		}
+		else if ("SELL".equals(posSide))
+		{
+			BigDecimal posDist = posPrice.divide(mrkPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
+			mapPosition.get("POS").setDist(posDist);
+			BigDecimal resultDist = resultPrice.divide(mrkPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
+			mapPosition.get("RESULT").setDist(resultDist);
+		}		
 
-		// -------------------------------------------------------------------
-		return calcFinalPriceAvg(lstGrid);		
-	}
-	
+		return mapPosition;
+	}	
+
 	// ------------------------------------------------------------------------
 
 	public static String toStringOrders(String symbolName)
@@ -253,7 +267,7 @@ public final class PositionService
 
 		for (PositionRisk entry : lstPositionRisk)
 		{
-			if (entry.getPositionAmt().doubleValue() != 0.0)
+			if (entry.getPositionAmt().compareTo(BigDecimal.ZERO) != 0)
 			{
 				Symbol symbol = Symbol.getInstance(entry.getSymbol());
 
@@ -291,13 +305,8 @@ public final class PositionService
 	public static void main(String[] args) throws InterruptedException
 	{
 		Application.initialize();
-
 		Thread.sleep(2000);
-
 		System.out.println(toStringPositions(true));
-
-		recalcSL("BTCUSDT", BigDecimal.valueOf(40000), BigDecimal.valueOf(0.018));
-
 	}
 
 }

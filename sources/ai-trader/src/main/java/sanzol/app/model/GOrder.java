@@ -5,21 +5,22 @@ import java.math.BigDecimal;
 public class GOrder
 {
 	private BigDecimal price;
-	private BigDecimal coins;
+	private BigDecimal qty;
 	private BigDecimal usd;
+	private BigDecimal dist;
 
-	public GOrder(BigDecimal price, BigDecimal coins, BigDecimal usd)
+	public GOrder(BigDecimal price, BigDecimal qty, BigDecimal usd)
 	{
 		this.price = price;
-		this.coins = coins;
+		this.qty = qty;
 		this.usd = usd;
 	}
 
-	public GOrder(BigDecimal price, BigDecimal coins)
+	public GOrder(BigDecimal price, BigDecimal qty)
 	{
 		this.price = price;
-		this.coins = coins;
-		this.usd = coins.multiply(price);
+		this.qty = qty;
+		this.usd = qty.multiply(price);
 	}
 
 	public BigDecimal getPrice()
@@ -34,12 +35,12 @@ public class GOrder
 
 	public BigDecimal getCoins()
 	{
-		return coins;
+		return qty;
 	}
 
-	public void setCoins(BigDecimal coins)
+	public void setCoins(BigDecimal qty)
 	{
-		this.coins = coins;
+		this.qty = qty;
 	}
 
 	public BigDecimal getUsd()
@@ -50,6 +51,16 @@ public class GOrder
 	public void setUsd(BigDecimal usd)
 	{
 		this.usd = usd;
+	}
+
+	public BigDecimal getDist()
+	{
+		return dist;
+	}
+
+	public void setDist(BigDecimal dist)
+	{
+		this.dist = dist;
 	}
 
 }

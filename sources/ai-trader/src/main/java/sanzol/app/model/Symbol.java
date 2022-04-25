@@ -79,9 +79,7 @@ public class Symbol
 	{
 		Symbol coin = new Symbol();
 		coin.nameLeft = symbolName.substring(0, symbolName.length() - Constants.DEFAULT_SYMBOL_RIGHT.length());
-
 		getExInfEntries();
-
 		for (ExchangeInfoEntry entry : lstExInfEntries)
 		{
 			if (entry.getSymbol().equals(symbolName))
@@ -92,10 +90,11 @@ public class Symbol
 				coin.tickSize = (int) Math.log10(Double.valueOf(ts)) * -1;
 
 				coin.quantityPrecision = eInfoEntry.getQuantityPrecision().intValue();
+				
+				return coin;
 			}
 		}
-
-		return coin;
+		return null;
 	}
 
 	// ------------------------------------------------------------------------
