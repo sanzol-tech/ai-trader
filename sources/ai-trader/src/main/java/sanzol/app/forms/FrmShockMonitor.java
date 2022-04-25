@@ -56,12 +56,13 @@ public class FrmShockMonitor extends JFrame
 	private void initComponents() 
 	{
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 800, 600);
+		setBounds(100, 100, 800, 588);
 		setMinimumSize(new Dimension(800, 600));
 		setTitle(TITLE);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmTrader.class.getResource("/resources/monitor.png")));
 
 		textArea = new JTextArea();
+		textArea.setBackground(Styles.COLOR_TEXT_AREA);
 		textArea.setEditable(false);
 		textArea.setBorder(new EmptyBorder(5, 5, 5, 5));
 		textArea.setFont(new Font("Courier New", Font.PLAIN, 12));
@@ -85,22 +86,24 @@ public class FrmShockMonitor extends JFrame
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addComponent(txtError, GroupLayout.DEFAULT_SIZE, 774, Short.MAX_VALUE)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addPreferredGap(ComponentPlacement.RELATED, 429, Short.MAX_VALUE)
-					.addComponent(btnCopy))
-				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 774, Short.MAX_VALUE)
+					.addContainerGap()
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPane, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
+						.addComponent(btnCopy, Alignment.TRAILING)
+						.addComponent(txtError, GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE))
+					.addContainerGap())
 		);
 		gl_contentPane.setVerticalGroup(
-			gl_contentPane.createParallelGroup(Alignment.TRAILING)
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 279, Short.MAX_VALUE)
+					.addContainerGap()
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 467, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnCopy))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(txtError, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addComponent(btnCopy)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(txtError, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 
 		contentPane.setLayout(gl_contentPane);

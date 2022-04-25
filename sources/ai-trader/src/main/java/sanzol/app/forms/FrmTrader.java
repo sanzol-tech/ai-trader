@@ -247,6 +247,7 @@ public class FrmTrader extends JFrame
 		txtTProfit.setColumns(10);
 
 		txtShowResult = new JTextArea();
+		txtShowResult.setBackground(Styles.COLOR_TEXT_AREA);
 		txtShowResult.setEditable(false);
 		txtShowResult.setFont(new Font("Courier New", Font.PLAIN, 12));
 
@@ -292,6 +293,7 @@ public class FrmTrader extends JFrame
 		contentPane.add(scrollOBookAsk);
 
 		txtOBookAsk = new JTextArea();
+		txtOBookAsk.setBackground(Styles.COLOR_TEXT_AREA);
 		txtOBookAsk.setForeground(Styles.COLOR_TEXT_SHORT);
 		txtOBookAsk.setFont(new Font("Courier New", Font.PLAIN, 12));
 		txtOBookAsk.setEditable(false);
@@ -302,6 +304,7 @@ public class FrmTrader extends JFrame
 		contentPane.add(scrollOBookBid);
 
 		txtOBookBid = new JTextArea();
+		txtOBookBid.setBackground(Styles.COLOR_TEXT_AREA);
 		txtOBookBid.setForeground(Styles.COLOR_TEXT_LONG);
 		txtOBookBid.setFont(new Font("Courier New", Font.PLAIN, 12));
 		txtOBookBid.setEditable(false);

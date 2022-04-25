@@ -291,6 +291,7 @@ public class FrmMain extends JFrame
 		contentPane.add(scrollFavorites);
 
 		listFavorites = new JList<String>();
+		listFavorites.setBackground(Styles.COLOR_TEXT_AREA);
 		listFavorites.setFont(new Font("Courier New", Font.PLAIN, 12));
 		listFavorites.setForeground(Styles.COLOR_TEXT_ALT2);
 		scrollFavorites.setViewportView(listFavorites);
@@ -300,6 +301,7 @@ public class FrmMain extends JFrame
 		contentPane.add(scrollSignals);
 
 		listSignals = new JList<String>();
+		listSignals.setBackground(Styles.COLOR_TEXT_AREA);
 		listSignals.setFont(new Font("Courier New", Font.PLAIN, 11));
 		listSignals.setForeground(Styles.COLOR_TEXT_ALT2);
 		scrollSignals.setViewportView(listSignals);

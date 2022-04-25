@@ -61,12 +61,13 @@ public class FrmPositions extends JFrame
 	private void initComponents() 
 	{
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 800, 600);
+		setBounds(100, 100, 804, 614);
 		setMinimumSize(new Dimension(800, 600));
 		setTitle(Constants.APP_NAME + " - Positions");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmTrader.class.getResource("/resources/upDown.png")));
 	
 		textArea = new JTextArea();
+		textArea.setBackground(Styles.COLOR_TEXT_AREA);
 		textArea.setEditable(false);
 		textArea.setBorder(new EmptyBorder(5, 5, 5, 5));
 		textArea.setFont(new Font("Courier New", Font.PLAIN, 12));
@@ -106,36 +107,42 @@ public class FrmPositions extends JFrame
 		
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
-			gl_contentPane.createParallelGroup(Alignment.TRAILING)
-				.addComponent(txtError, GroupLayout.DEFAULT_SIZE, 774, Short.MAX_VALUE)
-				.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup()
-					.addComponent(lblTProfit, GroupLayout.PREFERRED_SIZE, 51, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(txtTProfit, GroupLayout.PREFERRED_SIZE, 68, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lblTPPercent, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(chkTPRearrang, GroupLayout.PREFERRED_SIZE, 114, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnSave)
-					.addPreferredGap(ComponentPlacement.RELATED, 297, Short.MAX_VALUE)
-					.addComponent(chkIncludeOrders))
-				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 774, Short.MAX_VALUE)
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
+							.addComponent(lblTProfit, GroupLayout.PREFERRED_SIZE, 51, GroupLayout.PREFERRED_SIZE)
+							.addGap(10)
+							.addComponent(txtTProfit, GroupLayout.PREFERRED_SIZE, 68, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(lblTPPercent, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(chkTPRearrang, GroupLayout.PREFERRED_SIZE, 114, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(btnSave)
+							.addPreferredGap(ComponentPlacement.RELATED, 273, Short.MAX_VALUE)
+							.addComponent(chkIncludeOrders))
+						.addComponent(scrollPane, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
+						.addComponent(txtError, GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE))
+					.addContainerGap())
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE)
+					.addContainerGap()
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(chkIncludeOrders)
 						.addComponent(lblTProfit)
-						.addComponent(txtTProfit, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblTPPercent)
-						.addComponent(chkTPRearrang)
 						.addComponent(btnSave)
-						.addComponent(chkIncludeOrders))
-					.addGap(18)
-					.addComponent(txtError, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(chkTPRearrang)
+						.addComponent(lblTPPercent)
+						.addComponent(txtTProfit, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(txtError, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(7))
 		);
 
 		contentPane.setLayout(gl_contentPane);

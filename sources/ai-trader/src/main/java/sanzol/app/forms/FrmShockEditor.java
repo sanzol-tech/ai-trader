@@ -62,12 +62,13 @@ public class FrmShockEditor extends JFrame
 	private void initComponents() 
 	{
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 480, 500);
+		setBounds(100, 100, 480, 517);
 		setMinimumSize(new Dimension(480, 500));
 		setTitle(TITLE);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmTrader.class.getResource("/resources/rulepen.png")));
 	
 		textArea = new JTextArea();
+		textArea.setBackground(Styles.COLOR_TEXT_AREA);
 		textArea.setBorder(new EmptyBorder(5, 5, 5, 5));
 		textArea.setFont(new Font("Courier New", Font.PLAIN, 12));
 
@@ -97,25 +98,31 @@ public class FrmShockEditor extends JFrame
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(btnGenerate)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(chkOnlyFavorites)
-					.addPreferredGap(ComponentPlacement.RELATED, 213, Short.MAX_VALUE)
-					.addComponent(btnSave))
-				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE)
-				.addComponent(txtError, GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE)
+					.addContainerGap()
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(btnGenerate)
+							.addGap(18)
+							.addComponent(chkOnlyFavorites)
+							.addPreferredGap(ComponentPlacement.RELATED, 181, Short.MAX_VALUE)
+							.addComponent(btnSave))
+						.addComponent(txtError, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE))
+					.addContainerGap())
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
+					.addContainerGap()
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnGenerate)
 						.addComponent(btnSave)
+						.addComponent(btnGenerate)
 						.addComponent(chkOnlyFavorites))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(txtError, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(txtError, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(7))
 		);
 
 		contentPane.setLayout(gl_contentPane);

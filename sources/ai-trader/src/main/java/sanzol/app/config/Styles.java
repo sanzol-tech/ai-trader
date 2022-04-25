@@ -15,6 +15,8 @@ public class Styles
 	public static final Color COLOR_TEXT_ERROR = new Color(255, 0, 0);
 	public static final Color COLOR_TEXT_INFO = new Color(51, 107, 255);
 
+	public static final Color COLOR_TEXT_AREA = new Color(250, 250, 250);
+
 	public static final Color COLOR_BTN = new Color(220, 220, 220);
 	public static final Color COLOR_BTN_ALT1 = new Color(135, 206, 235);
 	public static final Color COLOR_BTN_ALT2 = new Color(51, 204, 204);
