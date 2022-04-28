@@ -22,6 +22,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import sanzol.app.config.Application;
 import sanzol.app.config.CharConstants;
@@ -74,7 +75,7 @@ public class FrmCoin extends JFrame
 		setTitle(TITLE);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 640, 560);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmMain.class.getResource("/resources/upDown.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmMain.class.getResource("/resources/monitor.png")));
 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -94,7 +95,6 @@ public class FrmCoin extends JFrame
 		
 		JButton btnSearch = new JButton(CharConstants.MAGNIFIER);
 		btnSearch.setOpaque(true);
-		btnSearch.setBackground(Styles.COLOR_BTN);
 		btnSearch.setBounds(31, 69, 178, 22);
 		contentPane.add(btnSearch);
 
@@ -137,13 +137,14 @@ public class FrmCoin extends JFrame
 		txt24h.setColumns(10);
 		txt24h.setBounds(505, 43, 86, 20);
 		contentPane.add(txt24h);
-		
+
 		scrollOBookAsk = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollOBookAsk.setBounds(31, 172, 270, 162);
+		scrollOBookAsk.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
 		contentPane.add(scrollOBookAsk);
 
 		txtOBookAsk = new JTextArea();
-		txtOBookAsk.setBackground(Styles.COLOR_TEXT_AREA);
+		txtOBookAsk.setBackground(Styles.COLOR_TEXT_AREA_BG);
 		txtOBookAsk.setForeground(Styles.COLOR_TEXT_SHORT);
 		txtOBookAsk.setFont(new Font("Courier New", Font.PLAIN, 12));
 		txtOBookAsk.setEditable(false);
@@ -151,10 +152,11 @@ public class FrmCoin extends JFrame
 
 		scrollOBookBid = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollOBookBid.setBounds(321, 204, 270, 162);
+		scrollOBookBid.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
 		contentPane.add(scrollOBookBid);
 
 		txtOBookBid = new JTextArea();
-		txtOBookBid.setBackground(Styles.COLOR_TEXT_AREA);
+		txtOBookBid.setBackground(Styles.COLOR_TEXT_AREA_BG);
 		txtOBookBid.setForeground(Styles.COLOR_TEXT_LONG);
 		txtOBookBid.setFont(new Font("Courier New", Font.PLAIN, 12));
 		txtOBookBid.setEditable(false);

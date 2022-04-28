@@ -24,6 +24,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
@@ -65,16 +66,17 @@ public class FrmPositions extends JFrame
 		setBounds(100, 100, 804, 614);
 		setMinimumSize(new Dimension(800, 600));
 		setTitle(Constants.APP_NAME + " - Positions");
-		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmTrader.class.getResource("/resources/upDown.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmTrader.class.getResource("/resources/monitor.png")));
 	
 		textArea = new JTextArea();
-		textArea.setBackground(Styles.COLOR_TEXT_AREA);
+		textArea.setBackground(Styles.COLOR_TEXT_AREA_BG);
+		textArea.setForeground(Styles.COLOR_TEXT_AREA_FG);
 		textArea.setEditable(false);
 		textArea.setBorder(new EmptyBorder(5, 5, 5, 5));
 		textArea.setFont(new Font("Courier New", Font.PLAIN, 12));
 
 		scrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+		scrollPane.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
 
 		lblTProfit = new javax.swing.JLabel();
 		lblTProfit.setText("T.Profit");
@@ -89,7 +91,6 @@ public class FrmPositions extends JFrame
 		btnSave = new javax.swing.JButton();
 		btnSave.setText("Save change");
 		btnSave.setOpaque(true);
-		btnSave.setBackground(Styles.COLOR_BTN);
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

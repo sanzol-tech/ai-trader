@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
+import org.decimal4j.util.DoubleRounder;
 
 import com.binance.client.RequestOptions;
 import com.binance.client.SyncRequestClient;
@@ -143,6 +144,16 @@ public class Symbol
 		return new DecimalFormat(pattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(coins);
 	}
 
+	public double roundPrice(double price)
+	{
+		return DoubleRounder.round(price, tickSize);
+	}
+
+	public double roundCoins(double coins)
+	{
+		return DoubleRounder.round(coins, quantityPrecision);
+	}
+	
 	public double addFewTicks(double price, int ticks)
 	{
 		return price + Math.pow(10, -tickSize) * ticks;

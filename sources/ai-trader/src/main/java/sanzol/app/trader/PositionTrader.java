@@ -1,12 +1,7 @@
 package sanzol.app.trader;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-
-import org.decimal4j.util.DoubleRounder;
 
 import com.binance.client.RequestOptions;
 import com.binance.client.SyncRequestClient;
@@ -25,6 +20,7 @@ import sanzol.app.model.Position;
 import sanzol.app.model.PositionOrder;
 import sanzol.app.model.PositionOrder.State;
 import sanzol.app.model.PositionOrder.Type;
+import sanzol.app.model.Symbol;
 import sanzol.app.task.BalanceService;
 import sanzol.app.task.PriceService;
 
@@ -48,41 +44,16 @@ public class PositionTrader
 		return position;
 	}
 
+	public Symbol getCoin()
+	{
+		return position.getCoin();
+	}
+	
 	// ------------------------------------------------------------------------
 
 	public PositionTrader(Position position)
 	{
 		this.position = position;
-	}
-
-	// ------------------------------------------------------------------------
-	// CONVERSIONS
-	// ------------------------------------------------------------------------
-
-	public static String usdToStr(double usd)
-	{
-		String pattern = "#0.00";
-		return new DecimalFormat(pattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(usd);
-	}
-
-	public String priceToStr(double price)
-	{
-		return position.getCoin().priceToStr(price);
-	}
-
-	public String coinsToStr(double coins)
-	{
-		return position.getCoin().coinsToStr(coins);
-	}
-
-	public double roundPrice(double price)
-	{
-		return DoubleRounder.round(price, position.getCoin().getTickSize());
-	}
-
-	public double roundCoins(double coins)
-	{
-		return DoubleRounder.round(coins, position.getCoin().getQuantityPrecision());
 	}
 
 	// ------------------------------------------------------------------------
@@ -116,8 +87,8 @@ public class PositionTrader
 			number = i;
 			type = Type.SELL;
 			distance = Math.pow(1 + position.getPriceIncr(), i) - 1;
-			price = roundPrice(position.getInPrice() * Math.pow(1 + position.getPriceIncr(), i));
-			coins = roundCoins(position.getInCoins() * Math.pow(1 + position.getCoinsIncr(), i));
+			price = getCoin().roundPrice(position.getInPrice() * Math.pow(1 + position.getPriceIncr(), i));
+			coins = getCoin().roundCoins(position.getInCoins() * Math.pow(1 + position.getCoinsIncr(), i));
 			usd = price * coins;
 			sumCoins += coins;
 			sumUsd += usd;
@@ -134,7 +105,7 @@ public class PositionTrader
 		number = position.getIterations() + 1;
 		type = Type.SL_BUY;
 		distance = (Math.pow(1 + position.getPriceIncr(), position.getIterations()) * (1 + position.getDistBeforeSL())) - 1;
-		price = roundPrice(position.getInPrice() * (1 + distance));
+		price = getCoin().roundPrice(position.getInPrice() * (1 + distance));
 		coins = sumCoins;
 		usd = sumUsd;
 		sumCoins = 0;
@@ -195,8 +166,8 @@ public class PositionTrader
 			number = i;
 			type = Type.BUY;
 			distance = Math.pow(1 - position.getPriceIncr(), i) - 1;
-			price = roundPrice(position.getInPrice() * Math.pow(1 - position.getPriceIncr(), i));
-			coins = roundCoins(position.getInCoins() * Math.pow(1 + position.getCoinsIncr(), i));
+			price = getCoin().roundPrice(position.getInPrice() * Math.pow(1 - position.getPriceIncr(), i));
+			coins = getCoin().roundCoins(position.getInCoins() * Math.pow(1 + position.getCoinsIncr(), i));
 			usd = price * coins;
 			sumCoins += coins;
 			sumUsd += usd;
@@ -213,7 +184,7 @@ public class PositionTrader
 		number = position.getIterations() + 1;
 		type = Type.SL_SELL;
 		distance = (Math.pow(1 - position.getPriceIncr(), position.getIterations()) * (1 - position.getDistBeforeSL())) - 1;
-		price = roundPrice(position.getInPrice() * (1 + distance));
+		price = getCoin().roundPrice(position.getInPrice() * (1 + distance));
 		coins = sumCoins;
 		usd = sumUsd;
 		sumCoins = 0;
@@ -322,25 +293,25 @@ public class PositionTrader
 		if (pOrder.getType() == Type.BUY)
 		{
 			orderResult = postOrder(OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC, 
-									coinsToStr(pOrder.getCoins()), priceToStr(pOrder.getPrice()), 
+									getCoin().coinsToStr(pOrder.getCoins()), getCoin().priceToStr(pOrder.getPrice()), 
 									null, null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
 		else if (pOrder.getType() == Type.SELL)
 		{
 			orderResult = postOrder(OrderSide.SELL, OrderType.LIMIT, TimeInForce.GTC,
-									coinsToStr(pOrder.getCoins()), priceToStr(pOrder.getPrice()),
+									getCoin().coinsToStr(pOrder.getCoins()), getCoin().priceToStr(pOrder.getPrice()),
 									null, null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
 		if (pOrder.getType() == Type.TP_BUY)
 		{
 			orderResult = postOrder(OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC, 
-					coinsToStr(pOrder.getCoins()), priceToStr(pOrder.getPrice()),
+									getCoin().coinsToStr(pOrder.getCoins()), getCoin().priceToStr(pOrder.getPrice()),
 									"true", null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
 		else if (pOrder.getType() == Type.TP_SELL)
 		{
 			orderResult = postOrder(OrderSide.SELL, OrderType.LIMIT, TimeInForce.GTC,
-									coinsToStr(pOrder.getCoins()), priceToStr(pOrder.getPrice()),
+									getCoin().coinsToStr(pOrder.getCoins()), getCoin().priceToStr(pOrder.getPrice()),
 									"true", null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
 		else if (pOrder.getType() == Type.SL_BUY)
@@ -348,14 +319,14 @@ public class PositionTrader
 			double stopPrice = pOrder.getPrice();
 			orderResult = postOrder(OrderSide.BUY, OrderType.STOP_MARKET, TimeInForce.GTC,
 									null, null,
-									null, null, priceToStr(stopPrice), WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, "true");
+									null, null, getCoin().priceToStr(stopPrice), WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, "true");
 		}
 		else if (pOrder.getType() == Type.SL_SELL)
 		{
 			double stopPrice = pOrder.getPrice();
 			orderResult = postOrder(OrderSide.SELL, OrderType.STOP_MARKET, TimeInForce.GTC,
 									null, null,
-									null, null, priceToStr(stopPrice), WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, "true");
+									null, null, getCoin().priceToStr(stopPrice), WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, "true");
 		}
 
 		if (orderResult != null)

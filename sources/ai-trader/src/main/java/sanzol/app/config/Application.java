@@ -1,9 +1,5 @@
 package sanzol.app.config;
 
-import javax.swing.UIManager;
-
-import com.formdev.flatlaf.FlatLightLaf;
-
 import sanzol.app.forms.FrmMain;
 import sanzol.app.task.BalanceService;
 import sanzol.app.task.PositionService;
@@ -41,8 +37,7 @@ public final class Application
 	{
 		try
 		{
-			//UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-			UIManager.setLookAndFeel( new FlatLightLaf() );
+			Styles.setLight();
 		}
 		catch (Exception e)
 		{

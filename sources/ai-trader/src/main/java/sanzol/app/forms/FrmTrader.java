@@ -29,6 +29,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -116,7 +117,7 @@ public class FrmTrader extends JFrame
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 1152, 652);
 		setTitle(TITLE);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmTrader.class.getResource("/resources/logo.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmTrader.class.getResource("/resources/upDown.png")));
 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(1, 1, 1, 1));
@@ -152,7 +153,6 @@ public class FrmTrader extends JFrame
 		contentPane.add(btnShortShock);
 
 		btnClean = new JButton("CLEAN");
-		btnClean.setBackground(Styles.COLOR_BTN);
 		btnClean.setOpaque(true);
 		btnClean.setBounds(257, 219, 78, 31);
 		contentPane.add(btnClean);
@@ -247,16 +247,17 @@ public class FrmTrader extends JFrame
 		txtTProfit.setColumns(10);
 
 		txtShowResult = new JTextArea();
-		txtShowResult.setBackground(Styles.COLOR_TEXT_AREA);
+		txtShowResult.setBackground(Styles.COLOR_TEXT_AREA_BG);
+		txtShowResult.setForeground(Styles.COLOR_TEXT_AREA_FG);
 		txtShowResult.setEditable(false);
 		txtShowResult.setFont(new Font("Courier New", Font.PLAIN, 12));
 
 		JScrollPane scroll = new JScrollPane(txtShowResult, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.setBounds(15, 261, 1102, 330);
+		scroll.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
 		contentPane.add(scroll);
 
 		btnSearch = new JButton(CharConstants.MAGNIFIER);
-		btnSearch.setBackground(Styles.COLOR_BTN);
 		btnSearch.setOpaque(true);
 		btnSearch.setBounds(15, 59, 106, 22);
 		contentPane.add(btnSearch);
@@ -290,10 +291,11 @@ public class FrmTrader extends JFrame
 
 		scrollOBookAsk = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollOBookAsk.setBounds(557, 19, 270, 162);
+		scrollOBookAsk.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
 		contentPane.add(scrollOBookAsk);
 
 		txtOBookAsk = new JTextArea();
-		txtOBookAsk.setBackground(Styles.COLOR_TEXT_AREA);
+		txtOBookAsk.setBackground(Styles.COLOR_TEXT_AREA_BG);
 		txtOBookAsk.setForeground(Styles.COLOR_TEXT_SHORT);
 		txtOBookAsk.setFont(new Font("Courier New", Font.PLAIN, 12));
 		txtOBookAsk.setEditable(false);
@@ -301,10 +303,11 @@ public class FrmTrader extends JFrame
 
 		scrollOBookBid = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollOBookBid.setBounds(847, 51, 270, 162);
+		scrollOBookBid.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
 		contentPane.add(scrollOBookBid);
 
 		txtOBookBid = new JTextArea();
-		txtOBookBid.setBackground(Styles.COLOR_TEXT_AREA);
+		txtOBookBid.setBackground(Styles.COLOR_TEXT_AREA_BG);
 		txtOBookBid.setForeground(Styles.COLOR_TEXT_LONG);
 		txtOBookBid.setFont(new Font("Courier New", Font.PLAIN, 12));
 		txtOBookBid.setEditable(false);
@@ -336,7 +339,6 @@ public class FrmTrader extends JFrame
 		btnPostFirst.setEnabled(false);
 		btnPostFirst.setToolTipText("Post only first order");
 		btnPostFirst.setOpaque(true);
-		btnPostFirst.setBackground(Styles.COLOR_BTN_ALT2);
 		btnPostFirst.setBounds(15, 219, 74, 31);
 		contentPane.add(btnPostFirst);
 
@@ -344,7 +346,6 @@ public class FrmTrader extends JFrame
 		btnPostOthers.setEnabled(false);
 		btnPostOthers.setToolTipText("Post the other orders");
 		btnPostOthers.setOpaque(true);
-		btnPostOthers.setBackground(Styles.COLOR_BTN_ALT2);
 		btnPostOthers.setBounds(99, 219, 74, 31);
 		contentPane.add(btnPostOthers);
 

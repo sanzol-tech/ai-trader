@@ -28,6 +28,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
@@ -66,23 +67,22 @@ public class FrmPointsEditor extends JFrame
 		setBounds(100, 100, 480, 517);
 		setMinimumSize(new Dimension(480, 500));
 		setTitle(TITLE);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmTrader.class.getResource("/resources/rulepen.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmTrader.class.getResource("/resources/monitor.png")));
 	
 		textArea = new JTextArea();
-		textArea.setBackground(Styles.COLOR_TEXT_AREA);
+		textArea.setBackground(Styles.COLOR_TEXT_AREA_BG);
+		textArea.setForeground(Styles.COLOR_TEXT_AREA_FG);
 		textArea.setBorder(new EmptyBorder(5, 5, 5, 5));
 		textArea.setFont(new Font("Courier New", Font.PLAIN, 12));
 
 		scrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+		scrollPane.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
 
 		btnGenerate = new JButton("GENERATE");
 		btnGenerate.setOpaque(true);
-		btnGenerate.setBackground(Styles.COLOR_BTN);
 
 		btnSave = new JButton("SAVE");
 		btnSave.setOpaque(true);
-		btnSave.setBackground(Styles.COLOR_BTN);
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

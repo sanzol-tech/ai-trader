@@ -195,10 +195,13 @@ public final class PositionService
 		mapPosition.put("RESULT", new GOrder(resultPrice, resultQty, resultUSD));
 
 		// --- OTHERS ---------------------------------------------------------
+		BigDecimal othersPrice = null;
+		BigDecimal othersQty = null;
+		BigDecimal othersUSD = null;
 		if (positionExists)
 		{
-			BigDecimal othersQty = resultQty;
-			BigDecimal othersUSD = resultUSD;
+			othersQty = resultQty;
+			othersUSD = resultUSD;
 			for (Order entry : getLstOpenOrders(coin.getName()))
 			{
 				if ("LIMIT".equals(entry.getType()) && posSide.equals(entry.getSide()))
@@ -207,13 +210,20 @@ public final class PositionService
 					othersUSD = entry.getOrigQty().multiply(entry.getPrice());
 				}
 			}
-			BigDecimal othersPrice = othersUSD.divide(othersQty, RoundingMode.HALF_UP);
+			othersPrice = othersUSD.divide(othersQty, RoundingMode.HALF_UP);
 			mapPosition.put("OTHERS", new GOrder(othersPrice, othersQty, othersUSD));
 		}
 
 		// --- STOP LOSS ------------------------------------------------------
-		BigDecimal slAmt = posQty;
-		BigDecimal slPrice = resultPrice.multiply(BigDecimal.valueOf(1 - Config.getStoploss_increment()));
+		BigDecimal slPrice;
+		BigDecimal slAmt;
+		if (positionExists)	{
+			slPrice = othersPrice.multiply(BigDecimal.valueOf(1 - Config.getStoploss_increment()));
+			slAmt = othersQty;
+		} else {
+			slPrice = resultPrice.multiply(BigDecimal.valueOf(1 - Config.getStoploss_increment()));
+			slAmt = resultQty;
+		}
 		mapPosition.put("SL", new GOrder(slPrice, slAmt));
 
 		// --- TAKE PROFIT ----------------------------------------------------
@@ -222,24 +232,22 @@ public final class PositionService
 		mapPosition.put("TP", new GOrder(tpPrice, tpAmt));
 
 		// --- DISTANCES ------------------------------------------------------
-		BigDecimal mrkPrice = PriceService.getLastPrice(coin);
-
 		if ("BUY".equals(posSide))
 		{
-			BigDecimal posDist = BigDecimal.ONE.subtract(posPrice.divide(mrkPrice, RoundingMode.HALF_UP));
+			BigDecimal posDist = BigDecimal.ONE.subtract(posPrice.divide(shootPrice, RoundingMode.HALF_UP));
 			mapPosition.get("POS").setDist(posDist);
-			BigDecimal resultDist = BigDecimal.ONE.subtract(resultPrice.divide(mrkPrice, RoundingMode.HALF_UP));
+			BigDecimal resultDist = BigDecimal.ONE.subtract(resultPrice.divide(shootPrice, RoundingMode.HALF_UP));
 			mapPosition.get("RESULT").setDist(resultDist);
-			BigDecimal tptDist = BigDecimal.ONE.subtract(tpPrice.divide(mrkPrice, RoundingMode.HALF_UP));
+			BigDecimal tptDist = BigDecimal.ONE.subtract(tpPrice.divide(shootPrice, RoundingMode.HALF_UP));
 			mapPosition.get("TP").setDist(tptDist);
 		}
 		else if ("SELL".equals(posSide))
 		{
-			BigDecimal posDist = posPrice.divide(mrkPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
+			BigDecimal posDist = posPrice.divide(shootPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
 			mapPosition.get("POS").setDist(posDist);
-			BigDecimal resultDist = resultPrice.divide(mrkPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
+			BigDecimal resultDist = resultPrice.divide(shootPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
 			mapPosition.get("RESULT").setDist(resultDist);
-			BigDecimal tptDist = tpPrice.divide(mrkPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
+			BigDecimal tptDist = tpPrice.divide(shootPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
 			mapPosition.get("TP").setDist(tptDist);
 		}		
 
@@ -264,7 +272,7 @@ public final class PositionService
 	{
 		if (lstPositionRisk == null || lstPositionRisk.isEmpty())
 		{
-			return "NO RECORDS";
+			return "No open positions found";
 		}
 
 		StringBuilder sbBody = new StringBuilder();
@@ -297,9 +305,9 @@ public final class PositionService
 
 		if (sbBody.length() == 0)
 		{
-			return "NO RECORDS";
+			return "No open positions found";
 		}
-		
+
 		StringBuilder sb  = new StringBuilder();
 		sb.append(String.format("%-22s %-20s %10s %14s %12s %14s\n", "SYMBOL", "TYPE", "AMOUNT", "PRICE", "AVG PRICE", "PNL"));
 		sb.append(StringUtils.repeat("-", 97));
