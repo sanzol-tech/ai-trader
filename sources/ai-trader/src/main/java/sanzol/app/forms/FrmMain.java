@@ -11,12 +11,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -31,11 +31,7 @@ import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import org.decimal4j.util.DoubleRounder;
-
 import com.binance.client.model.trade.AccountBalance;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
 
 import sanzol.app.config.Application;
 import sanzol.app.config.Config;
@@ -63,6 +59,7 @@ public class FrmMain extends JFrame
 	private JButton btnSaveConfig;
 	private JButton btnSaveKey;
 	private JButton btnShockEditor;
+	private JButton btnCoin;
 
 	private JList<String> listFavorites;
 	private JList<String> listSignals;
@@ -70,7 +67,7 @@ public class FrmMain extends JFrame
 	private JTextField txtIterations;
 	private JTextField txtPriceIncr;
 	private JTextField txtTProfit;
-	private JTextField txtBalanceStartPosition;
+	private JTextField txtPositionQty;
 	private JTextField txtDistBeforeSL;
 	private JTextField txtCoinsIncr;
 	private JTextField txtBalance;
@@ -82,6 +79,8 @@ public class FrmMain extends JFrame
 	private JPasswordField txtApiKey;
 	private JTextField txtLeverage;
 	private JTextField txtBalanceMinAvailable;
+	private JTextField txtPositionsMax;
+	private JTextField txtPositionQtyMax;
 
 	public FrmMain()
 	{
@@ -114,12 +113,14 @@ public class FrmMain extends JFrame
 
 		JPanel panelConfig = new JPanel();
 		panelConfig.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
-		panelConfig.setBounds(16, 307, 810, 114);
+		panelConfig.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Styles.COLOR_BORDER_LINE, 1, true), " Default values "));
+		panelConfig.setBounds(16, 300, 810, 123);
 		panelConfig.setLayout(null);
 		contentPane.add(panelConfig);
 
 		JPanel panelKey = new JPanel();
 		panelKey.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
+
 		panelKey.setBounds(16, 440, 810, 60);
 		panelKey.setLayout(null);
 		contentPane.add(panelKey);
@@ -152,139 +153,131 @@ public class FrmMain extends JFrame
 		panelKey.add(txtSecretKey);
 
 		btnSaveKey = new JButton("SAVE");
-		btnSaveKey.setBounds(726, 30, 72, 20);
+		btnSaveKey.setBounds(728, 30, 72, 20);
 		panelKey.add(btnSaveKey);
 		btnSaveKey.setOpaque(true);
 		btnSaveKey.setBackground(Styles.COLOR_BTN);
 
 		JLabel lblItarations = new JLabel("Iterations");
-		lblItarations.setBounds(10, 59, 90, 14);
+		lblItarations.setBounds(20, 26, 80, 14);
 		lblItarations.setHorizontalAlignment(SwingConstants.LEFT);
 		panelConfig.add(lblItarations);
 
 		txtIterations = new JTextField();
-		txtIterations.setBounds(110, 55, 60, 20);
+		txtIterations.setBounds(20, 43, 72, 20);
 		txtIterations.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtIterations.setColumns(10);
 		panelConfig.add(txtIterations);
 
 		txtCoinsIncr = new JTextField();
-		txtCoinsIncr.setBounds(462, 55, 60, 20);
+		txtCoinsIncr.setBounds(20, 86, 72, 20);
 		txtCoinsIncr.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtCoinsIncr.setColumns(10);
 		panelConfig.add(txtCoinsIncr);
 
-		JLabel lblCoinsIncr = new JLabel("Coins Incr");
-		lblCoinsIncr.setBounds(374, 59, 80, 14);
-		lblCoinsIncr.setHorizontalAlignment(SwingConstants.RIGHT);
+		JLabel lblCoinsIncr = new JLabel("Coins Incr %");
+		lblCoinsIncr.setBounds(20, 70, 80, 14);
 		panelConfig.add(lblCoinsIncr);
 
 		txtPriceIncr = new JTextField();
-		txtPriceIncr.setBounds(286, 55, 60, 20);
+		txtPriceIncr.setBounds(112, 43, 72, 20);
 		txtPriceIncr.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtPriceIncr.setColumns(10);
 		panelConfig.add(txtPriceIncr);
 
-		JLabel lblPriceIncr = new JLabel("Price Incr");
-		lblPriceIncr.setBounds(198, 59, 80, 14);
-		lblPriceIncr.setHorizontalAlignment(SwingConstants.RIGHT);
+		JLabel lblPriceIncr = new JLabel("Price Incr %");
+		lblPriceIncr.setBounds(112, 26, 80, 14);
 		panelConfig.add(lblPriceIncr);
 
-		JLabel lblTProfit = new JLabel("Take profit");
-		lblTProfit.setBounds(10, 83, 90, 14);
+		JLabel lblTProfit = new JLabel("Take profit %");
+		lblTProfit.setBounds(204, 26, 80, 14);
 		lblTProfit.setHorizontalAlignment(SwingConstants.LEFT);
 		panelConfig.add(lblTProfit);
 
 		txtTProfit = new JTextField();
-		txtTProfit.setBounds(110, 81, 60, 20);
+		txtTProfit.setBounds(204, 43, 72, 20);
 		txtTProfit.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtTProfit.setColumns(10);
 		panelConfig.add(txtTProfit);
 
 		txtDistBeforeSL = new JTextField();
-		txtDistBeforeSL.setBounds(638, 55, 60, 20);
+		txtDistBeforeSL.setBounds(112, 86, 72, 20);
 		txtDistBeforeSL.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtDistBeforeSL.setColumns(10);
 		panelConfig.add(txtDistBeforeSL);
 
-		JLabel lblDistSL = new JLabel("Last to SL");
-		lblDistSL.setBounds(550, 59, 80, 14);
-		lblDistSL.setHorizontalAlignment(SwingConstants.RIGHT);
+		JLabel lblDistSL = new JLabel("SL after last %");
+		lblDistSL.setBounds(112, 70, 90, 14);
 		panelConfig.add(lblDistSL);
 
-		JLabel lblPriceIncr_1 = new JLabel("Balance");
-		lblPriceIncr_1.setBounds(198, 83, 80, 14);
-		lblPriceIncr_1.setHorizontalAlignment(SwingConstants.RIGHT);
-		panelConfig.add(lblPriceIncr_1);
+		JLabel lblQty = new JLabel("Min qty %");
+		lblQty.setBounds(422, 26, 80, 14);
+		panelConfig.add(lblQty);
 
-		txtBalanceStartPosition = new JTextField();
-		txtBalanceStartPosition.setBounds(286, 81, 60, 20);
-		txtBalanceStartPosition.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtBalanceStartPosition.setColumns(10);
-		panelConfig.add(txtBalanceStartPosition);
+		txtPositionQty = new JTextField();
+		txtPositionQty.setBounds(422, 43, 72, 20);
+		txtPositionQty.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtPositionQty.setColumns(10);
+		panelConfig.add(txtPositionQty);
 
 		txtFavCoins = new JTextField();
-		txtFavCoins.setBounds(110, 11, 588, 20);
+		txtFavCoins.setBounds(640, 43, 154, 20);
 		txtFavCoins.setColumns(10);
 		panelConfig.add(txtFavCoins);
 
 		JLabel lblFavCoins = new JLabel("Favorite coins");
 		lblFavCoins.setHorizontalAlignment(SwingConstants.LEFT);
-		lblFavCoins.setBounds(10, 14, 90, 14);
+		lblFavCoins.setBounds(640, 26, 90, 14);
 		panelConfig.add(lblFavCoins);
 
 		txtLeverage = new JTextField();
 		txtLeverage.setEditable(false);
 		txtLeverage.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtLeverage.setBounds(638, 81, 60, 20);
+		txtLeverage.setBounds(514, 43, 72, 20);
 		panelConfig.add(txtLeverage);
 		txtLeverage.setColumns(10);
 
 		txtBalanceMinAvailable = new JTextField();
 		txtBalanceMinAvailable.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtBalanceMinAvailable.setBounds(462, 81, 60, 20);
+		txtBalanceMinAvailable.setBounds(330, 86, 72, 20);
 		panelConfig.add(txtBalanceMinAvailable);
 		txtBalanceMinAvailable.setColumns(10);
 
 		JLabel lblLeverage = new JLabel("Leverage");
-		lblLeverage.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblLeverage.setBounds(550, 83, 80, 14);
+		lblLeverage.setBounds(514, 26, 80, 14);
 		panelConfig.add(lblLeverage);
 
-		JLabel lblAvailable = new JLabel("Min available");
-		lblAvailable.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblAvailable.setBounds(374, 83, 80, 14);
+		JLabel lblAvailable = new JLabel("Min balance %");
+		lblAvailable.setBounds(330, 70, 80, 14);
 		panelConfig.add(lblAvailable);
 
 		btnSaveConfig = new JButton("SAVE");
-		btnSaveConfig.setBounds(726, 81, 72, 20);
+		btnSaveConfig.setBounds(722, 86, 72, 20);
 		panelConfig.add(btnSaveConfig);
 		btnSaveConfig.setOpaque(true);
 		btnSaveConfig.setBackground(Styles.COLOR_BTN);
-
-		JLabel lblPercetSymbol = new JLabel("%");
-		lblPercetSymbol.setBounds(173, 83, 25, 14);
-		panelConfig.add(lblPercetSymbol);
-
-		JLabel lblPercetSymbol_1 = new JLabel("%");
-		lblPercetSymbol_1.setBounds(349, 59, 25, 14);
-		panelConfig.add(lblPercetSymbol_1);
-
-		JLabel lblPercetSymbol_2 = new JLabel("%");
-		lblPercetSymbol_2.setBounds(349, 83, 25, 14);
-		panelConfig.add(lblPercetSymbol_2);
-
-		JLabel lblPercetSymbol_3 = new JLabel("%");
-		lblPercetSymbol_3.setBounds(525, 59, 25, 14);
-		panelConfig.add(lblPercetSymbol_3);
-
-		JLabel lblPercetSymbol_4 = new JLabel("%");
-		lblPercetSymbol_4.setBounds(525, 83, 25, 14);
-		panelConfig.add(lblPercetSymbol_4);
-
-		JLabel lblPercetSymbol_5 = new JLabel("%");
-		lblPercetSymbol_5.setBounds(701, 59, 25, 14);
-		panelConfig.add(lblPercetSymbol_5);
+		
+		JLabel lblPositionsMax = new JLabel("Max positions");
+		lblPositionsMax.setBounds(330, 26, 80, 14);
+		panelConfig.add(lblPositionsMax);
+		
+		JLabel lblQtyMax = new JLabel("Max qty %");
+		lblQtyMax.setBounds(422, 70, 80, 14);
+		panelConfig.add(lblQtyMax);
+		
+		txtPositionsMax = new JTextField();
+		txtPositionsMax.setText("3.0");
+		txtPositionsMax.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtPositionsMax.setColumns(10);
+		txtPositionsMax.setBounds(330, 43, 72, 20);
+		panelConfig.add(txtPositionsMax);
+		
+		txtPositionQtyMax = new JTextField();
+		txtPositionQtyMax.setText("10");
+		txtPositionQtyMax.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtPositionQtyMax.setColumns(10);
+		txtPositionQtyMax.setBounds(422, 86, 72, 20);
+		panelConfig.add(txtPositionQtyMax);
 
 		JScrollPane scrollFavorites = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollFavorites.setBounds(16, 67, 140, 190);
@@ -345,11 +338,6 @@ public class FrmMain extends JFrame
 		btnNewGrid.setBackground(Styles.COLOR_BTN_ALT1);
 		contentPane.add(btnNewGrid);
 
-		JLabel lblConfig = new JLabel("Default values");
-		lblConfig.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblConfig.setBounds(16, 281, 140, 20);
-		contentPane.add(lblConfig);
-
 		txtError = new JTextField();
 		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
 		txtError.setEditable(false);
@@ -382,6 +370,13 @@ public class FrmMain extends JFrame
 		lblTitle.setBounds(616, 15, 210, 14);
 		lblTitle.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		contentPane.add(lblTitle);
+		
+		btnCoin = new JButton("COIN");
+		btnCoin.setToolTipText("Edit shock points");
+		btnCoin.setOpaque(true);
+		btnCoin.setBackground(new Color(220, 220, 220));
+		btnCoin.setBounds(424, 11, 120, 28);
+		contentPane.add(btnCoin);
 
 		lblTitle.addMouseListener(new MouseAdapter() {
 			@Override
@@ -431,6 +426,12 @@ public class FrmMain extends JFrame
 			}
 		});
 
+		btnCoin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				showCoin();
+			}
+		});
+		
 		btnCalcOrder.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				showCalcOrder();
@@ -486,26 +487,31 @@ public class FrmMain extends JFrame
 		}
 	}
 
-	private void loadConfig() throws JsonSyntaxException, JsonIOException, FileNotFoundException
+	private void loadConfig()
 	{
-		//listFavorites.setModel(toListModel(Config.getLstFavSymbols()));
 		txtFavCoins.setText(Config.getFavorite_symbols());
 
-		txtLeverage.setText(String.valueOf(Config.getLeverage()));
 		txtIterations.setText(String.valueOf(Config.getIterations()));
+		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPrice_increment())); 
+		txtCoinsIncr.setText(Convert.dblToStrPercent(Config.getCoins_increment()));
+		txtDistBeforeSL.setText(Convert.dblToStrPercent(Config.getStoploss_increment()));
+		txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
 
-		txtPriceIncr.setText(dblToStrPercent(Config.getPrice_increment())); 
-		txtCoinsIncr.setText(dblToStrPercent(Config.getCoins_increment()));
-		txtDistBeforeSL.setText(dblToStrPercent(Config.getStoploss_increment()));
-		txtTProfit.setText(dblToStrPercent(Config.getTakeprofit()));
-
-		txtBalanceStartPosition.setText(dblToStrPercent(Config.getBalance_start_position()));
-		txtBalanceMinAvailable.setText(dblToStrPercent(Config.getBalance_min_available()));
+		txtPositionsMax.setText(String.valueOf(Config.getPositions_max()));
+		txtPositionQty.setText(Convert.dblToStrPercent(Config.getPosition_start_qty()));
+		txtPositionQtyMax.setText(Convert.dblToStrPercent(Config.getPosition_start_qty_max()));
+		txtBalanceMinAvailable.setText(Convert.dblToStrPercent(Config.getBalance_min_available()));
+		txtLeverage.setText(String.valueOf(Config.getLeverage()));
 	}
 
 	private void showPositions()
 	{
 		FrmPositions.launch();
+	}
+
+	private void showCoin()
+	{
+		FrmCoin.launch();
 	}
 
 	private void showCalcOrder()
@@ -628,16 +634,16 @@ public class FrmMain extends JFrame
 		{
 			Config.setFavorite_symbols(txtFavCoins.getText());
 
-			Config.setLeverage(txtLeverage.getText());
 			Config.setIterations(txtIterations.getText());
-
-			Config.setPrice_increment(strPercentToDbl(txtPriceIncr.getText()));
-			Config.setCoins_increment(strPercentToDbl(txtCoinsIncr.getText()));
-			Config.setStoploss_increment(strPercentToDbl(txtDistBeforeSL.getText()));
-			Config.setTakeprofit(strPercentToDbl(txtTProfit.getText()));
-
-			Config.setBalance_start_position(strPercentToDbl(txtBalanceStartPosition.getText()));
-			Config.setBalance_min_available(strPercentToDbl(txtBalanceMinAvailable.getText()));
+			Config.setPrice_increment(Convert.strPercentToDbl(txtPriceIncr.getText()));
+			Config.setCoins_increment(Convert.strPercentToDbl(txtCoinsIncr.getText()));
+			Config.setStoploss_increment(Convert.strPercentToDbl(txtDistBeforeSL.getText()));
+			Config.setTakeprofit(Convert.strPercentToDbl(txtTProfit.getText()));
+			Config.setPositions_max(txtPositionsMax.getText());
+			Config.setPosition_start_qty(Convert.strPercentToDbl(txtPositionQty.getText()));
+			Config.setPosition_start_qty_max(Convert.strPercentToDbl(txtPositionQtyMax.getText()));
+			Config.setBalance_min_available(Convert.strPercentToDbl(txtBalanceMinAvailable.getText()));
+			Config.setLeverage(txtLeverage.getText());
 
 			Config.save();
 			INFO("CONFIG SAVED");
@@ -663,24 +669,6 @@ public class FrmMain extends JFrame
 	}
 
 	// ------------------------------------------------------------------------
-
-	private static String dblToStrPercent(Double d)
-	{
-		if (d == null)
-			return "";
-
-		return String.valueOf(DoubleRounder.round(d * 100, 2));
-	}
-
-
-	private static Double strPercentToDbl(String str)
-	{
-		if (str == null)
-			return null;
-
-		return DoubleRounder.round(Double.valueOf(str) / 100, 4);
-	}
-
 
 	private static AbstractListModel<String> toListModel(List<String> values)
 	{

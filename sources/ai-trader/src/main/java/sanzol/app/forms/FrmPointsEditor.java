@@ -1,5 +1,6 @@
 package sanzol.app.forms;
 
+import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -21,10 +22,10 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
@@ -46,7 +47,7 @@ public class FrmPointsEditor extends JFrame
 	private JScrollPane scrollPane;
 	private JTextArea textArea;
 
-	private JTextField txtError;
+	private JLabel lblError;
 
 	private JButton btnGenerate;
 	private JButton btnSave;
@@ -75,10 +76,6 @@ public class FrmPointsEditor extends JFrame
 		scrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-		txtError = new javax.swing.JTextField();
-		txtError.setEditable(false);
-		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
-
 		btnGenerate = new JButton("GENERATE");
 		btnGenerate.setOpaque(true);
 		btnGenerate.setBackground(Styles.COLOR_BTN);
@@ -93,6 +90,14 @@ public class FrmPointsEditor extends JFrame
 		
 		JCheckBox chkOnlyFavorites = new JCheckBox("Only favorites");
 		chkOnlyFavorites.setSelected(true);
+
+		JPanel pnlBottom = new JPanel();
+		pnlBottom.setBorder(Styles.BORDER_UP);
+		pnlBottom.setLayout(new BorderLayout(0, 0));
+		lblError = new JLabel();
+		lblError.setBorder(new EmptyBorder(5, 0, 5, 5));		
+		lblError.setMinimumSize(new Dimension(100, 20));
+		pnlBottom.add(lblError);
 		
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
@@ -107,7 +112,7 @@ public class FrmPointsEditor extends JFrame
 							.addComponent(chkOnlyFavorites)
 							.addPreferredGap(ComponentPlacement.RELATED, 181, Short.MAX_VALUE)
 							.addComponent(btnSave))
-						.addComponent(txtError, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE))
+						.addComponent(pnlBottom, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		gl_contentPane.setVerticalGroup(
@@ -121,8 +126,8 @@ public class FrmPointsEditor extends JFrame
 						.addComponent(btnGenerate)
 						.addComponent(chkOnlyFavorites))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(txtError, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(7))
+					.addComponent(pnlBottom, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(4))
 		);
 
 		contentPane.setLayout(gl_contentPane);
@@ -258,14 +263,14 @@ public class FrmPointsEditor extends JFrame
 
 	public void ERROR(String msg)
 	{
-		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
-		txtError.setText(" " + msg);
+		lblError.setForeground(Styles.COLOR_TEXT_ERROR);
+		lblError.setText(" " + msg);
 	}
 
 	public void INFO(String msg)
 	{
-		txtError.setForeground(Styles.COLOR_TEXT_INFO);
-		txtError.setText(" " + msg);
+		lblError.setForeground(Styles.COLOR_TEXT_INFO);
+		lblError.setText(" " + msg);
 	}
 
 	// ------------------------------------------------------------------------

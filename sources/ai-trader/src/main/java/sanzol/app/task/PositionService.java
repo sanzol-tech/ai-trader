@@ -170,50 +170,54 @@ public final class PositionService
 
 	// ------------------------------------------------------------------------
 
-	public static Map<String, GOrder> calc(Symbol coin, String posSide, BigDecimal posPrice, BigDecimal posAmt, BigDecimal shootPrice, BigDecimal shootAmt) throws Exception 
+	public static Map<String, GOrder> calc(Symbol coin, String posSide, BigDecimal posPrice, BigDecimal posQty, BigDecimal shootPrice, BigDecimal shootQty) throws Exception 
 	{
 		Map<String, GOrder> mapPosition = new HashMap<String, GOrder>();
 
 		// --- POSITION -------------------------------------------------------
-		PositionRisk positionRisk = PositionService.getPositionRisk(coin.getName());
+		PositionRisk positionRisk = getPositionRisk(coin.getName());
 		boolean positionExists = (positionRisk != null && positionRisk.getPositionAmt().compareTo(BigDecimal.ZERO) != 0); 
 		if (positionExists)
 		{
 			posSide = positionRisk.getPositionAmt().doubleValue() < 0 ? "SELL" : "BUY";
 			posPrice = positionRisk.getEntryPrice();
-			posAmt = positionRisk.getPositionAmt().abs();
-
-			mapPosition.put("POS", new GOrder(posPrice, posAmt));
+			posQty = positionRisk.getPositionAmt().abs();
 		}
+		mapPosition.put("POS", new GOrder(posPrice, posQty));
 
 		// --- SHOOT ----------------------------------------------------------
-		mapPosition.put("SHOOT", new GOrder(shootPrice, shootAmt));
+		mapPosition.put("SHOOT", new GOrder(shootPrice, shootQty));
 
 		// --- RESULT ---------------------------------------------------------
-		BigDecimal resultAmt = posAmt.add(shootAmt);
-		BigDecimal resultUsd = posPrice.multiply(posAmt).add(shootPrice.multiply(shootAmt));
-		BigDecimal resultPrice = resultUsd.divide(resultAmt, RoundingMode.HALF_UP);
-		mapPosition.put("RESULT", new GOrder(resultPrice, resultAmt, resultUsd));
+		BigDecimal resultQty = posQty.add(shootQty);
+		BigDecimal resultUSD = posPrice.multiply(posQty).add(shootPrice.multiply(shootQty));
+		BigDecimal resultPrice = resultUSD.divide(resultQty, RoundingMode.HALF_UP);
+		mapPosition.put("RESULT", new GOrder(resultPrice, resultQty, resultUSD));
 
 		// --- OTHERS ---------------------------------------------------------
 		if (positionExists)
 		{
-			for (Order entry : PositionService.getLstOpenOrders(coin.getName()))
+			BigDecimal othersQty = resultQty;
+			BigDecimal othersUSD = resultUSD;
+			for (Order entry : getLstOpenOrders(coin.getName()))
 			{
 				if ("LIMIT".equals(entry.getType()) && posSide.equals(entry.getSide()))
 				{
-					mapPosition.put("OTHERS", new GOrder(entry.getPrice(), entry.getOrigQty()));
+					othersQty = othersQty.add(entry.getOrigQty());
+					othersUSD = entry.getOrigQty().multiply(entry.getPrice());
 				}
-			}		
+			}
+			BigDecimal othersPrice = othersUSD.divide(othersQty, RoundingMode.HALF_UP);
+			mapPosition.put("OTHERS", new GOrder(othersPrice, othersQty, othersUSD));
 		}
 
 		// --- STOP LOSS ------------------------------------------------------
-		BigDecimal slAmt = resultAmt;
+		BigDecimal slAmt = posQty;
 		BigDecimal slPrice = resultPrice.multiply(BigDecimal.valueOf(1 - Config.getStoploss_increment()));
 		mapPosition.put("SL", new GOrder(slPrice, slAmt));
 
 		// --- TAKE PROFIT ----------------------------------------------------
-		BigDecimal tpAmt = resultAmt;
+		BigDecimal tpAmt = posQty;
 		BigDecimal tpPrice = resultPrice.multiply(BigDecimal.valueOf(1 + Config.getTakeprofit()));
 		mapPosition.put("TP", new GOrder(tpPrice, tpAmt));
 
@@ -226,6 +230,8 @@ public final class PositionService
 			mapPosition.get("POS").setDist(posDist);
 			BigDecimal resultDist = BigDecimal.ONE.subtract(resultPrice.divide(mrkPrice, RoundingMode.HALF_UP));
 			mapPosition.get("RESULT").setDist(resultDist);
+			BigDecimal tptDist = BigDecimal.ONE.subtract(tpPrice.divide(mrkPrice, RoundingMode.HALF_UP));
+			mapPosition.get("TP").setDist(tptDist);
 		}
 		else if ("SELL".equals(posSide))
 		{
@@ -233,6 +239,8 @@ public final class PositionService
 			mapPosition.get("POS").setDist(posDist);
 			BigDecimal resultDist = resultPrice.divide(mrkPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
 			mapPosition.get("RESULT").setDist(resultDist);
+			BigDecimal tptDist = tpPrice.divide(mrkPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
+			mapPosition.get("TP").setDist(tptDist);
 		}		
 
 		return mapPosition;
@@ -259,12 +267,7 @@ public final class PositionService
 			return "NO RECORDS";
 		}
 
-		StringBuilder sb = new StringBuilder();
-
-		sb.append(String.format("%-22s %-20s %10s %14s %12s %14s\n", "SYMBOL", "TYPE", "AMOUNT", "PRICE", "AVG PRICE", "PNL"));
-		sb.append(StringUtils.repeat("-", 97));
-		sb.append("\n");
-
+		StringBuilder sbBody = new StringBuilder();
 		for (PositionRisk entry : lstPositionRisk)
 		{
 			if (entry.getPositionAmt().compareTo(BigDecimal.ZERO) != 0)
@@ -273,25 +276,36 @@ public final class PositionService
 
 				String side = entry.getPositionAmt().doubleValue() > 0 ? "LONG" : "SHORT";
 
-				sb.append(String.format("%-22s %-20s %10s %14s %12s %14s\n",
-										entry.getSymbol(),
-										side + " " + entry.getMarginType() + " " + entry.getLeverage(),
-										entry.getPositionAmt(),
-										symbol.priceToStr(entry.getMarkPrice()),
-										symbol.priceToStr(entry.getEntryPrice()), 
-										Convert.usdToStr(entry.getUnrealizedProfit().doubleValue())));
+				sbBody.append(String.format("%-22s %-20s %10s %14s %12s %14s\n",
+											entry.getSymbol(),
+											side + " " + entry.getMarginType() + " " + entry.getLeverage(),
+											entry.getPositionAmt(),
+											symbol.priceToStr(entry.getMarkPrice()),
+											symbol.priceToStr(entry.getEntryPrice()), 
+											Convert.usdToStr(entry.getUnrealizedProfit().doubleValue())));
 
 				if (includeOrders)
 				{
-					sb.append(StringUtils.repeat("-",97));
-					sb.append("\n");
-					sb.append(toStringOrders(entry.getSymbol()));
-					sb.append(StringUtils.repeat("-",97));
-					sb.append("\n");
+					sbBody.append(StringUtils.repeat("-",97));
+					sbBody.append("\n");
+					sbBody.append(toStringOrders(entry.getSymbol()));
+					sbBody.append(StringUtils.repeat("-",97));
+					sbBody.append("\n");
 				}
 			}
 		}
 
+		if (sbBody.length() == 0)
+		{
+			return "NO RECORDS";
+		}
+		
+		StringBuilder sb  = new StringBuilder();
+		sb.append(String.format("%-22s %-20s %10s %14s %12s %14s\n", "SYMBOL", "TYPE", "AMOUNT", "PRICE", "AVG PRICE", "PNL"));
+		sb.append(StringUtils.repeat("-", 97));
+		sb.append("\n");
+		sb.append(sbBody);
+		
 		return sb.toString();
 	}
 

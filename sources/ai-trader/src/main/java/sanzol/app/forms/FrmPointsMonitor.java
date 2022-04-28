@@ -1,5 +1,6 @@
 package sanzol.app.forms;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -15,10 +16,10 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
@@ -41,7 +42,7 @@ public class FrmPointsMonitor extends JFrame
 	private JScrollPane scrollPane;
 	private JTextArea textArea;
 
-	private JTextField txtError;
+	private JLabel lblError;
 	
 	private JButton btnCopy;
 
@@ -70,19 +71,23 @@ public class FrmPointsMonitor extends JFrame
 		scrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-		txtError = new javax.swing.JTextField();
-		txtError.setEditable(false);
-		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
-
 		btnCopy = new javax.swing.JButton();
 		btnCopy.setText("Copy to clipboard");
 		btnCopy.setOpaque(true);
 		btnCopy.setBackground(Styles.COLOR_BTN);
 
 		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setBorder(new EmptyBorder(5, 0, 5, 5));
 		setContentPane(contentPane);
 
+		JPanel pnlBottom = new JPanel();
+		pnlBottom.setBorder(Styles.BORDER_UP);
+		pnlBottom.setLayout(new BorderLayout(0, 0));
+		lblError = new JLabel();
+		lblError.setBorder(new EmptyBorder(5, 5, 5, 5));
+		lblError.setMinimumSize(new Dimension(100, 20));
+		pnlBottom.add(lblError);
+		
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -90,7 +95,7 @@ public class FrmPointsMonitor extends JFrame
 					.addContainerGap()
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 						.addComponent(scrollPane, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
-						.addComponent(txtError, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
+						.addComponent(pnlBottom, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
 						.addComponent(btnCopy, Alignment.TRAILING))
 					.addContainerGap())
 		);
@@ -101,9 +106,9 @@ public class FrmPointsMonitor extends JFrame
 					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 472, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnCopy)
-					.addGap(11)
-					.addComponent(txtError, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap())
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(pnlBottom, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(4))
 		);
 
 		contentPane.setLayout(gl_contentPane);
@@ -194,14 +199,14 @@ public class FrmPointsMonitor extends JFrame
 
 	public void ERROR(String msg)
 	{
-		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
-		txtError.setText(" " + msg);
+		lblError.setForeground(Styles.COLOR_TEXT_ERROR);
+		lblError.setText(" " + msg);
 	}
 
 	public void INFO(String msg)
 	{
-		txtError.setForeground(Styles.COLOR_TEXT_INFO);
-		txtError.setText(" " + msg);
+		lblError.setForeground(Styles.COLOR_TEXT_INFO);
+		lblError.setText(" " + msg);
 	}
 
 	// ------------------------------------------------------------------------

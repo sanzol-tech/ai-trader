@@ -2,6 +2,7 @@ package sanzol.app.forms;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -31,7 +32,6 @@ import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.decimal4j.util.DoubleRounder;
 
 import com.binance.client.model.enums.PositionSide;
 
@@ -48,6 +48,7 @@ import sanzol.app.task.PriceService;
 import sanzol.app.trader.PositionTrader;
 import sanzol.app.trader.PositionTrader.PostStyle;
 import sanzol.app.trader.PositionTrader.TestMode;
+import sanzol.app.util.Convert;
 
 public class FrmTrader extends JFrame
 {
@@ -83,7 +84,7 @@ public class FrmTrader extends JFrame
 
 	private JTextField textCoins;
 	private JTextField txtCoinsIncr;
-	private JTextField txtBalanceStartPosition;
+	private JTextField txtPositionQty;
 	private JTextField txtDistBeforeSL;
 	private JTextField txtIterations;
 	private JTextField textPrice;
@@ -104,9 +105,8 @@ public class FrmTrader extends JFrame
 	public FrmTrader()
 	{
 		initComponents();
-
-		pageload();
 		loadConfig();
+		startTimer();
 	}
 
 	private void initComponents() 
@@ -277,11 +277,11 @@ public class FrmTrader extends JFrame
 		lblDistSL.setBounds(180, 135, 76, 14);
 		contentPane.add(lblDistSL);
 
-		txtBalanceStartPosition = new JTextField();
-		txtBalanceStartPosition.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtBalanceStartPosition.setColumns(10);
-		txtBalanceStartPosition.setBounds(266, 162, 60, 20);
-		contentPane.add(txtBalanceStartPosition);
+		txtPositionQty = new JTextField();
+		txtPositionQty.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtPositionQty.setColumns(10);
+		txtPositionQty.setBounds(266, 162, 60, 20);
+		contentPane.add(txtPositionQty);
 
 		JLabel lblPriceIncr_1 = new JLabel("Balance");
 		lblPriceIncr_1.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -456,28 +456,14 @@ public class FrmTrader extends JFrame
 
 	}
 
-	private void pageload()
-	{
-		INFO("");
-		try
-		{
-			ERROR(Application.getError());
-			PositionTrader.TEST_MODE = TestMode.TEST;
-		}
-		catch(Exception e)
-		{
-			ERROR(e);
-		}
-	}
-
 	private void loadConfig()
 	{
 		txtIterations.setText(String.valueOf(Config.getIterations()));
-		txtPriceIncr.setText(dblToStrPercent(Config.getPrice_increment())); 
-		txtCoinsIncr.setText(dblToStrPercent(Config.getCoins_increment()));
-		txtDistBeforeSL.setText(dblToStrPercent(Config.getStoploss_increment()));
-		txtTProfit.setText(dblToStrPercent(Config.getTakeprofit()));
-		txtBalanceStartPosition.setText(dblToStrPercent(Config.getBalance_start_position()));
+		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPrice_increment())); 
+		txtCoinsIncr.setText(Convert.dblToStrPercent(Config.getCoins_increment()));
+		txtDistBeforeSL.setText(Convert.dblToStrPercent(Config.getStoploss_increment()));
+		txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
+		txtPositionQty.setText(Convert.dblToStrPercent(Config.getPosition_start_qty()));
 	}
 
 	public static void launch()
@@ -506,9 +492,6 @@ public class FrmTrader extends JFrame
 
 				try
 				{
-					frame.pageload();
-					frame.startTimer();
-
 					if (symbolLeft != null && !symbolLeft.isEmpty())
 					{
 						frame.txtSymbolLeft.setText(symbolLeft);
@@ -540,7 +523,7 @@ public class FrmTrader extends JFrame
 				refreshAuto(true, false);
 			}
 		};
-		Timer timer1 = new Timer(2000, taskPerformer1);
+		Timer timer1 = new Timer(3000, taskPerformer1);
 		timer1.setInitialDelay(0);
 		timer1.setRepeats(true);
 		timer1.start();
@@ -592,14 +575,23 @@ public class FrmTrader extends JFrame
 		{
 			txtSymbolLeft.setText(txtSymbolLeft.getText().toUpperCase());
 			String symbol = txtSymbolLeft.getText();
-			setTitle(TITLE + " - " + symbol);
 			coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
 
-			BigDecimal price = PriceService.getLastPrice(coin);
-			textPriceShow.setText(coin.priceToStr(price));
-			textPrice.setText(coin.priceToStr(price));
+			if (coin != null)
+			{
+				setTitle(TITLE + " - " + symbol);
 
-			refresh(false, true);
+				BigDecimal price = PriceService.getLastPrice(coin);
+				textPriceShow.setText(coin.priceToStr(price));
+				textPrice.setText(coin.priceToStr(price));
+
+				refresh(false, true);
+			}
+			else
+			{
+				ERROR("Symbol not found");
+			}
+
 		}
 		catch(Exception e)
 		{
@@ -623,10 +615,10 @@ public class FrmTrader extends JFrame
 			Position position = Position.getInstance(coin, PositionSide.SHORT);
 
 			position.setIterations(Integer.valueOf(txtIterations.getText()));
-			position.setPriceIncr(strPercentToDbl(txtPriceIncr.getText()));
-			position.setCoinsIncr(strPercentToDbl(txtCoinsIncr.getText()));
-			position.setDistBeforeSL(strPercentToDbl(txtDistBeforeSL.getText()));
-			position.setTakeProfit(strPercentToDbl(txtTProfit.getText()));
+			position.setPriceIncr(Convert.strPercentToDbl(txtPriceIncr.getText()));
+			position.setCoinsIncr(Convert.strPercentToDbl(txtCoinsIncr.getText()));
+			position.setDistBeforeSL(Convert.strPercentToDbl(txtDistBeforeSL.getText()));
+			position.setTakeProfit(Convert.strPercentToDbl(txtTProfit.getText()));
 
 			if (rbPriceNow.isSelected())
 			{
@@ -645,7 +637,7 @@ public class FrmTrader extends JFrame
 
 			if (rbCoinsAuto.isSelected())
 			{
-				double balancePercent = strPercentToDbl(txtBalanceStartPosition.getText());
+				double balancePercent = Convert.strPercentToDbl(txtPositionQty.getText());
 				position.withCoinAuto(balancePercent);
 			}
 			else
@@ -689,10 +681,10 @@ public class FrmTrader extends JFrame
 			Position position = Position.getInstance(coin, PositionSide.LONG);
 
 			position.setIterations(Integer.valueOf(txtIterations.getText()));
-			position.setPriceIncr(strPercentToDbl(txtPriceIncr.getText()));
-			position.setCoinsIncr(strPercentToDbl(txtCoinsIncr.getText()));
-			position.setDistBeforeSL(strPercentToDbl(txtDistBeforeSL.getText()));
-			position.setTakeProfit(strPercentToDbl(txtTProfit.getText()));
+			position.setPriceIncr(Convert.strPercentToDbl(txtPriceIncr.getText()));
+			position.setCoinsIncr(Convert.strPercentToDbl(txtCoinsIncr.getText()));
+			position.setDistBeforeSL(Convert.strPercentToDbl(txtDistBeforeSL.getText()));
+			position.setTakeProfit(Convert.strPercentToDbl(txtTProfit.getText()));
 
 			if (rbPriceNow.isSelected())
 			{
@@ -711,7 +703,7 @@ public class FrmTrader extends JFrame
 
 			if (rbCoinsAuto.isSelected())
 			{
-				double balancePercent = strPercentToDbl(txtBalanceStartPosition.getText());
+				double balancePercent = Convert.strPercentToDbl(txtPositionQty.getText());
 				position.withCoinAuto(balancePercent);
 			}
 			else
@@ -788,6 +780,8 @@ public class FrmTrader extends JFrame
 		{
 			if (JOptionPane.showConfirmDialog(null, "Do you like post this position ?") == 0)
 			{
+				setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
 				PositionTrader.TEST_MODE = TestMode.PROD;
 
 				String result = pMaker.post(postStyle);
@@ -806,6 +800,8 @@ public class FrmTrader extends JFrame
 					btnPostFirst.setEnabled(false);
 					btnPostOthers.setEnabled(postStyle.equals(PostStyle.FIRST));
 				}
+
+				setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 		}
 		catch(Exception e)
@@ -841,22 +837,6 @@ public class FrmTrader extends JFrame
 		{
 			fileProcessPath.mkdirs();
 		}
-	}
-
-	private static String dblToStrPercent(Double d)
-	{
-		if (d == null)
-			return "";
-
-		return String.valueOf(DoubleRounder.round(d * 100, 2));
-	}
-
-	private static Double strPercentToDbl(String str)
-	{
-		if (str == null)
-			return null;
-
-		return DoubleRounder.round(Double.valueOf(str) / 100, 4);
 	}
 
 	// ----------------------------------------------------------------------------------

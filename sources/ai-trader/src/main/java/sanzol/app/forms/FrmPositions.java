@@ -1,5 +1,6 @@
 package sanzol.app.forms;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -40,7 +41,7 @@ public class FrmPositions extends JFrame
 	private JScrollPane scrollPane;
 	private JTextArea textArea;
 
-	private JTextField txtError;
+	private JLabel lblError;
 	private JLabel lblTProfit;
 	private JTextField txtTProfit;
 	private JCheckBox chkTPRearrang;
@@ -75,10 +76,6 @@ public class FrmPositions extends JFrame
 		scrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-		txtError = new javax.swing.JTextField();
-		txtError.setEditable(false);
-		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
-
 		lblTProfit = new javax.swing.JLabel();
 		lblTProfit.setText("T.Profit");
 		
@@ -104,6 +101,14 @@ public class FrmPositions extends JFrame
 		chkIncludeOrders = new JCheckBox("Include orders");
 		chkIncludeOrders.setSelected(true);
 		chkIncludeOrders.setHorizontalAlignment(SwingConstants.RIGHT);
+
+		JPanel pnlBottom = new JPanel();
+		pnlBottom.setBorder(Styles.BORDER_UP);
+		pnlBottom.setLayout(new BorderLayout(0, 0));
+		lblError = new JLabel();
+		lblError.setBorder(new EmptyBorder(5, 0, 5, 5));
+		lblError.setMinimumSize(new Dimension(100, 20));
+		pnlBottom.add(lblError);
 		
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
@@ -124,7 +129,7 @@ public class FrmPositions extends JFrame
 							.addPreferredGap(ComponentPlacement.RELATED, 273, Short.MAX_VALUE)
 							.addComponent(chkIncludeOrders))
 						.addComponent(scrollPane, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
-						.addComponent(txtError, GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE))
+						.addComponent(pnlBottom, GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		gl_contentPane.setVerticalGroup(
@@ -141,8 +146,8 @@ public class FrmPositions extends JFrame
 						.addComponent(lblTPPercent)
 						.addComponent(txtTProfit, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(txtError, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(7))
+					.addComponent(pnlBottom, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(4))
 		);
 
 		contentPane.setLayout(gl_contentPane);
@@ -155,6 +160,12 @@ public class FrmPositions extends JFrame
 			@Override
 			public void windowClosed(WindowEvent e) {
 				isOpen = false;
+			}
+		});
+		
+		btnSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				saveChanges();
 			}
 		});
 
@@ -217,6 +228,13 @@ public class FrmPositions extends JFrame
 
 	// -----------------------------------------------------------------------
 
+	private void saveChanges()
+	{
+		INFO("Under construction");
+	}
+
+	// -----------------------------------------------------------------------
+	
 	public void ERROR(Exception e)
 	{
 		ERROR(e.getMessage());
@@ -224,14 +242,14 @@ public class FrmPositions extends JFrame
 
 	public void ERROR(String msg)
 	{
-		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
-		txtError.setText(" " + msg);
+		lblError.setForeground(Styles.COLOR_TEXT_ERROR);
+		lblError.setText(" " + msg);
 	}
 
 	public void INFO(String msg)
 	{
-		txtError.setForeground(Styles.COLOR_TEXT_INFO);
-		txtError.setText(" " + msg);
+		lblError.setForeground(Styles.COLOR_TEXT_INFO);
+		lblError.setText(" " + msg);
 	}
 
 	// ------------------------------------------------------------------------

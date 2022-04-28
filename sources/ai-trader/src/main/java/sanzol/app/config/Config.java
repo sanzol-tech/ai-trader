@@ -27,9 +27,11 @@ public class Config
 	private static final Double PRICE_INCREMENT = 0.02;
 	private static final Double STOPLOSS_INCREMENT = 0.03;
 	private static final Double COINS_INCREMENT = 0.40;
-	private static final Double TAKEPROFIT = 0.01;
-	private static final Double BALANCE_START_POSITION = 0.04;
-	private static final Double BALANCE_MIN_AVAILABLE = 0.15;
+	private static final Double TAKEPROFIT = 0.005;
+	private static final Integer POSITIONS_MAX = 5;
+	private static final Double POSITION_START_QTY = 0.03;
+	private static final Double POSITION_START_QTY_MAX = 0.035;
+	private static final Double BALANCE_MIN_AVAILABLE = 0.20;
 
 	private static String favorite_symbols;
 	private static Integer leverage;
@@ -38,9 +40,12 @@ public class Config
 	private static Double stoploss_increment;
 	private static Double coins_increment;
 	private static Double takeprofit;
-	private static Double balance_start_position;
+	private static Integer positions_max;
+	private static Double position_start_qty;
+	private static Double position_start_qty_max;
 	private static Double balance_min_available;
-
+	
+	
 	// -----------------------------------------------------------------------
 
 	public static List<String> getLstFavSymbols()
@@ -88,9 +93,19 @@ public class Config
 		return takeprofit != null ? takeprofit : TAKEPROFIT;
 	}
 
-	public static Double getBalance_start_position()
+	public static Integer getPositions_max()
 	{
-		return balance_start_position != null ? balance_start_position : BALANCE_START_POSITION;
+		return positions_max != null ? positions_max : POSITIONS_MAX;
+	}
+
+	public static Double getPosition_start_qty()
+	{
+		return position_start_qty != null ? position_start_qty : POSITION_START_QTY;
+	}
+
+	public static Double getPosition_start_qty_max()
+	{
+		return position_start_qty_max != null ? position_start_qty_max : POSITION_START_QTY_MAX;
 	}
 
 	public static Double getBalance_min_available()
@@ -165,24 +180,29 @@ public class Config
 		Config.takeprofit = Double.valueOf(takeprofit);
 	}
 
-	public static void setBalance_start_position(Double balance_start_position)
+	public static void setPositions_max(Integer positions_max)
 	{
-		Config.balance_start_position = balance_start_position;
+		Config.positions_max = positions_max;
 	}
 
-	public static void setBalance_start_position(String balance_start_position)
+	public static void setPositions_max(String positions_max)
 	{
-		Config.balance_start_position = Double.valueOf(balance_start_position);
+		Config.positions_max = Integer.valueOf(positions_max);
+	}
+
+	public static void setPosition_start_qty(Double position_start_qty)
+	{
+		Config.position_start_qty = position_start_qty;
+	}
+
+	public static void setPosition_start_qty_max(Double position_start_qty_max)
+	{
+		Config.position_start_qty_max = position_start_qty_max;
 	}
 
 	public static void setBalance_min_available(Double balance_min_available)
 	{
 		Config.balance_min_available = balance_min_available;
-	}
-
-	public static void setBalance_min_available(String balance_min_available)
-	{
-		Config.balance_min_available = Double.valueOf(balance_min_available);
 	}
 
 	// -----------------------------------------------------------------------
@@ -201,9 +221,11 @@ public class Config
 			prop.setProperty("stoploss_increment", String.valueOf(stoploss_increment));
 			prop.setProperty("coins_increment", String.valueOf(coins_increment));
 			prop.setProperty("takeprofit", String.valueOf(takeprofit));
-			prop.setProperty("balance_start_position", String.valueOf(balance_start_position));
+			prop.setProperty("positions_max", String.valueOf(positions_max));
+			prop.setProperty("position_start_qty", String.valueOf(position_start_qty));
+			prop.setProperty("position_start_qty_max", String.valueOf(position_start_qty_max));
 			prop.setProperty("balance_min_available", String.valueOf(balance_min_available));
-
+			
 			prop.store(output, null);
 
 			//prop.forEach((k, v) -> System.out.println("Key : " + k + ", Value : " + v));
@@ -235,10 +257,15 @@ public class Config
 					coins_increment = Double.valueOf(prop.getProperty("coins_increment"));
 				if (prop.containsKey("takeprofit"))
 					takeprofit = Double.valueOf(prop.getProperty("takeprofit"));
-				if (prop.containsKey("balance_start_position"))
-					balance_start_position = Double.valueOf(prop.getProperty("balance_start_position"));
+				if (prop.containsKey("positions_max"))
+					positions_max = Integer.valueOf(prop.getProperty("positions_max"));
+				if (prop.containsKey("position_start_qty"))
+					position_start_qty = Double.valueOf(prop.getProperty("position_start_qty"));
+				if (prop.containsKey("position_start_qty_max"))
+					position_start_qty_max = Double.valueOf(prop.getProperty("position_start_qty_max"));
 				if (prop.containsKey("balance_min_available"))
 					balance_min_available = Double.valueOf(prop.getProperty("balance_min_available"));
+
 			}
 		}
 	}
