@@ -1,9 +1,12 @@
-:warning: **THIS PROJECT IS UNDER CONSTRUCTION** :warning:
-and is very buggy yet
-
 # ai-trader 
 
 *for Binance futures*
+
+#
+:warning: **THIS PROJECT IS UNDER CONSTRUCTION** :warning: and is very buggy yet
+
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/1698016b6e03498583a8a8fa2ec0d9e3)](https://www.codacy.com/gh/sanzol-tech/ai-trader/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sanzol-tech/ai-trader&amp;utm_campaign=Badge_Grade)
+
 
 ![2022-04-30_04-52-42](https://user-images.githubusercontent.com/68629815/166097116-e6facd15-6480-4439-ad13-dd4e560253d3.png)
 
