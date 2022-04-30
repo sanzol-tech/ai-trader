@@ -1,18 +1,22 @@
+:warning: **THIS PROJECT IS UNDER CONSTRUCTION** :warning:
+
 # ai-trader 
 
 *for Binance futures*
 
-![image](https://user-images.githubusercontent.com/68629815/165016033-559ee7c8-eea3-4ef7-bb73-bcc7668c8e8f.png)
+![2022-04-30_04-52-42](https://user-images.githubusercontent.com/68629815/166097116-e6facd15-6480-4439-ad13-dd4e560253d3.png)
 
-![image](https://user-images.githubusercontent.com/68629815/165015991-4f66190f-2ab7-4ffb-a867-dfebd943380c.png)
+![2022-04-30_04-53-08](https://user-images.githubusercontent.com/68629815/166097345-d4bc6d27-ba58-4269-a25e-c5cc991c01c8.png)
 
-![image](https://user-images.githubusercontent.com/68629815/165016105-07a8243f-fd25-4fa2-ab86-01fc09724c77.png)
+![2022-04-30_04-50-56](https://user-images.githubusercontent.com/68629815/166097145-acc3202e-7d3b-4aff-9444-4b787f7615fd.png)
 
-![image](https://user-images.githubusercontent.com/68629815/165016260-265d67c7-0558-4b42-884e-656a3517bf68.png)
+![2022-04-30_04-50-29](https://user-images.githubusercontent.com/68629815/166097163-4482ff23-48ec-44dc-9b62-f8871835f31c.png)
 
-![image](https://user-images.githubusercontent.com/68629815/165016233-2f28ed1d-26e5-4786-956e-dc09a9864239.png)
+![2022-04-30_04-53-42](https://user-images.githubusercontent.com/68629815/166097184-c75049c3-690a-4ce6-b8bc-7602a34e9925.png)
 
-![image](https://user-images.githubusercontent.com/68629815/165016190-4eb600ee-c713-4ee4-8176-ad823991322e.png)
+![2022-04-30_04-52-04](https://user-images.githubusercontent.com/68629815/166097198-18f2e943-f54f-4cf6-93b7-59554385ca51.png)
+
+![2022-04-30_04-52-26](https://user-images.githubusercontent.com/68629815/166097220-259b58b6-436c-4d8d-b7ff-3f7cecd861e9.png)
 
 
 ### Getting started
