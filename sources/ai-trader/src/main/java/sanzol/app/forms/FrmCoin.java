@@ -122,7 +122,7 @@ public class FrmCoin extends JFrame
 	{
 		setTitle(TITLE);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 840, 601);
+		setBounds(100, 100, 840, 600);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmMain.class.getResource("/resources/monitor.png")));
 		setLocationRelativeTo(null);
 
@@ -133,7 +133,7 @@ public class FrmCoin extends JFrame
 
 		JPanel pnlBottom = new JPanel();
 		pnlBottom.setBorder(Styles.BORDER_UP);
-		pnlBottom.setBounds(31, 528, 768, 22);
+		pnlBottom.setBounds(30, 532, 770, 22);
 		contentPane.add(pnlBottom);
 		pnlBottom.setLayout(new BorderLayout(0, 0));
 		
@@ -144,23 +144,23 @@ public class FrmCoin extends JFrame
 		
 		JButton btnSearch = new JButton(CharConstants.MAGNIFIER);
 		btnSearch.setOpaque(true);
-		btnSearch.setBounds(31, 69, 178, 22);
+		btnSearch.setBounds(30, 69, 178, 22);
 		contentPane.add(btnSearch);
 
 		txtSymbolLeft = new JTextField();
 		txtSymbolLeft.setColumns(10);
-		txtSymbolLeft.setBounds(31, 43, 86, 20);
+		txtSymbolLeft.setBounds(30, 43, 86, 20);
 		contentPane.add(txtSymbolLeft);
 
 		JLabel lblNewLabel_2_1 = new JLabel("COIN");
-		lblNewLabel_2_1.setBounds(31, 24, 86, 14);
+		lblNewLabel_2_1.setBounds(30, 24, 86, 14);
 		contentPane.add(lblNewLabel_2_1);
 
 		txtSymbolRight = new JTextField();
 		txtSymbolRight.setEditable(false);
 		txtSymbolRight.setText(Constants.DEFAULT_SYMBOL_RIGHT);
 		txtSymbolRight.setColumns(10);
-		txtSymbolRight.setBounds(123, 43, 86, 20);
+		txtSymbolRight.setBounds(122, 43, 86, 20);
 		contentPane.add(txtSymbolRight);
 
 		txtMarkPrice = new JTextField();
@@ -206,7 +206,7 @@ public class FrmCoin extends JFrame
 		panel_0 = new JPanel();
 		panel_0.setLayout(null);
 		panel_0.setBorder(UIManager.getBorder("TextField.border"));
-		panel_0.setBounds(29, 144, 387, 95);
+		panel_0.setBounds(30, 144, 387, 95);
 		contentPane.add(panel_0);
 
 		txtShortPrice = new JTextField();
@@ -268,17 +268,17 @@ public class FrmCoin extends JFrame
 		panel_0.add(lblNewLabel_4);
 
 		lblTitlePoints0 = new JLabel("Biggest block");
-		lblTitlePoints0.setBounds(29, 119, 178, 14);
+		lblTitlePoints0.setBounds(30, 122, 178, 14);
 		contentPane.add(lblTitlePoints0);
 
-		lblTitlePoints1 = new JLabel("Min between 30% and 40%");
-		lblTitlePoints1.setBounds(29, 253, 178, 14);
+		lblTitlePoints1 = new JLabel("Fixes points");
+		lblTitlePoints1.setBounds(30, 390, 178, 14);
 		contentPane.add(lblTitlePoints1);
 
 		panel_1 = new JPanel();
 		panel_1.setLayout(null);
 		panel_1.setBorder(UIManager.getBorder("TextField.border"));
-		panel_1.setBounds(29, 278, 387, 95);
+		panel_1.setBounds(30, 411, 387, 95);
 		contentPane.add(panel_1);
 
 		txtShortPrice1 = new JTextField();
@@ -340,13 +340,13 @@ public class FrmCoin extends JFrame
 		panel_1.add(lblNewLabel_9);
 
 		lblTitlePoints2 = new JLabel("Weighted average (Max accum 50% / Max dist 20%)");
-		lblTitlePoints2.setBounds(29, 386, 370, 14);
+		lblTitlePoints2.setBounds(30, 258, 370, 14);
 		contentPane.add(lblTitlePoints2);
 
 		panel_2 = new JPanel();
 		panel_2.setLayout(null);
 		panel_2.setBorder(UIManager.getBorder("TextField.border"));
-		panel_2.setBounds(29, 411, 387, 95);
+		panel_2.setBounds(30, 280, 387, 95);
 		contentPane.add(panel_2);
 
 		txtShortPrice2 = new JTextField();
@@ -516,7 +516,8 @@ public class FrmCoin extends JFrame
 			{
 				setTitle(TITLE + " - " + symbol);
 				
-				loadDepth();				
+				getDepth();
+				getDistances();
 			}
 			else
 			{
@@ -529,56 +530,79 @@ public class FrmCoin extends JFrame
 		}
 	}
 
-	private void loadDepth()
+	private void refresh()
 	{
-		double minPercent = 0.3;
-		double maxPercent = 0.4;
-
-		double maxAccumPercent = 0.5;
-		double maxDist = 0.2;
-
 		try
 		{
-			obInfo = OrderBookService.getShoks(coin);
+			if (coin != null)
+			{
+				SymbolTickerEvent symbolTicker = PriceService.getSymbolTickerEvent(coin);
+				if (symbolTicker != null)
+				{
+					BigDecimal mrkPrice = PriceService.getLastPrice(coin);
+					txtMarkPrice.setText(coin.priceToStr(mrkPrice));
+					String priceChangePercent = String.format("%.2f", symbolTicker.getPriceChangePercent());
+					txt24h.setText(priceChangePercent);
+					txtHigh.setText(symbolTicker.getHigh().toPlainString());
+					txtLow.setText(symbolTicker.getLow().toPlainString());
+					
+					getDistances();
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
+	}
+	
+	private void getDepth()
+	{
+		try
+		{
+			obInfo = OrderBookService.getObInfo(coin);
 
 			txtOBookAsk.setText(OrderBookService.toStringInv(coin, obInfo.getAsksGrp()));
-			txtShortPrice.setText(obInfo.getStrShShock());
-
-			BigDecimal shShock1 = obInfo.getAskPriceBetween(minPercent, maxPercent);
-			txtShortPrice1.setText(shShock1.toPlainString());
-
-			BigDecimal shShock2 = OrderBookService.weightedAverage(obInfo.getAsks(), maxAccumPercent, maxDist);
-			txtShortPrice2.setText(shShock2.toPlainString());
-
 			txtOBookBid.setText(OrderBookService.toString(coin, obInfo.getBidsGrp()));
 			txtOBookBid.setCaretPosition(0);
-
+			
+			txtShortPrice.setText(obInfo.getStrShShock());
 			txtLongPrice.setText(obInfo.getStrLgShock());
 
-			BigDecimal lgShock1 = obInfo.getBidPriceBetween(minPercent, maxPercent);
-			txtLongPrice1.setText(lgShock1.toPlainString());
+			txtShortPrice1.setText(obInfo.getStrShShockFixed());
+			txtLongPrice1.setText(obInfo.getStrLgShockFixed());
 
-			BigDecimal lgShock2 = OrderBookService.weightedAverage(obInfo.getBids(), maxAccumPercent, maxDist);
-			txtLongPrice2.setText(lgShock2.toPlainString());
+			txtShortPrice2.setText(obInfo.getStrShShockWAvg());
+			txtLongPrice2.setText(obInfo.getStrLgShockWAvg());
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
+	}
 
+	private void getDistances()
+	{
+		try
+		{
 			BigDecimal mrkPrice = PriceService.getLastPrice(coin);
 
 			String distSh = Convert.dblToStrPercent(PriceUtil.priceDist(obInfo.getShShock(), mrkPrice));
 			txtShortDist.setText(distSh + " %");
 
-			String distSh1 = Convert.dblToStrPercent(PriceUtil.priceDist(shShock1, mrkPrice));
+			String distSh1 = Convert.dblToStrPercent(PriceUtil.priceDist(obInfo.getShShockFixed(), mrkPrice));
 			txtShortDist1.setText(distSh1 + " %");
 
-			String distSh2 = Convert.dblToStrPercent(PriceUtil.priceDist(shShock2, mrkPrice));
+			String distSh2 = Convert.dblToStrPercent(PriceUtil.priceDist(obInfo.getShShockWAvg(), mrkPrice));
 			txtShortDist2.setText(distSh2 + " %");
 
 			String distLg = Convert.dblToStrPercent(PriceUtil.priceDist(mrkPrice, obInfo.getLgShock()));
 			txtLongDist.setText(distLg + " %");
 
-			String distLg1 = Convert.dblToStrPercent(PriceUtil.priceDist(mrkPrice, lgShock1));
+			String distLg1 = Convert.dblToStrPercent(PriceUtil.priceDist(mrkPrice, obInfo.getLgShockFixed()));
 			txtLongDist1.setText(distLg1 + " %");
 
-			String distLg2 = Convert.dblToStrPercent(PriceUtil.priceDist(mrkPrice, lgShock2));
+			String distLg2 = Convert.dblToStrPercent(PriceUtil.priceDist(mrkPrice, obInfo.getLgShockWAvg()));
 			txtLongDist2.setText(distLg2 + " %");
 		}
 		catch (Exception e)
@@ -679,30 +703,6 @@ public class FrmCoin extends JFrame
 		timer1.setInitialDelay(0);
 		timer1.setRepeats(true);
 		timer1.start();
-	}
-
-	private void refresh()
-	{
-		try
-		{
-			if (coin != null)
-			{
-				SymbolTickerEvent symbolTicker = PriceService.getSymbolTickerEvent(coin);
-				if (symbolTicker != null)
-				{
-					BigDecimal mrkPrice = PriceService.getLastPrice(coin);
-					txtMarkPrice.setText(coin.priceToStr(mrkPrice));
-					String priceChangePercent = String.format("%.2f", symbolTicker.getPriceChangePercent());
-					txt24h.setText(priceChangePercent);
-					txtHigh.setText(symbolTicker.getHigh().toPlainString());
-					txtLow.setText(symbolTicker.getLow().toPlainString());
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			ERROR(e);
-		}
 	}
 	
 	// ----------------------------------------------------------------------------------

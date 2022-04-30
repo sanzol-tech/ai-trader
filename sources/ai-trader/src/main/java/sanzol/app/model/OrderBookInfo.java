@@ -1,11 +1,13 @@
 package sanzol.app.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 public class OrderBookInfo
 {
 	private Symbol coin;
+
 	private List<OrderBookElement> asks;
 	private List<OrderBookElement> asksGrp;
 
@@ -15,6 +17,12 @@ public class OrderBookInfo
 	private BigDecimal shShock;
 	private BigDecimal lgShock;
 
+	private BigDecimal shShockWAvg;
+	private BigDecimal lgShockWAvg;
+	
+	private BigDecimal shShockFixed;
+	private BigDecimal lgShockFixed;
+	
 	public Symbol getCoin()
 	{
 		return coin;
@@ -55,6 +63,26 @@ public class OrderBookInfo
 		return lgShock;
 	}
 
+	public BigDecimal getShShockWAvg()
+	{
+		return shShockWAvg;
+	}
+
+	public BigDecimal getLgShockWAvg()
+	{
+		return lgShockWAvg;
+	}
+
+	public BigDecimal getShShockFixed()
+	{
+		return shShockFixed;
+	}
+
+	public BigDecimal getLgShockFixed()
+	{
+		return lgShockFixed;
+	}
+
 	// -------------------------------------------------------------------------
 
 	public OrderBookInfo()
@@ -74,52 +102,11 @@ public class OrderBookInfo
 
 		this.shShock = getMaxAsksGrp();
 		this.lgShock = getMaxBidsGrp();
-	}
-
-	// ------------------------------------------------------------------------
-
-	public BigDecimal getAskPriceBetween(double minPercent, double maxPercent)
-	{
-		if (asks != null && !asks.isEmpty())
-		{
-			double total = asks.get(asks.size() - 1).getSumQty().doubleValue();
-
-			for (OrderBookElement entry : asks)
-			{
-				if (entry.getSumQty().doubleValue() > total * maxPercent)
-				{
-					return null;
-				}
-
-				if (entry.getSumQty().doubleValue() >= total * minPercent)
-				{
-					return entry.getPrice();
-				}
-			}
-		}
-		return null;
-	}
-
-	public BigDecimal getBidPriceBetween(double minPercent, double maxPercent)
-	{
-		if (bids != null && !bids.isEmpty())
-		{
-			double total = bids.get(bids.size() - 1).getSumQty().doubleValue();
-
-			for (OrderBookElement entry : bids)
-			{
-				if (entry.getSumQty().doubleValue() > total * maxPercent)
-				{
-					return null;
-				}
-
-				if (entry.getSumQty().doubleValue() >= total * minPercent)
-				{
-					return entry.getPrice();
-				}
-			}
-		}
-		return null;
+		
+		this.shShockWAvg = weightedAverage(asks);
+		this.lgShockWAvg = weightedAverage(bids);
+		
+		fixShocks();
 	}
 
 	// ------------------------------------------------------------------------
@@ -158,19 +145,41 @@ public class OrderBookInfo
 
 	public void fixShocks()
 	{
-		fixShocks(BigDecimal.valueOf(0.2), BigDecimal.valueOf(0.5));
+		BigDecimal shortWAvg = weightedAverage(asks);
+		BigDecimal longWAvg = weightedAverage(bids);
+
+		if (shortWAvg != null && shortWAvg.doubleValue() > shShock.doubleValue())
+			shShockFixed = shortWAvg;
+		else
+			shShockFixed = shShock;
+
+		if (longWAvg != null && longWAvg.doubleValue() < lgShock.doubleValue())
+			lgShockFixed = longWAvg;
+		else
+			lgShockFixed = lgShock;
 	}
 
-	public void fixShocks(BigDecimal min, BigDecimal max)
+	public static BigDecimal weightedAverage(List<OrderBookElement> lst)
 	{
-		BigDecimal askPrice30 = getAskPriceBetween(0.35, 0.45);
-		BigDecimal bidPrice30 = getBidPriceBetween(0.35, 0.45);
+		return weightedAverage(lst, 0.5, 0.2);
+	}
+	
+	public static BigDecimal weightedAverage(List<OrderBookElement> lst, double maxAccumPercent, double maxDist)
+	{
+		BigDecimal sumProd = BigDecimal.ZERO;
+		BigDecimal sumQty = BigDecimal.ZERO;
 
-		if (askPrice30 != null && askPrice30.doubleValue() > shShock.doubleValue())
-			shShock = askPrice30;
+		for (OrderBookElement entry : lst)
+		{
+			if (entry.getSumPercent().doubleValue() > maxAccumPercent || entry.getDistance().doubleValue() > maxDist)
+			{
+				break;
+			}
+			sumProd = sumProd.add(entry.getPrice().multiply(entry.getQty()));
+			sumQty = sumQty.add(entry.getQty());
+		}
 
-		if (bidPrice30 != null && bidPrice30.doubleValue() < lgShock.doubleValue())
-			lgShock = bidPrice30;
+		return sumProd.divide(sumQty, RoundingMode.HALF_UP);
 	}
 
 	// ------------------------------------------------------------------------
@@ -185,4 +194,24 @@ public class OrderBookInfo
 		return coin.priceToStr(lgShock);
 	}
 
+	public String getStrShShockWAvg()
+	{
+		return coin.priceToStr(shShockWAvg);
+	}
+
+	public String getStrLgShockWAvg()
+	{
+		return coin.priceToStr(lgShockWAvg);
+	}
+
+	public String getStrShShockFixed()
+	{
+		return coin.priceToStr(shShockFixed);
+	}
+
+	public String getStrLgShockFixed()
+	{
+		return coin.priceToStr(lgShockFixed);
+	}
+	
 }

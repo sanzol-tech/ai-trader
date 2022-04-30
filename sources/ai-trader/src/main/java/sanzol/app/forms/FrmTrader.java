@@ -550,12 +550,12 @@ public class FrmTrader extends JFrame
 
 			if (rfDepth && coin != null)
 			{
-				OrderBookInfo points = OrderBookService.getShoks(coin);
+				OrderBookInfo points = OrderBookService.getObInfo(coin);
 				txtOBookAsk.setText(OrderBookService.toStringInv(coin, points.getAsksGrp()));
-				txtMaxAsk.setText("SHORT " + points.getStrShShock());
+				txtMaxAsk.setText("SHORT " + points.getStrShShockFixed());
 				txtOBookBid.setText(OrderBookService.toString(coin, points.getBidsGrp()));
 				txtOBookBid.setCaretPosition(0);
-				txtMaxBid.setText("LONG " + points.getStrLgShock());
+				txtMaxBid.setText("LONG " + points.getStrLgShockFixed());
 
 				String distShLg = coin.priceToStr((points.getShShock().doubleValue() / points.getLgShock().doubleValue() - 1.0) * 100.0);
 				txtMaxAsk.setToolTipText("Short-Long : " +  distShLg  + "%");

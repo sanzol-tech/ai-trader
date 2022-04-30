@@ -113,15 +113,15 @@ public final class SignalService
 			for (String symbol : Config.getLstFavSymbols())
 			{
 				Symbol coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
-				OrderBookInfo obInfo = OrderBookService.getShoks(coin);
+				OrderBookInfo obInfo = OrderBookService.getObInfo(coin);
 
-				BigDecimal distShLg = getDistance(coin, obInfo.getShShock(), obInfo.getLgShock());
+				BigDecimal distShLg = getDistance(coin, obInfo.getShShockFixed(), obInfo.getLgShockFixed());
 				if ((distShLg.doubleValue() < 1.5 || distShLg.doubleValue() > 6.0))
 				{
 					continue;
 				}
 
-				lstShocks.add(new SignalEntry(coin, obInfo.getShShock(), obInfo.getLgShock()));
+				lstShocks.add(new SignalEntry(coin, obInfo.getShShockFixed(), obInfo.getLgShockFixed()));
 			}
 		}
 		catch (Exception e)

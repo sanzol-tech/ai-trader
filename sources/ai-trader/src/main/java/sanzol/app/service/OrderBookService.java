@@ -22,9 +22,9 @@ import sanzol.app.util.PriceUtil;
 public class OrderBookService
 {
 
-	public static OrderBookInfo getShoks(Symbol coin)
+	public static OrderBookInfo getObInfo(Symbol coin)
 	{
-		OrderBookInfo points = new OrderBookInfo();
+		OrderBookInfo obInfo = new OrderBookInfo();
 
 		RequestOptions options = new RequestOptions();
 		SyncRequestClient syncRequestClient = SyncRequestClient.create(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, options);
@@ -37,13 +37,9 @@ public class OrderBookService
 		List<OrderBookElement> bids = getElemnets(obook.getBids());
 		List<OrderBookElement> bidsGrp = getBidsGrp(bids, coin.getTickSize());
 
-		points = new OrderBookInfo(coin, asks, asksGrp, bids, bidsGrp);
+		obInfo = new OrderBookInfo(coin, asks, asksGrp, bids, bidsGrp);
 
-		// ----------------- EXPERIMENTAL ----------------
-		points.fixShocks();
-		// -----------------------------------------------
-
-		return points;
+		return obInfo;
 	}
 
 	private static List<OrderBookElement> getElemnets(List<OrderBookEntry> lst)
@@ -174,24 +170,6 @@ public class OrderBookService
 		return lstResult;
 	}
 
-	public static BigDecimal weightedAverage(List<OrderBookElement> lst, double maxAccumPercent, double maxDist)
-	{
-		BigDecimal sumProd = BigDecimal.ZERO;
-		BigDecimal sumQty = BigDecimal.ZERO;
-
-		for (OrderBookElement entry : lst)
-		{
-			if (entry.getSumPercent().doubleValue() > maxAccumPercent || entry.getDistance().doubleValue() > maxDist)
-			{
-				break;
-			}
-			sumProd = sumProd.add(entry.getPrice().multiply(entry.getQty()));
-			sumQty = sumQty.add(entry.getQty());
-		}
-
-		return sumProd.divide(sumQty, RoundingMode.HALF_UP);
-	}
-
 	public static String toString(Symbol coin, List<OrderBookElement> list)
 	{
 		String text = "";
@@ -266,28 +244,28 @@ public class OrderBookService
 		System.out.println("");
 		System.out.println(coin.getNameLeft());
 
-		OrderBookInfo obInfo = getShoks(coin);
+		OrderBookInfo obInfo = getObInfo(coin);
 
 		System.out.println("");
-		//System.out.println(toStringInvAll(coin, obInfo.getAsks()));
+		System.out.println(toStringInvAll(coin, obInfo.getAsks()));
 		//System.out.println("");
 		//System.out.println(toStringInvAll(coin, obInfo.getAsksGrp()));
 		System.out.println("");
-		System.out.println("Max Ask: " + obInfo.getStrShShock());
-		System.out.println("[PERCENT]: " + obInfo.getAskPriceBetween(0.3, 0.4));
-		System.out.println("->" + weightedAverage(obInfo.getAsks(), 0.35, 0.1));
+		System.out.println("SHORT:       " + obInfo.getStrShShock());
+		System.out.println("SHORT FIXED: " + obInfo.getStrShShockFixed());
+		System.out.println("SHOR WAVG:   " + obInfo.getStrShShockWAvg());
 		System.out.println("");
 
 		System.out.println("Price " + PriceService.getLastPrice(coin));
 
 		System.out.println("");
-		//System.out.println(toStringAll(coin, obInfo.getBids()));
+		System.out.println(toStringAll(coin, obInfo.getBids()));
 		//System.out.println("");
 		//System.out.println(toStringAll(coin, obInfo.getBidsGrp()));
 		System.out.println("");
-		System.out.println("Max Bid: " + obInfo.getStrLgShock());
-		System.out.println("[PERCENT]: " + obInfo.getBidPriceBetween(0.3, 0.4));
-		System.out.println("->" + weightedAverage(obInfo.getBids(), 0.35, 0.1));
+		System.out.println("LONG:       " + obInfo.getStrLgShock());
+		System.out.println("LONG FIXED: " + obInfo.getStrLgShockFixed());
+		System.out.println("LONG WAVG:   " + obInfo.getStrLgShockWAvg());
 
 		System.out.println("");
 
