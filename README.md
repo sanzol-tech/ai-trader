@@ -1,4 +1,5 @@
 :warning: **THIS PROJECT IS UNDER CONSTRUCTION** :warning:
+and is very buggy yet
 
 # ai-trader 
 
