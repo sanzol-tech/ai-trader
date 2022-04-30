@@ -44,8 +44,8 @@ public class Styles
 		COLOR_TEXT_AREA_BG = new Color(250, 250, 250);
 		COLOR_TEXT_AREA_FG = new Color(0, 74, 127);
 
-		COLOR_BTN_SHORT = new Color(230, 0, 0);
-		COLOR_BTN_LONG = new Color(0, 170, 80);
+		COLOR_BTN_SHORT = new Color(255, 92, 92);
+		COLOR_BTN_LONG = new Color(100, 200, 90);
 
 		BORDER_UP = BorderFactory.createMatteBorder(1, 0, 0, 0, COLOR_BORDER_LINE);
 

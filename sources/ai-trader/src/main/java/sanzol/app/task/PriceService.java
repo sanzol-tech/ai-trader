@@ -32,15 +32,15 @@ public class PriceService
 
 		return mapTickers.get(coin.getName()).getLastPrice();
 	}
-
-	public static BigDecimal PriceChangePercent(Symbol coin) throws Exception
+	
+	public static SymbolTickerEvent getSymbolTickerEvent(Symbol coin) throws Exception
 	{
 		if (!mapTickers.containsKey(coin.getName()))
 		{
-			return BigDecimal.valueOf(-1);
+			return null;
 		}
 
-		return mapTickers.get(coin.getName()).getPriceChangePercent();
+		return mapTickers.get(coin.getName());
 	}
 	
 	public static void start()

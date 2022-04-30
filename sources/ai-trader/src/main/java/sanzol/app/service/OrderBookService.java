@@ -17,6 +17,7 @@ import sanzol.app.model.OrderBookElement;
 import sanzol.app.model.OrderBookInfo;
 import sanzol.app.model.Symbol;
 import sanzol.app.task.PriceService;
+import sanzol.app.util.PriceUtil;
 
 public class OrderBookService
 {
@@ -49,29 +50,36 @@ public class OrderBookService
 	{
 		List<OrderBookElement> lstResult = new ArrayList<OrderBookElement>();
 
-		BigDecimal sumQty = BigDecimal.ZERO;
-		for (OrderBookEntry entry : lst)
+		if (lst != null && !lst.isEmpty())
 		{
-			sumQty = sumQty.add(entry.getQty());
-			lstResult.add(new OrderBookElement(entry.getPrice(), entry.getQty(), sumQty));
+			BigDecimal sumQty = BigDecimal.ZERO;
+			BigDecimal firstPrice = lst.get(0).getPrice();
+			BigDecimal totalQty = getTotalQty(lst);
+
+			for (OrderBookEntry entry : lst)
+			{
+				sumQty = sumQty.add(entry.getQty());
+				BigDecimal sumPercent = sumQty.divide(totalQty, 4, RoundingMode.HALF_UP);
+				BigDecimal distance = PriceUtil.priceDist(firstPrice, entry.getPrice());
+
+				lstResult.add(new OrderBookElement(entry.getPrice(), entry.getQty(), sumQty, sumPercent, distance));
+			}
+
 		}
-
-		completePercents(lstResult);
-
 		return lstResult;
 	}
 
-	private static void completePercents(List<OrderBookElement> lst)
+	private static BigDecimal getTotalQty(List<OrderBookEntry> lst)
 	{
+		BigDecimal total = BigDecimal.ZERO;
 		if (lst != null && !lst.isEmpty())
 		{
-			BigDecimal total = lst.get(lst.size() - 1).getSumQty();
-
-			for (OrderBookElement entry : lst)
+			for (OrderBookEntry entry : lst)
 			{
-				entry.setSumPercent(entry.getSumQty().divide(total, 4, RoundingMode.HALF_UP));
+				total = total.add(entry.getQty());
 			}
 		}
+		return total;
 	}
 
 	private static List<OrderBookElement> getAsksGrp(List<OrderBookElement> lst, int tickSize)
@@ -166,6 +174,24 @@ public class OrderBookService
 		return lstResult;
 	}
 
+	public static BigDecimal weightedAverage(List<OrderBookElement> lst, double maxAccumPercent, double maxDist)
+	{
+		BigDecimal sumProd = BigDecimal.ZERO;
+		BigDecimal sumQty = BigDecimal.ZERO;
+
+		for (OrderBookElement entry : lst)
+		{
+			if (entry.getSumPercent().doubleValue() > maxAccumPercent || entry.getDistance().doubleValue() > maxDist)
+			{
+				break;
+			}
+			sumProd = sumProd.add(entry.getPrice().multiply(entry.getQty()));
+			sumQty = sumQty.add(entry.getQty());
+		}
+
+		return sumProd.divide(sumQty, RoundingMode.HALF_UP);
+	}
+
 	public static String toString(Symbol coin, List<OrderBookElement> list)
 	{
 		String text = "";
@@ -205,7 +231,7 @@ public class OrderBookService
 		{
 			for (OrderBookElement ele : list)
 			{
-				text += String.format("%-10s  %10s  %10s  %8.2f %%\n", coin.priceToStr(ele.getPrice()), coin.coinsToStr(ele.getQty()), coin.coinsToStr(ele.getSumQty()), ele.getSumPercent().multiply(BigDecimal.valueOf(100.0)));
+				text += String.format("%-10s  %10s  %10s  %8.2f %%  %8.2f %%\n", coin.priceToStr(ele.getPrice()), coin.coinsToStr(ele.getQty()), coin.coinsToStr(ele.getSumQty()), ele.getSumPercent().multiply(BigDecimal.valueOf(100.0)), ele.getDistance().multiply(BigDecimal.valueOf(100.0)));
 			}
 		}
 
@@ -221,7 +247,7 @@ public class OrderBookService
 			for (int i = list.size() - 1; i >= 0; i--)
 			{
 				OrderBookElement ele = list.get(i);
-				text += String.format("%-10s  %10s  %10s  %8.2f %%\n", coin.priceToStr(ele.getPrice()), coin.coinsToStr(ele.getQty()), coin.coinsToStr(ele.getSumQty()), ele.getSumPercent().multiply(BigDecimal.valueOf(100.0)));
+				text += String.format("%-10s  %10s  %10s  %8.2f %%  %8.2f %%\n", coin.priceToStr(ele.getPrice()), coin.coinsToStr(ele.getQty()), coin.coinsToStr(ele.getSumQty()), ele.getSumPercent().multiply(BigDecimal.valueOf(100.0)), ele.getDistance().multiply(BigDecimal.valueOf(100.0)));
 			}
 		}
 
@@ -234,7 +260,7 @@ public class OrderBookService
 
 		Thread.sleep(5000);
 
-		String symbol = "BTC";
+		String symbol = "OGN";
 		Symbol coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
 
 		System.out.println("");
@@ -243,23 +269,28 @@ public class OrderBookService
 		OrderBookInfo obInfo = getShoks(coin);
 
 		System.out.println("");
-		System.out.println(toStringInvAll(coin, obInfo.getAsks()));
-		System.out.println("");
-		System.out.println(toStringInvAll(coin, obInfo.getAsksGrp()));
+		//System.out.println(toStringInvAll(coin, obInfo.getAsks()));
+		//System.out.println("");
+		//System.out.println(toStringInvAll(coin, obInfo.getAsksGrp()));
 		System.out.println("");
 		System.out.println("Max Ask: " + obInfo.getStrShShock());
 		System.out.println("[PERCENT]: " + obInfo.getAskPriceBetween(0.3, 0.4));
+		System.out.println("->" + weightedAverage(obInfo.getAsks(), 0.35, 0.1));
 		System.out.println("");
 
 		System.out.println("Price " + PriceService.getLastPrice(coin));
 
 		System.out.println("");
-		System.out.println(toStringAll(coin, obInfo.getBids()));
-		System.out.println("");
-		System.out.println(toStringAll(coin, obInfo.getBidsGrp()));
+		//System.out.println(toStringAll(coin, obInfo.getBids()));
+		//System.out.println("");
+		//System.out.println(toStringAll(coin, obInfo.getBidsGrp()));
 		System.out.println("");
 		System.out.println("Max Bid: " + obInfo.getStrLgShock());
 		System.out.println("[PERCENT]: " + obInfo.getBidPriceBetween(0.3, 0.4));
+		System.out.println("->" + weightedAverage(obInfo.getBids(), 0.35, 0.1));
+
+		System.out.println("");
+
 	}
 
 }

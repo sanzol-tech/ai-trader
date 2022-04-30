@@ -27,8 +27,8 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 
 import com.binance.client.model.trade.AccountBalance;
 
@@ -105,21 +105,22 @@ public class FrmMain extends JFrame
 		setBounds(100, 100, 860, 610);
 		setTitle(Constants.APP_NAME);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmMain.class.getResource("/resources/logo.png")));
-
+		setLocationRelativeTo(null);
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(1, 1, 1, 1));
 		contentPane.setLayout(null);
 		setContentPane(contentPane);
 
 		JPanel panelConfig = new JPanel();
-		panelConfig.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
+		panelConfig.setBorder(UIManager.getBorder("TextField.border"));
 		panelConfig.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Styles.COLOR_BORDER_LINE, 1, true), " Default values "));
 		panelConfig.setBounds(16, 300, 810, 123);
 		panelConfig.setLayout(null);
 		contentPane.add(panelConfig);
 
 		JPanel panelKey = new JPanel();
-		panelKey.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
+		panelKey.setBorder(UIManager.getBorder("TextField.border"));
 
 		panelKey.setBounds(16, 440, 810, 60);
 		panelKey.setLayout(null);
@@ -142,7 +143,7 @@ public class FrmMain extends JFrame
 		btnPositions = new JButton("POSITIONS");
 		btnPositions.setToolTipText("Edit shock points");
 		btnPositions.setOpaque(true);
-		btnPositions.setBounds(294, 11, 120, 28);
+		btnPositions.setBounds(358, 11, 110, 28);
 		contentPane.add(btnPositions);
 
 		txtSecretKey = new JPasswordField();
@@ -278,7 +279,7 @@ public class FrmMain extends JFrame
 
 		JScrollPane scrollFavorites = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollFavorites.setBounds(16, 67, 140, 190);
-		scrollFavorites.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
+		scrollFavorites.setBorder(UIManager.getBorder("TextField.border"));
 		contentPane.add(scrollFavorites);
 
 		listFavorites = new JList<String>();
@@ -290,7 +291,7 @@ public class FrmMain extends JFrame
 
 		JScrollPane scrollSignals = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollSignals.setBounds(183, 104, 643, 180);
-		scrollSignals.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
+		scrollSignals.setBorder(UIManager.getBorder("TextField.border"));
 		contentPane.add(scrollSignals);
 
 		listSignals = new JList<String>();
@@ -333,7 +334,7 @@ public class FrmMain extends JFrame
 		contentPane.add(lblWithdrawalL);
 
 		btnNewGrid = new JButton("NEW GRID");
-		btnNewGrid.setBounds(16, 11, 120, 28);
+		btnNewGrid.setBounds(118, 11, 110, 28);
 		btnNewGrid.setOpaque(true);
 		contentPane.add(btnNewGrid);
 
@@ -357,7 +358,7 @@ public class FrmMain extends JFrame
 
 		btnCalcOrder = new JButton("ADD ORDER");
 		btnCalcOrder.setOpaque(true);
-		btnCalcOrder.setBounds(146, 11, 120, 28);
+		btnCalcOrder.setBounds(238, 11, 110, 28);
 		contentPane.add(btnCalcOrder);
 		
 		JLabel lblTitle = new JLabel("ai-trader on GitHub");
@@ -371,12 +372,12 @@ public class FrmMain extends JFrame
 		btnCoin = new JButton("COIN");
 		btnCoin.setToolTipText("Edit shock points");
 		btnCoin.setOpaque(true);
-		btnCoin.setBounds(424, 11, 120, 28);
+		btnCoin.setBounds(16, 11, 92, 28);
 		contentPane.add(btnCoin);
 		
 		btnLookFeel = new JButton("Light");
 		btnCoin.setOpaque(true);
-		btnLookFeel.setBounds(580, 14, 68, 23);
+		btnLookFeel.setBounds(556, 14, 68, 23);
 		contentPane.add(btnLookFeel);
 
 		btnLookFeel.addActionListener(new ActionListener() {
@@ -407,7 +408,7 @@ public class FrmMain extends JFrame
 					int index = list.locationToIndex(e.getPoint());
 					String item = (String) list.getModel().getElementAt(index);
 					String symbolLeft = item.substring(0, item.indexOf(" "));
-					FrmTrader.launch(symbolLeft, null, null);
+					FrmCoin.launch(symbolLeft);
 				}
 
 			}

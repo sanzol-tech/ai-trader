@@ -28,8 +28,8 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -118,6 +118,7 @@ public class FrmTrader extends JFrame
 		setBounds(100, 100, 1152, 652);
 		setTitle(TITLE);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmTrader.class.getResource("/resources/upDown.png")));
+		setLocationRelativeTo(null);
 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(1, 1, 1, 1));
@@ -254,7 +255,7 @@ public class FrmTrader extends JFrame
 
 		JScrollPane scroll = new JScrollPane(txtShowResult, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.setBounds(15, 261, 1102, 330);
-		scroll.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
+		scroll.setBorder(UIManager.getBorder("TextField.border"));
 		contentPane.add(scroll);
 
 		btnSearch = new JButton(CharConstants.MAGNIFIER);
@@ -291,7 +292,7 @@ public class FrmTrader extends JFrame
 
 		scrollOBookAsk = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollOBookAsk.setBounds(557, 19, 270, 162);
-		scrollOBookAsk.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
+		scrollOBookAsk.setBorder(UIManager.getBorder("TextField.border"));
 		contentPane.add(scrollOBookAsk);
 
 		txtOBookAsk = new JTextArea();
@@ -303,7 +304,7 @@ public class FrmTrader extends JFrame
 
 		scrollOBookBid = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollOBookBid.setBounds(847, 51, 270, 162);
-		scrollOBookBid.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
+		scrollOBookBid.setBorder(UIManager.getBorder("TextField.border"));
 		contentPane.add(scrollOBookBid);
 
 		txtOBookBid = new JTextArea();

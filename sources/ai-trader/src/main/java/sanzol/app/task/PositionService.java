@@ -142,8 +142,7 @@ public final class PositionService
 
 			Comparator<Order> orderComparator = Comparator
 													.comparing(Order::getSymbol)
-													.thenComparing(Order::getPrice)
-													.thenComparing(Order::getStopPrice);
+													.thenComparing(Order::getUpdateTime);
 			Collections.sort(lstOpenOrders, orderComparator);
 		}
 		catch (Exception e)
@@ -234,8 +233,8 @@ public final class PositionService
 		// --- DISTANCES ------------------------------------------------------
 		if ("BUY".equals(posSide))
 		{
-			BigDecimal posDist = BigDecimal.ONE.subtract(posPrice.divide(shootPrice, RoundingMode.HALF_UP));
-			mapPosition.get("POS").setDist(posDist);
+			BigDecimal shootDist = BigDecimal.ONE.subtract(posPrice.divide(shootPrice, RoundingMode.HALF_UP));
+			mapPosition.get("SHOOT").setDist(shootDist);
 			BigDecimal resultDist = BigDecimal.ONE.subtract(resultPrice.divide(shootPrice, RoundingMode.HALF_UP));
 			mapPosition.get("RESULT").setDist(resultDist);
 			BigDecimal tptDist = BigDecimal.ONE.subtract(tpPrice.divide(shootPrice, RoundingMode.HALF_UP));
@@ -243,8 +242,8 @@ public final class PositionService
 		}
 		else if ("SELL".equals(posSide))
 		{
-			BigDecimal posDist = posPrice.divide(shootPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
-			mapPosition.get("POS").setDist(posDist);
+			BigDecimal shootDist = posPrice.divide(shootPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
+			mapPosition.get("SHOOT").setDist(shootDist);
 			BigDecimal resultDist = resultPrice.divide(shootPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
 			mapPosition.get("RESULT").setDist(resultDist);
 			BigDecimal tptDist = tpPrice.divide(shootPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);

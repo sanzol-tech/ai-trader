@@ -8,17 +8,20 @@ public class OrderBookElement
 	private BigDecimal qty;
 	private BigDecimal sumQty;
 	private BigDecimal sumPercent;
+	private BigDecimal distance;
 
 	public OrderBookElement()
 	{
-		super();
+		//
 	}
 
-	public OrderBookElement(BigDecimal price, BigDecimal qty, BigDecimal sumQty)
+	public OrderBookElement(BigDecimal price, BigDecimal qty, BigDecimal sumQty, BigDecimal sumPercent, BigDecimal distance)
 	{
 		this.price = price;
 		this.qty = qty;
 		this.sumQty = sumQty;
+		this.sumPercent = sumPercent;
+		this.distance = distance;
 	}
 
 	public BigDecimal getPrice()
@@ -59,6 +62,22 @@ public class OrderBookElement
 	public void setSumPercent(BigDecimal sumPercent)
 	{
 		this.sumPercent = sumPercent;
+	}
+
+	public BigDecimal getDistance()
+	{
+		return distance;
+	}
+
+	public void setDistance(BigDecimal distance)
+	{
+		this.distance = distance;
+	}
+
+	@Override
+	public String toString()
+	{
+		return String.format("%f;%f;%f;%f;%f", price, qty, sumQty, sumPercent, distance);
 	}
 
 }

@@ -22,8 +22,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 
 import sanzol.app.config.Application;
 import sanzol.app.config.Styles;
@@ -62,6 +62,7 @@ public class FrmPointsMonitor extends JFrame
 		setMinimumSize(new Dimension(800, 600));
 		setTitle(TITLE);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmTrader.class.getResource("/resources/monitor.png")));
+		setLocationRelativeTo(null);
 
 		textArea = new JTextArea();
 		textArea.setBackground(Styles.COLOR_TEXT_AREA_BG);
@@ -71,7 +72,7 @@ public class FrmPointsMonitor extends JFrame
 		textArea.setFont(new Font("Courier New", Font.PLAIN, 12));
 
 		scrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
+		scrollPane.setBorder(UIManager.getBorder("TextField.border"));
 
 		btnCopy = new javax.swing.JButton();
 		btnCopy.setText("Copy to clipboard");

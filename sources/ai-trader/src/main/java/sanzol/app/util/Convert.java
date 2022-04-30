@@ -8,8 +8,12 @@ import java.util.Locale;
 
 import org.decimal4j.util.DoubleRounder;
 
-public class Convert
+public final class Convert
 {
+	private Convert()
+	{
+		// Hide
+	}
 
 	public static String usdToStr(BigDecimal usd)
 	{

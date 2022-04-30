@@ -78,6 +78,11 @@ public class Symbol
 
 	public static Symbol getInstance(String symbolName)
 	{
+		if (!symbolName.endsWith(Constants.DEFAULT_SYMBOL_RIGHT))
+		{
+			return null;
+		}
+
 		Symbol coin = new Symbol();
 		coin.nameLeft = symbolName.substring(0, symbolName.length() - Constants.DEFAULT_SYMBOL_RIGHT.length());
 		getExInfEntries();
@@ -180,4 +185,5 @@ public class Symbol
 	{
 		System.out.println(getAll());
 	}	
+
 }

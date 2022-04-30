@@ -25,6 +25,7 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
+import com.binance.client.model.event.SymbolTickerEvent;
 import com.binance.client.model.trade.AccountBalance;
 import com.binance.client.model.trade.PositionRisk;
 
@@ -113,6 +114,7 @@ public class FrmAddOrder extends JFrame
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 550, 560);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmMain.class.getResource("/resources/upDown.png")));
+		setLocationRelativeTo(null);
 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -558,9 +560,15 @@ public class FrmAddOrder extends JFrame
 			coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
 			if (coin != null)
 			{
+				SymbolTickerEvent symbolTicker = PriceService.getSymbolTickerEvent(coin);
+				if (symbolTicker == null)
+				{
+					return;
+				}
+
 				BigDecimal mrkPrice = PriceService.getLastPrice(coin);
 				txtMarkPrice.setText(coin.priceToStr(mrkPrice));
-				String priceChangePercent = String.format("%.2f%%", PriceService.PriceChangePercent(coin));
+				String priceChangePercent = String.format("%.2f", symbolTicker.getPriceChangePercent());
 				txt24h.setText(priceChangePercent);
 	
 				PositionRisk positionRisk = PositionService.getPositionRisk(coin.getName());
@@ -763,10 +771,14 @@ public class FrmAddOrder extends JFrame
 		{
 			if (coin != null)
 			{
-				BigDecimal mrkPrice = PriceService.getLastPrice(coin);
-				txtMarkPrice.setText(coin.priceToStr(mrkPrice));
-				String priceChangePercent = String.format("%.2f%%", PriceService.PriceChangePercent(coin));
-				txt24h.setText(priceChangePercent);
+				SymbolTickerEvent symbolTicker = PriceService.getSymbolTickerEvent(coin);
+				if (symbolTicker != null)
+				{
+					BigDecimal mrkPrice = PriceService.getLastPrice(coin);
+					txtMarkPrice.setText(coin.priceToStr(mrkPrice));
+					String priceChangePercent = String.format("%.2f%%", symbolTicker.getPriceChangePercent());
+					txt24h.setText(priceChangePercent);
+				}
 			}
 		}
 		catch (Exception e)

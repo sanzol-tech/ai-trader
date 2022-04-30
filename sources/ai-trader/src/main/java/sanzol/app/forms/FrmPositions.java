@@ -23,8 +23,8 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 
 import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
@@ -67,6 +67,7 @@ public class FrmPositions extends JFrame
 		setMinimumSize(new Dimension(800, 600));
 		setTitle(Constants.APP_NAME + " - Positions");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmTrader.class.getResource("/resources/monitor.png")));
+		setLocationRelativeTo(null);
 	
 		textArea = new JTextArea();
 		textArea.setBackground(Styles.COLOR_TEXT_AREA_BG);
@@ -76,7 +77,7 @@ public class FrmPositions extends JFrame
 		textArea.setFont(new Font("Courier New", Font.PLAIN, 12));
 
 		scrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setBorder(new LineBorder(Styles.COLOR_BORDER_LINE, 1, true));
+		scrollPane.setBorder(UIManager.getBorder("TextField.border"));
 
 		lblTProfit = new javax.swing.JLabel();
 		lblTProfit.setText("T.Profit");
