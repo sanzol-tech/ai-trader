@@ -25,4 +25,15 @@ public final class PriceUtil
 			return BigDecimal.ZERO;
 		}
 	}
+
+	public static String cashFormat(double n, int iteration)
+	{
+		char[] suff = new char[] { 'K', 'M', 'B', 'T' };
+
+		double d = ((long) n / 100) / 10.0;
+		boolean isRound = (d * 10) % 10 == 0;
+		return (d < 1000 ? ((d > 99.9 || isRound || (!isRound && d > 9.99) ? (int) d * 10 / 10 : d + "") + "" + suff[iteration]) : cashFormat(d, iteration + 1));
+
+	}
+
 }

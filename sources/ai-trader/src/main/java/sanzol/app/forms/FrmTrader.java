@@ -384,7 +384,7 @@ public class FrmTrader extends JFrame
 		lblPercetSymbol_4.setBounds(331, 164, 25, 14);
 		contentPane.add(lblPercetSymbol_4);
 
-		// ---------------------------------------------------------------------
+		// --------------------------------------------------------------------
 
 		rbPriceNow.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
@@ -531,7 +531,7 @@ public class FrmTrader extends JFrame
 		timer1.start();
 	}
 
-	// ----------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 
 	private void refreshAuto(boolean rfCoin, boolean rfDepth)
 	{
@@ -568,7 +568,7 @@ public class FrmTrader extends JFrame
 		}
 	}
 
-	// ----------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 
 	private void searchCoin()
 	{
@@ -601,19 +601,19 @@ public class FrmTrader extends JFrame
 		}
 	}
 
-	// ----------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 
 	private void createShort()
 	{
 		INFO("");
 		try
 		{
-			//------------------------------------------------------------------
+			//-----------------------------------------------------------------
 			txtSymbolLeft.setText(txtSymbolLeft.getText().toUpperCase());
 			String symbol = txtSymbolLeft.getText();
 			coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
 
-			//------------------------------------------------------------------
+			//-----------------------------------------------------------------
 			Position position = Position.getInstance(coin, PositionSide.SHORT);
 
 			position.setIterations(Integer.valueOf(txtIterations.getText()));
@@ -653,11 +653,11 @@ public class FrmTrader extends JFrame
 				position.setInCoins(coins);
 			}
 
-			//------------------------------------------------------------------
+			//-----------------------------------------------------------------
 			pMaker = new PositionTrader(position);
 			pMaker.createShort();
 
-			//------------------------------------------------------------------
+			//-----------------------------------------------------------------
 			txtShowResult.setForeground(Styles.COLOR_TEXT_SHORT);
 			txtShowResult.setText(position.toString());
 
@@ -674,12 +674,12 @@ public class FrmTrader extends JFrame
 		INFO("");
 		try
 		{
-			//------------------------------------------------------------------
+			//-----------------------------------------------------------------
 			txtSymbolLeft.setText(txtSymbolLeft.getText().toUpperCase());
 			String symbol = txtSymbolLeft.getText();
 			coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
 
-			//------------------------------------------------------------------
+			//-----------------------------------------------------------------
 			Position position = Position.getInstance(coin, PositionSide.LONG);
 
 			position.setIterations(Integer.valueOf(txtIterations.getText()));
@@ -719,11 +719,11 @@ public class FrmTrader extends JFrame
 				position.setInCoins(coins);
 			}
 
-			//------------------------------------------------------------------
+			//-----------------------------------------------------------------
 			pMaker = new PositionTrader(position);
 			pMaker.createLong();
 
-			//------------------------------------------------------------------
+			//-----------------------------------------------------------------
 			txtShowResult.setForeground(Styles.COLOR_TEXT_LONG);
 			txtShowResult.setText(position.toString());
 
@@ -773,7 +773,7 @@ public class FrmTrader extends JFrame
 		btnPostOthers.setEnabled(false);
 	}
 
-	// ----------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 
 	private void postOrders(PostStyle postStyle)
 	{
@@ -796,7 +796,7 @@ public class FrmTrader extends JFrame
 				txtShowResult.setText(pMaker.getPosition().toString());
 				save(coin.getName() + "_" + pMaker.getPosition().getSide().name());
 
-				// -------------------------------------------------------------
+				// ------------------------------------------------------------
 				if (PositionTrader.TEST_MODE.equals(TestMode.PROD))
 				{
 					btnPostFirst.setEnabled(false);
@@ -831,7 +831,7 @@ public class FrmTrader extends JFrame
 		}
 	}
 
-	// ----------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 
 	public static void createDirectory(File fileProcessPath) 
 	{
@@ -841,7 +841,7 @@ public class FrmTrader extends JFrame
 		}
 	}
 
-	// ----------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 
 	public void ERROR(Exception e)
 	{

@@ -8,8 +8,6 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -50,66 +48,70 @@ public class FrmCoin extends JFrame
 
 	private static final String TITLE = Constants.APP_NAME;
 
-	private static boolean isOpen = false;
-
 	private Symbol coin;
 	private OrderBookInfo obInfo = null;
 
 	private JPanel contentPane;
 	private JLabel lblError;
 
+	private JScrollPane scrollOBookAsk;
+	private JScrollPane scrollOBookBid;
+
+	private JPanel panel_0;
+	private JPanel panel_1;
+	private JPanel panel_2;
+
+	private JButton btnSearch;
+	private JButton btnExport;
+	private JButton btnLongShock0;
+	private JButton btnLongShock1;
+	private JButton btnLongShock2;
+	private JButton btnShortShock0;
+	private JButton btnShortShock1;
+	private JButton btnShortShock2;
+
+	private JLabel lbl24Hs;
+	private JLabel lblHigh;
+	private JLabel lblLow;
+	private JLabel lblShortBB;
+	private JLabel lblShortWA;
+	private JLabel lblLongWA;
+	private JLabel lblPriceWA;
+	private JLabel lblDistWA;
+	private JLabel lblLongBB;
+	private JLabel lblPriceBB;
+	private JLabel lblDistBB;
+	private JLabel lblShortFP;
+	private JLabel lblLongFP;
+	private JLabel lblPriceFP;
+	private JLabel lblDistFP;
+	private JLabel lblTitlePoints0;
+	private JLabel lblTitlePoints1;
+	private JLabel lblTitlePoints2;
+	private JLabel lblVolume;
+
+	private JTextArea txtOBookAsk;
+	private JTextArea txtOBookBid;
+
 	private JTextField txtSymbolLeft;
 	private JTextField txtSymbolRight;
 	private JTextField txtMarkPrice;
 	private JTextField txt24h;
-
-	private JScrollPane scrollOBookAsk;
-	private JScrollPane scrollOBookBid;
-
-	private JTextArea txtOBookAsk;
-	private JTextArea txtOBookBid;
-	private JPanel panel_0;
-	private JTextField txtShortPrice;
-	private JTextField txtShortDist;
-	private JButton btnShortShock0;
-	private JButton btnLongShock0;
-	private JTextField txtLongDist;
-	private JTextField txtLongPrice;
-	private JLabel lblTitlePoints0;
-	private JLabel lblNewLabel_1;
-	private JLabel lblNewLabel_2;
-	private JLabel lblNewLabel_3;
-	private JLabel lblNewLabel_4;
-	private JLabel lblTitlePoints1;
-	private JPanel panel_1;
-	private JTextField txtShortPrice1;
-	private JTextField txtShortDist1;
-	private JButton btnShortShock1;
-	private JButton btnLongShock1;
-	private JTextField txtLongDist1;
-	private JTextField txtLongPrice1;
-	private JLabel lblNewLabel_6;
-	private JLabel lblNewLabel_7;
-	private JLabel lblNewLabel_8;
-	private JLabel lblNewLabel_9;
-	private JLabel lblTitlePoints2;
-	private JPanel panel_2;
-	private JTextField txtShortPrice2;
-	private JTextField txtShortDist2;
-	private JButton btnShortShock2;
-	private JButton btnLongShock2;
-	private JTextField txtLongDist2;
-	private JTextField txtLongPrice2;
-	private JLabel lblNewLabel_11;
-	private JLabel lblNewLabel_12;
-	private JLabel lblNewLabel_13;
-	private JLabel lblNewLabel_14;
-	private JButton btnExport;
-	private JLabel lbl24Hs;
-	private JTextField txtLow;
 	private JTextField txtHigh;
-	private JLabel lblHigh;
-	private JLabel lblLow;
+	private JTextField txtLongDist;
+	private JTextField txtLongDist1;
+	private JTextField txtLongDist2;
+	private JTextField txtLongPrice;
+	private JTextField txtLongPrice1;
+	private JTextField txtLongPrice2;
+	private JTextField txtLow;
+	private JTextField txtShortDist;
+	private JTextField txtShortDist1;
+	private JTextField txtShortDist2;
+	private JTextField txtShortPrice;
+	private JTextField txtShortPrice1;
+	private JTextField txtShortPrice2;
+	private JTextField txtVolume;
 
 	public FrmCoin()
 	{
@@ -118,7 +120,7 @@ public class FrmCoin extends JFrame
 		startTimer();
 	}
 
-	private void initComponents() 
+	private void initComponents()
 	{
 		setTitle(TITLE);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -142,7 +144,7 @@ public class FrmCoin extends JFrame
 		lblError.setMinimumSize(new Dimension(100, 20));
 		lblError.setBorder(new EmptyBorder(5, 0, 5, 5));
 		
-		JButton btnSearch = new JButton(CharConstants.MAGNIFIER);
+		btnSearch = new JButton(CharConstants.MAGNIFIER);
 		btnSearch.setOpaque(true);
 		btnSearch.setBounds(30, 69, 178, 22);
 		contentPane.add(btnSearch);
@@ -152,9 +154,9 @@ public class FrmCoin extends JFrame
 		txtSymbolLeft.setBounds(30, 43, 86, 20);
 		contentPane.add(txtSymbolLeft);
 
-		JLabel lblNewLabel_2_1 = new JLabel("COIN");
-		lblNewLabel_2_1.setBounds(30, 24, 86, 14);
-		contentPane.add(lblNewLabel_2_1);
+		JLabel lblSymbol = new JLabel("COIN");
+		lblSymbol.setBounds(30, 24, 86, 14);
+		contentPane.add(lblSymbol);
 
 		txtSymbolRight = new JTextField();
 		txtSymbolRight.setEditable(false);
@@ -171,14 +173,6 @@ public class FrmCoin extends JFrame
 		txtMarkPrice.setBounds(440, 280, 360, 20);
 		contentPane.add(txtMarkPrice);
 		
-		txt24h = new JTextField();
-		txt24h.setForeground(Styles.COLOR_TEXT_ALT1);
-		txt24h.setHorizontalAlignment(SwingConstants.RIGHT);
-		txt24h.setEditable(false);
-		txt24h.setColumns(10);
-		txt24h.setBounds(234, 43, 86, 20);
-		contentPane.add(txt24h);
-
 		scrollOBookAsk = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollOBookAsk.setBounds(440, 74, 360, 200);
 		scrollOBookAsk.setBorder(UIManager.getBorder("TextField.border"));
@@ -251,21 +245,21 @@ public class FrmCoin extends JFrame
 		txtLongPrice.setBounds(86, 63, 110, 20);
 		panel_0.add(txtLongPrice);
 
-		lblNewLabel_1 = new JLabel("SHORT");
-		lblNewLabel_1.setBounds(24, 35, 52, 14);
-		panel_0.add(lblNewLabel_1);
+		lblShortBB = new JLabel("SHORT");
+		lblShortBB.setBounds(24, 35, 52, 14);
+		panel_0.add(lblShortBB);
 
-		lblNewLabel_2 = new JLabel("LONG");
-		lblNewLabel_2.setBounds(24, 66, 52, 14);
-		panel_0.add(lblNewLabel_2);
+		lblLongBB = new JLabel("LONG");
+		lblLongBB.setBounds(24, 66, 52, 14);
+		panel_0.add(lblLongBB);
 
-		lblNewLabel_3 = new JLabel("Price");
-		lblNewLabel_3.setBounds(86, 11, 46, 14);
-		panel_0.add(lblNewLabel_3);
+		lblPriceBB = new JLabel("Price");
+		lblPriceBB.setBounds(86, 11, 46, 14);
+		panel_0.add(lblPriceBB);
 
-		lblNewLabel_4 = new JLabel("Dist %");
-		lblNewLabel_4.setBounds(206, 11, 46, 14);
-		panel_0.add(lblNewLabel_4);
+		lblDistBB = new JLabel("Dist %");
+		lblDistBB.setBounds(206, 11, 46, 14);
+		panel_0.add(lblDistBB);
 
 		lblTitlePoints0 = new JLabel("Biggest block");
 		lblTitlePoints0.setBounds(30, 122, 178, 14);
@@ -323,21 +317,21 @@ public class FrmCoin extends JFrame
 		txtLongPrice1.setBounds(86, 63, 110, 20);
 		panel_1.add(txtLongPrice1);
 
-		lblNewLabel_6 = new JLabel("SHORT");
-		lblNewLabel_6.setBounds(24, 35, 52, 14);
-		panel_1.add(lblNewLabel_6);
+		lblShortFP = new JLabel("SHORT");
+		lblShortFP.setBounds(24, 35, 52, 14);
+		panel_1.add(lblShortFP);
 
-		lblNewLabel_7 = new JLabel("LONG");
-		lblNewLabel_7.setBounds(24, 66, 52, 14);
-		panel_1.add(lblNewLabel_7);
+		lblLongFP = new JLabel("LONG");
+		lblLongFP.setBounds(24, 66, 52, 14);
+		panel_1.add(lblLongFP);
 
-		lblNewLabel_8 = new JLabel("Price");
-		lblNewLabel_8.setBounds(86, 11, 46, 14);
-		panel_1.add(lblNewLabel_8);
+		lblPriceFP = new JLabel("Price");
+		lblPriceFP.setBounds(86, 11, 46, 14);
+		panel_1.add(lblPriceFP);
 
-		lblNewLabel_9 = new JLabel("Dist %");
-		lblNewLabel_9.setBounds(206, 11, 46, 14);
-		panel_1.add(lblNewLabel_9);
+		lblDistFP = new JLabel("Dist %");
+		lblDistFP.setBounds(206, 11, 46, 14);
+		panel_1.add(lblDistFP);
 
 		lblTitlePoints2 = new JLabel("Weighted average (Max accum 50% / Max dist 20%)");
 		lblTitlePoints2.setBounds(30, 258, 370, 14);
@@ -391,68 +385,80 @@ public class FrmCoin extends JFrame
 		txtLongPrice2.setBounds(86, 63, 110, 20);
 		panel_2.add(txtLongPrice2);
 
-		lblNewLabel_11 = new JLabel("SHORT");
-		lblNewLabel_11.setBounds(24, 35, 52, 14);
-		panel_2.add(lblNewLabel_11);
+		lblShortWA = new JLabel("SHORT");
+		lblShortWA.setBounds(24, 35, 52, 14);
+		panel_2.add(lblShortWA);
 
-		lblNewLabel_12 = new JLabel("LONG");
-		lblNewLabel_12.setBounds(24, 66, 52, 14);
-		panel_2.add(lblNewLabel_12);
+		lblLongWA = new JLabel("LONG");
+		lblLongWA.setBounds(24, 66, 52, 14);
+		panel_2.add(lblLongWA);
 
-		lblNewLabel_13 = new JLabel("Price");
-		lblNewLabel_13.setBounds(86, 11, 46, 14);
-		panel_2.add(lblNewLabel_13);
+		lblPriceWA = new JLabel("Price");
+		lblPriceWA.setBounds(86, 11, 46, 14);
+		panel_2.add(lblPriceWA);
 
-		lblNewLabel_14 = new JLabel("Dist %");
-		lblNewLabel_14.setBounds(206, 11, 46, 14);
-		panel_2.add(lblNewLabel_14);
+		lblDistWA = new JLabel("Dist %");
+		lblDistWA.setBounds(206, 11, 46, 14);
+		panel_2.add(lblDistWA);
 
 		btnExport = new JButton("Export");
 		btnExport.setOpaque(true);
 		btnExport.setBounds(710, 42, 87, 22);
 		contentPane.add(btnExport);
-		
+
 		lbl24Hs = new JLabel("24h %");
 		lbl24Hs.setHorizontalAlignment(SwingConstants.TRAILING);
-		lbl24Hs.setBounds(234, 24, 85, 14);
+		lbl24Hs.setBounds(257, 28, 62, 14);
 		contentPane.add(lbl24Hs);
+
+		lblVolume = new JLabel("Volume");
+		lblVolume.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblVolume.setBounds(259, 53, 62, 14);
+		contentPane.add(lblVolume);
+
+		lblHigh = new JLabel("HIGH");
+		lblHigh.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblHigh.setBounds(257, 78, 62, 14);
+		contentPane.add(lblHigh);
 		
+		lblLow = new JLabel("LOW");
+		lblLow.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblLow.setBounds(247, 103, 72, 14);
+		contentPane.add(lblLow);
+		
+		txt24h = new JTextField();
+		txt24h.setHorizontalAlignment(SwingConstants.TRAILING);
+		txt24h.setForeground(Styles.COLOR_TEXT_ALT1);
+		txt24h.setEditable(false);
+		txt24h.setColumns(10);
+		txt24h.setBounds(331, 25, 86, 20);
+		contentPane.add(txt24h);
+
+		txtVolume = new JTextField();
+		txtVolume.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtVolume.setForeground(Styles.COLOR_TEXT_ALT1);
+		txtVolume.setEditable(false);
+		txtVolume.setColumns(10);
+		txtVolume.setBounds(331, 50, 86, 20);
+		contentPane.add(txtVolume);
+
 		txtLow = new JTextField();
 		txtLow.setHorizontalAlignment(SwingConstants.TRAILING);
 		txtLow.setForeground(Styles.COLOR_TEXT_ALT1);
 		txtLow.setEditable(false);
 		txtLow.setColumns(10);
-		txtLow.setBounds(330, 94, 86, 20);
+		txtLow.setBounds(331, 100, 86, 20);
 		contentPane.add(txtLow);
 		
 		txtHigh = new JTextField();
-		txtHigh.setEditable(false);
 		txtHigh.setHorizontalAlignment(SwingConstants.TRAILING);
 		txtHigh.setForeground(Styles.COLOR_TEXT_ALT1);
+		txtHigh.setEditable(false);
 		txtHigh.setColumns(10);
-		txtHigh.setBounds(330, 43, 86, 20);
+		txtHigh.setBounds(331, 75, 86, 20);
 		contentPane.add(txtHigh);
-		
-		lblHigh = new JLabel("HIGH");
-		lblHigh.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblHigh.setBounds(330, 24, 85, 14);
-		contentPane.add(lblHigh);
-		
-		lblLow = new JLabel("LOW");
-		lblLow.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblLow.setBounds(330, 75, 85, 14);
-		contentPane.add(lblLow);
 
 		// ---------------------------------------------------------------------
-
-		addWindowListener(new WindowAdapter()
-		{
-			@Override
-			public void windowClosed(WindowEvent e)
-			{
-				isOpen = false;
-			}
-		});
 
 		btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -543,6 +549,7 @@ public class FrmCoin extends JFrame
 					txtMarkPrice.setText(coin.priceToStr(mrkPrice));
 					String priceChangePercent = String.format("%.2f", symbolTicker.getPriceChangePercent());
 					txt24h.setText(priceChangePercent);
+					txtVolume.setText(PriceUtil.cashFormat(symbolTicker.getTotalTradedQuoteAssetVolume().doubleValue(), 0));
 					txtHigh.setText(symbolTicker.getHigh().toPlainString());
 					txtLow.setText(symbolTicker.getLow().toPlainString());
 					
@@ -662,11 +669,6 @@ public class FrmCoin extends JFrame
 
 	public static void launch(String symbolLeft)
 	{
-		if (isOpen)
-		{
-			return;
-		}
-
 		EventQueue.invokeLater(new Runnable()
 		{
 			public void run()
@@ -675,7 +677,7 @@ public class FrmCoin extends JFrame
 				{
 					FrmCoin frame = new FrmCoin();
 					frame.setVisible(true);
-					
+
 					if (symbolLeft != null && !symbolLeft.isEmpty())
 					{
 						frame.txtSymbolLeft.setText(symbolLeft);
@@ -704,7 +706,7 @@ public class FrmCoin extends JFrame
 		timer1.setRepeats(true);
 		timer1.start();
 	}
-	
+
 	// ----------------------------------------------------------------------------------
 
 	public void ERROR(Exception e)
