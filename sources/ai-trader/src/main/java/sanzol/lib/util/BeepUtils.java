@@ -43,4 +43,25 @@ public class BeepUtils
 		sdl.close();
 	}
 
+	public static void beep()
+	{
+		try
+		{
+			tone(2000, 100, 1.0);
+			tone(2000, 100, 1.0);
+			Thread.sleep(20);
+			tone(1600, 200, 1.0);
+		}
+		catch (Exception e)
+		{
+			//
+		}
+		tone(1600,200);
+	}
+	
+	public static void main(String[] args) throws InterruptedException
+	{
+		beep();
+	}
+
 }

@@ -2,6 +2,8 @@ package sanzol.app.forms;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -10,8 +12,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -26,21 +26,18 @@ import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import org.apache.commons.io.FileUtils;
-
 import com.binance.client.model.event.SymbolTickerEvent;
 
 import sanzol.app.config.Application;
 import sanzol.app.config.CharConstants;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
-import sanzol.app.model.OrderBookElement;
-import sanzol.app.model.OrderBookInfo;
 import sanzol.app.model.Symbol;
-import sanzol.app.service.OrderBookService;
+import sanzol.app.service.OBookService;
 import sanzol.app.task.PriceService;
 import sanzol.app.util.Convert;
 import sanzol.app.util.PriceUtil;
+import sanzol.lib.util.BeepUtils;
 
 public class FrmCoin extends JFrame
 {
@@ -49,7 +46,8 @@ public class FrmCoin extends JFrame
 	private static final String TITLE = Constants.APP_NAME;
 
 	private Symbol coin;
-	private OrderBookInfo obInfo = null;
+	private OBookService obService = null;
+	private boolean beepDone = false;	
 
 	private JPanel contentPane;
 	private JLabel lblError;
@@ -62,13 +60,14 @@ public class FrmCoin extends JFrame
 	private JPanel panel_2;
 
 	private JButton btnSearch;
+	private JButton btnRefresh;
 	private JButton btnExport;
-	private JButton btnLongShock0;
-	private JButton btnLongShock1;
-	private JButton btnLongShock2;
-	private JButton btnShortShock0;
-	private JButton btnShortShock1;
-	private JButton btnShortShock2;
+	private JButton btnLongShockBB;
+	private JButton btnLongShockFP;
+	private JButton btnLongShockWA;
+	private JButton btnShortShockBB;
+	private JButton btnShortShockFP;
+	private JButton btnShortShockWA;
 
 	private JLabel lbl24Hs;
 	private JLabel lblHigh;
@@ -99,18 +98,18 @@ public class FrmCoin extends JFrame
 	private JTextField txt24h;
 	private JTextField txtHigh;
 	private JTextField txtLongDist;
-	private JTextField txtLongDist1;
-	private JTextField txtLongDist2;
+	private JTextField txtLongDistFP;
+	private JTextField txtLongDistWA;
 	private JTextField txtLongPrice;
-	private JTextField txtLongPrice1;
-	private JTextField txtLongPrice2;
+	private JTextField txtLongPriceFP;
+	private JTextField txtLongPriceWA;
 	private JTextField txtLow;
 	private JTextField txtShortDist;
-	private JTextField txtShortDist1;
-	private JTextField txtShortDist2;
+	private JTextField txtShortDistFP;
+	private JTextField txtShortDistWA;
 	private JTextField txtShortPrice;
-	private JTextField txtShortPrice1;
-	private JTextField txtShortPrice2;
+	private JTextField txtShortPriceFP;
+	private JTextField txtShortPriceWA;
 	private JTextField txtVolume;
 
 	public FrmCoin()
@@ -217,19 +216,19 @@ public class FrmCoin extends JFrame
 		txtShortDist.setBounds(206, 32, 80, 20);
 		panel_0.add(txtShortDist);
 
-		btnShortShock0 = new JButton("\u2193");
-		btnShortShock0.setToolTipText("Create Short in this price");
-		btnShortShock0.setOpaque(true);
-		btnShortShock0.setBackground(Styles.COLOR_BTN_SHORT);
-		btnShortShock0.setBounds(296, 31, 46, 22);
-		panel_0.add(btnShortShock0);
+		btnShortShockBB = new JButton("\u2193");
+		btnShortShockBB.setToolTipText("Create Short in this price");
+		btnShortShockBB.setOpaque(true);
+		btnShortShockBB.setBackground(Styles.COLOR_BTN_SHORT);
+		btnShortShockBB.setBounds(296, 31, 46, 22);
+		panel_0.add(btnShortShockBB);
 
-		btnLongShock0 = new JButton("\u2191");
-		btnLongShock0.setToolTipText("Create Long in this price");
-		btnLongShock0.setOpaque(true);
-		btnLongShock0.setBackground(Styles.COLOR_BTN_LONG);
-		btnLongShock0.setBounds(296, 62, 46, 22);
-		panel_0.add(btnLongShock0);
+		btnLongShockBB = new JButton("\u2191");
+		btnLongShockBB.setToolTipText("Create Long in this price");
+		btnLongShockBB.setOpaque(true);
+		btnLongShockBB.setBackground(Styles.COLOR_BTN_LONG);
+		btnLongShockBB.setBounds(296, 62, 46, 22);
+		panel_0.add(btnLongShockBB);
 
 		txtLongDist = new JTextField();
 		txtLongDist.setForeground(Styles.COLOR_TEXT_LONG);
@@ -275,47 +274,47 @@ public class FrmCoin extends JFrame
 		panel_1.setBounds(30, 411, 387, 95);
 		contentPane.add(panel_1);
 
-		txtShortPrice1 = new JTextField();
-		txtShortPrice1.setForeground(Styles.COLOR_TEXT_SHORT);
-		txtShortPrice1.setEditable(false);
-		txtShortPrice1.setColumns(10);
-		txtShortPrice1.setBounds(86, 32, 110, 20);
-		panel_1.add(txtShortPrice1);
+		txtShortPriceFP = new JTextField();
+		txtShortPriceFP.setForeground(Styles.COLOR_TEXT_SHORT);
+		txtShortPriceFP.setEditable(false);
+		txtShortPriceFP.setColumns(10);
+		txtShortPriceFP.setBounds(86, 32, 110, 20);
+		panel_1.add(txtShortPriceFP);
 
-		txtShortDist1 = new JTextField();
-		txtShortDist1.setForeground(Styles.COLOR_TEXT_SHORT);
-		txtShortDist1.setEditable(false);
-		txtShortDist1.setColumns(10);
-		txtShortDist1.setBounds(206, 32, 80, 20);
-		panel_1.add(txtShortDist1);
+		txtShortDistFP = new JTextField();
+		txtShortDistFP.setForeground(Styles.COLOR_TEXT_SHORT);
+		txtShortDistFP.setEditable(false);
+		txtShortDistFP.setColumns(10);
+		txtShortDistFP.setBounds(206, 32, 80, 20);
+		panel_1.add(txtShortDistFP);
 
-		btnShortShock1 = new JButton("\u2193");
-		btnShortShock1.setToolTipText("Create Short in this price");
-		btnShortShock1.setOpaque(true);
-		btnShortShock1.setBackground(Styles.COLOR_BTN_SHORT);
-		btnShortShock1.setBounds(296, 31, 46, 22);
-		panel_1.add(btnShortShock1);
+		btnShortShockFP = new JButton("\u2193");
+		btnShortShockFP.setToolTipText("Create Short in this price");
+		btnShortShockFP.setOpaque(true);
+		btnShortShockFP.setBackground(Styles.COLOR_BTN_SHORT);
+		btnShortShockFP.setBounds(296, 31, 46, 22);
+		panel_1.add(btnShortShockFP);
 
-		btnLongShock1 = new JButton("\u2191");
-		btnLongShock1.setToolTipText("Create Long in this price");
-		btnLongShock1.setOpaque(true);
-		btnLongShock1.setBackground(Styles.COLOR_BTN_LONG);
-		btnLongShock1.setBounds(296, 62, 46, 22);
-		panel_1.add(btnLongShock1);
+		btnLongShockFP = new JButton("\u2191");
+		btnLongShockFP.setToolTipText("Create Long in this price");
+		btnLongShockFP.setOpaque(true);
+		btnLongShockFP.setBackground(Styles.COLOR_BTN_LONG);
+		btnLongShockFP.setBounds(296, 62, 46, 22);
+		panel_1.add(btnLongShockFP);
 
-		txtLongDist1 = new JTextField();
-		txtLongDist1.setForeground(Styles.COLOR_TEXT_LONG);
-		txtLongDist1.setEditable(false);
-		txtLongDist1.setColumns(10);
-		txtLongDist1.setBounds(206, 63, 80, 20);
-		panel_1.add(txtLongDist1);
+		txtLongDistFP = new JTextField();
+		txtLongDistFP.setForeground(Styles.COLOR_TEXT_LONG);
+		txtLongDistFP.setEditable(false);
+		txtLongDistFP.setColumns(10);
+		txtLongDistFP.setBounds(206, 63, 80, 20);
+		panel_1.add(txtLongDistFP);
 
-		txtLongPrice1 = new JTextField();
-		txtLongPrice1.setForeground(Styles.COLOR_TEXT_LONG);
-		txtLongPrice1.setEditable(false);
-		txtLongPrice1.setColumns(10);
-		txtLongPrice1.setBounds(86, 63, 110, 20);
-		panel_1.add(txtLongPrice1);
+		txtLongPriceFP = new JTextField();
+		txtLongPriceFP.setForeground(Styles.COLOR_TEXT_LONG);
+		txtLongPriceFP.setEditable(false);
+		txtLongPriceFP.setColumns(10);
+		txtLongPriceFP.setBounds(86, 63, 110, 20);
+		panel_1.add(txtLongPriceFP);
 
 		lblShortFP = new JLabel("SHORT");
 		lblShortFP.setBounds(24, 35, 52, 14);
@@ -343,47 +342,47 @@ public class FrmCoin extends JFrame
 		panel_2.setBounds(30, 280, 387, 95);
 		contentPane.add(panel_2);
 
-		txtShortPrice2 = new JTextField();
-		txtShortPrice2.setForeground(Styles.COLOR_TEXT_SHORT);
-		txtShortPrice2.setEditable(false);
-		txtShortPrice2.setColumns(10);
-		txtShortPrice2.setBounds(86, 32, 110, 20);
-		panel_2.add(txtShortPrice2);
+		txtShortPriceWA = new JTextField();
+		txtShortPriceWA.setForeground(Styles.COLOR_TEXT_SHORT);
+		txtShortPriceWA.setEditable(false);
+		txtShortPriceWA.setColumns(10);
+		txtShortPriceWA.setBounds(86, 32, 110, 20);
+		panel_2.add(txtShortPriceWA);
 
-		txtShortDist2 = new JTextField();
-		txtShortDist2.setForeground(Styles.COLOR_TEXT_SHORT);
-		txtShortDist2.setEditable(false);
-		txtShortDist2.setColumns(10);
-		txtShortDist2.setBounds(206, 32, 80, 20);
-		panel_2.add(txtShortDist2);
+		txtShortDistWA = new JTextField();
+		txtShortDistWA.setForeground(Styles.COLOR_TEXT_SHORT);
+		txtShortDistWA.setEditable(false);
+		txtShortDistWA.setColumns(10);
+		txtShortDistWA.setBounds(206, 32, 80, 20);
+		panel_2.add(txtShortDistWA);
 
-		btnShortShock2 = new JButton("\u2193");
-		btnShortShock2.setToolTipText("Create Short in this price");
-		btnShortShock2.setOpaque(true);
-		btnShortShock2.setBackground(Styles.COLOR_BTN_SHORT);
-		btnShortShock2.setBounds(296, 31, 46, 22);
-		panel_2.add(btnShortShock2);
+		btnShortShockWA = new JButton("\u2193");
+		btnShortShockWA.setToolTipText("Create Short in this price");
+		btnShortShockWA.setOpaque(true);
+		btnShortShockWA.setBackground(Styles.COLOR_BTN_SHORT);
+		btnShortShockWA.setBounds(296, 31, 46, 22);
+		panel_2.add(btnShortShockWA);
 
-		btnLongShock2 = new JButton("\u2191");
-		btnLongShock2.setToolTipText("Create Long in this price");
-		btnLongShock2.setOpaque(true);
-		btnLongShock2.setBackground(Styles.COLOR_BTN_LONG);
-		btnLongShock2.setBounds(296, 62, 46, 22);
-		panel_2.add(btnLongShock2);
+		btnLongShockWA = new JButton("\u2191");
+		btnLongShockWA.setToolTipText("Create Long in this price");
+		btnLongShockWA.setOpaque(true);
+		btnLongShockWA.setBackground(Styles.COLOR_BTN_LONG);
+		btnLongShockWA.setBounds(296, 62, 46, 22);
+		panel_2.add(btnLongShockWA);
 
-		txtLongDist2 = new JTextField();
-		txtLongDist2.setForeground(Styles.COLOR_TEXT_LONG);
-		txtLongDist2.setEditable(false);
-		txtLongDist2.setColumns(10);
-		txtLongDist2.setBounds(206, 63, 80, 20);
-		panel_2.add(txtLongDist2);
+		txtLongDistWA = new JTextField();
+		txtLongDistWA.setForeground(Styles.COLOR_TEXT_LONG);
+		txtLongDistWA.setEditable(false);
+		txtLongDistWA.setColumns(10);
+		txtLongDistWA.setBounds(206, 63, 80, 20);
+		panel_2.add(txtLongDistWA);
 
-		txtLongPrice2 = new JTextField();
-		txtLongPrice2.setForeground(Styles.COLOR_TEXT_LONG);
-		txtLongPrice2.setEditable(false);
-		txtLongPrice2.setColumns(10);
-		txtLongPrice2.setBounds(86, 63, 110, 20);
-		panel_2.add(txtLongPrice2);
+		txtLongPriceWA = new JTextField();
+		txtLongPriceWA.setForeground(Styles.COLOR_TEXT_LONG);
+		txtLongPriceWA.setEditable(false);
+		txtLongPriceWA.setColumns(10);
+		txtLongPriceWA.setBounds(86, 63, 110, 20);
+		panel_2.add(txtLongPriceWA);
 
 		lblShortWA = new JLabel("SHORT");
 		lblShortWA.setBounds(24, 35, 52, 14);
@@ -457,6 +456,11 @@ public class FrmCoin extends JFrame
 		txtHigh.setColumns(10);
 		txtHigh.setBounds(331, 75, 86, 20);
 		contentPane.add(txtHigh);
+		
+		btnRefresh = new JButton("Full O.Book");
+		btnRefresh.setOpaque(true);
+		btnRefresh.setBounds(440, 42, 100, 22);
+		contentPane.add(btnRefresh);
 
 		// ---------------------------------------------------------------------
 
@@ -467,37 +471,43 @@ public class FrmCoin extends JFrame
 		});
 
 
-		btnShortShock0.addActionListener(new ActionListener() {
+		btnShortShockBB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				FrmTrader.launch(coin.getNameLeft(), "SHORT", txtShortPrice.getText());
 			}
 		});
-		btnLongShock0.addActionListener(new ActionListener() {
+		btnLongShockBB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				FrmTrader.launch(coin.getNameLeft(), "LONG", txtLongPrice.getText());
 			}
 		});
-		btnShortShock1.addActionListener(new ActionListener() {
+		btnShortShockFP.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmTrader.launch(coin.getNameLeft(), "SHORT", txtShortPrice1.getText());
+				FrmTrader.launch(coin.getNameLeft(), "SHORT", txtShortPriceFP.getText());
 			}
 		});
-		btnLongShock1.addActionListener(new ActionListener() {
+		btnLongShockFP.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmTrader.launch(coin.getNameLeft(), "LONG", txtLongPrice1.getText());
+				FrmTrader.launch(coin.getNameLeft(), "LONG", txtLongPriceFP.getText());
 			}
 		});
-		btnShortShock2.addActionListener(new ActionListener() {
+		btnShortShockWA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmTrader.launch(coin.getNameLeft(), "SHORT", txtShortPrice2.getText());
+				FrmTrader.launch(coin.getNameLeft(), "SHORT", txtShortPriceWA.getText());
 			}
 		});
-		btnLongShock2.addActionListener(new ActionListener() {
+		btnLongShockWA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmTrader.launch(coin.getNameLeft(), "LONG", txtLongPrice2.getText());
+				FrmTrader.launch(coin.getNameLeft(), "LONG", txtLongPriceWA.getText());
 			}
 		});
 
+
+		btnRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				loadOBook(true);
+			}
+		});
 
 		btnExport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -522,7 +532,7 @@ public class FrmCoin extends JFrame
 			{
 				setTitle(TITLE + " - " + symbol);
 				
-				getDepth();
+				loadOBook(false);
 				getDistances();
 			}
 			else
@@ -562,25 +572,38 @@ public class FrmCoin extends JFrame
 			ERROR(e);
 		}
 	}
-	
-	private void getDepth()
+
+	private void loadOBook(boolean isFull)
 	{
 		try
 		{
-			obInfo = OrderBookService.getObInfo(coin);
+			if (isFull)
+			{
+				setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				
+				obService = OBookService.getInstance(coin).request().subscribeDiffDepthEvent();
+				Thread.sleep(30000);
+				obService.calc();
 
-			txtOBookAsk.setText(OrderBookService.toStringInv(coin, obInfo.getAsksGrp()));
-			txtOBookBid.setText(OrderBookService.toString(coin, obInfo.getBidsGrp()));
-			txtOBookBid.setCaretPosition(0);
+				setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+			else
+			{
+				obService = OBookService.getInstance(coin).request().calc();
+			}
 			
-			txtShortPrice.setText(obInfo.getStrShShock());
-			txtLongPrice.setText(obInfo.getStrLgShock());
+			txtOBookAsk.setText(obService.printAsksGrp());
+			txtOBookBid.setText(obService.printBidsGrp());
+			txtOBookBid.setCaretPosition(0);
 
-			txtShortPrice1.setText(obInfo.getStrShShockFixed());
-			txtLongPrice1.setText(obInfo.getStrLgShockFixed());
+			txtShortPrice.setText(coin.priceToStr(obService.getShortPriceBBlk()));
+			txtLongPrice.setText(coin.priceToStr(obService.getLongPriceBBlk()));
 
-			txtShortPrice2.setText(obInfo.getStrShShockWAvg());
-			txtLongPrice2.setText(obInfo.getStrLgShockWAvg());
+			txtShortPriceWA.setText(coin.priceToStr(obService.getShortPriceWAvg()));
+			txtLongPriceWA.setText(coin.priceToStr(obService.getLongPriceWAvg()));
+			
+			txtShortPriceFP.setText(coin.priceToStr(obService.getShortPriceFixed()));
+			txtLongPriceFP.setText(coin.priceToStr(obService.getLongPriceFixed()));
 		}
 		catch (Exception e)
 		{
@@ -594,23 +617,34 @@ public class FrmCoin extends JFrame
 		{
 			BigDecimal mrkPrice = PriceService.getLastPrice(coin);
 
-			String distSh = Convert.dblToStrPercent(PriceUtil.priceDist(obInfo.getShShock(), mrkPrice));
-			txtShortDist.setText(distSh + " %");
+			BigDecimal distSh = PriceUtil.priceDistUp(mrkPrice, obService.getShortPriceBBlk(), false);
+			txtShortDist.setText(Convert.dblToStrPercent(distSh) + " %");
 
-			String distSh1 = Convert.dblToStrPercent(PriceUtil.priceDist(obInfo.getShShockFixed(), mrkPrice));
-			txtShortDist1.setText(distSh1 + " %");
+			BigDecimal distShWA = PriceUtil.priceDistUp(mrkPrice, obService.getShortPriceWAvg(), false);
+			txtShortDistWA.setText(Convert.dblToStrPercent(distShWA) + " %");
 
-			String distSh2 = Convert.dblToStrPercent(PriceUtil.priceDist(obInfo.getShShockWAvg(), mrkPrice));
-			txtShortDist2.setText(distSh2 + " %");
+			BigDecimal distShFP = PriceUtil.priceDistUp(mrkPrice, obService.getShortPriceFixed(), false);
+			txtShortDistFP.setText(Convert.dblToStrPercent(distShFP) + " %");
 
-			String distLg = Convert.dblToStrPercent(PriceUtil.priceDist(mrkPrice, obInfo.getLgShock()));
-			txtLongDist.setText(distLg + " %");
+			BigDecimal distLg = PriceUtil.priceDistDown(mrkPrice, obService.getLongPriceBBlk(), false);
+			txtLongDist.setText(Convert.dblToStrPercent(distLg) + " %");
 
-			String distLg1 = Convert.dblToStrPercent(PriceUtil.priceDist(mrkPrice, obInfo.getLgShockFixed()));
-			txtLongDist1.setText(distLg1 + " %");
+			BigDecimal distLgWA = PriceUtil.priceDistDown(mrkPrice, obService.getLongPriceWAvg(), false);
+			txtLongDistWA.setText(Convert.dblToStrPercent(distLgWA) + " %");
 
-			String distLg2 = Convert.dblToStrPercent(PriceUtil.priceDist(mrkPrice, obInfo.getLgShockWAvg()));
-			txtLongDist2.setText(distLg2 + " %");
+			BigDecimal distLgFP = PriceUtil.priceDistDown(mrkPrice, obService.getLongPriceFixed(), false);
+			txtLongDistFP.setText(Convert.dblToStrPercent(distLgFP) + " %");
+
+			if (distSh.doubleValue() <= 0.002 || distShWA.doubleValue() <= 0.002 ||
+				distLg.doubleValue() <= 0.002 || distLgWA.doubleValue() <= 0.002)
+			{
+				if(!beepDone)
+				{
+					BeepUtils.beep();
+					beepDone = true;
+				}
+			}
+
 		}
 		catch (Exception e)
 		{
@@ -624,34 +658,12 @@ public class FrmCoin extends JFrame
 	{
 		try
 		{
-			// ----------------------------------------------------------------
-			List<OrderBookElement> asks = obInfo.getAsks();
-			if (asks != null && !asks.isEmpty())
-			{
-				StringBuilder sbAsks = new StringBuilder();
-				for (OrderBookElement ele : asks)
-				{
-					sbAsks.append(ele.toString());
-					sbAsks.append("\n");
-				}
-				File fileExportAsks = new File(Constants.DEFAULT_USER_FOLDER, coin.getNameLeft() + "_depth_asks.csv");
-				FileUtils.writeStringToFile(fileExportAsks, sbAsks.toString(), StandardCharsets.UTF_8);
-			}
-	
-			// ----------------------------------------------------------------
-			List<OrderBookElement> bids = obInfo.getBids();
-			if (bids != null && !bids.isEmpty())
-			{
-				StringBuilder sbBids = new StringBuilder();
-				for (OrderBookElement ele : bids)
-				{
-					sbBids.append(ele.toString());
-					sbBids.append("\n");
-				}
-				File fileExportBids = new File(Constants.DEFAULT_USER_FOLDER, coin.getNameLeft() + "_depth_bids.csv");
-				FileUtils.writeStringToFile(fileExportBids, sbBids.toString(), StandardCharsets.UTF_8);
-			}
-			
+			obService.export();
+
+			File file = new File(Constants.DEFAULT_USER_FOLDER);
+			Desktop desktop = Desktop.getDesktop();
+			desktop.open(file);
+
 			INFO("Exported to " + Constants.DEFAULT_USER_FOLDER.toString());
 		}
 		catch (Exception e)

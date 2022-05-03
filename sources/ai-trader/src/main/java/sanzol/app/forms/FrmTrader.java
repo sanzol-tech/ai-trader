@@ -41,10 +41,9 @@ import sanzol.app.config.CharConstants;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
-import sanzol.app.model.OrderBookInfo;
 import sanzol.app.model.Position;
 import sanzol.app.model.Symbol;
-import sanzol.app.service.OrderBookService;
+import sanzol.app.service.OBookService;
 import sanzol.app.task.PriceService;
 import sanzol.app.trader.PositionTrader;
 import sanzol.app.trader.PositionTrader.PostStyle;
@@ -205,45 +204,45 @@ public class FrmTrader extends JFrame
 
 		JLabel lblPriceIncr = new JLabel("Price Incr");
 		lblPriceIncr.setHorizontalAlignment(SwingConstants.LEFT);
-		lblPriceIncr.setBounds(15, 135, 70, 14);
+		lblPriceIncr.setBounds(16, 131, 70, 14);
 		contentPane.add(lblPriceIncr);
 
 		txtPriceIncr = new JTextField();
 		txtPriceIncr.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtPriceIncr.setBounds(91, 134, 60, 20);
+		txtPriceIncr.setBounds(101, 130, 60, 20);
 		contentPane.add(txtPriceIncr);
 		txtPriceIncr.setColumns(10);
 
 		JLabel lblCoinsIncr = new JLabel("Coins Incr");
 		lblCoinsIncr.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblCoinsIncr.setBounds(170, 108, 86, 14);
+		lblCoinsIncr.setBounds(180, 104, 86, 14);
 		contentPane.add(lblCoinsIncr);
 
 		txtCoinsIncr = new JTextField();
 		txtCoinsIncr.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtCoinsIncr.setBounds(266, 106, 60, 20);
+		txtCoinsIncr.setBounds(276, 102, 60, 20);
 		contentPane.add(txtCoinsIncr);
 		txtCoinsIncr.setColumns(10);
 
 		JLabel lblItarations = new JLabel("Iterations");
 		lblItarations.setHorizontalAlignment(SwingConstants.LEFT);
-		lblItarations.setBounds(15, 108, 70, 14);
+		lblItarations.setBounds(16, 104, 70, 14);
 		contentPane.add(lblItarations);
 
 		txtIterations = new JTextField();
 		txtIterations.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtIterations.setBounds(91, 106, 60, 20);
+		txtIterations.setBounds(101, 102, 60, 20);
 		contentPane.add(txtIterations);
 		txtIterations.setColumns(10);
 
 		JLabel lblTProfit = new JLabel("T. Profit");
 		lblTProfit.setHorizontalAlignment(SwingConstants.LEFT);
-		lblTProfit.setBounds(15, 164, 70, 14);
+		lblTProfit.setBounds(16, 160, 70, 14);
 		contentPane.add(lblTProfit);
 
 		txtTProfit = new JTextField();
 		txtTProfit.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtTProfit.setBounds(91, 162, 60, 20);
+		txtTProfit.setBounds(101, 158, 60, 20);
 		contentPane.add(txtTProfit);
 		txtTProfit.setColumns(10);
 
@@ -271,23 +270,23 @@ public class FrmTrader extends JFrame
 		txtDistBeforeSL = new JTextField();
 		txtDistBeforeSL.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtDistBeforeSL.setColumns(10);
-		txtDistBeforeSL.setBounds(266, 134, 60, 20);
+		txtDistBeforeSL.setBounds(276, 130, 60, 20);
 		contentPane.add(txtDistBeforeSL);
 
 		JLabel lblDistSL = new JLabel("Last to SL");
 		lblDistSL.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblDistSL.setBounds(180, 135, 76, 14);
+		lblDistSL.setBounds(190, 131, 76, 14);
 		contentPane.add(lblDistSL);
 
 		txtPositionQty = new JTextField();
 		txtPositionQty.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtPositionQty.setColumns(10);
-		txtPositionQty.setBounds(266, 162, 60, 20);
+		txtPositionQty.setBounds(276, 158, 60, 20);
 		contentPane.add(txtPositionQty);
 
 		JLabel lblPriceIncr_1 = new JLabel("Balance");
 		lblPriceIncr_1.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblPriceIncr_1.setBounds(180, 164, 76, 14);
+		lblPriceIncr_1.setBounds(190, 160, 76, 14);
 		contentPane.add(lblPriceIncr_1);
 
 		scrollOBookAsk = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -365,23 +364,23 @@ public class FrmTrader extends JFrame
 		contentPane.add(lblNewLabel);
 
 		lblPercetSymbol = new JLabel("%");
-		lblPercetSymbol.setBounds(156, 135, 25, 14);
+		lblPercetSymbol.setBounds(166, 131, 25, 14);
 		contentPane.add(lblPercetSymbol);
 
 		lblPercetSymbol_1 = new JLabel("%");
-		lblPercetSymbol_1.setBounds(156, 164, 25, 14);
+		lblPercetSymbol_1.setBounds(166, 160, 25, 14);
 		contentPane.add(lblPercetSymbol_1);
 
 		lblPercetSymbol_2 = new JLabel("%");
-		lblPercetSymbol_2.setBounds(331, 108, 25, 14);
+		lblPercetSymbol_2.setBounds(341, 104, 25, 14);
 		contentPane.add(lblPercetSymbol_2);
 
 		lblPercetSymbol_3 = new JLabel("%");
-		lblPercetSymbol_3.setBounds(331, 135, 25, 14);
+		lblPercetSymbol_3.setBounds(341, 131, 25, 14);
 		contentPane.add(lblPercetSymbol_3);
 
 		lblPercetSymbol_4 = new JLabel("%");
-		lblPercetSymbol_4.setBounds(331, 164, 25, 14);
+		lblPercetSymbol_4.setBounds(341, 160, 25, 14);
 		contentPane.add(lblPercetSymbol_4);
 
 		// --------------------------------------------------------------------
@@ -550,16 +549,12 @@ public class FrmTrader extends JFrame
 
 			if (rfDepth && coin != null)
 			{
-				OrderBookInfo points = OrderBookService.getObInfo(coin);
-				txtOBookAsk.setText(OrderBookService.toStringInv(coin, points.getAsksGrp()));
-				txtMaxAsk.setText("SHORT " + points.getStrShShockFixed());
-				txtOBookBid.setText(OrderBookService.toString(coin, points.getBidsGrp()));
+				OBookService obService = OBookService.getInstance(coin).request().calc();
+				txtOBookAsk.setText(obService.printAsksGrp());
+				txtMaxAsk.setText("SHORT " + coin.priceToStr(obService.getShortPriceFixed()));
+				txtOBookBid.setText(obService.printBidsGrp());
 				txtOBookBid.setCaretPosition(0);
-				txtMaxBid.setText("LONG " + points.getStrLgShockFixed());
-
-				String distShLg = coin.priceToStr((points.getShShock().doubleValue() / points.getLgShock().doubleValue() - 1.0) * 100.0);
-				txtMaxAsk.setToolTipText("Short-Long : " +  distShLg  + "%");
-				txtMaxBid.setToolTipText("Short-Long : " +  distShLg  + "%");
+				txtMaxBid.setText("LONG " + coin.priceToStr(obService.getLongPriceFixed()));
 			}
 		}
 		catch (Exception e)
@@ -868,5 +863,4 @@ public class FrmTrader extends JFrame
 		Application.initializeUI();
 		launch();
 	}
-
 }

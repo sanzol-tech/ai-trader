@@ -1,7 +1,6 @@
 package sanzol.app.task;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,10 +16,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
-import sanzol.app.model.OrderBookInfo;
 import sanzol.app.model.SignalEntry;
 import sanzol.app.model.Symbol;
-import sanzol.app.service.OrderBookService;
+import sanzol.app.service.OBookService;
+import sanzol.app.util.PriceUtil;
 
 public final class SignalService
 {
@@ -113,15 +112,16 @@ public final class SignalService
 			for (String symbol : Config.getLstFavSymbols())
 			{
 				Symbol coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
-				OrderBookInfo obInfo = OrderBookService.getObInfo(coin);
+				OBookService obService = OBookService.getInstance(coin).request().calc();
 
-				BigDecimal distShLg = getDistance(coin, obInfo.getShShockFixed(), obInfo.getLgShockFixed());
+				BigDecimal distShLg = PriceUtil.priceDistDown(obService.getShortPriceFixed(), obService.getLongPriceFixed(), true);
+				
 				if ((distShLg.doubleValue() < 1.5 || distShLg.doubleValue() > 6.0))
 				{
 					continue;
 				}
 
-				lstShocks.add(new SignalEntry(coin, obInfo.getShShockFixed(), obInfo.getLgShockFixed()));
+				lstShocks.add(new SignalEntry(coin, obService.getShortPriceFixed(), obService.getLongPriceFixed()));
 			}
 		}
 		catch (Exception e)
@@ -155,9 +155,9 @@ public final class SignalService
 
 				entry.setPrice(price);
 
-				BigDecimal distShLg = getDistance(entry.getCoin(), entry.getShShock(), entry.getLgShock());
-				BigDecimal distShort = getDistance(entry.getCoin(), entry.getShShock(), price);
-				BigDecimal distLong = getDistance(entry.getCoin(), price, entry.getLgShock());
+				BigDecimal distShLg = PriceUtil.priceDistDown(entry.getShShock(), entry.getLgShock(), true);
+				BigDecimal distShort = PriceUtil.priceDistUp(price, entry.getShShock(), true);
+				BigDecimal distLong = PriceUtil.priceDistDown(price, entry.getLgShock(), true);
 
 				String action = "";
 				if ((distShLg.doubleValue() >= 1.5 && distShLg.doubleValue() <= 6.0))
@@ -200,12 +200,6 @@ public final class SignalService
 		}
 
 		lstShockStatus = list;
-
-	}
-
-	private static BigDecimal getDistance(Symbol coin, BigDecimal price1, BigDecimal price2)
-	{
-		return price1.divide(price2, 4, RoundingMode.HALF_UP).subtract(BigDecimal.ONE).multiply(BigDecimal.valueOf(100));
 	}
 
 	// -----------------------------------------------------------------------
