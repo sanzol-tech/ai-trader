@@ -19,15 +19,15 @@ public class Config
 		 "DASH", "DOGE", "DOT", "EGLD", "EOS", "ETH", "FIL", "FTM", "GALA", 
 		 "GMT", "HNT", "IOTA", "KAVA", "KNC", "LINA", "LINK", "LTC", "LUNA", 
 		 "MANA", "MATIC", "NEAR", "NEO", "OCEAN", "OGN", "OMG", "ONE", "PEOPLE", 
-		 "ROSE", "RUNE", "SAND", "SOL", "STORJ", "SUSHI", "THETA", "TRX", "UNI", 
+		 "ROSE", "RUNE", "SAND", "STORJ", "SUSHI", "THETA", "TRX", "UNI", 
 		 "VET", "WAVES", "XLM", "XMR", "XRP", "XTZ", "ZEC", "ZIL"};
 
 	private static final Integer LEVERAGE = 10;
-	private static final Integer ITERATIONS = 7;
+	private static final Integer ITERATIONS = 5;
 	private static final Double PRICE_INCREMENT = 0.02;
-	private static final Double STOPLOSS_INCREMENT = 0.03;
+	private static final Double STOPLOSS_INCREMENT = 0.1;
 	private static final Double COINS_INCREMENT = 0.40;
-	private static final Double TAKEPROFIT = 0.005;
+	private static final Double TAKEPROFIT = 0.01;
 	private static final Integer POSITIONS_MAX = 5;
 	private static final Double POSITION_START_QTY = 0.03;
 	private static final Double POSITION_START_QTY_MAX = 0.035;

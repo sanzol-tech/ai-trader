@@ -37,6 +37,8 @@ public class FrmPositions extends JFrame
 	private static final int DEFAULT_PERIOD_MILLIS = 5000;
 	private static boolean isOpen = false;
 
+	private Timer timer1;
+	
 	private JPanel contentPane;
 
 	private JScrollPane scrollPane;
@@ -161,6 +163,7 @@ public class FrmPositions extends JFrame
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
+				timer1.stop();
 				isOpen = false;
 			}
 		});
@@ -185,7 +188,7 @@ public class FrmPositions extends JFrame
 			}
 		};
 
-		Timer timer1 = new Timer(DEFAULT_PERIOD_MILLIS, taskPerformer1);
+		timer1 = new Timer(DEFAULT_PERIOD_MILLIS, taskPerformer1);
 		timer1.setInitialDelay(0);
 		timer1.setRepeats(true);
 		timer1.start();

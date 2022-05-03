@@ -53,6 +53,8 @@ public class FrmAddOrder extends JFrame
 
 	private Symbol coin;
 
+	private Timer timer1;
+
 	private JPanel contentPane;
 	private JLabel lblError;
 
@@ -447,15 +449,15 @@ public class FrmAddOrder extends JFrame
 		btnCalc150.setOpaque(true);
 		btnCalc150.setBounds(108, 403, 70, 23);
 		contentPane.add(btnCalc150);
-		
 
 		// ---------------------------------------------------------------------
-
+		
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
 			public void windowClosed(WindowEvent e)
 			{
+				timer1.stop();
 				isOpen = false;
 			}
 		});
@@ -759,7 +761,7 @@ public class FrmAddOrder extends JFrame
 				refresh();
 			}
 		};
-		Timer timer1 = new Timer(2000, taskPerformer1);
+		timer1 = new Timer(2000, taskPerformer1);
 		timer1.setInitialDelay(0);
 		timer1.setRepeats(true);
 		timer1.start();

@@ -10,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -58,6 +60,8 @@ public class FrmTrader extends JFrame
 
 	private Symbol coin;
 	private PositionTrader pMaker;
+
+	private Timer timer1;
 
 	private JPanel contentPane;
 
@@ -385,6 +389,15 @@ public class FrmTrader extends JFrame
 
 		// --------------------------------------------------------------------
 
+		addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowClosed(WindowEvent e)
+			{
+				timer1.stop();
+			}
+		});
+
 		rbPriceNow.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
@@ -524,7 +537,7 @@ public class FrmTrader extends JFrame
 				refreshAuto(true, false);
 			}
 		};
-		Timer timer1 = new Timer(3000, taskPerformer1);
+		timer1 = new Timer(3000, taskPerformer1);
 		timer1.setInitialDelay(0);
 		timer1.setRepeats(true);
 		timer1.start();

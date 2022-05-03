@@ -280,24 +280,26 @@ public final class PositionService
 			if (entry.getPositionAmt().compareTo(BigDecimal.ZERO) != 0)
 			{
 				Symbol symbol = Symbol.getInstance(entry.getSymbol());
-
-				String side = entry.getPositionAmt().doubleValue() > 0 ? "LONG" : "SHORT";
-
-				sbBody.append(String.format("%-22s %-20s %10s %14s %12s %14s\n",
-											entry.getSymbol(),
-											side + " " + entry.getMarginType() + " " + entry.getLeverage(),
-											entry.getPositionAmt(),
-											symbol.priceToStr(entry.getMarkPrice()),
-											symbol.priceToStr(entry.getEntryPrice()), 
-											Convert.usdToStr(entry.getUnrealizedProfit().doubleValue())));
-
-				if (includeOrders)
+				if (symbol != null)
 				{
-					sbBody.append(StringUtils.repeat("-",97));
-					sbBody.append("\n");
-					sbBody.append(toStringOrders(entry.getSymbol()));
-					sbBody.append(StringUtils.repeat("-",97));
-					sbBody.append("\n");
+					String side = entry.getPositionAmt().doubleValue() > 0 ? "LONG" : "SHORT";
+	
+					sbBody.append(String.format("%-22s %-20s %10s %14s %12s %14s\n",
+												entry.getSymbol(),
+												side + " " + entry.getMarginType() + " " + entry.getLeverage(),
+												entry.getPositionAmt(),
+												symbol.priceToStr(entry.getMarkPrice()),
+												symbol.priceToStr(entry.getEntryPrice()), 
+												Convert.usdToStr(entry.getUnrealizedProfit().doubleValue())));
+	
+					if (includeOrders)
+					{
+						sbBody.append(StringUtils.repeat("-",97));
+						sbBody.append("\n");
+						sbBody.append(toStringOrders(entry.getSymbol()));
+						sbBody.append(StringUtils.repeat("-",97));
+						sbBody.append("\n");
+					}
 				}
 			}
 		}
