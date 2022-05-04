@@ -67,7 +67,7 @@ public class FrmPointsEditor extends JFrame
 		setBounds(100, 100, 480, 517);
 		setMinimumSize(new Dimension(480, 500));
 		setTitle(TITLE);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmTrader.class.getResource("/resources/monitor.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmGrid.class.getResource("/resources/monitor.png")));
 		setLocationRelativeTo(null);
 	
 		textArea = new JTextArea();

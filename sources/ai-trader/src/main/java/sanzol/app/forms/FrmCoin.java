@@ -486,32 +486,32 @@ public class FrmCoin extends JFrame
 
 		btnShortShockBB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmTrader.launch(coin.getNameLeft(), "SHORT", txtShortPrice.getText());
+				FrmGrid.launch(coin.getNameLeft(), "SHORT", txtShortPrice.getText());
 			}
 		});
 		btnLongShockBB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmTrader.launch(coin.getNameLeft(), "LONG", txtLongPrice.getText());
+				FrmGrid.launch(coin.getNameLeft(), "LONG", txtLongPrice.getText());
 			}
 		});
 		btnShortShockFP.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmTrader.launch(coin.getNameLeft(), "SHORT", txtShortPriceFP.getText());
+				FrmGrid.launch(coin.getNameLeft(), "SHORT", txtShortPriceFP.getText());
 			}
 		});
 		btnLongShockFP.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmTrader.launch(coin.getNameLeft(), "LONG", txtLongPriceFP.getText());
+				FrmGrid.launch(coin.getNameLeft(), "LONG", txtLongPriceFP.getText());
 			}
 		});
 		btnShortShockWA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmTrader.launch(coin.getNameLeft(), "SHORT", txtShortPriceWA.getText());
+				FrmGrid.launch(coin.getNameLeft(), "SHORT", txtShortPriceWA.getText());
 			}
 		});
 		btnLongShockWA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmTrader.launch(coin.getNameLeft(), "LONG", txtLongPriceWA.getText());
+				FrmGrid.launch(coin.getNameLeft(), "LONG", txtLongPriceWA.getText());
 			}
 		});
 

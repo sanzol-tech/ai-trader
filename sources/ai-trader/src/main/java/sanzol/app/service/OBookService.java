@@ -102,6 +102,11 @@ public class OBookService
 
 	public OBookService calc()
 	{
+		return calc(0.5, 0.2);
+	}
+	
+	public OBookService calc(double waMaxAccc, double waMaxDist)
+	{
 		if (client != null)
 			client.unsubscribeAll();
 		
@@ -113,8 +118,8 @@ public class OBookService
 		this.shortPriceBBlk = getBestBlockAsks();
 		this.longPriceBBlk = geBestBlockBids();
 
-		this.shortPriceWAvg = weightedAverage(asks, 0.5, 0.2);
-		this.longPriceWAvg = weightedAverage(bids, 0.5, 0.2);
+		this.shortPriceWAvg = weightedAverage(asks, waMaxAccc, waMaxDist);
+		this.longPriceWAvg = weightedAverage(bids, waMaxAccc, waMaxDist);
 
 		fixShocks();
 		
@@ -409,7 +414,7 @@ public class OBookService
 			for (int i = asks.size() - 1; i >= 0; i--)
 			{
 				OrderBookElement ele = asks.get(i);
-				sb.append(String.format("%-10s  %10s  %10s  %8.2f %%  %8.2f %%\n", coin.priceToStr(ele.getPrice()), coin.coinsToStr(ele.getQty()), coin.coinsToStr(ele.getSumQty()), ele.getSumPercent().multiply(BigDecimal.valueOf(100.0)), ele.getDistance().multiply(BigDecimal.valueOf(100.0))));
+				sb.append(String.format("%-10s  %10s  %10s  %8.2f %%  %8.2f %%\n", coin.priceToStr(ele.getPrice()), coin.qtyToStr(ele.getQty()), coin.qtyToStr(ele.getSumQty()), ele.getSumPercent().multiply(BigDecimal.valueOf(100.0)), ele.getDistance().multiply(BigDecimal.valueOf(100.0))));
 			}
 			return sb.toString();
 		}
@@ -423,7 +428,7 @@ public class OBookService
 			StringBuilder sb = new StringBuilder();
 			for (OrderBookElement ele : bids)
 			{
-				sb.append(String.format("%-10s  %10s  %10s  %8.2f %%  %8.2f %%\n", coin.priceToStr(ele.getPrice()), coin.coinsToStr(ele.getQty()), coin.coinsToStr(ele.getSumQty()), ele.getSumPercent().multiply(BigDecimal.valueOf(100.0)), ele.getDistance().multiply(BigDecimal.valueOf(100.0))));
+				sb.append(String.format("%-10s  %10s  %10s  %8.2f %%  %8.2f %%\n", coin.priceToStr(ele.getPrice()), coin.qtyToStr(ele.getQty()), coin.qtyToStr(ele.getSumQty()), ele.getSumPercent().multiply(BigDecimal.valueOf(100.0)), ele.getDistance().multiply(BigDecimal.valueOf(100.0))));
 			}
 			return sb.toString();
 		}
@@ -438,7 +443,7 @@ public class OBookService
 			for (int i = asksGrp.size() - 1; i >= 0; i--)
 			{
 				OrderBookElement ele = asksGrp.get(i);
-				sb.append(String.format("%-10s : %10s  %8.2f %%\n", coin.priceToStr(ele.getPrice()), coin.coinsToStr(ele.getQty()), ele.getSumPercent().multiply(BigDecimal.valueOf(100.0))));
+				sb.append(String.format("%-10s : %10s  %8.2f %%\n", coin.priceToStr(ele.getPrice()), coin.qtyToStr(ele.getQty()), ele.getSumPercent().multiply(BigDecimal.valueOf(100.0))));
 			}
 			return sb.toString();
 		}
@@ -452,7 +457,7 @@ public class OBookService
 			StringBuilder sb = new StringBuilder();
 			for (OrderBookElement ele : bidsGrp)
 			{
-				sb.append(String.format("%-10s : %10s  %8.2f %%\n", coin.priceToStr(ele.getPrice()), coin.coinsToStr(ele.getQty()), ele.getSumPercent().multiply(BigDecimal.valueOf(100.0))));
+				sb.append(String.format("%-10s : %10s  %8.2f %%\n", coin.priceToStr(ele.getPrice()), coin.qtyToStr(ele.getQty()), ele.getSumPercent().multiply(BigDecimal.valueOf(100.0))));
 			}
 			return sb.toString();
 		}
@@ -494,12 +499,12 @@ public class OBookService
 	{
 		Application.initialize();
 
-		String symbol = "1000SHIB";
+		String symbol = "ETH";
 		Symbol coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
 
-		OBookService obService = OBookService.getInstance(coin).request(); //.subscribeDiffDepthEvent();
-		Thread.sleep(2000);
-		obService.calc();
+		OBookService obService = OBookService.getInstance(coin).request().subscribeDiffDepthEvent();
+		Thread.sleep(20000);
+		obService.calc(1, 1);
 
 		System.out.println("");
 		System.out.println(coin.getNameLeft());

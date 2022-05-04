@@ -26,7 +26,7 @@ public class Config
 	private static final Integer ITERATIONS = 5;
 	private static final Double PRICE_INCREMENT = 0.02;
 	private static final Double STOPLOSS_INCREMENT = 0.1;
-	private static final Double COINS_INCREMENT = 0.40;
+	private static final Double COINS_INCREMENT = 0.50;
 	private static final Double TAKEPROFIT = 0.01;
 	private static final Integer POSITIONS_MAX = 5;
 	private static final Double POSITION_START_QTY = 0.03;

@@ -579,7 +579,7 @@ public class FrmAddOrder extends JFrame
 					txtPositionPrice.setText(coin.priceToStr(positionRisk.getEntryPrice()));
 		
 					double amt = Math.abs(positionRisk.getPositionAmt().doubleValue());
-					txtPositionQty.setText(coin.coinsToStr(amt));
+					txtPositionQty.setText(coin.qtyToStr(amt));
 		
 					if (positionRisk.getPositionAmt().doubleValue() < 0)
 					{
@@ -643,19 +643,19 @@ public class FrmAddOrder extends JFrame
 			txtPositionDist.setText(Convert.dblToStrPercent(mapPosition.get("POS").getDist()));
 
 			txtShootPrice.setText(coin.priceToStr(mapPosition.get("SHOOT").getPrice()));
-			txtShootQty.setText(coin.coinsToStr(mapPosition.get("SHOOT").getCoins()));
+			txtShootQty.setText(coin.qtyToStr(mapPosition.get("SHOOT").getCoins()));
 			txtShootUsd.setText(Convert.usdToStr(mapPosition.get("SHOOT").getUsd()));
 			txtShootDist.setText(Convert.dblToStrPercent(mapPosition.get("SHOOT").getDist()));
 
 			txtResultPrice.setText(coin.priceToStr(mapPosition.get("RESULT").getPrice()));
-			txtResultQty.setText(coin.coinsToStr(mapPosition.get("RESULT").getCoins()));
+			txtResultQty.setText(coin.qtyToStr(mapPosition.get("RESULT").getCoins()));
 			txtResultUsd.setText(Convert.usdToStr(mapPosition.get("RESULT").getUsd()));
 			txtResultDist.setText(Convert.dblToStrPercent(mapPosition.get("RESULT").getDist()));
 
 			if (mapPosition.containsKey("OTHERS"))
 			{
 				txtOthersPrice.setText(coin.priceToStr(mapPosition.get("OTHERS").getPrice()));
-				txtOthersQty.setText(coin.coinsToStr(mapPosition.get("OTHERS").getCoins()));
+				txtOthersQty.setText(coin.qtyToStr(mapPosition.get("OTHERS").getCoins()));
 				txtOthersUsd.setText(Convert.usdToStr(mapPosition.get("OTHERS").getUsd()));
 				txtOthersDist.setText(Convert.dblToStrPercent(mapPosition.get("OTHERS").getDist()));
 			}
@@ -663,7 +663,7 @@ public class FrmAddOrder extends JFrame
 			if (mapPosition.containsKey("SL"))
 			{
 				txtSLPrice.setText(coin.priceToStr(mapPosition.get("SL").getPrice()));
-				txtSLQty.setText(coin.coinsToStr(mapPosition.get("SL").getCoins()));
+				txtSLQty.setText(coin.qtyToStr(mapPosition.get("SL").getCoins()));
 				txtSLUsd.setText(Convert.usdToStr(mapPosition.get("SL").getUsd()));
 				txtSLDist.setText(Convert.dblToStrPercent(mapPosition.get("SL").getDist()));
 			}
@@ -671,7 +671,7 @@ public class FrmAddOrder extends JFrame
 			if (mapPosition.containsKey("TP"))
 			{
 				txtTPPrice.setText(coin.priceToStr(mapPosition.get("TP").getPrice()));
-				txtTPQty.setText(coin.coinsToStr(mapPosition.get("TP").getCoins()));
+				txtTPQty.setText(coin.qtyToStr(mapPosition.get("TP").getCoins()));
 				txtTPUsd.setText(Convert.usdToStr(mapPosition.get("TP").getUsd()));
 				txtTPDist.setText(Convert.dblToStrPercent(mapPosition.get("TP").getDist()));
 			}
@@ -703,7 +703,7 @@ public class FrmAddOrder extends JFrame
 			}
 
 			// ----------------------------------------------------------------
-			String msg = String.format("Post order %s  /  %s  /  %s  /  %s ? *The price can be better than the selected one", coin.getName(), side.name(), coin.priceToStr(price), coin.coinsToStr(coins));			
+			String msg = String.format("Post order %s  /  %s  /  %s  /  %s ? *The price can be better than the selected one", coin.getName(), side.name(), coin.priceToStr(price), coin.qtyToStr(coins));			
 
 			if (JOptionPane.showConfirmDialog(null, msg) == 0)
 			{

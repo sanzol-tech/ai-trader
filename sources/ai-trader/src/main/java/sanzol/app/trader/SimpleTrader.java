@@ -29,13 +29,13 @@ public class SimpleTrader
 		if (side == Side.SHORT)
 		{
 			orderResult = postOrder(symbol, OrderSide.SELL, OrderType.LIMIT, TimeInForce.GTC, 
-									symbol.coinsToStr(coins), symbol.priceToStr(price), null, null, null, WorkingType.CONTRACT_PRICE,
+									symbol.qtyToStr(coins), symbol.priceToStr(price), null, null, null, WorkingType.CONTRACT_PRICE,
 									NewOrderRespType.RESULT, null);
 		}
 		else if (side == Side.LONG)
 		{
 			orderResult = postOrder(symbol, OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC, 
-									symbol.coinsToStr(coins), symbol.priceToStr(price), null, null, null, WorkingType.CONTRACT_PRICE,
+									symbol.qtyToStr(coins), symbol.priceToStr(price), null, null, null, WorkingType.CONTRACT_PRICE,
 									NewOrderRespType.RESULT, null);
 		}
 

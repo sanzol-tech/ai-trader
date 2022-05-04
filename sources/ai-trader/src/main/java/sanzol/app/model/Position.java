@@ -1,38 +1,32 @@
 package sanzol.app.model;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
-import org.decimal4j.util.DoubleRounder;
 
 import com.binance.client.model.enums.PositionSide;
-import com.binance.client.model.trade.AccountBalance;
 
 import sanzol.app.config.CharConstants;
 import sanzol.app.model.PositionOrder.State;
 import sanzol.app.model.PositionOrder.Type;
-import sanzol.app.task.BalanceService;
-import sanzol.app.task.PriceService;
 
 public class Position
 {
 	private Symbol coin;
+	
 	private PositionSide side;
 	private Double inPrice = null;
-	private Double inCoins = null;
-	private int iterations;
-	private double priceIncr;
+	private Double inQty = null;
 	private double distBeforeSL;
-	private double coinsIncr;
 	private double takeProfit;
+	private List<PriceQty> lstPriceQty = new ArrayList<PriceQty>();
+	
 	private List<PositionOrder> lstOrders;
 	private double sumUsd;
-
 
 	public Position()
 	{
@@ -45,54 +39,13 @@ public class Position
 		this.side = side;
 	}
 
-	public Position(Symbol coin, PositionSide side, int iterations, double priceIncr, double distBeforeSL, double coinsIncr, double takeProfit)
+	public Position(Symbol coin, PositionSide side, double distBeforeSL, double takeProfit, List<PriceQty> lstPriceQty)
 	{
 		this.coin = coin;
 		this.side = side;
-		this.iterations = iterations;
-		this.priceIncr = priceIncr;
 		this.distBeforeSL = distBeforeSL;
-		this.coinsIncr = coinsIncr;
 		this.takeProfit = takeProfit;
-	}
-
-	public static Position getInstance(Symbol coin, PositionSide side)
-	{
-		return new Position(coin, side);
-	}
-
-	public static Position getInstance(Symbol coin, PositionSide side, int iterations, double priceIncr, double distBeforeSL, double coinsIncr, double takeProfit)
-	{
-		return new Position(coin, side, iterations, priceIncr, distBeforeSL, coinsIncr, takeProfit);
-	}
-
-	// ------------------------------------------------------------------------
-
-	public Position withCoinAuto(double balancePercent) throws Exception
-	{
-		if (inPrice == null)
-		{
-			throw new IllegalArgumentException("inPrice is null"); 
-		}
-
-		AccountBalance accBalance = BalanceService.getAccountBalance();
-		double balance = accBalance.getBalance().doubleValue();
-		this.inCoins = DoubleRounder.round(Math.max(5, balance * balancePercent) / inPrice, coin.getQuantityPrecision(), RoundingMode.CEILING);
-		return this;
-	}
-
-	public Position withPriceAuto() throws Exception
-	{
-		BigDecimal lastPrice = PriceService.getLastPrice(coin);
-		if (side == PositionSide.SHORT)
-		{
-			this.inPrice = coin.addFewTicks(lastPrice.doubleValue(), 5);
-		}
-		else
-		{
-			this.inPrice = coin.subFewTicks(lastPrice.doubleValue(), 5);
-		}
-		return this;
+		this.lstPriceQty = lstPriceQty;
 	}
 
 	// ------------------------------------------------------------------------
@@ -122,9 +75,9 @@ public class Position
 		return coin.priceToStr(inPrice);
 	}
 
-	public String getInCoinsStr()
+	public String getInQtyStr()
 	{
-		return coin.coinsToStr(inCoins);
+		return coin.qtyToStr(inQty);
 	}
 
 	// ------------------------------------------------------------------------
@@ -134,59 +87,29 @@ public class Position
 		return coin;
 	}
 
-	public void setCoin(Symbol coin)
-	{
-		this.coin = coin;
-	}
-
 	public PositionSide getSide()
 	{
 		return side;
 	}
 
-	public void setSide(PositionSide side)
-	{
-		this.side = side;
-	}
-
-	public double getInPrice()
+	public Double getInPrice()
 	{
 		return inPrice;
 	}
 
-	public void setInPrice(double inPrice)
+	public void setInPrice(Double inPrice)
 	{
 		this.inPrice = inPrice;
 	}
-
-	public double getInCoins()
+	
+	public Double getInQty()
 	{
-		return inCoins;
+		return inQty;
 	}
 
-	public void setInCoins(double inCoins)
+	public void setInQty(Double inQty)
 	{
-		this.inCoins = inCoins;
-	}
-
-	public int getIterations()
-	{
-		return iterations;
-	}
-
-	public void setIterations(int iterations)
-	{
-		this.iterations = iterations;
-	}
-
-	public double getPriceIncr()
-	{
-		return priceIncr;
-	}
-
-	public void setPriceIncr(double priceIncr)
-	{
-		this.priceIncr = priceIncr;
+		this.inQty = inQty;
 	}
 
 	public double getDistBeforeSL()
@@ -194,19 +117,19 @@ public class Position
 		return distBeforeSL;
 	}
 
-	public void setDistBeforeSL(double distBeforeSL)
+	public double getTakeProfit()
 	{
-		this.distBeforeSL = distBeforeSL;
+		return takeProfit;
 	}
 
-	public double getCoinsIncr()
+	public List<PriceQty> getLstPriceQty()
 	{
-		return coinsIncr;
+		return lstPriceQty;
 	}
 
-	public void setCoinsIncr(double coinsIncr)
+	public void setLstPriceQty(List<PriceQty> lstPriceQty)
 	{
-		this.coinsIncr = coinsIncr;
+		this.lstPriceQty = lstPriceQty;
 	}
 
 	public List<PositionOrder> getLstOrders()
@@ -217,16 +140,6 @@ public class Position
 	public void setLstOrders(List<PositionOrder> lstOrders)
 	{
 		this.lstOrders = lstOrders;
-	}
-
-	public double getTakeProfit()
-	{
-		return takeProfit;
-	}
-
-	public void setTakeProfit(double takeProfit)
-	{
-		this.takeProfit = takeProfit;
 	}
 
 	public double getSumUsd()
@@ -253,10 +166,10 @@ public class Position
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("\n");
-		sb.append(String.format("%s %s - in Price: %s - in Coins: %s", side.name(), coin.getNameLeft(), getInPriceStr(), getInCoinsStr()));
+		sb.append(String.format("%s %s - in Price: %s - in Coins: %s", side.name(), coin.getNameLeft(), getInPriceStr(), getInQtyStr()));
 		sb.append("\n\n");
 
-		String labels = String.format("%-3s %8s %8s %12s %12s %12s %12s %12s %12s | %12s %10s %12s %12s", "#", "TYPE", CharConstants.ARROW_UP + " %", "PRICE", "COINS", "USD", CharConstants.SIGNA + " COINS", CharConstants.SIGNA + " USD", "USD LOST", "AVG-PRICE", CharConstants.ARROW_UP_DOWN + " %", "TP-PRICE", "PROFIT");
+		String labels = String.format("%-3s %8s %8s %12s %12s %12s %12s %12s %12s | %12s %10s %12s %12s", "#", "TYPE", CharConstants.ARROW_UP + " %", "PRICE", "QTY", "USD", CharConstants.SIGNA + " QTY", CharConstants.SIGNA + " USD", "USD LOST", "AVG-PRICE", CharConstants.ARROW_UP_DOWN + " %", "TP-PRICE", "PROFIT");
 
 		sb.append(labels);
 		sb.append("\n");
@@ -276,9 +189,9 @@ public class Position
 					entry.getType().name(), 
 					entry.getDistance() * 100, 
 					coin.priceToStr(entry.getPrice()),
-					coin.coinsToStr(entry.getCoins()), 
+					coin.qtyToStr(entry.getCoins()), 
 					usdToStr(entry.getUsd()), 
-					coin.coinsToStr(entry.getSumCoins()), 
+					coin.qtyToStr(entry.getSumCoins()), 
 					usdToStr(entry.getSumUsd()), 
 					usdToStr(entry.getLost()), 
 					coin.priceToStr(entry.getNewPrice()), 
@@ -303,5 +216,5 @@ public class Position
 
 		return sb.toString();
 	}
-
+	
 }

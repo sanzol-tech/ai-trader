@@ -127,7 +127,7 @@ public class Symbol
 		return new DecimalFormat(pattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(price);
 	}
 
-	public String coinsToStr(BigDecimal coins)
+	public String qtyToStr(BigDecimal coins)
 	{
 		String pattern = "#0";
 		if (quantityPrecision > 0)
@@ -138,7 +138,7 @@ public class Symbol
 		return new DecimalFormat(pattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(coins.doubleValue());
 	}
 
-	public String coinsToStr(double coins)
+	public String qtyToStr(double coins)
 	{
 		String pattern = "#0";
 		if (quantityPrecision > 0)
@@ -154,7 +154,7 @@ public class Symbol
 		return DoubleRounder.round(price, tickSize);
 	}
 
-	public double roundCoins(double coins)
+	public double roundQty(double coins)
 	{
 		return DoubleRounder.round(coins, quantityPrecision);
 	}

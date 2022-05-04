@@ -454,7 +454,7 @@ public class FrmMain extends JFrame
 
 		btnNewGrid.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmTrader.launch();
+				FrmGrid.launch();
 			}
 		});
 
@@ -646,12 +646,12 @@ public class FrmMain extends JFrame
 		if (entry.getAction().startsWith("SHORT"))
 		{
 			Double price = Math.max(entry.getPrice().doubleValue(), entry.getShShock().doubleValue());
-			FrmTrader.launch(entry.getCoin().getNameLeft(), "SHORT", entry.getCoin().priceToStr(price));
+			FrmGrid.launch(entry.getCoin().getNameLeft(), "SHORT", entry.getCoin().priceToStr(price));
 		}
 		else
 		{
 			Double price = Math.min(entry.getPrice().doubleValue(), entry.getLgShock().doubleValue());
-			FrmTrader.launch(entry.getCoin().getNameLeft(), "LONG", entry.getCoin().priceToStr(price));
+			FrmGrid.launch(entry.getCoin().getNameLeft(), "LONG", entry.getCoin().priceToStr(price));
 		}
 	}
 

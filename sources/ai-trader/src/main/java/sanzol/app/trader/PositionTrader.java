@@ -18,6 +18,7 @@ import sanzol.app.config.Config;
 import sanzol.app.config.PrivateConfig;
 import sanzol.app.model.Position;
 import sanzol.app.model.PositionOrder;
+import sanzol.app.model.PriceQty;
 import sanzol.app.model.PositionOrder.State;
 import sanzol.app.model.PositionOrder.Type;
 import sanzol.app.model.Symbol;
@@ -44,7 +45,7 @@ public class PositionTrader
 		return position;
 	}
 
-	public Symbol getCoin()
+	public Symbol getSymbol()
 	{
 		return position.getCoin();
 	}
@@ -69,61 +70,63 @@ public class PositionTrader
 		int number = 0;
 		Type type = Type.SELL;
 		double distance = 0;
+		double qtyIncr = 0;
 		double price = position.getInPrice();
-		double coins = position.getInCoins();
-		double usd = coins * price;
-		double sumCoins = coins;
+		double qty = position.getInQty();
+		double usd = qty * price;
+		double sumCoins = qty;
 		double sumUsd = usd;
 		double lost = 0;
 		double newPrice = sumUsd / sumCoins;
 		double takeProfit = newPrice * (1 - position.getTakeProfit());
 		double profit = sumUsd - sumCoins * takeProfit;
 		double recoveryNeeded = newPrice / price - 1;
-		lstOrders.add(new PositionOrder(number, type, distance, price, coins, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
+		lstOrders.add(new PositionOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
 
 		// RE SELLS
-		for (int i = 1; i <= position.getIterations(); i++)
+		for (PriceQty entry : position.getLstPriceQty())
 		{
-			number = i;
+			number++;
 			type = Type.SELL;
-			distance = Math.pow(1 + position.getPriceIncr(), i) - 1;
-			price = getCoin().roundPrice(position.getInPrice() * Math.pow(1 + position.getPriceIncr(), i));
-			coins = getCoin().roundCoins(position.getInCoins() * Math.pow(1 + position.getCoinsIncr(), i));
-			usd = price * coins;
-			sumCoins += coins;
+			distance = (1 + distance) * (1 + entry.getPriceDist()) - 1;
+			price = getSymbol().roundPrice(position.getInPrice() * (1 + distance));
+			qtyIncr = (1 + qtyIncr) * ( 1 + entry.getQtyIncr()) - 1;
+			qty = getSymbol().roundQty(position.getInQty() * (1 + qtyIncr));
+			usd = price * qty;
+			sumCoins += qty;
 			sumUsd += usd;
 			lost = sumUsd - sumCoins * price;
 			newPrice = sumUsd / sumCoins;
 			takeProfit = newPrice * (1 - position.getTakeProfit());
 			profit = sumUsd - sumCoins * takeProfit;
 			recoveryNeeded = newPrice / price - 1;
-			lstOrders.add(new PositionOrder(number, type, distance, price, coins, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
+			lstOrders.add(new PositionOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
 		}
 		position.setSumUsd(sumUsd);
 
 		// STOP LOSS
-		number = position.getIterations() + 1;
+		number++;
 		type = Type.SL_BUY;
-		distance = (Math.pow(1 + position.getPriceIncr(), position.getIterations()) * (1 + position.getDistBeforeSL())) - 1;
-		price = getCoin().roundPrice(position.getInPrice() * (1 + distance));
-		coins = sumCoins;
+		distance = (1 + distance) * (1 + position.getDistBeforeSL()) - 1;
+		price = getSymbol().roundPrice(position.getInPrice() * (1 + distance));
+		qty = sumCoins;
 		usd = sumUsd;
 		sumCoins = 0;
 		sumUsd = 0;
-		lost = usd - coins * price;
+		lost = usd - qty * price;
 		newPrice = 0;
 		takeProfit = 0;
 		profit = 0;
 		recoveryNeeded = 0;
-		lstOrders.add(new PositionOrder(number, type, distance, price, coins, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
+		lstOrders.add(new PositionOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
 
 		// TAKE PROFIT
-		number = position.getIterations() + 2;
+		number++;
 		type = Type.TP_BUY;
 		distance = 0;
 		price = lstOrders.get(0).getTakeProfit();
-		coins = lstOrders.get(0).getCoins();
-		usd = price * coins;
+		qty = lstOrders.get(0).getCoins();
+		usd = price * qty;
 		sumCoins = 0;
 		sumUsd = 0;
 		lost = 0;
@@ -131,7 +134,7 @@ public class PositionTrader
 		takeProfit = 0;
 		profit = 0;
 		recoveryNeeded = 0;
-		lstOrders.add(new PositionOrder(number, type, distance, price, coins, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
+		lstOrders.add(new PositionOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
 
 	}
 
@@ -148,61 +151,63 @@ public class PositionTrader
 		int number = 0;
 		Type type = Type.BUY;
 		double distance = 0;
+		double qtyIncr = 0;
 		double price = position.getInPrice();
-		double coins = position.getInCoins();
-		double usd = coins * price;
-		double sumCoins = coins;
+		double qty = position.getInQty();
+		double usd = qty * price;
+		double sumCoins = qty;
 		double sumUsd = usd;
 		double lost = 0;
 		double newPrice = sumUsd / sumCoins;
 		double takeProfit = newPrice * (1 + position.getTakeProfit());
 		double profit = sumCoins * takeProfit - sumUsd;
 		double recoveryNeeded = newPrice / price - 1;
-		lstOrders.add(new PositionOrder(number, type, distance, price, coins, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
+		lstOrders.add(new PositionOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
 
-		// RE SELLS
-		for (int i = 1; i <= position.getIterations(); i++)
+		// RE BUYS
+		for (PriceQty entry : position.getLstPriceQty())
 		{
-			number = i;
+			number++;
 			type = Type.BUY;
-			distance = Math.pow(1 - position.getPriceIncr(), i) - 1;
-			price = getCoin().roundPrice(position.getInPrice() * Math.pow(1 - position.getPriceIncr(), i));
-			coins = getCoin().roundCoins(position.getInCoins() * Math.pow(1 + position.getCoinsIncr(), i));
-			usd = price * coins;
-			sumCoins += coins;
+			distance = (1 + distance) * (1 - entry.getPriceDist()) - 1;
+			price = getSymbol().roundPrice(position.getInPrice() * (1 + distance));
+			qtyIncr = (1 + qtyIncr) * ( 1 + entry.getQtyIncr()) - 1;
+			qty = getSymbol().roundQty(position.getInQty() * (1 + qtyIncr));
+			usd = price * qty;
+			sumCoins += qty;
 			sumUsd += usd;
 			lost = -1 * (sumUsd - sumCoins * price);
 			newPrice = sumUsd / sumCoins;
 			takeProfit = newPrice * (1 + position.getTakeProfit());
 			profit = sumCoins * takeProfit - sumUsd;
 			recoveryNeeded = newPrice / price - 1;
-			lstOrders.add(new PositionOrder(number, type, distance, price, coins, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
+			lstOrders.add(new PositionOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
 		}
 		position.setSumUsd(sumUsd);
 
 		// STOP LOSS
-		number = position.getIterations() + 1;
+		number++;
 		type = Type.SL_SELL;
-		distance = (Math.pow(1 - position.getPriceIncr(), position.getIterations()) * (1 - position.getDistBeforeSL())) - 1;
-		price = getCoin().roundPrice(position.getInPrice() * (1 + distance));
-		coins = sumCoins;
+		distance = (1 + distance) * (1 - position.getDistBeforeSL()) - 1;
+		price = getSymbol().roundPrice(position.getInPrice() * (1 + distance));
+		qty = sumCoins;
 		usd = sumUsd;
 		sumCoins = 0;
 		sumUsd = 0;
-		lost = -1 * (usd - coins * price);
+		lost = -1 * (usd - qty * price);
 		newPrice = 0;
 		takeProfit = 0;
 		profit = 0;
 		recoveryNeeded = 0;
-		lstOrders.add(new PositionOrder(number, type, distance, price, coins, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
+		lstOrders.add(new PositionOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
 
 		// TAKE PROFIT
-		number = position.getIterations() + 2;
+		number++;
 		type = Type.TP_SELL;
 		distance = 0;
 		price = lstOrders.get(0).getTakeProfit();
-		coins = lstOrders.get(0).getCoins();
-		usd = price * coins;
+		qty = lstOrders.get(0).getCoins();
+		usd = price * qty;
 		sumCoins = 0;
 		sumUsd = 0;
 		lost = 0;
@@ -210,7 +215,7 @@ public class PositionTrader
 		takeProfit = 0;
 		profit = 0;
 		recoveryNeeded = 0;
-		lstOrders.add(new PositionOrder(number, type, distance, price, coins, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
+		lstOrders.add(new PositionOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
 
 	}
 
@@ -237,17 +242,19 @@ public class PositionTrader
 			double markPrice = PriceService.getLastPrice(position.getCoin()).doubleValue();
 			if (position.isShort())
 			{
-				if (markPrice > position.getInPrice())
+				if (markPrice < getSymbol().subFewTicks(position.getInPrice(), 20))
 				{
-					return "ERR: mark Price > order Price";
+					return "ERR: mark Price < in Price";
 				}
+				position.setInPrice(markPrice);
 			}
 			else
 			{
-				if (markPrice < position.getInPrice())
+				if (markPrice > getSymbol().addFewTicks(position.getInPrice(), 20))
 				{
-					return "ERR: mark Price < order Price";
+					return "ERR: mark Price > in Price";
 				}
+				position.setInPrice(markPrice);
 			}
 		}
 
@@ -293,25 +300,25 @@ public class PositionTrader
 		if (pOrder.getType() == Type.BUY)
 		{
 			orderResult = postOrder(OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC, 
-									getCoin().coinsToStr(pOrder.getCoins()), getCoin().priceToStr(pOrder.getPrice()), 
+									getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()), 
 									null, null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
 		else if (pOrder.getType() == Type.SELL)
 		{
 			orderResult = postOrder(OrderSide.SELL, OrderType.LIMIT, TimeInForce.GTC,
-									getCoin().coinsToStr(pOrder.getCoins()), getCoin().priceToStr(pOrder.getPrice()),
+					getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),
 									null, null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
 		if (pOrder.getType() == Type.TP_BUY)
 		{
 			orderResult = postOrder(OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC, 
-									getCoin().coinsToStr(pOrder.getCoins()), getCoin().priceToStr(pOrder.getPrice()),
+					getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),
 									"true", null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
 		else if (pOrder.getType() == Type.TP_SELL)
 		{
 			orderResult = postOrder(OrderSide.SELL, OrderType.LIMIT, TimeInForce.GTC,
-									getCoin().coinsToStr(pOrder.getCoins()), getCoin().priceToStr(pOrder.getPrice()),
+					getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),
 									"true", null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
 		else if (pOrder.getType() == Type.SL_BUY)
@@ -319,14 +326,14 @@ public class PositionTrader
 			double stopPrice = pOrder.getPrice();
 			orderResult = postOrder(OrderSide.BUY, OrderType.STOP_MARKET, TimeInForce.GTC,
 									null, null,
-									null, null, getCoin().priceToStr(stopPrice), WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, "true");
+									null, null, getSymbol().priceToStr(stopPrice), WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, "true");
 		}
 		else if (pOrder.getType() == Type.SL_SELL)
 		{
 			double stopPrice = pOrder.getPrice();
 			orderResult = postOrder(OrderSide.SELL, OrderType.STOP_MARKET, TimeInForce.GTC,
 									null, null,
-									null, null, getCoin().priceToStr(stopPrice), WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, "true");
+									null, null, getSymbol().priceToStr(stopPrice), WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, "true");
 		}
 
 		if (orderResult != null)
