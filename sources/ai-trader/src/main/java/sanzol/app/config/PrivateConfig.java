@@ -17,13 +17,7 @@ public class PrivateConfig
 
 	public static String loadKey() throws IOException
 	{
-		File path = new File(Constants.DEFAULT_USER_FOLDER);
-		if (!path.exists()) 
-		{
-			path.mkdirs();
-		}
-		
-		File fileConfig = new File(path, Constants.PRIVATEKEY_FILENAME);
+		File fileConfig = new File(Constants.DEFAULT_USER_FOLDER, Constants.PRIVATEKEY_FILENAME);
 		String text = FileUtils.readFileToString(fileConfig, StandardCharsets.UTF_8);
 		String key = Cipher.decrypt(text);
 

@@ -1,5 +1,7 @@
 package sanzol.app.config;
 
+import java.io.File;
+
 import sanzol.app.forms.FrmMain;
 import sanzol.app.task.BalanceService;
 import sanzol.app.task.PositionService;
@@ -19,6 +21,7 @@ public final class Application
 	{
 		try
 		{
+			verifyFolders();
 			PrivateConfig.loadKey();
 			Config.load();
 			PriceService.start();
@@ -30,6 +33,25 @@ public final class Application
 		{
 			error = "Application.initialize: " + e.getMessage();
 			System.err.println(e.getMessage());
+		}
+	}
+
+	private static void verifyFolders()
+	{
+		File path = new File(Constants.DEFAULT_USER_FOLDER);
+		if (!path.exists()) 
+		{
+			path.mkdirs();
+		}
+		File pathLog = new File(Constants.DEFAULT_LOG_FOLDER);
+		if (!pathLog.exists()) 
+		{
+			pathLog.mkdirs();
+		}
+		File pathExport = new File(Constants.DEFAULT_EXPORT_FOLDER);
+		if (!pathExport.exists()) 
+		{
+			pathExport.mkdirs();
 		}
 	}
 

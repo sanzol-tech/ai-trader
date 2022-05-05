@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
@@ -33,7 +35,6 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import org.apache.commons.io.FileUtils;
@@ -59,8 +60,6 @@ import sanzol.app.trader.PositionTrader;
 import sanzol.app.trader.PositionTrader.PostStyle;
 import sanzol.app.trader.PositionTrader.TestMode;
 import sanzol.app.util.Convert;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 
 public class FrmGrid extends JFrame
 {
@@ -457,7 +456,7 @@ public class FrmGrid extends JFrame
 		
 		pnlPosition = new JPanel();
 		pnlPosition.setLayout(null);
-		pnlPosition.setBorder(new TitledBorder(new LineBorder(new Color(171, 173, 179)), " Position ", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		pnlPosition.setBorder(new TitledBorder(null, " Position ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		pnlPosition.setBounds(16, 107, 190, 91);
 		contentPane.add(pnlPosition);
 
@@ -1098,7 +1097,7 @@ public class FrmGrid extends JFrame
 	{
 		try
 		{
-			File path = new File(Constants.DEFAULT_USER_FOLDER);
+			File path = new File(Constants.DEFAULT_LOG_FOLDER);
 			if (!path.exists()) 
 			{
 				path.mkdirs();

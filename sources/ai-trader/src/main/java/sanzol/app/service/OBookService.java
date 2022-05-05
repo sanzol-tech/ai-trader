@@ -476,7 +476,7 @@ public class OBookService
 				sbAsks.append(ele.toString());
 				sbAsks.append("\n");
 			}
-			File fileExportAsks = new File(Constants.DEFAULT_USER_FOLDER, coin.getNameLeft() + "_depth_asks.csv");
+			File fileExportAsks = new File(Constants.DEFAULT_EXPORT_FOLDER, coin.getNameLeft() + "_depth_asks.csv");
 			FileUtils.writeStringToFile(fileExportAsks, sbAsks.toString(), StandardCharsets.UTF_8);
 		}
 
@@ -488,7 +488,7 @@ public class OBookService
 				sbBids.append(ele.toString());
 				sbBids.append("\n");
 			}
-			File fileExportBids = new File(Constants.DEFAULT_USER_FOLDER, coin.getNameLeft() + "_depth_bids.csv");
+			File fileExportBids = new File(Constants.DEFAULT_EXPORT_FOLDER, coin.getNameLeft() + "_depth_bids.csv");
 			FileUtils.writeStringToFile(fileExportBids, sbBids.toString(), StandardCharsets.UTF_8);
 		}
 	}	

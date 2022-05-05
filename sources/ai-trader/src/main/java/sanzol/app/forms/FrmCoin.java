@@ -673,11 +673,11 @@ public class FrmCoin extends JFrame
 		{
 			obService.export();
 
-			File file = new File(Constants.DEFAULT_USER_FOLDER);
+			File file = new File(Constants.DEFAULT_EXPORT_FOLDER);
 			Desktop desktop = Desktop.getDesktop();
 			desktop.open(file);
 
-			INFO("Exported to " + Constants.DEFAULT_USER_FOLDER.toString());
+			INFO("Exported to " + Constants.DEFAULT_EXPORT_FOLDER.toString());
 		}
 		catch (Exception e)
 		{

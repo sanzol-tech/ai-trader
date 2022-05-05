@@ -15,7 +15,6 @@ import java.net.URI;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -29,6 +28,7 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 
 import com.binance.client.model.trade.AccountBalance;
 
@@ -113,8 +113,7 @@ public class FrmMain extends JFrame
 		setContentPane(contentPane);
 
 		JPanel panelConfig = new JPanel();
-		panelConfig.setBorder(UIManager.getBorder("TextField.border"));
-		panelConfig.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Styles.COLOR_BORDER_LINE, 1, true), " Default values "));
+		panelConfig.setBorder(new TitledBorder(null, " Default values ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelConfig.setBounds(16, 300, 810, 123);
 		panelConfig.setLayout(null);
 		contentPane.add(panelConfig);
@@ -174,7 +173,7 @@ public class FrmMain extends JFrame
 		txtCoinsIncr.setColumns(10);
 		panelConfig.add(txtCoinsIncr);
 
-		JLabel lblCoinsIncr = new JLabel("Coins Incr %");
+		JLabel lblCoinsIncr = new JLabel("Qty Incr %");
 		lblCoinsIncr.setBounds(20, 70, 80, 14);
 		panelConfig.add(lblCoinsIncr);
 
