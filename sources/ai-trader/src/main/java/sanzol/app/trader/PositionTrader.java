@@ -68,7 +68,7 @@ public class PositionTrader
 		int number = 0;
 		Type type = Type.SELL;
 		double distance = 0;
-		double qtyIncr = 0;
+		//double qtyIncr = 0;
 		double price = position.getInPrice();
 		double qty = position.getInQty();
 		double usd = qty * price;
@@ -88,8 +88,11 @@ public class PositionTrader
 			type = Type.SELL;
 			distance = (1 + distance) * (1 + entry.getPriceDist()) - 1;
 			price = getSymbol().roundPrice(position.getInPrice() * (1 + distance));
-			qtyIncr = (1 + qtyIncr) * ( 1 + entry.getQtyIncr()) - 1;
-			qty = getSymbol().roundQty(position.getInQty() * (1 + qtyIncr));
+
+			//qtyIncr = (1 + qtyIncr) * ( 1 + entry.getQtyIncr()) - 1;
+			//qty = getSymbol().roundQty(position.getInQty() * (1 + qtyIncr));
+			qty = qty * (1 + entry.getQtyIncr());
+			
 			usd = price * qty;
 			sumCoins += qty;
 			sumUsd += usd;
@@ -149,7 +152,7 @@ public class PositionTrader
 		int number = 0;
 		Type type = Type.BUY;
 		double distance = 0;
-		double qtyIncr = 0;
+		//double qtyIncr = 0;
 		double price = position.getInPrice();
 		double qty = position.getInQty();
 		double usd = qty * price;
@@ -169,8 +172,11 @@ public class PositionTrader
 			type = Type.BUY;
 			distance = (1 + distance) * (1 - entry.getPriceDist()) - 1;
 			price = getSymbol().roundPrice(position.getInPrice() * (1 + distance));
-			qtyIncr = (1 + qtyIncr) * ( 1 + entry.getQtyIncr()) - 1;
-			qty = getSymbol().roundQty(position.getInQty() * (1 + qtyIncr));
+
+			//qtyIncr = (1 + qtyIncr) * ( 1 + entry.getQtyIncr()) - 1;
+			//qty = getSymbol().roundQty(position.getInQty() * (1 + qtyIncr));
+			qty = qty * (1 + entry.getQtyIncr());
+			
 			usd = price * qty;
 			sumCoins += qty;
 			sumUsd += usd;

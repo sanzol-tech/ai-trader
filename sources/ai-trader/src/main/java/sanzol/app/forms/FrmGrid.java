@@ -11,6 +11,8 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -126,6 +128,7 @@ public class FrmGrid extends JFrame
 	private JTextField txtSymbolLeft;
 	private JTextField txtSymbolRight;
 	private JTextField txtTProfit;
+	private JLabel lnkBtnToy;
 
 	public FrmGrid()
 	{
@@ -206,6 +209,51 @@ public class FrmGrid extends JFrame
 		contentPane.add(txtSymbolRight);
 		txtSymbolRight.setColumns(10);
 
+		JLabel lblPreload = new JLabel("PRELOAD");
+		lblPreload.setBounds(231, 98, 60, 14);
+		contentPane.add(lblPreload);
+		
+		JLabel lnkBtnExtreme = new JLabel("Extreme");
+		lnkBtnExtreme.setHorizontalAlignment(SwingConstants.TRAILING);
+		lnkBtnExtreme.setBounds(295, 98, 60, 14);
+		lnkBtnExtreme.setForeground(Color.BLUE.darker());
+		lnkBtnExtreme.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		contentPane.add(lnkBtnExtreme);
+
+		JLabel lnkBtnStrong = new JLabel("Strong");
+		lnkBtnStrong.setHorizontalAlignment(SwingConstants.TRAILING);
+		lnkBtnStrong.setBounds(365, 98, 60, 14);
+		lnkBtnStrong.setForeground(Color.BLUE.darker());
+		lnkBtnStrong.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		contentPane.add(lnkBtnStrong);
+		
+		JLabel lnkBtnNormal = new JLabel("Normal");
+		lnkBtnNormal.setHorizontalAlignment(SwingConstants.TRAILING);
+		lnkBtnNormal.setBounds(435, 98, 60, 14);
+		lnkBtnNormal.setForeground(Color.BLUE.darker());
+		lnkBtnNormal.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		contentPane.add(lnkBtnNormal);
+		
+		JLabel lnkBtnLarge = new JLabel("Large");
+		lnkBtnLarge.setHorizontalAlignment(SwingConstants.TRAILING);
+		lnkBtnLarge.setBounds(505, 98, 60, 14);
+		lnkBtnLarge.setForeground(Color.BLUE.darker());
+		lnkBtnLarge.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		contentPane.add(lnkBtnLarge);
+
+		JLabel lnkBtnEternal = new JLabel("Eternal");
+		lnkBtnEternal.setHorizontalAlignment(SwingConstants.TRAILING);
+		lnkBtnEternal.setBounds(575, 98, 60, 14);
+		lnkBtnEternal.setForeground(Color.BLUE.darker());
+		lnkBtnEternal.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		contentPane.add(lnkBtnEternal);
+	
+		lnkBtnToy = new JLabel("Toy");
+		lnkBtnToy.setHorizontalAlignment(SwingConstants.TRAILING);
+		lnkBtnToy.setForeground(new Color(0, 0, 178));
+		lnkBtnToy.setBounds(645, 98, 50, 14);
+		contentPane.add(lnkBtnToy);
+		
 		txtShowResult = new JTextArea();
 		txtShowResult.setBackground(Styles.COLOR_TEXT_AREA_BG);
 		txtShowResult.setForeground(Styles.COLOR_TEXT_AREA_FG);
@@ -483,7 +531,7 @@ public class FrmGrid extends JFrame
 		txtPositionQty.setColumns(10);
 		txtPositionQty.setBounds(76, 54, 92, 20);
 		pnlPosition.add(txtPositionQty);
-
+		
 		btnShort.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				createShort();
@@ -571,6 +619,108 @@ public class FrmGrid extends JFrame
 			}
 		});
 
+		lnkBtnExtreme.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				loadGridTemplate(1);
+			}
+		});
+		lnkBtnStrong.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				loadGridTemplate(2);
+			}
+		});
+		lnkBtnNormal.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				loadGridTemplate(3);
+			}
+		});
+		lnkBtnLarge.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				loadGridTemplate(4);
+			}
+		});
+		lnkBtnEternal.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				loadGridTemplate(5);
+			}
+		});		
+		lnkBtnToy.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				loadGridTemplate(6);
+			}
+		});		
+
+	}
+	
+	private void loadGridTemplate(int templaneNro)
+	{
+		try
+		{
+			if (templaneNro == 1)
+			{
+				txtBalancePercent.setText("1");
+				txtIterations.setText("5");
+				txtPriceIncr.setText("1.8");
+				txtSLossDist.setText("10");
+				txtQtyIncr.setText("200");
+			}
+			else if (templaneNro == 2)
+			{
+				txtBalancePercent.setText("3");
+				txtIterations.setText("6");
+				txtPriceIncr.setText("2");
+				txtSLossDist.setText("10");
+				txtQtyIncr.setText("100");
+			}
+			else if (templaneNro == 3)
+			{
+				txtBalancePercent.setText("3");
+				txtIterations.setText("5");
+				txtPriceIncr.setText("2");
+				txtSLossDist.setText("10");
+				txtQtyIncr.setText("50");
+			}
+			else if (templaneNro == 4)
+			{
+				txtBalancePercent.setText("2");
+				txtIterations.setText("7");
+				txtPriceIncr.setText("3");
+				txtSLossDist.setText("10");
+				txtQtyIncr.setText("40");
+			}
+			else if (templaneNro == 5)
+			{
+				txtBalancePercent.setText("1");
+				txtIterations.setText("8");
+				txtPriceIncr.setText("5");
+				txtSLossDist.setText("10");
+				txtQtyIncr.setText("40");
+			}
+			else if (templaneNro == 6)
+			{
+				txtBalancePercent.setText("1");
+				txtIterations.setText("3");
+				txtPriceIncr.setText("2");
+				txtSLossDist.setText("1.5");
+				txtQtyIncr.setText("40");
+			}
+			else
+			{
+				return;
+			}
+
+			generateGrid();
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
 	}
 
 	private void loadConfig()
@@ -754,7 +904,10 @@ public class FrmGrid extends JFrame
 		if (iterations >= 1)
 		{
 			txtGPrice1.setText(Convert.dblToStrPercent(priceIncr));
-			txtGQty1.setText("0.0");
+			if (qtyIncr < 2)
+				txtGQty1.setText("0.0");
+			else
+				txtGQty1.setText("100.0");
 		}
 		else
 		{
