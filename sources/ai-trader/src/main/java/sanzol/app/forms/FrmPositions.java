@@ -66,7 +66,7 @@ public class FrmPositions extends JFrame
 	{
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 804, 614);
-		setMinimumSize(new Dimension(800, 600));
+		setMinimumSize(new Dimension(800, 400));
 		setTitle(Constants.APP_NAME + " - Positions");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmGrid.class.getResource("/resources/monitor.png")));
 		setLocationRelativeTo(null);

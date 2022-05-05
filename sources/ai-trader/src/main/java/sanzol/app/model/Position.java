@@ -19,6 +19,7 @@ public class Position
 	private Symbol coin;
 	
 	private PositionSide side;
+	private boolean markPrice;
 	private Double inPrice = null;
 	private Double inQty = null;
 	private double distBeforeSL;
@@ -150,6 +151,16 @@ public class Position
 	public void setSumUsd(double sumUsd)
 	{
 		this.sumUsd = sumUsd;
+	}
+
+	public boolean isMarkPrice()
+	{
+		return markPrice;
+	}
+
+	public void setMarkPrice(boolean markPrice)
+	{
+		this.markPrice = markPrice;
 	}
 
 	// ------------------------------------------------------------------------

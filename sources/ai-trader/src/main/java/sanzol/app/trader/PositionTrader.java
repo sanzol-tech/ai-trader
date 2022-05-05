@@ -29,8 +29,6 @@ public class PositionTrader
 {
 	public enum TestMode { TEST, PROD }
 
-	public static TestMode TEST_MODE = TestMode.PROD;
-
 	public enum PostStyle { ALL, FIRST, OTHERS }
 
 	private Position position;
@@ -242,19 +240,40 @@ public class PositionTrader
 			double markPrice = PriceService.getLastPrice(position.getCoin()).doubleValue();
 			if (position.isShort())
 			{
-				if (markPrice < getSymbol().subFewTicks(position.getInPrice(), 20))
+				if (position.isMarkPrice())
 				{
-					return "ERR: mark Price < in Price";
+					if (markPrice < getSymbol().subFewTicks(position.getInPrice(), 20))
+					{
+						return "ERR: mark Price < in Price";
+					}
+					position.setInPrice(markPrice);
 				}
-				position.setInPrice(markPrice);
+				else
+				{
+					if (markPrice > position.getInPrice())
+					{
+						return "ERR: mark Price > in Price";
+					}
+				}
 			}
 			else
 			{
-				if (markPrice > getSymbol().addFewTicks(position.getInPrice(), 20))
+				if (position.isMarkPrice())
 				{
-					return "ERR: mark Price > in Price";
+					if (markPrice > getSymbol().addFewTicks(position.getInPrice(), 20))
+					{
+						return "ERR: mark Price > in Price";
+					}
+					position.setInPrice(markPrice);
 				}
-				position.setInPrice(markPrice);
+				else
+				{
+					if (markPrice < position.getInPrice())
+					{
+						return "ERR: mark Price < in Price";
+					}
+					
+				}
 			}
 		}
 
@@ -349,11 +368,6 @@ public class PositionTrader
 							String quantity, String price, String reduceOnly, String newClientOrderId,
 							String stopPrice, WorkingType workingType, NewOrderRespType newOrderRespType, String closePosition)
 	{
-		if (TEST_MODE != TestMode.PROD)
-		{
-			return null;
-		}
-
 		return syncRequestClient.postOrder(position.getSymbol(), side, PositionSide.BOTH, orderType, timeInForce, 
 										   quantity, price, reduceOnly, newClientOrderId, stopPrice, workingType, newOrderRespType, closePosition);
 	}

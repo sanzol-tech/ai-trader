@@ -58,7 +58,6 @@ import sanzol.app.task.PositionService;
 import sanzol.app.task.PriceService;
 import sanzol.app.trader.PositionTrader;
 import sanzol.app.trader.PositionTrader.PostStyle;
-import sanzol.app.trader.PositionTrader.TestMode;
 import sanzol.app.util.Convert;
 
 public class FrmGrid extends JFrame
@@ -84,8 +83,8 @@ public class FrmGrid extends JFrame
 
 	private JRadioButton rbQty;
 	private JRadioButton rbQtyBalance;
-	private JRadioButton rbPrice;
-	private JRadioButton rbPriceNow;
+	private JRadioButton rbPriceLimit;
+	private JRadioButton rbPriceMark;
 	private JTextArea txtShowResult;
 
 	private JTextField txtQty;
@@ -173,14 +172,14 @@ public class FrmGrid extends JFrame
 		contentPane.add(txtQty);
 		txtQty.setColumns(10);
 
-		rbPriceNow = new JRadioButton("MARK");
-		rbPriceNow.setBounds(292, 58, 68, 23);
-		contentPane.add(rbPriceNow);
+		rbPriceMark = new JRadioButton("MARK");
+		rbPriceMark.setBounds(292, 58, 68, 23);
+		contentPane.add(rbPriceMark);
 
-		rbPrice = new JRadioButton("PRICE");
-		rbPrice.setSelected(true);
-		rbPrice.setBounds(292, 28, 68, 23);
-		contentPane.add(rbPrice);
+		rbPriceLimit = new JRadioButton("PRICE");
+		rbPriceLimit.setSelected(true);
+		rbPriceLimit.setBounds(292, 28, 68, 23);
+		contentPane.add(rbPriceLimit);
 
 		rbQtyBalance = new JRadioButton("BALANCE %");
 		rbQtyBalance.setSelected(true);
@@ -192,8 +191,8 @@ public class FrmGrid extends JFrame
 		contentPane.add(rbQty);
 
 		ButtonGroup bg1 = new javax.swing.ButtonGroup();
-		bg1.add(rbPriceNow);
-		bg1.add(rbPrice);
+		bg1.add(rbPriceMark);
+		bg1.add(rbPriceLimit);
 
 		ButtonGroup bg2 = new javax.swing.ButtonGroup();
 		bg2.add(rbQtyBalance);
@@ -501,7 +500,7 @@ public class FrmGrid extends JFrame
 			}
 		});
 
-		rbPriceNow.addItemListener(new ItemListener() {
+		rbPriceMark.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					txtPrice.setEnabled(false);
@@ -718,8 +717,8 @@ public class FrmGrid extends JFrame
 			if (amt < 0)
 				btnLong.setEnabled(false);
 
-			rbPrice.setEnabled(false);
-			rbPriceNow.setEnabled(false);
+			rbPriceLimit.setEnabled(false);
+			rbPriceMark.setEnabled(false);
 			txtPrice.setEnabled(false);
 			txtMarkPrice.setEnabled(false);
 			rbQty.setEnabled(false);
@@ -732,8 +731,8 @@ public class FrmGrid extends JFrame
 			btnShort.setEnabled(true);
 			btnLong.setEnabled(true);
 
-			rbPrice.setEnabled(true);
-			rbPriceNow.setEnabled(true);
+			rbPriceLimit.setEnabled(true);
+			rbPriceMark.setEnabled(true);
 			txtPrice.setEnabled(true);
 			txtMarkPrice.setEnabled(true);
 			rbQty.setEnabled(true);
@@ -922,6 +921,7 @@ public class FrmGrid extends JFrame
 
 		Double inPrice = getInPrice();
 		position.setInPrice(inPrice);
+		position.setMarkPrice(rbPriceMark.isSelected());
 
 		Double inQty = getInQty(inPrice);
 		position.setInQty(inQty);
@@ -936,7 +936,7 @@ public class FrmGrid extends JFrame
 			double price = Double.valueOf(txtPositionPrice.getText());
 			return price;
 		}
-		else if (rbPrice.isSelected())
+		else if (rbPriceLimit.isSelected())
 		{
 			if (NumberUtils.isCreatable(txtPrice.getText()))
 			{
@@ -1065,8 +1065,6 @@ public class FrmGrid extends JFrame
 			{
 				setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-				PositionTrader.TEST_MODE = TestMode.PROD;
-
 				String result = pMaker.post(postStyle);
 				if (result != null)
 				{
@@ -1078,11 +1076,8 @@ public class FrmGrid extends JFrame
 				save(coin.getName() + "_" + pMaker.getPosition().getSide().name());
 
 				// ------------------------------------------------------------
-				if (PositionTrader.TEST_MODE.equals(TestMode.PROD))
-				{
-					btnPostFirst.setEnabled(false);
-					btnPostOthers.setEnabled(postStyle.equals(PostStyle.FIRST));
-				}
+				btnPostFirst.setEnabled(false);
+				btnPostOthers.setEnabled(postStyle.equals(PostStyle.FIRST));
 
 				setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}

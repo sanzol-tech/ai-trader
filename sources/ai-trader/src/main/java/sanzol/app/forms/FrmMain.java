@@ -277,7 +277,7 @@ public class FrmMain extends JFrame
 		panelConfig.add(txtPositionQtyMax);
 
 		JScrollPane scrollFavorites = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollFavorites.setBounds(16, 67, 140, 190);
+		scrollFavorites.setBounds(16, 67, 235, 203);
 		scrollFavorites.setBorder(UIManager.getBorder("TextField.border"));
 		contentPane.add(scrollFavorites);
 
@@ -289,7 +289,7 @@ public class FrmMain extends JFrame
 		scrollFavorites.setViewportView(listFavorites);
 
 		JScrollPane scrollSignals = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollSignals.setBounds(183, 104, 643, 180);
+		scrollSignals.setBounds(276, 104, 550, 180);
 		scrollSignals.setBorder(UIManager.getBorder("TextField.border"));
 		contentPane.add(scrollSignals);
 
@@ -352,7 +352,7 @@ public class FrmMain extends JFrame
 		JLabel lblSignals = new JLabel("Short or Long Entries");
 		lblSignals.setHorizontalAlignment(SwingConstants.LEFT);
 		lblSignals.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblSignals.setBounds(184, 76, 200, 20);
+		lblSignals.setBounds(276, 76, 200, 20);
 		contentPane.add(lblSignals);
 
 		btnCalcOrder = new JButton("ADD ORDER");

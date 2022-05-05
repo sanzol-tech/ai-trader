@@ -80,8 +80,8 @@ public class PriceService
 				continue;
 			}
 			
-			String symbolName = Symbol.getRightSymbol(entry.getSymbol());
-			list.add(String.format("%-8s %6.2f%%", symbolName, entry.getPriceChangePercent()));
+			Symbol coin = Symbol.getInstance(entry.getSymbol());
+			list.add(String.format("%-8s %10s %8.2f%%", coin.getNameLeft(), coin.priceToStr(entry.getLastPrice()), entry.getPriceChangePercent()));
 		}
 		Collections.sort(list);		
 		return list;

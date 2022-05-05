@@ -65,7 +65,7 @@ public class FrmPointsEditor extends JFrame
 	{
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 480, 517);
-		setMinimumSize(new Dimension(480, 500));
+		setMinimumSize(new Dimension(480, 400));
 		setTitle(TITLE);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmGrid.class.getResource("/resources/monitor.png")));
 		setLocationRelativeTo(null);
