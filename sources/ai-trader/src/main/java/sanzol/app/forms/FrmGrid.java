@@ -73,32 +73,25 @@ public class FrmGrid extends JFrame
 	private Timer timer1;
 
 	private JPanel contentPane;
+	private JPanel pnlConfig;
+	private JPanel pnlPosition;
 
 	private JButton btnClean;
 	private JButton btnLong;
+	private JButton btnPostFirst;
 	private JButton btnPostOthers;
 	private JButton btnSearch;
 	private JButton btnShort;
-	private JButton btnPostFirst;
 
-	private JRadioButton rbQty;
-	private JRadioButton rbQtyBalance;
+	private JLabel lblPrice;
+	private JLabel lblQty;
+
 	private JRadioButton rbPriceLimit;
 	private JRadioButton rbPriceMark;
-	private JTextArea txtShowResult;
+	private JRadioButton rbQty;
+	private JRadioButton rbQtyBalance;
 
-	private JTextField txtQty;
-	private JTextField txtQtyIncr;
-	private JTextField txtBalancePercent;
-	private JTextField txtSLossDist;
-	private JTextField txtIterations;
-	private JTextField txtPrice;
-	private JTextField txtPriceIncr;
-	private JTextField txtPriceShow;
-	private JTextField txtTProfit;
-	private JTextField txtError;
-	private JTextField txtSymbolLeft;
-	private JTextField txtSymbolRight;
+	private JTextArea txtShowResult;
 
 	private JTextField txtGPrice1;
 	private JTextField txtGPrice2;
@@ -117,14 +110,22 @@ public class FrmGrid extends JFrame
 	private JTextField txtGQty6;
 	private JTextField txtGQty7;
 	private JTextField txtGQty8;
-	
+
+	private JTextField txtError;
+	private JTextField txtBalancePercent;
+	private JTextField txtIterations;
 	private JTextField txtMarkPrice;
-	private JPanel pnlConfig;
-	private JPanel pnlPosition;
-	private JLabel lblPrice;
 	private JTextField txtPositionPrice;
-	private JLabel lblQty;
 	private JTextField txtPositionQty;
+	private JTextField txtPrice;
+	private JTextField txtPriceIncr;
+	private JTextField txtPriceShow;
+	private JTextField txtQty;
+	private JTextField txtQtyIncr;
+	private JTextField txtSLossDist;
+	private JTextField txtSymbolLeft;
+	private JTextField txtSymbolRight;
+	private JTextField txtTProfit;
 
 	public FrmGrid()
 	{

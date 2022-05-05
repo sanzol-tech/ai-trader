@@ -239,7 +239,7 @@ public class FrmPositions extends JFrame
 	}
 
 	// -----------------------------------------------------------------------
-	
+
 	public void ERROR(Exception e)
 	{
 		ERROR(e.getMessage());
