@@ -40,7 +40,6 @@ import sanzol.app.task.BalanceService;
 import sanzol.app.task.PositionService;
 import sanzol.app.task.PriceService;
 import sanzol.app.trader.SimpleTrader;
-import sanzol.app.trader.SimpleTrader.Side;
 import sanzol.app.util.Convert;
 
 public class FrmAddOrder extends JFrame
@@ -688,7 +687,7 @@ public class FrmAddOrder extends JFrame
 		INFO("");
 		try
 		{
-			Side side = rbLong.isSelected() ? Side.LONG : Side.SHORT;
+			String side = rbLong.isSelected() ? "LONG" : "SHORT";
 			BigDecimal price = new BigDecimal(txtShootPrice.getText());
 			BigDecimal coins = new BigDecimal(txtShootQty.getText());
 
@@ -703,13 +702,13 @@ public class FrmAddOrder extends JFrame
 			}
 
 			// ----------------------------------------------------------------
-			String msg = String.format("Post order %s  /  %s  /  %s  /  %s ? *The price can be better than the selected one", coin.getName(), side.name(), coin.priceToStr(price), coin.qtyToStr(coins));			
+			String msg = String.format("Post order %s  /  %s  /  %s  /  %s ? *The price can be better than the selected one", coin.getName(), side, coin.priceToStr(price), coin.qtyToStr(coins));			
 
 			if (JOptionPane.showConfirmDialog(null, msg) == 0)
 			{
 				BigDecimal mrkPrice = PriceService.getLastPrice(coin);
-				if ((side == Side.SHORT && mrkPrice.doubleValue() > price.doubleValue()) ||
-					(side == Side.LONG && mrkPrice.doubleValue() < price.doubleValue()))
+				if (("SHORT".equals(side) && mrkPrice.doubleValue() > price.doubleValue()) ||
+					("LONG".equals(side) && mrkPrice.doubleValue() < price.doubleValue()))
 				{
 					price = mrkPrice;
 				}

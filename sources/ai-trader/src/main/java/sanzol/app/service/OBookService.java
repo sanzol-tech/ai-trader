@@ -218,7 +218,7 @@ public class OBookService
 	{
 		if (bidsGrp != null && !bidsGrp.isEmpty())
 		{
-			double minPrice = Math.pow(10, -coin.getTickSize());
+			double minPrice = Math.pow(10, -coin.getTickSize()) * 2;
 
 			OrderBookElement eMax = null;
 			for (OrderBookElement e : bidsGrp)
@@ -232,7 +232,7 @@ public class OBookService
 			return eMax.getPrice();
 		}
 		return null;
-	}	
+	}
 
 	public static BigDecimal weightedAverage(List<OrderBookElement> lst, double maxAccumPercent, double maxDist)
 	{
@@ -251,7 +251,7 @@ public class OBookService
 
 		return sumProd.divide(sumQty, RoundingMode.HALF_UP);
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	private void loadAsks()
@@ -393,12 +393,10 @@ public class OBookService
 		if ("1000SHIB".equalsIgnoreCase(coin.getNameLeft()))
 		{
 			return BigDecimal.valueOf(0.0001);
-	
 		}
 		if ("BTC".equalsIgnoreCase(coin.getNameLeft()))
 		{
 			return BigDecimal.valueOf(100);
-	
 		}
 
 		return BLOCK_SIZE[coin.getTickSize() - 1];

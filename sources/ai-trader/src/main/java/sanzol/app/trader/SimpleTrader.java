@@ -17,22 +17,17 @@ import sanzol.app.model.Symbol;
 
 public class SimpleTrader
 {
-	public enum Side
-	{
-		SHORT, LONG
-	};
-
-	public static String postOrder(Symbol symbol, Side side, BigDecimal price, BigDecimal coins)
+	public static String postOrder(Symbol symbol, String side, BigDecimal price, BigDecimal coins)
 	{
 		Order orderResult = null;
 
-		if (side == Side.SHORT)
+		if ("SHORT".equals(side))
 		{
 			orderResult = postOrder(symbol, OrderSide.SELL, OrderType.LIMIT, TimeInForce.GTC, 
 									symbol.qtyToStr(coins), symbol.priceToStr(price), null, null, null, WorkingType.CONTRACT_PRICE,
 									NewOrderRespType.RESULT, null);
 		}
-		else if (side == Side.LONG)
+		else if ("LONG".equals(side))
 		{
 			orderResult = postOrder(symbol, OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC, 
 									symbol.qtyToStr(coins), symbol.priceToStr(price), null, null, null, WorkingType.CONTRACT_PRICE,
@@ -42,6 +37,26 @@ public class SimpleTrader
 		return (orderResult != null ? orderResult.getStatus() : "n/a");
 	}
 
+	public static String postTprofit(Symbol symbol, String side, BigDecimal price, BigDecimal coins)
+	{
+		Order orderResult = null;
+
+		if ("SHORT".equals(side))
+		{
+			orderResult = postOrder(symbol, OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC, 
+									symbol.qtyToStr(coins), symbol.priceToStr(price), "true", null, null, WorkingType.CONTRACT_PRICE, 
+									NewOrderRespType.RESULT, null);
+		}
+		else if ("LONG".equals(side))
+		{
+			orderResult = postOrder(symbol, OrderSide.SELL, OrderType.LIMIT, TimeInForce.GTC,
+									symbol.qtyToStr(coins), symbol.priceToStr(price), "true", null, null, WorkingType.CONTRACT_PRICE, 
+									NewOrderRespType.RESULT, null);
+		}
+
+		return (orderResult != null ? orderResult.getStatus() : "n/a");
+	}
+	
 	private static Order postOrder(Symbol symbol, OrderSide side, OrderType orderType, TimeInForce timeInForce, 
 								   String quantity, String price, String reduceOnly, String newClientOrderId,
 								   String stopPrice, WorkingType workingType, NewOrderRespType newOrderRespType, String closePosition)

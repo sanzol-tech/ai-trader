@@ -47,7 +47,7 @@ public class FrmPositions extends JFrame
 	private JLabel lblError;
 	private JLabel lblTProfit;
 	private JTextField txtTProfit;
-	private JCheckBox chkTPRearrang;
+	private JCheckBox chkRearrangement;
 	
 	private JButton btnSave;
 	private JLabel lblTPPercent;
@@ -88,8 +88,9 @@ public class FrmPositions extends JFrame
 		txtTProfit.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtTProfit.setText("0");
 
-		chkTPRearrang = new javax.swing.JCheckBox();
-		chkTPRearrang.setText("Rearrangement");
+		chkRearrangement = new javax.swing.JCheckBox();
+		chkRearrangement.setText("Rearrangement");
+		chkRearrangement.setSelected(PositionService.isTpRearrangement());
 
 		btnSave = new javax.swing.JButton();
 		btnSave.setText("Save change");
@@ -127,7 +128,7 @@ public class FrmPositions extends JFrame
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(lblTPPercent, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(chkTPRearrang, GroupLayout.PREFERRED_SIZE, 114, GroupLayout.PREFERRED_SIZE)
+							.addComponent(chkRearrangement, GroupLayout.PREFERRED_SIZE, 114, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(btnSave)
 							.addPreferredGap(ComponentPlacement.RELATED, 273, Short.MAX_VALUE)
@@ -146,7 +147,7 @@ public class FrmPositions extends JFrame
 						.addComponent(chkIncludeOrders)
 						.addComponent(lblTProfit)
 						.addComponent(btnSave)
-						.addComponent(chkTPRearrang)
+						.addComponent(chkRearrangement)
 						.addComponent(lblTPPercent)
 						.addComponent(txtTProfit, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
@@ -235,7 +236,9 @@ public class FrmPositions extends JFrame
 
 	private void saveChanges()
 	{
-		INFO("Under construction");
+		PositionService.setTpRearrangement(chkRearrangement.isSelected());
+
+		INFO("Changed !");
 	}
 
 	// -----------------------------------------------------------------------

@@ -9,10 +9,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -28,20 +26,38 @@ import sanzol.app.config.Config;
 import sanzol.app.config.PrivateConfig;
 import sanzol.app.model.GOrder;
 import sanzol.app.model.Symbol;
+import sanzol.app.trader.SimpleTrader;
 import sanzol.app.util.Convert;
 
 public final class PositionService
 {
 	private static final long DEFAULT_PERIOD_MILLIS = 5000;
+	private static final double DEFAULT_TP = 0.01; 
 
 	private static boolean isStarted = false;
+	private static boolean isTpRearrangement = false;
 
-	private static Map<String, BigDecimal> mapAmountsPrev = new HashMap<String, BigDecimal>();
-	private static Set<String> setAmountChange = new HashSet<String>();
 	private static List<PositionRisk> lstPositionRisk;
 	private static List<Order> lstOpenOrders;
 
 	private static String errorMessage;
+
+	public static String getErrorMessage()
+	{
+		return errorMessage;
+	}
+
+	public static boolean isTpRearrangement()
+	{
+		return isTpRearrangement;
+	}
+
+	public static void setTpRearrangement(boolean isTpRearrangement)
+	{
+		PositionService.isTpRearrangement = isTpRearrangement;
+	}
+
+	// ------------------------------------------------------------------------
 
 	public static List<PositionRisk> getLstPositionRisk()
 	{
@@ -84,20 +100,7 @@ public final class PositionService
 		return list;
 	}
 
-	public static String getErrorMessage()
-	{
-		return errorMessage;
-	}
-
-	public static boolean wasChange()
-	{
-		if (setAmountChange != null && !setAmountChange.isEmpty())
-		{
-			setAmountChange.clear();
-			return true;
-		}
-		return false;
-	}
+	// ------------------------------------------------------------------------
 
 	public static void start()
 	{
@@ -131,12 +134,10 @@ public final class PositionService
 			if (lstPositionRisk == null || lstPositionRisk.isEmpty())
 			{
 				lstOpenOrders.clear();
-				mapAmountsPrev.clear();
-				setAmountChange.clear();
 				return;
 			}
 
-			verifyAmountChange();
+			verify();
 
 			lstOpenOrders = syncRequestClient.getOpenOrders(null);
 
@@ -148,24 +149,110 @@ public final class PositionService
 		catch (Exception e)
 		{
 			errorMessage = e.getMessage();
-			System.err.println("BalanceService.runGetBalances: " + e.getMessage());
+			System.err.println("PositionService.getPositions: " + e.getMessage());
 		}
 	}
 
-	private static void verifyAmountChange()
+	// ------------------------------------------------------------------------
+
+	private static void verify()
 	{
-		if (lstPositionRisk != null && lstPositionRisk.isEmpty())
+		if (lstPositionRisk != null && !lstPositionRisk.isEmpty())
 		{
 			for (PositionRisk entry : lstPositionRisk)
 			{
-				if (!mapAmountsPrev.get(entry.getSymbol()).equals(entry.getPositionAmt()))
+				if (entry.getPositionAmt().compareTo(BigDecimal.ZERO) != 0)
 				{
-					mapAmountsPrev.put(entry.getSymbol(), entry.getPositionAmt());
-					setAmountChange.add(entry.getSymbol());
+					Symbol symbol = Symbol.getInstance(entry.getSymbol());
+					if (symbol != null)
+					{
+						String side = (entry.getPositionAmt().doubleValue() < 0 ? "SHORT" : "LONG");
+						BigDecimal price = entry.getEntryPrice();
+						BigDecimal qty = entry.getPositionAmt().abs();
+
+						Order tpOrder = getTpOrder(symbol.getName(), side);
+						if (tpOrder != null)
+						{
+							BigDecimal tpQty = tpOrder.getOrigQty();
+							if (qty.compareTo(tpQty) != 0)
+							{
+								BigDecimal tpCoef = "SHORT".equals(side) ? BigDecimal.valueOf(1 - DEFAULT_TP) : BigDecimal.valueOf(1 + DEFAULT_TP);
+								BigDecimal newTpPrice = price.multiply(tpCoef).setScale(symbol.getTickSize(), RoundingMode.HALF_UP);
+
+								tpRearrangement(symbol, side, tpOrder, newTpPrice, qty);
+							}
+						}
+
+						Order slOrder = getSlOrder(symbol.getName(), side);
+						if (slOrder != null)
+						{
+							//
+						}
+
+					}
 				}
 			}
 		}
-	}	
+	}
+
+	private static void tpRearrangement(Symbol symbol, String side, Order order, BigDecimal newPrice, BigDecimal newQty)
+	{
+		BigDecimal tpPrice = order.getPrice();
+		BigDecimal tpQty = order.getOrigQty();
+
+		System.out.println(order.getSymbol() + " TP REARRANGEMENT");
+		System.out.println("OLD TP qty: " + tpQty + " price: " + tpPrice);
+		System.out.println("NEW TP qty: " + newQty + " price: " + newPrice);
+
+		if (isTpRearrangement)
+		{
+			// CANCEL ORDER
+			RequestOptions options = new RequestOptions();
+			SyncRequestClient syncRequestClient = SyncRequestClient.create(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, options);
+			syncRequestClient.cancelOrder(order.getSymbol(), order.getOrderId(), null);
+	
+			// ADD NEW ORDER
+			SimpleTrader.postTprofit(symbol, side, newPrice, newQty);
+		}
+	}
+
+	public static Order getTpOrder(String symbolName, String side)
+	{
+		for (Order entry : getLstOpenOrders(symbolName))
+		{
+			if ("LIMIT".equals(entry.getType()) && entry.getReduceOnly() && entry.getStopPrice().doubleValue() == 0)
+			{
+				if ("SHORT".equals(side) && "BUY".equals(entry.getSide()))
+				{
+					return entry;
+				}
+				else if ("LONG".equals(side) && "SELL".equals(entry.getSide()) && entry.getReduceOnly() && entry.getStopPrice().doubleValue() == 0)
+				{
+					return entry;
+				}
+			}
+		}
+		return null;
+	}
+
+	public static Order getSlOrder(String symbolName, String side)
+	{
+		for (Order entry : getLstOpenOrders(symbolName))
+		{
+			if ("STOP_MARKET".equals(entry.getType()) && entry.getReduceOnly() && entry.getStopPrice().doubleValue() != 0)
+			{
+				if ("SHORT".equals(side) && "BUY".equals(entry.getSide()))
+				{
+					return entry;
+				}
+				else if ("LONG".equals(side) && "SELL".equals(entry.getSide()))
+				{
+					return entry;
+				}
+			}
+		}
+		return null;
+	}
 
 	// ------------------------------------------------------------------------
 
