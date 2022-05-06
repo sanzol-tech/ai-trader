@@ -49,6 +49,9 @@ public class FrmMain extends JFrame
 
 	private List<SignalEntry> lstShockStatus = null;
 
+	private JList<String> listFavorites;
+	private JList<String> listSignals;
+
 	private JPanel contentPane;
 
 	private JButton btnLookFeel;
@@ -61,9 +64,6 @@ public class FrmMain extends JFrame
 	private JButton btnShockEditor;
 	private JButton btnCoin;
 
-	private JList<String> listFavorites;
-	private JList<String> listSignals;
-
 	private JTextField txtIterations;
 	private JTextField txtPriceIncr;
 	private JTextField txtTProfit;
@@ -74,13 +74,13 @@ public class FrmMain extends JFrame
 	private JTextField txtWithdrawal;
 	private JTextField txtFavCoins;
 	private JTextField txtError;
-
-	private JPasswordField txtSecretKey;
-	private JPasswordField txtApiKey;
 	private JTextField txtLeverage;
 	private JTextField txtBalanceMinAvailable;
 	private JTextField txtPositionsMax;
 	private JTextField txtPositionQtyMax;
+
+	private JPasswordField txtSecretKey;
+	private JPasswordField txtApiKey;
 
 	public FrmMain()
 	{
@@ -232,14 +232,14 @@ public class FrmMain extends JFrame
 		txtLeverage.setEditable(false);
 		txtLeverage.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtLeverage.setBounds(514, 43, 72, 20);
-		panelConfig.add(txtLeverage);
 		txtLeverage.setColumns(10);
+		panelConfig.add(txtLeverage);
 
 		txtBalanceMinAvailable = new JTextField();
 		txtBalanceMinAvailable.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtBalanceMinAvailable.setBounds(330, 86, 72, 20);
-		panelConfig.add(txtBalanceMinAvailable);
 		txtBalanceMinAvailable.setColumns(10);
+		panelConfig.add(txtBalanceMinAvailable);
 
 		JLabel lblLeverage = new JLabel("Leverage");
 		lblLeverage.setBounds(514, 26, 80, 14);
@@ -285,7 +285,6 @@ public class FrmMain extends JFrame
 		listFavorites.setBackground(Styles.COLOR_TEXT_AREA_BG);
 		listFavorites.setForeground(Styles.COLOR_TEXT_AREA_FG);
 		listFavorites.setFont(new Font("Courier New", Font.PLAIN, 12));
-		//listFavorites.setForeground(Styles.COLOR_TEXT_ALT2);
 		scrollFavorites.setViewportView(listFavorites);
 
 		JScrollPane scrollSignals = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -297,7 +296,6 @@ public class FrmMain extends JFrame
 		listSignals.setBackground(Styles.COLOR_TEXT_AREA_BG);
 		listSignals.setForeground(Styles.COLOR_TEXT_AREA_FG);
 		listSignals.setFont(new Font("Courier New", Font.PLAIN, 11));
-		//listSignals.setForeground(Styles.COLOR_TEXT_ALT2);
 		scrollSignals.setViewportView(listSignals);
 
 		btnShockMonitor = new JButton("MONITOR ALL");
@@ -338,7 +336,6 @@ public class FrmMain extends JFrame
 		contentPane.add(btnNewGrid);
 
 		txtError = new JTextField();
-		//txtError.setForeground(Styles.COLOR_TEXT_ERROR);
 		txtError.setEditable(false);
 		txtError.setBounds(16, 517, 600, 40);
 		contentPane.add(txtError);
@@ -606,7 +603,9 @@ public class FrmMain extends JFrame
 			loadListSignals();
 			
 			// ----------------------------------------------------------------
-			listFavorites.setModel(toListModel(PriceService.getSymbols(true)));			
+			listFavorites.setModel(toListModel(PriceService.getSymbols(true)));
+
+			setTitle(Constants.APP_NAME + " - "+ PriceService.btcLabel());
 		}
 		catch (Exception e)
 		{
