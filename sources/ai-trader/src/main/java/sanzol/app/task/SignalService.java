@@ -16,9 +16,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
+import sanzol.app.listener.SignalListener;
 import sanzol.app.model.SignalEntry;
-import sanzol.app.model.Symbol;
 import sanzol.app.service.OBookService;
+import sanzol.app.service.Symbol;
 import sanzol.app.util.PriceUtil;
 
 public final class SignalService
@@ -59,7 +60,7 @@ public final class SignalService
 		{
 			loadShocks();
 
-			Timer timer = new Timer("SignalService1");
+			Timer timer = new Timer("SignalService");
 			timer.schedule(new MyTask(), 3000, 2000);
 
 			isStarted = true;
@@ -72,6 +73,7 @@ public final class SignalService
 		public void run()
 		{
 			verifyShocks();
+			notifyAllLogObservers();
 		}
 	}
 
@@ -281,6 +283,28 @@ public final class SignalService
 		return lst;
 	}
 
+	// ------------------------------------------------------------------------	
+
+	private static List<SignalListener> observers = new ArrayList<SignalListener>();
+
+	public static void attachRefreshObserver(SignalListener observer)
+	{
+		observers.add(observer);
+	}
+
+	public static void deattachRefreshObserver(SignalListener observer)
+	{
+		observers.remove(observer);
+	}
+
+	public static void notifyAllLogObservers()
+	{
+		for (SignalListener observer : observers)
+		{
+			observer.onSignalUpdate();
+		}
+	}
+	
 	// -----------------------------------------------------------------------
 
 	public static void main(String[] args) throws Exception
@@ -305,5 +329,5 @@ public final class SignalService
 		System.out.println(toStringStatus());
 
 	}
-
+	
 }

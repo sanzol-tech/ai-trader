@@ -10,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -25,7 +27,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -37,13 +38,16 @@ import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.PrivateConfig;
 import sanzol.app.config.Styles;
+import sanzol.app.listener.BalanceListener;
+import sanzol.app.listener.PriceListener;
+import sanzol.app.listener.SignalListener;
 import sanzol.app.model.SignalEntry;
 import sanzol.app.task.BalanceService;
 import sanzol.app.task.PriceService;
 import sanzol.app.task.SignalService;
 import sanzol.app.util.Convert;
 
-public class FrmMain extends JFrame
+public class FrmMain extends JFrame implements PriceListener, SignalListener, BalanceListener
 {
 	private static final long serialVersionUID = 1L;
 
@@ -63,6 +67,7 @@ public class FrmMain extends JFrame
 	private JButton btnSaveKey;
 	private JButton btnShockEditor;
 	private JButton btnCoin;
+	private JButton btnBot;
 
 	private JTextField txtIterations;
 	private JTextField txtPriceIncr;
@@ -85,16 +90,10 @@ public class FrmMain extends JFrame
 	public FrmMain()
 	{
 		initComponents();
-
-		try
-		{
-			pageload();
-			startTimer();
-		}
-		catch (Exception e)
-		{
-			ERROR(e);
-		}
+		pageload();
+		PriceService.attachRefreshObserver(this);
+		SignalService.attachRefreshObserver(this);
+		BalanceService.attachRefreshObserver(this);
 	}
 
 	private void initComponents() 
@@ -125,9 +124,9 @@ public class FrmMain extends JFrame
 		panelKey.setLayout(null);
 		contentPane.add(panelKey);
 
-		JLabel lblNewLabel_2 = new JLabel("Api Key");
-		lblNewLabel_2.setBounds(12, 11, 80, 14);
-		panelKey.add(lblNewLabel_2);
+		JLabel lblApiKey = new JLabel("Api Key");
+		lblApiKey.setBounds(12, 11, 80, 14);
+		panelKey.add(lblApiKey);
 
 		txtApiKey = new JPasswordField();
 		txtApiKey.setBounds(12, 30, 340, 20);
@@ -135,14 +134,14 @@ public class FrmMain extends JFrame
 		txtApiKey.setColumns(10);
 		panelKey.add(txtApiKey);
 
-		JLabel lblNewLabel_3 = new JLabel("Secret Key");
-		lblNewLabel_3.setBounds(358, 11, 80, 14);
-		panelKey.add(lblNewLabel_3);
+		JLabel lblSecretKey = new JLabel("Secret Key");
+		lblSecretKey.setBounds(358, 11, 80, 14);
+		panelKey.add(lblSecretKey);
 
 		btnPositions = new JButton("POSITIONS");
 		btnPositions.setToolTipText("Edit shock points");
 		btnPositions.setOpaque(true);
-		btnPositions.setBounds(358, 11, 110, 28);
+		btnPositions.setBounds(322, 11, 110, 28);
 		contentPane.add(btnPositions);
 
 		txtSecretKey = new JPasswordField();
@@ -153,8 +152,8 @@ public class FrmMain extends JFrame
 
 		btnSaveKey = new JButton("SAVE");
 		btnSaveKey.setBounds(728, 30, 72, 20);
-		panelKey.add(btnSaveKey);
 		btnSaveKey.setOpaque(true);
+		panelKey.add(btnSaveKey);
 
 		JLabel lblItarations = new JLabel("Iterations");
 		lblItarations.setBounds(20, 26, 80, 14);
@@ -330,8 +329,8 @@ public class FrmMain extends JFrame
 		lblWithdrawalL.setHorizontalAlignment(SwingConstants.RIGHT);
 		contentPane.add(lblWithdrawalL);
 
-		btnNewGrid = new JButton("NEW GRID");
-		btnNewGrid.setBounds(118, 11, 110, 28);
+		btnNewGrid = new JButton("GRID");
+		btnNewGrid.setBounds(118, 11, 92, 28);
 		btnNewGrid.setOpaque(true);
 		contentPane.add(btnNewGrid);
 
@@ -352,16 +351,16 @@ public class FrmMain extends JFrame
 		lblSignals.setBounds(276, 76, 200, 20);
 		contentPane.add(lblSignals);
 
-		btnCalcOrder = new JButton("ADD ORDER");
+		btnCalcOrder = new JButton("SHOOT");
 		btnCalcOrder.setOpaque(true);
-		btnCalcOrder.setBounds(238, 11, 110, 28);
+		btnCalcOrder.setBounds(220, 11, 92, 28);
 		contentPane.add(btnCalcOrder);
 		
 		JLabel lblTitle = new JLabel("ai-trader on GitHub");
 		lblTitle.setForeground(Styles.COLOR_TEXT_ALT1);
 		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		lblTitle.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblTitle.setBounds(669, 15, 157, 14);
+		lblTitle.setBounds(669, 15, 157, 22);
 		lblTitle.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		contentPane.add(lblTitle);
 		
@@ -373,12 +372,27 @@ public class FrmMain extends JFrame
 		
 		btnLookFeel = new JButton("Light");
 		btnCoin.setOpaque(true);
-		btnLookFeel.setBounds(556, 14, 68, 23);
+		btnLookFeel.setBounds(590, 15, 68, 22);
 		contentPane.add(btnLookFeel);
+		
+		btnBot = new JButton("BOT");
+		btnBot.setToolTipText("Edit shock points");
+		btnBot.setOpaque(true);
+		btnBot.setBounds(442, 11, 92, 28);
+		contentPane.add(btnBot);
 
-		btnLookFeel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setLookFeel(!Styles.isNight);
+		// --------------------------------------------------------------------
+
+		FrmMain thisFrm = this;
+
+		addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowClosed(WindowEvent e)
+			{
+				PriceService.deattachRefreshObserver(thisFrm);
+				SignalService.deattachRefreshObserver(thisFrm);
+				BalanceService.deattachRefreshObserver(thisFrm);
 			}
 		});
 		
@@ -424,6 +438,12 @@ public class FrmMain extends JFrame
 			}
 		});
 
+		btnLookFeel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setLookFeel(!Styles.isNight);
+			}
+		});
+		
 		btnPositions.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				showPositions();
@@ -433,6 +453,12 @@ public class FrmMain extends JFrame
 		btnCoin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				showCoin();
+			}
+		});
+		
+		btnBot.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				showBot();
 			}
 		});
 		
@@ -544,6 +570,11 @@ public class FrmMain extends JFrame
 		FrmAddOrder.launch();
 	}
 
+	private void showBot()
+	{
+		FrmBot.launch();
+	}
+
 	private void editShockPoints()
 	{
 		FrmPointsEditor.launch();
@@ -572,22 +603,10 @@ public class FrmMain extends JFrame
 		});
 	}
 
-	private void startTimer()
-	{
-		ActionListener taskPerformer1 = new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				refresh();
-			}
-		};
-		Timer timer1 = new Timer(3000, taskPerformer1);
-		timer1.setInitialDelay(0);
-		timer1.setRepeats(true);
-		timer1.start();
-	}
+	// ------------------------------------------------------------------------
 
-	private void refresh()
+	@Override
+	public void onBalanceUpdate()
 	{
 		try
 		{
@@ -597,12 +616,31 @@ public class FrmMain extends JFrame
 				txtBalance.setText(Convert.usdToStr(balance.getBalance().doubleValue()));
 				txtWithdrawal.setText(Convert.usdToStr(balance.getWithdrawAvailable().doubleValue()));
 			}
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
+	}
 
-			// ----------------------------------------------------------------
-
+	@Override
+	public void onSignalUpdate()
+	{
+		try
+		{
 			loadListSignals();
-			
-			// ----------------------------------------------------------------
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
+	}
+
+	@Override
+	public void onPriceUpdate()
+	{
+		try
+		{
 			listFavorites.setModel(toListModel(PriceService.getSymbols(true)));
 
 			setTitle(Constants.APP_NAME + " - "+ PriceService.btcLabel());
@@ -614,7 +652,7 @@ public class FrmMain extends JFrame
 	}
 
 	// ------------------------------------------------------------------------
-
+	
 	private void loadListSignals()
 	{
 		lstShockStatus = SignalService.getShockStatus();
@@ -744,4 +782,5 @@ public class FrmMain extends JFrame
 		Application.initializeUI();
 		launch();
 	}
+	
 }

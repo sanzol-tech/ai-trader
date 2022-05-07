@@ -1,5 +1,6 @@
 package sanzol.app.task;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -10,6 +11,7 @@ import com.binance.client.model.trade.AccountBalance;
 
 import sanzol.app.config.Constants;
 import sanzol.app.config.PrivateConfig;
+import sanzol.app.listener.BalanceListener;
 
 public final class BalanceService
 {
@@ -54,6 +56,7 @@ public final class BalanceService
 			public void run()
 			{
 				runGetBalances();
+				notifyAllLogObservers();
 			}
 		};
 		Timer timer = new Timer("BalanceService");
@@ -88,4 +91,26 @@ public final class BalanceService
 
 	}
 
+	// ------------------------------------------------------------------------	
+
+	private static List<BalanceListener> observers = new ArrayList<BalanceListener>();
+
+	public static void attachRefreshObserver(BalanceListener observer)
+	{
+		observers.add(observer);
+	}
+
+	public static void deattachRefreshObserver(BalanceListener observer)
+	{
+		observers.remove(observer);
+	}
+
+	public static void notifyAllLogObservers()
+	{
+		for (BalanceListener observer : observers)
+		{
+			observer.onBalanceUpdate();
+		}
+	}
+	
 }

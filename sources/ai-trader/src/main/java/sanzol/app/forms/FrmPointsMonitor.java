@@ -21,24 +21,21 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 import sanzol.app.config.Application;
 import sanzol.app.config.Styles;
+import sanzol.app.listener.SignalListener;
 import sanzol.app.task.SignalService;
 
-public class FrmPointsMonitor extends JFrame
+public class FrmPointsMonitor extends JFrame implements SignalListener
 {
 	private static final long serialVersionUID = 1L;
 
-	private static final int DEFAULT_PERIOD_MILLIS = 2000;
 	private static final String TITLE = "Points monitor";
 
 	private static boolean isOpen = false;
-
-	private Timer timer1;
 	
 	private JPanel contentPane;
 
@@ -52,8 +49,7 @@ public class FrmPointsMonitor extends JFrame
 	public FrmPointsMonitor()
 	{
 		initComponents();
-
-		startTimer();
+		SignalService.attachRefreshObserver(this);
 		isOpen = true;
 	}
 
@@ -121,10 +117,12 @@ public class FrmPointsMonitor extends JFrame
 
 		// -----------------------------------------------------------------
 
+		FrmPointsMonitor thisFrm = this;
+
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
-				timer1.stop();
+				SignalService.deattachRefreshObserver(thisFrm);
 				isOpen = false;
 			}
 		});
@@ -141,20 +139,10 @@ public class FrmPointsMonitor extends JFrame
 	
 	// ------------------------------------------------------------------------
 
-	private void startTimer()
+	@Override
+	public void onSignalUpdate()
 	{
-		ActionListener taskPerformer1 = new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				getSignals();
-			}
-		};
-
-		timer1 = new Timer(DEFAULT_PERIOD_MILLIS, taskPerformer1);
-		timer1.setInitialDelay(0);
-		timer1.setRepeats(true);
-		timer1.start();
+		getSignals();
 	}
 
 	private void getSignals()

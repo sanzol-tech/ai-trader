@@ -22,7 +22,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
 import com.binance.client.model.event.SymbolTickerEvent;
@@ -34,15 +33,16 @@ import sanzol.app.config.CharConstants;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
+import sanzol.app.listener.PriceListener;
 import sanzol.app.model.GOrder;
-import sanzol.app.model.Symbol;
+import sanzol.app.service.SimpleTrader;
+import sanzol.app.service.Symbol;
 import sanzol.app.task.BalanceService;
 import sanzol.app.task.PositionService;
 import sanzol.app.task.PriceService;
-import sanzol.app.trader.SimpleTrader;
 import sanzol.app.util.Convert;
 
-public class FrmAddOrder extends JFrame
+public class FrmAddOrder extends JFrame implements PriceListener
 {
 	private static final long serialVersionUID = 1L;
 
@@ -51,8 +51,6 @@ public class FrmAddOrder extends JFrame
 	private static boolean isOpen = false;
 
 	private Symbol coin;
-
-	private Timer timer1;
 
 	private JPanel contentPane;
 	private JLabel lblError;
@@ -106,7 +104,7 @@ public class FrmAddOrder extends JFrame
 	{
 		setResizable(false);
 		initComponents();
-		startTimer();
+		PriceService.attachRefreshObserver(this);
 	}
 
 	private void initComponents() 
@@ -451,12 +449,14 @@ public class FrmAddOrder extends JFrame
 
 		// ---------------------------------------------------------------------
 		
+		FrmAddOrder thisFrm = this;
+
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
 			public void windowClosed(WindowEvent e)
 			{
-				timer1.stop();
+				PriceService.deattachRefreshObserver(thisFrm);
 				isOpen = false;
 			}
 		});
@@ -635,7 +635,7 @@ public class FrmAddOrder extends JFrame
 				shootQty = posQty.multiply(x).setScale(coin.getQuantityPrecision(), RoundingMode.UP);
 			
 			// --- CALC -------------------------------------------------------
-			Map<String, GOrder> mapPosition = PositionService.calc(coin, side, posPrice, posQty, shootPrice, shootQty);
+			Map<String, GOrder> mapPosition = SimpleTrader.calc(coin, side, posPrice, posQty, shootPrice, shootQty);
 
 			// ----------------------------------------------------------------
 			txtPositionUsd.setText(Convert.usdToStr(mapPosition.get("POS").getUsd()));
@@ -727,6 +727,31 @@ public class FrmAddOrder extends JFrame
 
 	// ----------------------------------------------------------------------------------
 
+	@Override
+	public void onPriceUpdate()
+	{
+		try
+		{
+			if (coin != null)
+			{
+				SymbolTickerEvent symbolTicker = PriceService.getSymbolTickerEvent(coin);
+				if (symbolTicker != null)
+				{
+					BigDecimal mrkPrice = PriceService.getLastPrice(coin);
+					txtMarkPrice.setText(coin.priceToStr(mrkPrice));
+					String priceChangePercent = String.format("%.2f%%", symbolTicker.getPriceChangePercent());
+					txt24h.setText(priceChangePercent);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
+	}
+	
+	// ----------------------------------------------------------------------------------
+	
 	public static void launch()
 	{
 		if (isOpen)
@@ -749,43 +774,6 @@ public class FrmAddOrder extends JFrame
 				}
 			}
 		});
-	}
-
-	private void startTimer()
-	{
-		ActionListener taskPerformer1 = new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				refresh();
-			}
-		};
-		timer1 = new Timer(2000, taskPerformer1);
-		timer1.setInitialDelay(0);
-		timer1.setRepeats(true);
-		timer1.start();
-	}
-
-	private void refresh()
-	{
-		try
-		{
-			if (coin != null)
-			{
-				SymbolTickerEvent symbolTicker = PriceService.getSymbolTickerEvent(coin);
-				if (symbolTicker != null)
-				{
-					BigDecimal mrkPrice = PriceService.getLastPrice(coin);
-					txtMarkPrice.setText(coin.priceToStr(mrkPrice));
-					String priceChangePercent = String.format("%.2f%%", symbolTicker.getPriceChangePercent());
-					txt24h.setText(priceChangePercent);
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			ERROR(e);
-		}
 	}
 
 	// ----------------------------------------------------------------------------------

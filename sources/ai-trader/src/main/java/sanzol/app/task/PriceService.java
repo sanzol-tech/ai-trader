@@ -14,9 +14,10 @@ import com.binance.client.model.event.SymbolTickerEvent;
 
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
-import sanzol.app.model.Symbol;
+import sanzol.app.listener.PriceListener;
+import sanzol.app.service.Symbol;
 
-public class PriceService
+public final class PriceService
 {
 	private static SubscriptionClient client = SubscriptionClient.create();
 
@@ -58,7 +59,7 @@ public class PriceService
 
 		return mapTickers.get(coin.getName());
 	}
-	
+
 	public static void start()
 	{
 		loadFavorites();
@@ -74,6 +75,9 @@ public class PriceService
 					mapTickers.put(entry.getSymbol(), entry);
 				}
 			}
+
+			notifyAllLogObservers();
+			
 		}), null);
 	}
 
@@ -114,6 +118,28 @@ public class PriceService
 	
 	// ------------------------------------------------------------------------
 
+	private static List<PriceListener> observers = new ArrayList<PriceListener>();
+	
+	public static void attachRefreshObserver(PriceListener observer)
+	{
+		observers.add(observer);
+	}
+
+	public static void deattachRefreshObserver(PriceListener observer)
+	{
+		observers.remove(observer);
+	}
+
+	public static void notifyAllLogObservers()
+	{
+		for (PriceListener observer : observers)
+		{
+			observer.onPriceUpdate();
+		}
+	}
+
+	// ------------------------------------------------------------------------
+	
 	public static void main(String[] args) throws InterruptedException
 	{
 		start();

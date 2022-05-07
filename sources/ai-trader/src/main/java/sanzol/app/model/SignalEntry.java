@@ -3,6 +3,7 @@ package sanzol.app.model;
 import java.math.BigDecimal;
 
 import sanzol.app.config.CharConstants;
+import sanzol.app.service.Symbol;
 
 public class SignalEntry
 {

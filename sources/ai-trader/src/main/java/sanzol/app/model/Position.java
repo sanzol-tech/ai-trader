@@ -13,6 +13,7 @@ import com.binance.client.model.enums.PositionSide;
 import sanzol.app.config.CharConstants;
 import sanzol.app.model.PositionOrder.State;
 import sanzol.app.model.PositionOrder.Type;
+import sanzol.app.service.Symbol;
 
 public class Position
 {

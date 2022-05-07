@@ -34,7 +34,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -52,17 +51,19 @@ import sanzol.app.config.CharConstants;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
+import sanzol.app.listener.PositionListener;
+import sanzol.app.listener.PriceListener;
 import sanzol.app.model.Position;
 import sanzol.app.model.PriceQty;
-import sanzol.app.model.Symbol;
+import sanzol.app.service.PositionTrader;
+import sanzol.app.service.Symbol;
+import sanzol.app.service.PositionTrader.PostStyle;
 import sanzol.app.task.BalanceService;
 import sanzol.app.task.PositionService;
 import sanzol.app.task.PriceService;
-import sanzol.app.trader.PositionTrader;
-import sanzol.app.trader.PositionTrader.PostStyle;
 import sanzol.app.util.Convert;
 
-public class FrmGrid extends JFrame
+public class FrmGrid extends JFrame implements PriceListener, PositionListener
 {
 	private static final long serialVersionUID = 1L;
 
@@ -71,8 +72,6 @@ public class FrmGrid extends JFrame
 	private Symbol coin;
 	private PositionTrader pMaker;
 	private boolean isOpenPosition = false;
-
-	private Timer timer1;
 
 	private JPanel contentPane;
 	private JPanel pnlConfig;
@@ -87,13 +86,14 @@ public class FrmGrid extends JFrame
 
 	private JLabel lblPrice;
 	private JLabel lblQty;
+	private JLabel lnkBtnToy;
 
 	private JRadioButton rbPriceLimit;
 	private JRadioButton rbPriceMark;
 	private JRadioButton rbQty;
 	private JRadioButton rbQtyBalance;
 
-	private JTextArea txtShowResult;
+	private JTextArea txtResult;
 
 	private JTextField txtGPrice1;
 	private JTextField txtGPrice2;
@@ -128,13 +128,13 @@ public class FrmGrid extends JFrame
 	private JTextField txtSymbolLeft;
 	private JTextField txtSymbolRight;
 	private JTextField txtTProfit;
-	private JLabel lnkBtnToy;
 
 	public FrmGrid()
 	{
 		initComponents();
 		loadConfig();
-		startTimer();
+		PriceService.attachRefreshObserver(this);
+		PositionService.attachRefreshObserver(this);
 	}
 
 	private void initComponents() 
@@ -254,13 +254,13 @@ public class FrmGrid extends JFrame
 		lnkBtnToy.setBounds(645, 98, 50, 14);
 		contentPane.add(lnkBtnToy);
 		
-		txtShowResult = new JTextArea();
-		txtShowResult.setBackground(Styles.COLOR_TEXT_AREA_BG);
-		txtShowResult.setForeground(Styles.COLOR_TEXT_AREA_FG);
-		txtShowResult.setEditable(false);
-		txtShowResult.setFont(new Font("Courier New", Font.PLAIN, 12));
+		txtResult = new JTextArea();
+		txtResult.setBackground(Styles.COLOR_TEXT_AREA_BG);
+		txtResult.setForeground(Styles.COLOR_TEXT_AREA_FG);
+		txtResult.setEditable(false);
+		txtResult.setFont(new Font("Courier New", Font.PLAIN, 12));
 
-		JScrollPane scroll = new JScrollPane(txtShowResult, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollPane scroll = new JScrollPane(txtResult, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.setBounds(16, 218, 1102, 330);
 		scroll.setBorder(UIManager.getBorder("TextField.border"));
 		contentPane.add(scroll);
@@ -532,20 +532,17 @@ public class FrmGrid extends JFrame
 		txtPositionQty.setBounds(76, 54, 92, 20);
 		pnlPosition.add(txtPositionQty);
 		
-		btnShort.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				createShort();
-			}
-		});
-
 		// --------------------------------------------------------------------
+
+		FrmGrid thisFrm = this;
 
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
 			public void windowClosed(WindowEvent e)
 			{
-				timer1.stop();
+				PriceService.deattachRefreshObserver(thisFrm);
+				PositionService.deattachRefreshObserver(thisFrm);
 			}
 		});
 
@@ -595,6 +592,12 @@ public class FrmGrid extends JFrame
 			}
 		});
 
+		btnShort.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				createShort();
+			}
+		});
+		
 		btnLong.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				createLong();
@@ -783,24 +786,10 @@ public class FrmGrid extends JFrame
 		});
 	}
 
-	private void startTimer()
-	{
-		ActionListener taskPerformer1 = new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				refresh();
-			}
-		};
-		timer1 = new Timer(3000, taskPerformer1);
-		timer1.setInitialDelay(0);
-		timer1.setRepeats(true);
-		timer1.start();
-	}
-
 	// ------------------------------------------------------------------------
 
-	private void refresh()
+	@Override
+	public void onPriceUpdate()
 	{
 		try
 		{
@@ -818,6 +807,22 @@ public class FrmGrid extends JFrame
 			ERROR(e);
 		}
 	}
+
+	@Override
+	public void onPositionUpdate()
+	{
+		try
+		{
+			if (coin != null)
+			{
+				searchPosition();
+			}
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
+	}	
 
 	// ------------------------------------------------------------------------
 
@@ -1158,8 +1163,8 @@ public class FrmGrid extends JFrame
 			pMaker.createShort();
 
 			//-----------------------------------------------------------------
-			txtShowResult.setForeground(Styles.COLOR_TEXT_SHORT);
-			txtShowResult.setText(position.toString());
+			txtResult.setForeground(Styles.COLOR_TEXT_SHORT);
+			txtResult.setText(position.toString());
 
 			btnPostFirst.setEnabled(!isOpenPosition);
 			btnPostOthers.setEnabled(isOpenPosition);
@@ -1186,8 +1191,8 @@ public class FrmGrid extends JFrame
 			pMaker.createLong();
 
 			//-----------------------------------------------------------------
-			txtShowResult.setForeground(Styles.COLOR_TEXT_LONG);
-			txtShowResult.setText(position.toString());
+			txtResult.setForeground(Styles.COLOR_TEXT_LONG);
+			txtResult.setText(position.toString());
 
 			btnPostFirst.setEnabled(!isOpenPosition);
 			btnPostOthers.setEnabled(isOpenPosition);
@@ -1202,7 +1207,7 @@ public class FrmGrid extends JFrame
 	{
 		pMaker = null;
 		INFO("");
-		txtShowResult.setText("");
+		txtResult.setText("");
 
 		btnPostFirst.setEnabled(false);
 		btnPostOthers.setEnabled(false);
@@ -1225,8 +1230,8 @@ public class FrmGrid extends JFrame
 					ERROR(result);
 				}
 
-				txtShowResult.setForeground(pMaker.getPosition().getSide() == PositionSide.SHORT ? Styles.COLOR_TEXT_SHORT : Styles.COLOR_TEXT_LONG);
-				txtShowResult.setText(pMaker.getPosition().toString());
+				txtResult.setForeground(pMaker.getPosition().getSide() == PositionSide.SHORT ? Styles.COLOR_TEXT_SHORT : Styles.COLOR_TEXT_LONG);
+				txtResult.setText(pMaker.getPosition().toString());
 				save(coin.getName() + "_" + pMaker.getPosition().getSide().name());
 
 				// ------------------------------------------------------------
@@ -1253,7 +1258,7 @@ public class FrmGrid extends JFrame
 			}
 
 			File logFile = new File(path, filename + ".log");
-			FileUtils.writeStringToFile(logFile, txtShowResult.getText(), StandardCharsets.UTF_8);
+			FileUtils.writeStringToFile(logFile, txtResult.getText(), StandardCharsets.UTF_8);
 		}
 		catch (IOException e)
 		{
@@ -1298,4 +1303,5 @@ public class FrmGrid extends JFrame
 		Application.initializeUI();
 		launch();
 	}
+
 }

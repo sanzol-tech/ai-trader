@@ -1,16 +1,10 @@
 package sanzol.app.task;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.Format;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -22,20 +16,16 @@ import com.binance.client.model.trade.Order;
 import com.binance.client.model.trade.PositionRisk;
 
 import sanzol.app.config.Application;
-import sanzol.app.config.Config;
 import sanzol.app.config.PrivateConfig;
-import sanzol.app.model.GOrder;
-import sanzol.app.model.Symbol;
-import sanzol.app.trader.SimpleTrader;
+import sanzol.app.listener.PositionListener;
+import sanzol.app.service.Symbol;
 import sanzol.app.util.Convert;
 
 public final class PositionService
 {
 	private static final long DEFAULT_PERIOD_MILLIS = 5000;
-	private static final double DEFAULT_TP = 0.01; 
 
 	private static boolean isStarted = false;
-	private static boolean isTpRearrangement = false;
 
 	private static List<PositionRisk> lstPositionRisk;
 	private static List<Order> lstOpenOrders;
@@ -45,16 +35,6 @@ public final class PositionService
 	public static String getErrorMessage()
 	{
 		return errorMessage;
-	}
-
-	public static boolean isTpRearrangement()
-	{
-		return isTpRearrangement;
-	}
-
-	public static void setTpRearrangement(boolean isTpRearrangement)
-	{
-		PositionService.isTpRearrangement = isTpRearrangement;
 	}
 
 	// ------------------------------------------------------------------------
@@ -100,6 +80,44 @@ public final class PositionService
 		return list;
 	}
 
+	public static Order getTpOrder(String symbolName, String side)
+	{
+		for (Order entry : PositionService.getLstOpenOrders(symbolName))
+		{
+			if ("LIMIT".equals(entry.getType()) && entry.getReduceOnly() && entry.getStopPrice().doubleValue() == 0)
+			{
+				if ("SHORT".equals(side) && "BUY".equals(entry.getSide()))
+				{
+					return entry;
+				}
+				else if ("LONG".equals(side) && "SELL".equals(entry.getSide()) && entry.getReduceOnly() && entry.getStopPrice().doubleValue() == 0)
+				{
+					return entry;
+				}
+			}
+		}
+		return null;
+	}
+
+	public static Order getSlOrder(String symbolName, String side)
+	{
+		for (Order entry : PositionService.getLstOpenOrders(symbolName))
+		{
+			if ("STOP_MARKET".equals(entry.getType()) && entry.getReduceOnly() && entry.getStopPrice().doubleValue() != 0)
+			{
+				if ("SHORT".equals(side) && "BUY".equals(entry.getSide()))
+				{
+					return entry;
+				}
+				else if ("LONG".equals(side) && "SELL".equals(entry.getSide()))
+				{
+					return entry;
+				}
+			}
+		}
+		return null;
+	}
+	
 	// ------------------------------------------------------------------------
 
 	public static void start()
@@ -114,6 +132,10 @@ public final class PositionService
 			public void run()
 			{
 				getPositions();
+
+				BotService.onPositionUpdate();
+
+				notifyAllLogObservers();
 			}
 		};
 		Timer timer = new Timer("BalanceService");
@@ -137,8 +159,6 @@ public final class PositionService
 				return;
 			}
 
-			verify();
-
 			lstOpenOrders = syncRequestClient.getOpenOrders(null);
 
 			Comparator<Order> orderComparator = Comparator
@@ -155,200 +175,13 @@ public final class PositionService
 
 	// ------------------------------------------------------------------------
 
-	private static void verify()
-	{
-		if (lstPositionRisk != null && !lstPositionRisk.isEmpty())
-		{
-			for (PositionRisk entry : lstPositionRisk)
-			{
-				if (entry.getPositionAmt().compareTo(BigDecimal.ZERO) != 0)
-				{
-					Symbol symbol = Symbol.getInstance(entry.getSymbol());
-					if (symbol != null)
-					{
-						String side = (entry.getPositionAmt().doubleValue() < 0 ? "SHORT" : "LONG");
-						BigDecimal price = entry.getEntryPrice();
-						BigDecimal qty = entry.getPositionAmt().abs();
-
-						Order tpOrder = getTpOrder(symbol.getName(), side);
-						if (tpOrder != null)
-						{
-							BigDecimal tpQty = tpOrder.getOrigQty();
-							if (qty.compareTo(tpQty) != 0)
-							{
-								BigDecimal tpCoef = "SHORT".equals(side) ? BigDecimal.valueOf(1 - DEFAULT_TP) : BigDecimal.valueOf(1 + DEFAULT_TP);
-								BigDecimal newTpPrice = price.multiply(tpCoef).setScale(symbol.getTickSize(), RoundingMode.HALF_UP);
-
-								tpRearrangement(symbol, side, tpOrder, newTpPrice, qty);
-							}
-						}
-
-						Order slOrder = getSlOrder(symbol.getName(), side);
-						if (slOrder != null)
-						{
-							//
-						}
-
-					}
-				}
-			}
-		}
-	}
-
-	private static void tpRearrangement(Symbol symbol, String side, Order order, BigDecimal newPrice, BigDecimal newQty)
-	{
-		BigDecimal tpPrice = order.getPrice();
-		BigDecimal tpQty = order.getOrigQty();
-
-		System.out.println(order.getSymbol() + " TP REARRANGEMENT");
-		System.out.println("OLD TP qty: " + tpQty + " price: " + tpPrice);
-		System.out.println("NEW TP qty: " + newQty + " price: " + newPrice);
-
-		if (isTpRearrangement)
-		{
-			// CANCEL ORDER
-			RequestOptions options = new RequestOptions();
-			SyncRequestClient syncRequestClient = SyncRequestClient.create(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, options);
-			syncRequestClient.cancelOrder(order.getSymbol(), order.getOrderId(), null);
-	
-			// ADD NEW ORDER
-			SimpleTrader.postTprofit(symbol, side, newPrice, newQty);
-		}
-	}
-
-	public static Order getTpOrder(String symbolName, String side)
-	{
-		for (Order entry : getLstOpenOrders(symbolName))
-		{
-			if ("LIMIT".equals(entry.getType()) && entry.getReduceOnly() && entry.getStopPrice().doubleValue() == 0)
-			{
-				if ("SHORT".equals(side) && "BUY".equals(entry.getSide()))
-				{
-					return entry;
-				}
-				else if ("LONG".equals(side) && "SELL".equals(entry.getSide()) && entry.getReduceOnly() && entry.getStopPrice().doubleValue() == 0)
-				{
-					return entry;
-				}
-			}
-		}
-		return null;
-	}
-
-	public static Order getSlOrder(String symbolName, String side)
-	{
-		for (Order entry : getLstOpenOrders(symbolName))
-		{
-			if ("STOP_MARKET".equals(entry.getType()) && entry.getReduceOnly() && entry.getStopPrice().doubleValue() != 0)
-			{
-				if ("SHORT".equals(side) && "BUY".equals(entry.getSide()))
-				{
-					return entry;
-				}
-				else if ("LONG".equals(side) && "SELL".equals(entry.getSide()))
-				{
-					return entry;
-				}
-			}
-		}
-		return null;
-	}
-
-	// ------------------------------------------------------------------------
-
-	public static Map<String, GOrder> calc(Symbol coin, String posSide, BigDecimal posPrice, BigDecimal posQty, BigDecimal shootPrice, BigDecimal shootQty) throws Exception 
-	{
-		Map<String, GOrder> mapPosition = new HashMap<String, GOrder>();
-
-		// --- POSITION -------------------------------------------------------
-		PositionRisk positionRisk = getPositionRisk(coin.getName());
-		boolean positionExists = (positionRisk != null && positionRisk.getPositionAmt().compareTo(BigDecimal.ZERO) != 0); 
-		if (positionExists)
-		{
-			posSide = positionRisk.getPositionAmt().doubleValue() < 0 ? "SELL" : "BUY";
-			posPrice = positionRisk.getEntryPrice();
-			posQty = positionRisk.getPositionAmt().abs();
-		}
-		mapPosition.put("POS", new GOrder(posPrice, posQty));
-
-		// --- SHOOT ----------------------------------------------------------
-		mapPosition.put("SHOOT", new GOrder(shootPrice, shootQty));
-
-		// --- RESULT ---------------------------------------------------------
-		BigDecimal resultQty = posQty.add(shootQty);
-		BigDecimal resultUSD = posPrice.multiply(posQty).add(shootPrice.multiply(shootQty));
-		BigDecimal resultPrice = resultUSD.divide(resultQty, RoundingMode.HALF_UP);
-		mapPosition.put("RESULT", new GOrder(resultPrice, resultQty, resultUSD));
-
-		// --- OTHERS ---------------------------------------------------------
-		BigDecimal othersPrice = null;
-		BigDecimal othersQty = null;
-		BigDecimal othersUSD = null;
-		if (positionExists)
-		{
-			othersQty = resultQty;
-			othersUSD = resultUSD;
-			for (Order entry : getLstOpenOrders(coin.getName()))
-			{
-				if ("LIMIT".equals(entry.getType()) && posSide.equals(entry.getSide()))
-				{
-					othersQty = othersQty.add(entry.getOrigQty());
-					othersUSD = entry.getOrigQty().multiply(entry.getPrice());
-				}
-			}
-			othersPrice = othersUSD.divide(othersQty, RoundingMode.HALF_UP);
-			mapPosition.put("OTHERS", new GOrder(othersPrice, othersQty, othersUSD));
-		}
-
-		// --- STOP LOSS ------------------------------------------------------
-		BigDecimal slPrice;
-		BigDecimal slAmt;
-		if (positionExists)	{
-			slPrice = othersPrice.multiply(BigDecimal.valueOf(1 - Config.getStoploss_increment()));
-			slAmt = othersQty;
-		} else {
-			slPrice = resultPrice.multiply(BigDecimal.valueOf(1 - Config.getStoploss_increment()));
-			slAmt = resultQty;
-		}
-		mapPosition.put("SL", new GOrder(slPrice, slAmt));
-
-		// --- TAKE PROFIT ----------------------------------------------------
-		BigDecimal tpAmt = posQty;
-		BigDecimal tpPrice = resultPrice.multiply(BigDecimal.valueOf(1 + Config.getTakeprofit()));
-		mapPosition.put("TP", new GOrder(tpPrice, tpAmt));
-
-		// --- DISTANCES ------------------------------------------------------
-		if ("BUY".equals(posSide))
-		{
-			BigDecimal shootDist = BigDecimal.ONE.subtract(posPrice.divide(shootPrice, RoundingMode.HALF_UP));
-			mapPosition.get("SHOOT").setDist(shootDist);
-			BigDecimal resultDist = BigDecimal.ONE.subtract(resultPrice.divide(shootPrice, RoundingMode.HALF_UP));
-			mapPosition.get("RESULT").setDist(resultDist);
-			BigDecimal tptDist = BigDecimal.ONE.subtract(tpPrice.divide(shootPrice, RoundingMode.HALF_UP));
-			mapPosition.get("TP").setDist(tptDist);
-		}
-		else if ("SELL".equals(posSide))
-		{
-			BigDecimal shootDist = posPrice.divide(shootPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
-			mapPosition.get("SHOOT").setDist(shootDist);
-			BigDecimal resultDist = resultPrice.divide(shootPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
-			mapPosition.get("RESULT").setDist(resultDist);
-			BigDecimal tptDist = tpPrice.divide(shootPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
-			mapPosition.get("TP").setDist(tptDist);
-		}		
-
-		return mapPosition;
-	}	
-
-	// ------------------------------------------------------------------------
-
 	public static String toStringOrders(String symbolName)
 	{
 		StringBuilder sb = new StringBuilder();
 
 		for (Order entry : getLstOpenOrders(symbolName))
 		{
-			sb.append(String.format("%-22s %-6s %-13s %10s %14s %12s %14s\n", convertTime(entry.getUpdateTime()), entry.getSide(), entry.getType(), entry.getOrigQty(), entry.getPrice(), entry.getStopPrice(), entry.getReduceOnly() ? "R.Only" : ""));
+			sb.append(String.format("%-22s %-6s %-13s %10s %14s %12s %14s\n", Convert.convertTime(entry.getUpdateTime()), entry.getSide(), entry.getType(), entry.getOrigQty(), entry.getPrice(), entry.getStopPrice(), entry.getReduceOnly() ? "R.Only" : ""));
 		}
 
 		return sb.toString();
@@ -405,13 +238,30 @@ public final class PositionService
 		return sb.toString();
 	}
 
-	public static String convertTime(long time)
+	// ------------------------------------------------------------------------
+
+	private static List<PositionListener> observers = new ArrayList<PositionListener>();
+	
+	public static void attachRefreshObserver(PositionListener observer)
 	{
-		Date date = new Date(time);
-		Format format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		return format.format(date);
+		observers.add(observer);
 	}
 
+	public static void deattachRefreshObserver(PositionListener observer)
+	{
+		observers.remove(observer);
+	}
+
+	public static void notifyAllLogObservers()
+	{
+		for (PositionListener observer : observers)
+		{
+			observer.onPositionUpdate();
+		}
+	}
+
+	// ------------------------------------------------------------------------
+	
 	public static void main(String[] args) throws InterruptedException
 	{
 		Application.initialize();

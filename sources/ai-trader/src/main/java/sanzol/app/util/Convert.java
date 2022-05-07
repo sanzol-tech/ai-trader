@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 import org.decimal4j.util.DoubleRounder;
@@ -50,5 +53,13 @@ public final class Convert
 
 		return DoubleRounder.round(Double.valueOf(str) / 100, 4);
 	}
+	
+	public static String convertTime(long time)
+	{
+		Date date = new Date(time);
+		Format format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		return format.format(date);
+	}
+	
 
 }

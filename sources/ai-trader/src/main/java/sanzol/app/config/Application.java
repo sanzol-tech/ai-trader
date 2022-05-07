@@ -26,7 +26,6 @@ public final class Application
 			Config.load();
 			PriceService.start();
 			BalanceService.start();
-			PositionService.setTpRearrangement(false);
 			PositionService.start();
 			SignalService.start();
 		}

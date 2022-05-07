@@ -24,7 +24,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
@@ -34,14 +33,15 @@ import sanzol.app.config.Application;
 import sanzol.app.config.CharConstants;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
-import sanzol.app.model.Symbol;
+import sanzol.app.listener.PriceListener;
 import sanzol.app.service.OBookService;
+import sanzol.app.service.Symbol;
 import sanzol.app.task.PriceService;
 import sanzol.app.util.Convert;
 import sanzol.app.util.PriceUtil;
 import sanzol.lib.util.BeepUtils;
 
-public class FrmCoin extends JFrame
+public class FrmCoin extends JFrame implements PriceListener
 {
 	private static final long serialVersionUID = 1L;
 
@@ -50,8 +50,6 @@ public class FrmCoin extends JFrame
 	private Symbol coin;
 	private OBookService obService = null;
 	private boolean beepDone = false;	
-
-	private Timer timer1;
 
 	private JPanel contentPane;
 	private JLabel lblError;
@@ -119,7 +117,7 @@ public class FrmCoin extends JFrame
 	public FrmCoin()
 	{
 		initComponents();
-		startTimer();
+		PriceService.attachRefreshObserver(this);
 	}
 
 	private void initComponents()
@@ -468,12 +466,14 @@ public class FrmCoin extends JFrame
 
 		// ---------------------------------------------------------------------
 
+		FrmCoin thisFrm = this;
+
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
 			public void windowClosed(WindowEvent e)
 			{
-				timer1.stop();
+				PriceService.deattachRefreshObserver(thisFrm);
 			}
 		});
 
@@ -482,7 +482,6 @@ public class FrmCoin extends JFrame
 				search();
 			}
 		});
-
 
 		btnShortShockBB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -532,6 +531,36 @@ public class FrmCoin extends JFrame
 
 	// ----------------------------------------------------------------------------------
 
+	@Override
+	public void onPriceUpdate()
+	{
+		try
+		{
+			if (coin != null)
+			{
+				SymbolTickerEvent symbolTicker = PriceService.getSymbolTickerEvent(coin);
+				if (symbolTicker != null)
+				{
+					BigDecimal mrkPrice = PriceService.getLastPrice(coin);
+					txtMarkPrice.setText(coin.priceToStr(mrkPrice));
+					String priceChangePercent = String.format("%.2f", symbolTicker.getPriceChangePercent());
+					txt24h.setText(priceChangePercent);
+					txtVolume.setText(PriceUtil.cashFormat(symbolTicker.getTotalTradedQuoteAssetVolume().doubleValue(), 0));
+					txtHigh.setText(symbolTicker.getHigh().toPlainString());
+					txtLow.setText(symbolTicker.getLow().toPlainString());
+					
+					getDistances();
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
+	}
+
+	// ----------------------------------------------------------------------------------
+
 	private void search()
 	{
 		INFO("");
@@ -554,33 +583,6 @@ public class FrmCoin extends JFrame
 			}
 		}
 		catch(Exception e)
-		{
-			ERROR(e);
-		}
-	}
-
-	private void refresh()
-	{
-		try
-		{
-			if (coin != null)
-			{
-				SymbolTickerEvent symbolTicker = PriceService.getSymbolTickerEvent(coin);
-				if (symbolTicker != null)
-				{
-					BigDecimal mrkPrice = PriceService.getLastPrice(coin);
-					txtMarkPrice.setText(coin.priceToStr(mrkPrice));
-					String priceChangePercent = String.format("%.2f", symbolTicker.getPriceChangePercent());
-					txt24h.setText(priceChangePercent);
-					txtVolume.setText(PriceUtil.cashFormat(symbolTicker.getTotalTradedQuoteAssetVolume().doubleValue(), 0));
-					txtHigh.setText(symbolTicker.getHigh().toPlainString());
-					txtLow.setText(symbolTicker.getLow().toPlainString());
-					
-					getDistances();
-				}
-			}
-		}
-		catch (Exception e)
 		{
 			ERROR(e);
 		}
@@ -723,21 +725,6 @@ public class FrmCoin extends JFrame
 		});
 	}
 
-	private void startTimer()
-	{
-		ActionListener taskPerformer1 = new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				refresh();
-			}
-		};
-		timer1 = new Timer(2000, taskPerformer1);
-		timer1.setInitialDelay(0);
-		timer1.setRepeats(true);
-		timer1.start();
-	}
-
 	// ----------------------------------------------------------------------------------
 
 	public void ERROR(Exception e)
@@ -765,4 +752,5 @@ public class FrmCoin extends JFrame
 		Application.initializeUI();
 		launch();
 	}
+	
 }

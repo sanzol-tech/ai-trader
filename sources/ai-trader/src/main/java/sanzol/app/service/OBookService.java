@@ -23,7 +23,6 @@ import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
 import sanzol.app.config.PrivateConfig;
 import sanzol.app.model.OrderBookElement;
-import sanzol.app.model.Symbol;
 import sanzol.app.task.PriceService;
 
 public class OBookService
