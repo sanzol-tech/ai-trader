@@ -7,7 +7,7 @@
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/1698016b6e03498583a8a8fa2ec0d9e3)](https://www.codacy.com/gh/sanzol-tech/ai-trader/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sanzol-tech/ai-trader&amp;utm_campaign=Badge_Grade)
 
-![2022-05-05_11-49-32](https://user-images.githubusercontent.com/68629815/166961050-53406f71-f8e9-404f-9dca-447170f7eb88.png)
+![image](https://user-images.githubusercontent.com/68629815/167231415-e99780d5-4e19-4067-a3f3-301d683e0ccb.png)
 
 ![2022-05-05_11-50-19](https://user-images.githubusercontent.com/68629815/166961185-8e822ae5-3b44-4cc7-932a-6777ebec752a.png)
 
@@ -18,6 +18,8 @@
 ![2022-05-05_11-52-41](https://user-images.githubusercontent.com/68629815/166961307-f06389cf-f2a4-4f73-ad08-f586db1efdc3.png)
 
 ![2022-05-05_11-53-15](https://user-images.githubusercontent.com/68629815/166961348-ef19e0da-288b-4506-b789-0f5bb92b720f.png)
+
+![image](https://user-images.githubusercontent.com/68629815/167231485-e844b55c-0f86-4c33-a562-66fbb55e3baf.png)
 
 
 ### Getting started
