@@ -47,7 +47,6 @@ import com.binance.client.model.trade.AccountBalance;
 import com.binance.client.model.trade.PositionRisk;
 
 import sanzol.app.config.Application;
-import sanzol.app.config.CharConstants;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
@@ -56,8 +55,8 @@ import sanzol.app.listener.PriceListener;
 import sanzol.app.model.Position;
 import sanzol.app.model.PriceQty;
 import sanzol.app.service.PositionTrader;
-import sanzol.app.service.Symbol;
 import sanzol.app.service.PositionTrader.PostStyle;
+import sanzol.app.service.Symbol;
 import sanzol.app.task.BalanceService;
 import sanzol.app.task.PositionService;
 import sanzol.app.task.PriceService;
@@ -86,6 +85,12 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 	private JLabel lblPrice;
 	private JLabel lblQty;
+
+	private JLabel lnkBtnExtreme;
+	private JLabel lnkBtnStrong;
+	private JLabel lnkBtnNormal;
+	private JLabel lnkBtnEternal;
+	private JLabel lnkBtnLarge;
 	private JLabel lnkBtnToy;
 
 	private JRadioButton rbPriceLimit;
@@ -172,7 +177,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 		txtQty = new JTextField();
 		txtQty.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtQty.setBounds(581, 28, 90, 22);
+		txtQty.setBounds(586, 28, 90, 22);
 		contentPane.add(txtQty);
 		txtQty.setColumns(10);
 
@@ -187,11 +192,11 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 		rbQtyBalance = new JRadioButton("BALANCE %");
 		rbQtyBalance.setSelected(true);
-		rbQtyBalance.setBounds(480, 58, 95, 23);
+		rbQtyBalance.setBounds(480, 58, 100, 23);
 		contentPane.add(rbQtyBalance);
 
 		rbQty = new JRadioButton("COINS QTY");
-		rbQty.setBounds(480, 28, 95, 23);
+		rbQty.setBounds(480, 28, 100, 23);
 		contentPane.add(rbQty);
 
 		ButtonGroup bg1 = new javax.swing.ButtonGroup();
@@ -208,50 +213,41 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		txtSymbolRight.setBounds(132, 28, 104, 22);
 		contentPane.add(txtSymbolRight);
 		txtSymbolRight.setColumns(10);
-
-		JLabel lblPreload = new JLabel("PRELOAD");
-		lblPreload.setBounds(231, 98, 60, 14);
-		contentPane.add(lblPreload);
 		
-		JLabel lnkBtnExtreme = new JLabel("Extreme");
-		lnkBtnExtreme.setHorizontalAlignment(SwingConstants.TRAILING);
-		lnkBtnExtreme.setBounds(295, 98, 60, 14);
-		lnkBtnExtreme.setForeground(Color.BLUE.darker());
+		lnkBtnExtreme = new JLabel("Extreme");
+		lnkBtnExtreme.setBounds(228, 100, 60, 14);
+		lnkBtnExtreme.setForeground(Styles.COLOR_LINK);
 		lnkBtnExtreme.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		contentPane.add(lnkBtnExtreme);
 
-		JLabel lnkBtnStrong = new JLabel("Strong");
-		lnkBtnStrong.setHorizontalAlignment(SwingConstants.TRAILING);
-		lnkBtnStrong.setBounds(365, 98, 60, 14);
-		lnkBtnStrong.setForeground(Color.BLUE.darker());
+		lnkBtnStrong = new JLabel("Strong");
+		lnkBtnStrong.setBounds(298, 100, 60, 14);
+		lnkBtnStrong.setForeground(Styles.COLOR_LINK);
 		lnkBtnStrong.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		contentPane.add(lnkBtnStrong);
 		
-		JLabel lnkBtnNormal = new JLabel("Normal");
-		lnkBtnNormal.setHorizontalAlignment(SwingConstants.TRAILING);
-		lnkBtnNormal.setBounds(435, 98, 60, 14);
-		lnkBtnNormal.setForeground(Color.BLUE.darker());
+		lnkBtnNormal = new JLabel("Normal");
+		lnkBtnNormal.setBounds(368, 100, 60, 14);
+		lnkBtnNormal.setForeground(Styles.COLOR_LINK);
 		lnkBtnNormal.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		contentPane.add(lnkBtnNormal);
 		
-		JLabel lnkBtnLarge = new JLabel("Large");
-		lnkBtnLarge.setHorizontalAlignment(SwingConstants.TRAILING);
-		lnkBtnLarge.setBounds(505, 98, 60, 14);
-		lnkBtnLarge.setForeground(Color.BLUE.darker());
+		lnkBtnLarge = new JLabel("Large");
+		lnkBtnLarge.setBounds(438, 100, 60, 14);
+		lnkBtnLarge.setForeground(Styles.COLOR_LINK);
 		lnkBtnLarge.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		contentPane.add(lnkBtnLarge);
 
-		JLabel lnkBtnEternal = new JLabel("Eternal");
-		lnkBtnEternal.setHorizontalAlignment(SwingConstants.TRAILING);
-		lnkBtnEternal.setBounds(575, 98, 60, 14);
-		lnkBtnEternal.setForeground(Color.BLUE.darker());
+		lnkBtnEternal = new JLabel("Eternal");
+		lnkBtnEternal.setBounds(508, 100, 60, 14);
+		lnkBtnEternal.setForeground(Styles.COLOR_LINK);
 		lnkBtnEternal.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		contentPane.add(lnkBtnEternal);
 	
 		lnkBtnToy = new JLabel("Toy");
-		lnkBtnToy.setHorizontalAlignment(SwingConstants.TRAILING);
-		lnkBtnToy.setForeground(new Color(0, 0, 178));
-		lnkBtnToy.setBounds(645, 98, 50, 14);
+		lnkBtnToy.setForeground(Styles.COLOR_LINK);
+		lnkBtnToy.setBounds(578, 100, 50, 14);
+		lnkBtnToy.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		contentPane.add(lnkBtnToy);
 		
 		txtResult = new JTextArea();
@@ -265,7 +261,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		scroll.setBorder(UIManager.getBorder("TextField.border"));
 		contentPane.add(scroll);
 
-		btnSearch = new JButton(CharConstants.MAGNIFIER);
+		btnSearch = new JButton(Styles.IMAGE_SEARCH);
 		btnSearch.setOpaque(true);
 		btnSearch.setBounds(15, 59, 106, 22);
 		contentPane.add(btnSearch);
@@ -278,7 +274,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		txtBalancePercent = new JTextField();
 		txtBalancePercent.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtBalancePercent.setColumns(10);
-		txtBalancePercent.setBounds(581, 58, 90, 22);
+		txtBalancePercent.setBounds(586, 58, 90, 22);
 		contentPane.add(txtBalancePercent);
 
 		txtError = new JTextField();
@@ -290,6 +286,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		txtError.setColumns(10);
 
 		btnPostFirst = new JButton("First");
+		btnPostFirst.setIcon(Styles.IMAGE_EXECUTE);
 		btnPostFirst.setEnabled(false);
 		btnPostFirst.setToolTipText("Post only first order");
 		btnPostFirst.setOpaque(true);
@@ -297,6 +294,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		contentPane.add(btnPostFirst);
 
 		btnPostOthers = new JButton("Others");
+		btnPostOthers.setIcon(Styles.IMAGE_EXECUTE);
 		btnPostOthers.setEnabled(false);
 		btnPostOthers.setToolTipText("Post the other orders");
 		btnPostOthers.setOpaque(true);
@@ -331,13 +329,13 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		contentPane.add(pndGrid);
 		pndGrid.setLayout(null);
 		
-		JLabel lblNewLabel_2 = new JLabel("Price %");
-		lblNewLabel_2.setBounds(20, 20, 53, 14);
-		pndGrid.add(lblNewLabel_2);
+		JLabel lblGrdPrice = new JLabel("Price %");
+		lblGrdPrice.setBounds(20, 20, 53, 14);
+		pndGrid.add(lblGrdPrice);
 		
-		JLabel lblNewLabel_1 = new JLabel("Qty %");
-		lblNewLabel_1.setBounds(20, 47, 53, 14);
-		pndGrid.add(lblNewLabel_1);
+		JLabel lblGrdQty = new JLabel("Qty %");
+		lblGrdQty.setBounds(20, 47, 53, 14);
+		pndGrid.add(lblGrdQty);
 		
 		txtGPrice1 = new JTextField();
 		txtGPrice1.setBounds(83, 18, 60, 20);
@@ -476,10 +474,10 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		txtQtyIncr.setColumns(10);
 		pnlConfig.add(txtQtyIncr);
 
-		JLabel lblCoinsIncr = new JLabel("Qty %");
-		lblCoinsIncr.setBounds(172, 11, 60, 14);
-		lblCoinsIncr.setHorizontalAlignment(SwingConstants.LEFT);
-		pnlConfig.add(lblCoinsIncr);
+		JLabel lblQtyIncr = new JLabel("Qty %");
+		lblQtyIncr.setBounds(172, 11, 60, 14);
+		lblQtyIncr.setHorizontalAlignment(SwingConstants.LEFT);
+		pnlConfig.add(lblQtyIncr);
 
 		JLabel lblDistSL = new JLabel("SL %");
 		lblDistSL.setBounds(248, 12, 60, 14);
@@ -1220,7 +1218,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		INFO("");
 		try
 		{
-			if (JOptionPane.showConfirmDialog(null, "Do you like post this position ?") == 0)
+			int resultOption = JOptionPane.showConfirmDialog(null, "Do you like post this position ?", "Confirm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if (resultOption == 0)
 			{
 				setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 

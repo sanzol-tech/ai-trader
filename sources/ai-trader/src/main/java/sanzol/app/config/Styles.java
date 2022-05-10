@@ -3,18 +3,24 @@ package sanzol.app.config;
 import java.awt.Color;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.MatteBorder;
 
 import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.intellijthemes.FlatCarbonIJTheme;
 
 public class Styles
 {
 	public static boolean isNight = false;
 	
+	public static ImageIcon IMAGE_SEARCH = new FlatSVGIcon(Styles.class.getResource("/resources/search.svg"));
+	public static ImageIcon IMAGE_EXECUTE = new FlatSVGIcon(Styles.class.getResource("/resources/execute.svg"));
+
 	public static Color COLOR_BORDER_LINE;
+	public static Color COLOR_LINK;
 	public static Color COLOR_TEXT_ALT1;
 	public static Color COLOR_TEXT_ALT2;
 	public static Color COLOR_TEXT_SHORT;
@@ -32,6 +38,7 @@ public class Styles
 	{
 		COLOR_BORDER_LINE = new Color(192, 192, 192);
 
+		COLOR_LINK = new Color(65, 105, 225);
 		COLOR_TEXT_ALT1 = new Color(65, 105, 225);
 		COLOR_TEXT_ALT2 = new Color(39, 82, 194);
 
@@ -60,6 +67,7 @@ public class Styles
 	{
 		COLOR_BORDER_LINE = new Color(192, 192, 192);
 
+		COLOR_LINK = new Color(137, 255, 253);
 		COLOR_TEXT_ALT1 = new Color(137, 255, 253);
 		COLOR_TEXT_ALT2 = new Color(240, 240, 255);
 

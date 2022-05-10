@@ -83,6 +83,8 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	private JTextField txtBalanceMinAvailable;
 	private JTextField txtPositionsMax;
 	private JTextField txtPositionQtyMax;
+	
+	private JLabel lnkGitHub;
 
 	private JPasswordField txtSecretKey;
 	private JPasswordField txtApiKey;
@@ -105,11 +107,58 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		setTitle(Constants.APP_NAME);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmMain.class.getResource("/resources/logo.png")));
 		setLocationRelativeTo(null);
-		
+
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(1, 1, 1, 1));
 		contentPane.setLayout(null);
 		setContentPane(contentPane);
+
+		btnCoin = new JButton("COIN");
+		btnCoin.setToolTipText("Edit shock points");
+		btnCoin.setOpaque(true);
+		btnCoin.setBounds(16, 11, 92, 28);
+		contentPane.add(btnCoin);
+
+		btnNewGrid = new JButton("GRID");
+		btnNewGrid.setBounds(118, 11, 92, 28);
+		btnNewGrid.setOpaque(true);
+		contentPane.add(btnNewGrid);
+
+		btnCalcOrder = new JButton("SHOOT");
+		btnCalcOrder.setOpaque(true);
+		btnCalcOrder.setBounds(220, 11, 92, 28);
+		contentPane.add(btnCalcOrder);
+
+		btnShockMonitor = new JButton("MONITOR ALL");
+		btnShockMonitor.setToolTipText("Monitor shock points");
+		btnShockMonitor.setOpaque(true);
+		btnShockMonitor.setBounds(556, 66, 130, 28);
+		contentPane.add(btnShockMonitor);
+
+		btnShockEditor = new JButton("EDIT POINTS");
+		btnShockEditor.setToolTipText("Edit shock points");
+		btnShockEditor.setOpaque(true);
+		btnShockEditor.setBounds(696, 66, 130, 28);
+		contentPane.add(btnShockEditor);
+
+		btnBot = new JButton("BOT");
+		btnBot.setToolTipText("Edit shock points");
+		btnBot.setOpaque(true);
+		btnBot.setBounds(442, 11, 92, 28);
+		contentPane.add(btnBot);
+
+		btnLookFeel = new JButton("Light");
+		btnCoin.setOpaque(true);
+		btnLookFeel.setBounds(590, 15, 68, 22);
+		contentPane.add(btnLookFeel);
+
+		lnkGitHub = new JLabel("ai-trader on GitHub");
+		lnkGitHub.setForeground(Styles.COLOR_LINK);
+		lnkGitHub.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lnkGitHub.setHorizontalAlignment(SwingConstants.RIGHT);
+		lnkGitHub.setBounds(669, 15, 157, 22);
+		lnkGitHub.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		contentPane.add(lnkGitHub);
 
 		JPanel panelConfig = new JPanel();
 		panelConfig.setBorder(new TitledBorder(null, " Default values ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -297,12 +346,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		listSignals.setFont(new Font("Courier New", Font.PLAIN, 11));
 		scrollSignals.setViewportView(listSignals);
 
-		btnShockMonitor = new JButton("MONITOR ALL");
-		btnShockMonitor.setToolTipText("Monitor shock points");
-		btnShockMonitor.setOpaque(true);
-		btnShockMonitor.setBounds(556, 66, 130, 28);
-		contentPane.add(btnShockMonitor);
-
 		txtBalance = new JTextField();
 		txtBalance.setBounds(640, 537, 86, 20);
 		txtBalance.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -329,57 +372,16 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		lblWithdrawalL.setHorizontalAlignment(SwingConstants.RIGHT);
 		contentPane.add(lblWithdrawalL);
 
-		btnNewGrid = new JButton("GRID");
-		btnNewGrid.setBounds(118, 11, 92, 28);
-		btnNewGrid.setOpaque(true);
-		contentPane.add(btnNewGrid);
-
 		txtError = new JTextField();
 		txtError.setEditable(false);
 		txtError.setBounds(16, 517, 600, 40);
 		contentPane.add(txtError);
-
-		btnShockEditor = new JButton("EDIT POINTS");
-		btnShockEditor.setToolTipText("Edit shock points");
-		btnShockEditor.setOpaque(true);
-		btnShockEditor.setBounds(696, 66, 130, 28);
-		contentPane.add(btnShockEditor);
-
+		
 		JLabel lblSignals = new JLabel("Short or Long Entries");
 		lblSignals.setHorizontalAlignment(SwingConstants.LEFT);
 		lblSignals.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblSignals.setBounds(276, 76, 200, 20);
 		contentPane.add(lblSignals);
-
-		btnCalcOrder = new JButton("SHOOT");
-		btnCalcOrder.setOpaque(true);
-		btnCalcOrder.setBounds(220, 11, 92, 28);
-		contentPane.add(btnCalcOrder);
-		
-		JLabel lblTitle = new JLabel("ai-trader on GitHub");
-		lblTitle.setForeground(Styles.COLOR_TEXT_ALT1);
-		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblTitle.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblTitle.setBounds(669, 15, 157, 22);
-		lblTitle.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		contentPane.add(lblTitle);
-		
-		btnCoin = new JButton("COIN");
-		btnCoin.setToolTipText("Edit shock points");
-		btnCoin.setOpaque(true);
-		btnCoin.setBounds(16, 11, 92, 28);
-		contentPane.add(btnCoin);
-		
-		btnLookFeel = new JButton("Light");
-		btnCoin.setOpaque(true);
-		btnLookFeel.setBounds(590, 15, 68, 22);
-		contentPane.add(btnLookFeel);
-		
-		btnBot = new JButton("BOT");
-		btnBot.setToolTipText("Edit shock points");
-		btnBot.setOpaque(true);
-		btnBot.setBounds(442, 11, 92, 28);
-		contentPane.add(btnBot);
 
 		// --------------------------------------------------------------------
 
@@ -396,7 +398,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 			}
 		});
 		
-		lblTitle.addMouseListener(new MouseAdapter() {
+		lnkGitHub.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {

@@ -111,11 +111,11 @@ public class FrmBot extends JFrame implements BotListener
 		contentPane.add(pnlBot);
 		
 		chkAuto1 = new JCheckBox("Auto star position from signal");
-		chkAuto1.setBounds(22, 22, 250, 23);
+		chkAuto1.setBounds(22, 22, 280, 23);
 		pnlBot.add(chkAuto1);
 		
 		chkAuto2 = new JCheckBox("Auto post grid orders when position filled");
-		chkAuto2.setBounds(22, 48, 250, 23);
+		chkAuto2.setBounds(22, 48, 280, 23);
 		pnlBot.add(chkAuto2);
 		
 		btnSave = new JButton("SAVE");
@@ -137,13 +137,13 @@ public class FrmBot extends JFrame implements BotListener
 		chkTPRearrangement = new JCheckBox();
 		chkTPRearrangement.setText("Rearrangement %");
 		chkTPRearrangement.setSelected(false);
-		chkTPRearrangement.setBounds(16, 14, 114, 23);
+		chkTPRearrangement.setBounds(16, 14, 128, 23);
 		pnlTProfit.add(chkTPRearrangement);
 
 		txtTPPercent = new JTextField();
 		txtTPPercent.setText("0");
 		txtTPPercent.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtTPPercent.setBounds(147, 16, 68, 20);
+		txtTPPercent.setBounds(156, 16, 68, 20);
 		pnlTProfit.add(txtTPPercent);
 	
 		btnTPSave = new JButton("SAVE");
@@ -165,13 +165,13 @@ public class FrmBot extends JFrame implements BotListener
 		chkSLRearrangement = new JCheckBox();
 		chkSLRearrangement.setText("Rearrangement %");
 		chkSLRearrangement.setSelected(false);
-		chkSLRearrangement.setBounds(16, 14, 114, 23);
+		chkSLRearrangement.setBounds(16, 14, 128, 23);
 		pnlStopLoss.add(chkSLRearrangement);
 		
 		txtSLPercent = new JTextField();
 		txtSLPercent.setText("0");
 		txtSLPercent.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtSLPercent.setBounds(147, 16, 68, 20);
+		txtSLPercent.setBounds(156, 16, 68, 20);
 		pnlStopLoss.add(txtSLPercent);
 		
 		btnSLSave = new JButton("SAVE");

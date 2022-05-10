@@ -43,7 +43,7 @@ public final class PositionService
 	{
 		return lstPositionRisk;
 	}
-	
+
 	public static PositionRisk getPositionRisk(String symbolName)
 	{
 		if (lstPositionRisk != null && !lstPositionRisk.isEmpty())
@@ -82,7 +82,7 @@ public final class PositionService
 
 	public static Order getTpOrder(String symbolName, String side)
 	{
-		for (Order entry : PositionService.getLstOpenOrders(symbolName))
+		for (Order entry : getLstOpenOrders(symbolName))
 		{
 			if ("LIMIT".equals(entry.getType()) && entry.getReduceOnly() && entry.getStopPrice().doubleValue() == 0)
 			{
@@ -101,7 +101,7 @@ public final class PositionService
 
 	public static Order getSlOrder(String symbolName, String side)
 	{
-		for (Order entry : PositionService.getLstOpenOrders(symbolName))
+		for (Order entry : getLstOpenOrders(symbolName))
 		{
 			if ("STOP_MARKET".equals(entry.getType()) && entry.getReduceOnly() && entry.getStopPrice().doubleValue() != 0)
 			{
@@ -132,9 +132,6 @@ public final class PositionService
 			public void run()
 			{
 				getPositions();
-
-				BotService.onPositionUpdate();
-
 				notifyAllLogObservers();
 			}
 		};

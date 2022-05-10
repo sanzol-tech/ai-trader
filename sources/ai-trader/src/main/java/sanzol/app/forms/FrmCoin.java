@@ -10,10 +10,13 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.math.BigDecimal;
+import java.net.URI;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -30,7 +33,6 @@ import javax.swing.border.EmptyBorder;
 import com.binance.client.model.event.SymbolTickerEvent;
 
 import sanzol.app.config.Application;
-import sanzol.app.config.CharConstants;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.listener.PriceListener;
@@ -91,6 +93,8 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JLabel lblTitlePoints2;
 	private JLabel lblVolume;
 
+	private JLabel lnkTradingview;
+
 	private JTextArea txtOBookAsk;
 	private JTextArea txtOBookBid;
 
@@ -125,7 +129,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		setTitle(TITLE);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 840, 600);
+		setBounds(100, 100, 770, 600);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmMain.class.getResource("/resources/monitor.png")));
 		setLocationRelativeTo(null);
 
@@ -136,7 +140,7 @@ public class FrmCoin extends JFrame implements PriceListener
 
 		JPanel pnlBottom = new JPanel();
 		pnlBottom.setBorder(Styles.BORDER_UP);
-		pnlBottom.setBounds(30, 532, 770, 22);
+		pnlBottom.setBounds(30, 532, 702, 22);
 		pnlBottom.setLayout(new BorderLayout(0, 0));
 		contentPane.add(pnlBottom);
 		
@@ -144,8 +148,8 @@ public class FrmCoin extends JFrame implements PriceListener
 		lblError.setMinimumSize(new Dimension(100, 20));
 		lblError.setBorder(new EmptyBorder(5, 0, 5, 5));
 		pnlBottom.add(lblError, BorderLayout.CENTER);
-		
-		btnSearch = new JButton(CharConstants.MAGNIFIER);
+
+		btnSearch = new JButton(Styles.IMAGE_SEARCH);
 		btnSearch.setOpaque(true);
 		btnSearch.setBounds(30, 69, 178, 22);
 		contentPane.add(btnSearch);
@@ -171,11 +175,11 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtMarkPrice.setEditable(false);
 		txtMarkPrice.setForeground(Styles.COLOR_TEXT_ALT1);
 		txtMarkPrice.setColumns(10);
-		txtMarkPrice.setBounds(440, 270, 360, 20);
+		txtMarkPrice.setBounds(430, 270, 300, 20);
 		contentPane.add(txtMarkPrice);
 		
 		scrollOBookAsk = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollOBookAsk.setBounds(440, 54, 360, 210);
+		scrollOBookAsk.setBounds(430, 54, 300, 210);
 		scrollOBookAsk.setBorder(UIManager.getBorder("TextField.border"));
 		contentPane.add(scrollOBookAsk);
 
@@ -187,7 +191,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		scrollOBookAsk.setViewportView(txtOBookAsk);
 
 		scrollOBookBid = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollOBookBid.setBounds(440, 296, 360, 210);
+		scrollOBookBid.setBounds(430, 296, 300, 210);
 		scrollOBookBid.setBorder(UIManager.getBorder("TextField.border"));
 		contentPane.add(scrollOBookBid);
 
@@ -201,7 +205,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		pnlBB = new JPanel();
 		pnlBB.setLayout(null);
 		pnlBB.setBorder(UIManager.getBorder("TextField.border"));
-		pnlBB.setBounds(30, 144, 387, 95);
+		pnlBB.setBounds(30, 144, 370, 95);
 		contentPane.add(pnlBB);
 
 		txtShortPrice = new JTextField();
@@ -273,7 +277,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		pnlFP = new JPanel();
 		pnlFP.setLayout(null);
 		pnlFP.setBorder(UIManager.getBorder("TextField.border"));
-		pnlFP.setBounds(30, 411, 387, 95);
+		pnlFP.setBounds(30, 411, 370, 95);
 		contentPane.add(pnlFP);
 
 		txtShortPriceFP = new JTextField();
@@ -341,7 +345,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		pnlWA = new JPanel();
 		pnlWA.setLayout(null);
 		pnlWA.setBorder(UIManager.getBorder("TextField.border"));
-		pnlWA.setBounds(30, 280, 387, 95);
+		pnlWA.setBounds(30, 280, 370, 95);
 		contentPane.add(pnlWA);
 
 		txtShortPriceWA = new JTextField();
@@ -404,27 +408,27 @@ public class FrmCoin extends JFrame implements PriceListener
 
 		btnExport = new JButton("Export");
 		btnExport.setOpaque(true);
-		btnExport.setBounds(710, 22, 87, 22);
+		btnExport.setBounds(643, 22, 87, 22);
 		contentPane.add(btnExport);
 
 		lbl24Hs = new JLabel("24h %");
 		lbl24Hs.setHorizontalAlignment(SwingConstants.TRAILING);
-		lbl24Hs.setBounds(257, 28, 62, 14);
+		lbl24Hs.setBounds(240, 25, 62, 14);
 		contentPane.add(lbl24Hs);
 
 		lblVolume = new JLabel("Volume");
 		lblVolume.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblVolume.setBounds(259, 53, 62, 14);
+		lblVolume.setBounds(242, 50, 62, 14);
 		contentPane.add(lblVolume);
 
 		lblHigh = new JLabel("HIGH");
 		lblHigh.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblHigh.setBounds(257, 78, 62, 14);
+		lblHigh.setBounds(240, 75, 62, 14);
 		contentPane.add(lblHigh);
 		
 		lblLow = new JLabel("LOW");
 		lblLow.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblLow.setBounds(247, 103, 72, 14);
+		lblLow.setBounds(230, 100, 72, 14);
 		contentPane.add(lblLow);
 		
 		txt24h = new JTextField();
@@ -432,7 +436,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		txt24h.setForeground(Styles.COLOR_TEXT_ALT1);
 		txt24h.setEditable(false);
 		txt24h.setColumns(10);
-		txt24h.setBounds(331, 25, 86, 20);
+		txt24h.setBounds(314, 22, 86, 20);
 		contentPane.add(txt24h);
 
 		txtVolume = new JTextField();
@@ -440,7 +444,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtVolume.setForeground(Styles.COLOR_TEXT_ALT1);
 		txtVolume.setEditable(false);
 		txtVolume.setColumns(10);
-		txtVolume.setBounds(331, 50, 86, 20);
+		txtVolume.setBounds(314, 47, 86, 20);
 		contentPane.add(txtVolume);
 
 		txtLow = new JTextField();
@@ -448,7 +452,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtLow.setForeground(Styles.COLOR_TEXT_ALT1);
 		txtLow.setEditable(false);
 		txtLow.setColumns(10);
-		txtLow.setBounds(331, 100, 86, 20);
+		txtLow.setBounds(314, 97, 86, 20);
 		contentPane.add(txtLow);
 		
 		txtHigh = new JTextField();
@@ -456,13 +460,20 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtHigh.setForeground(Styles.COLOR_TEXT_ALT1);
 		txtHigh.setEditable(false);
 		txtHigh.setColumns(10);
-		txtHigh.setBounds(331, 75, 86, 20);
+		txtHigh.setBounds(314, 72, 86, 20);
 		contentPane.add(txtHigh);
 		
 		btnRefresh = new JButton("Full O.Book");
 		btnRefresh.setOpaque(true);
-		btnRefresh.setBounds(440, 22, 100, 22);
+		btnRefresh.setBounds(430, 22, 100, 22);
 		contentPane.add(btnRefresh);
+		
+		lnkTradingview = new JLabel("TradingView");
+		lnkTradingview.setHorizontalAlignment(SwingConstants.TRAILING);
+		lnkTradingview.setForeground(Styles.COLOR_LINK);
+		lnkTradingview.setBounds(121, 96, 87, 14);
+		lnkTradingview.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		contentPane.add(lnkTradingview);
 
 		// ---------------------------------------------------------------------
 
@@ -474,6 +485,17 @@ public class FrmCoin extends JFrame implements PriceListener
 			public void windowClosed(WindowEvent e)
 			{
 				PriceService.deattachRefreshObserver(thisFrm);
+			}
+		});
+
+		lnkTradingview.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					Desktop.getDesktop().browse(new URI("https://es.tradingview.com/chart/?symbol=BINANCE%3A" + coin.getName()));
+				} catch (Exception ex) {
+					System.err.println(ex.getMessage());
+				}
 			}
 		});
 
@@ -752,5 +774,4 @@ public class FrmCoin extends JFrame implements PriceListener
 		Application.initializeUI();
 		launch();
 	}
-	
 }

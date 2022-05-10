@@ -18,10 +18,11 @@ import com.binance.client.model.trade.PositionRisk;
 import sanzol.app.config.Config;
 import sanzol.app.config.PrivateConfig;
 import sanzol.app.listener.BotListener;
+import sanzol.app.listener.PositionListener;
 import sanzol.app.service.SimpleTrader;
 import sanzol.app.service.Symbol;
 
-public final class BotService
+public final class BotService implements PositionListener
 {
 	private static boolean isTpRearrangement = false;
 	private static boolean isSlRearrangement = false;
@@ -52,7 +53,8 @@ public final class BotService
 	// TP & SL
 	// ------------------------------------------------------------------------
 
-	public static void onPositionUpdate()
+	@Override
+	public void onPositionUpdate()
 	{
 		List<PositionRisk> lstPositionRisk = PositionService.getLstPositionRisk();
 		
@@ -128,6 +130,7 @@ public final class BotService
 	// ------------------------------------------------------------------------	
 
 	private static final long LOG_MAXSIZE = 10000;
+
 	private static LinkedList<String> logLines = new LinkedList<String>();
 
 	public static String getLOG()

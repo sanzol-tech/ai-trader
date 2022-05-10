@@ -28,7 +28,7 @@ public final class PriceService
 	{
 		String symbolName = "BTC" + Constants.DEFAULT_SYMBOL_RIGHT;
 		Symbol coin = Symbol.getInstance(symbolName);
-		
+
 		if (!mapTickers.containsKey(coin.getName()))
 		{
 			return "n/a";
@@ -36,10 +36,10 @@ public final class PriceService
 
 		BigDecimal price = mapTickers.get(symbolName).getLastPrice();
 		BigDecimal priceChange = mapTickers.get(symbolName).getPriceChangePercent();
-		String label = String.format("BTC  %s  %.2f %%", coin.priceToStr(price), priceChange); 
+		String label = String.format("BTC  %s  %.2f %%", coin.priceToStr(price), priceChange);
 		return label;
 	}
-	
+
 	public static BigDecimal getLastPrice(Symbol coin) throws Exception
 	{
 		if (!mapTickers.containsKey(coin.getName()))
@@ -49,7 +49,7 @@ public final class PriceService
 
 		return mapTickers.get(coin.getName()).getLastPrice();
 	}
-	
+
 	public static SymbolTickerEvent getSymbolTickerEvent(Symbol coin) throws Exception
 	{
 		if (!mapTickers.containsKey(coin.getName()))
@@ -77,7 +77,7 @@ public final class PriceService
 			}
 
 			notifyAllLogObservers();
-			
+
 		}), null);
 	}
 
@@ -99,11 +99,11 @@ public final class PriceService
 			{
 				continue;
 			}
-			
+
 			Symbol coin = Symbol.getInstance(entry.getSymbol());
 			list.add(String.format("%-8s %10s %8.2f%%", coin.getNameLeft(), coin.priceToStr(entry.getLastPrice()), entry.getPriceChangePercent()));
 		}
-		Collections.sort(list);		
+		Collections.sort(list);
 		return list;
 	}
 
@@ -115,11 +115,11 @@ public final class PriceService
 			setFavorites.add(item);
 		}
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	private static List<PriceListener> observers = new ArrayList<PriceListener>();
-	
+
 	public static void attachRefreshObserver(PriceListener observer)
 	{
 		observers.add(observer);
@@ -139,7 +139,7 @@ public final class PriceService
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	public static void main(String[] args) throws InterruptedException
 	{
 		start();

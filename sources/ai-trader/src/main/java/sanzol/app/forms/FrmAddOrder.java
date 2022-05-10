@@ -29,7 +29,6 @@ import com.binance.client.model.trade.AccountBalance;
 import com.binance.client.model.trade.PositionRisk;
 
 import sanzol.app.config.Application;
-import sanzol.app.config.CharConstants;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
@@ -149,7 +148,7 @@ public class FrmAddOrder extends JFrame implements PriceListener
 		contentPane.add(txtPositionPrice);
 		txtPositionPrice.setColumns(10);
 
-		JButton btnSearch = new JButton(CharConstants.MAGNIFIER);
+		JButton btnSearch = new JButton(Styles.IMAGE_SEARCH);
 		btnSearch.setOpaque(true);
 		btnSearch.setBounds(31, 69, 178, 22);
 		contentPane.add(btnSearch);
@@ -301,6 +300,7 @@ public class FrmAddOrder extends JFrame implements PriceListener
 		contentPane.add(btnCalc);
 
 		btnPost = new JButton("POST ORDER");
+		btnPost.setIcon(Styles.IMAGE_EXECUTE);
 		btnPost.setBounds(327, 409, 162, 40);
 		btnPost.setOpaque(true);
 		contentPane.add(btnPost);
@@ -704,7 +704,8 @@ public class FrmAddOrder extends JFrame implements PriceListener
 			// ----------------------------------------------------------------
 			String msg = String.format("Post order %s  /  %s  /  %s  /  %s ? *The price can be better than the selected one", coin.getName(), side, coin.priceToStr(price), coin.qtyToStr(coins));			
 
-			if (JOptionPane.showConfirmDialog(null, msg) == 0)
+			int resultOption = JOptionPane.showConfirmDialog(null, msg, "Confirm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if (resultOption == 0)
 			{
 				BigDecimal mrkPrice = PriceService.getLastPrice(coin);
 				if (("SHORT".equals(side) && mrkPrice.doubleValue() > price.doubleValue()) ||
