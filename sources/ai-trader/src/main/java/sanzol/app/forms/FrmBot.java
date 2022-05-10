@@ -29,6 +29,7 @@ import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.listener.BotListener;
 import sanzol.app.task.BotService;
+import sanzol.lib.util.ExceptionUtils;
 
 public class FrmBot extends JFrame implements BotListener
 {
@@ -269,7 +270,7 @@ public class FrmBot extends JFrame implements BotListener
 
 	public void ERROR(Exception e)
 	{
-		ERROR(e.getMessage());
+		ERROR(ExceptionUtils.getMessage(e));
 	}
 
 	public void ERROR(String msg)

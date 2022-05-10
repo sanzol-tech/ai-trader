@@ -19,8 +19,8 @@ public class Config
 		 "DASH", "DOGE", "DOT", "EGLD", "EOS", "ETH", "FIL", "FTM", "GALA", 
 		 "GMT", "HNT", "IOTA", "KAVA", "KNC", "LINA", "LINK", "LTC", "LUNA", 
 		 "MANA", "MATIC", "NEAR", "NEO", "OCEAN", "OGN", "OMG", "ONE", "PEOPLE", 
-		 "ROSE", "RUNE", "SAND", "STORJ", "SUSHI", "THETA", "TRX", "UNI", 
-		 "VET", "WAVES", "XLM", "XMR", "XRP", "XTZ", "ZEC", "ZIL"};
+		 "QTUM", "ROSE", "RUNE", "SAND", "SOL", "STORJ", "SUSHI", "THETA", "TRX", 
+		 "UNI", "VET", "WAVES", "XLM", "XMR", "XRP", "XTZ", "ZEC", "ZIL"};
 
 	private static final Integer LEVERAGE = 10;
 	private static final Integer ITERATIONS = 5;

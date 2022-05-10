@@ -46,7 +46,7 @@ public class Styles
 		COLOR_TEXT_LONG = new Color(0, 102, 0);
 
 		COLOR_TEXT_ERROR = new Color(255, 0, 0);
-		COLOR_TEXT_INFO = new Color(0, 74, 127);
+		COLOR_TEXT_INFO = new Color(50, 50, 50);
 
 		COLOR_TEXT_AREA_BG = new Color(250, 250, 250);
 		COLOR_TEXT_AREA_FG = new Color(0, 74, 127);
@@ -75,7 +75,7 @@ public class Styles
 		COLOR_TEXT_LONG = new Color(137, 255, 143);
 
 		COLOR_TEXT_ERROR = new Color(255, 0, 0);
-		COLOR_TEXT_INFO = new Color(140, 207, 255);
+		COLOR_TEXT_INFO = new Color(200, 200, 200);
 
 		COLOR_TEXT_AREA_BG = new Color(20, 29, 45);
 		COLOR_TEXT_AREA_FG = new Color(140, 207, 255);

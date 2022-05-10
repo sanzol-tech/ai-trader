@@ -46,6 +46,7 @@ import sanzol.app.task.BalanceService;
 import sanzol.app.task.PriceService;
 import sanzol.app.task.SignalService;
 import sanzol.app.util.Convert;
+import sanzol.lib.util.ExceptionUtils;
 
 public class FrmMain extends JFrame implements PriceListener, SignalListener, BalanceListener
 {
@@ -484,7 +485,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 		btnShockMonitor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmPointsMonitor.launch();
+				FrmSignalsMonitor.launch();
 			}
 		});
 
@@ -761,7 +762,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 	public void ERROR(Exception e)
 	{
-		ERROR(e.getMessage());
+		ERROR(ExceptionUtils.getMessage(e));
 	}
 
 	public void ERROR(String msg)

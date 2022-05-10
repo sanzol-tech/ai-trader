@@ -42,6 +42,7 @@ import sanzol.app.task.PriceService;
 import sanzol.app.util.Convert;
 import sanzol.app.util.PriceUtil;
 import sanzol.lib.util.BeepUtils;
+import sanzol.lib.util.ExceptionUtils;
 
 public class FrmCoin extends JFrame implements PriceListener
 {
@@ -595,9 +596,8 @@ public class FrmCoin extends JFrame implements PriceListener
 			if (coin != null)
 			{
 				setTitle(TITLE + " - " + symbol);
-				
+
 				loadOBook(false);
-				getDistances();
 			}
 			else
 			{
@@ -656,6 +656,11 @@ public class FrmCoin extends JFrame implements PriceListener
 
 	private void getDistances()
 	{
+		if (obService == null)
+		{
+			return;	
+		}
+
 		try
 		{
 			BigDecimal mrkPrice = PriceService.getLastPrice(coin);
@@ -751,7 +756,7 @@ public class FrmCoin extends JFrame implements PriceListener
 
 	public void ERROR(Exception e)
 	{
-		ERROR(e.getMessage());
+		ERROR(ExceptionUtils.getMessage(e));
 	}
 
 	public void ERROR(String msg)

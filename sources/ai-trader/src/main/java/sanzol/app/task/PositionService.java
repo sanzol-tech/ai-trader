@@ -132,7 +132,6 @@ public final class PositionService
 			public void run()
 			{
 				getPositions();
-				notifyAllLogObservers();
 			}
 		};
 		Timer timer = new Timer("BalanceService");
@@ -141,7 +140,7 @@ public final class PositionService
 		isStarted = true;
 	}
 
-	private static void getPositions()
+	private synchronized static void getPositions()
 	{
 		try
 		{
@@ -165,8 +164,17 @@ public final class PositionService
 		}
 		catch (Exception e)
 		{
-			errorMessage = e.getMessage();
-			System.err.println("PositionService.getPositions: " + e.getMessage());
+			BotService.error("PositionService.getPositions", e.getMessage());
+		}
+
+		try
+		{
+			BotService.onPositionUpdate();
+			notifyAllLogObservers();
+		}
+		catch (Exception e)
+		{
+			BotService.error("PositionService.getPositions", e.getMessage());
 		}
 	}
 

@@ -61,6 +61,7 @@ import sanzol.app.task.BalanceService;
 import sanzol.app.task.PositionService;
 import sanzol.app.task.PriceService;
 import sanzol.app.util.Convert;
+import sanzol.lib.util.ExceptionUtils;
 
 public class FrmGrid extends JFrame implements PriceListener, PositionListener
 {
@@ -1279,7 +1280,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 	public void ERROR(Exception e)
 	{
-		ERROR(e.getMessage());
+		ERROR(ExceptionUtils.getMessage(e));
 	}
 
 	public void ERROR(String msg)

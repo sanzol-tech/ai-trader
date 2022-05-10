@@ -1,6 +1,5 @@
 package sanzol.app.forms;
 
-import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -17,16 +16,13 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
@@ -34,6 +30,7 @@ import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.task.SignalService;
+import sanzol.lib.util.ExceptionUtils;
 
 public class FrmPointsEditor extends JFrame
 {
@@ -42,8 +39,6 @@ public class FrmPointsEditor extends JFrame
 	private static final String TITLE = "Points editor";
 
 	private static boolean isOpen = false;
-
-	private JPanel contentPane;
 
 	private JScrollPane scrollPane;
 	private JTextArea textArea;
@@ -64,12 +59,14 @@ public class FrmPointsEditor extends JFrame
 	private void initComponents() 
 	{
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 480, 517);
+		setBounds(100, 100, 480, 500);
 		setMinimumSize(new Dimension(480, 400));
 		setTitle(TITLE);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmGrid.class.getResource("/resources/monitor.png")));
 		setLocationRelativeTo(null);
 	
+		lblError = new JLabel();
+		
 		textArea = new JTextArea();
 		textArea.setBackground(Styles.COLOR_TEXT_AREA_BG);
 		textArea.setForeground(Styles.COLOR_TEXT_AREA_FG);
@@ -82,58 +79,47 @@ public class FrmPointsEditor extends JFrame
 		btnGenerate = new JButton("GENERATE");
 		btnGenerate.setOpaque(true);
 
+		JCheckBox chkOnlyFavorites = new JCheckBox("Only favorites");
+		chkOnlyFavorites.setSelected(true);
+		
 		btnSave = new JButton("SAVE");
 		btnSave.setOpaque(true);
 		
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-		
-		JCheckBox chkOnlyFavorites = new JCheckBox("Only favorites");
-		chkOnlyFavorites.setSelected(true);
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(scrollPane, Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+                    .addGroup(Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(btnGenerate)
+                        .addGap(6, 6, 6)
+                        .addComponent(chkOnlyFavorites, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(lblError, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnSave)))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(Alignment.TRAILING)
+                    .addComponent(chkOnlyFavorites)
+                    .addComponent(btnGenerate))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(Alignment.TRAILING)
+                    .addComponent(lblError, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSave))
+                .addContainerGap())
+        );
 
-		JPanel pnlBottom = new JPanel();
-		pnlBottom.setBorder(Styles.BORDER_UP);
-		pnlBottom.setLayout(new BorderLayout(0, 0));
-		lblError = new JLabel();
-		lblError.setBorder(new EmptyBorder(5, 0, 5, 5));		
-		lblError.setMinimumSize(new Dimension(100, 20));
-		pnlBottom.add(lblError);
-		
-		GroupLayout gl_contentPane = new GroupLayout(contentPane);
-		gl_contentPane.setHorizontalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE)
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(btnGenerate)
-							.addGap(18)
-							.addComponent(chkOnlyFavorites)
-							.addPreferredGap(ComponentPlacement.RELATED, 181, Short.MAX_VALUE)
-							.addComponent(btnSave))
-						.addComponent(pnlBottom, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE))
-					.addContainerGap())
-		);
-		gl_contentPane.setVerticalGroup(
-			gl_contentPane.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnSave)
-						.addComponent(btnGenerate)
-						.addComponent(chkOnlyFavorites))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(pnlBottom, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(4))
-		);
-
-		contentPane.setLayout(gl_contentPane);
-
-		pack();
+        pack();
 
 		// -----------------------------------------------------------------
 
@@ -259,7 +245,7 @@ public class FrmPointsEditor extends JFrame
 
 	public void ERROR(Exception e)
 	{
-		ERROR(e.getMessage());
+		ERROR(ExceptionUtils.getMessage(e));
 	}
 
 	public void ERROR(String msg)
