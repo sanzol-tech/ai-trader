@@ -202,9 +202,14 @@ public class OBookService
 	{
 		if (asksGrp != null && !asksGrp.isEmpty())
 		{
+			double maxPrice = asksGrp.get(0).getPrice().multiply(BigDecimal.TEN).doubleValue();
+
 			OrderBookElement eMax = null;
 			for (OrderBookElement e : asksGrp)
 			{
+				if (e.getPrice().doubleValue() >= maxPrice)
+					break;
+
 				if ((eMax == null) || (eMax.getQty().compareTo(e.getQty()) == -1))
 					eMax = e;
 			}
@@ -217,7 +222,7 @@ public class OBookService
 	{
 		if (bidsGrp != null && !bidsGrp.isEmpty())
 		{
-			double minPrice = Math.pow(10, -coin.getTickSize()) * 2;
+			double minPrice = Math.pow(10, -coin.getTickSize()) * 20;
 
 			OrderBookElement eMax = null;
 			for (OrderBookElement e : bidsGrp)
@@ -389,10 +394,6 @@ public class OBookService
 	{
 		final BigDecimal[] BLOCK_SIZE = { BigDecimal.valueOf(10), BigDecimal.valueOf(1), BigDecimal.valueOf(0.1), BigDecimal.valueOf(0.01), BigDecimal.valueOf(0.001), BigDecimal.valueOf(0.0001) };
 
-		if ("1000SHIB".equalsIgnoreCase(coin.getNameLeft()))
-		{
-			return BigDecimal.valueOf(0.0001);
-		}
 		if ("BTC".equalsIgnoreCase(coin.getNameLeft()))
 		{
 			return BigDecimal.valueOf(100);

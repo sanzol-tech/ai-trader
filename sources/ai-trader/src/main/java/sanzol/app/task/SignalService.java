@@ -115,6 +115,7 @@ public final class SignalService
 		{
 			List<String> lstSymbols = onlyFavorites ? Config.getLstFavSymbols() : Symbol.getAll();
 
+			int count = 0;
 			for (String symbol : lstSymbols)
 			{
 				try
@@ -124,7 +125,7 @@ public final class SignalService
 	
 					BigDecimal distShLg = PriceUtil.priceDistDown(obService.getShortPriceFixed(), obService.getLongPriceFixed(), true);
 					
-					if ((distShLg.doubleValue() < 1.5 || distShLg.doubleValue() > 6.0))
+					if ((distShLg.doubleValue() < 1.5 || distShLg.doubleValue() > 8.0))
 					{
 						continue;
 					}
@@ -132,7 +133,13 @@ public final class SignalService
 					lstShocks.add(new SignalEntry(coin, obService.getShortPriceFixed(), obService.getLongPriceFixed()));
 					
 					// ------- TODO --------
-					Thread.sleep(200);
+					count++;
+					if (count > 20)	{
+						count = 0;
+						Thread.sleep(5000);
+					} else {
+						Thread.sleep(300);
+					}
 					// ------- TODO --------
 				}
 				catch (BinanceApiException ex)
@@ -178,7 +185,7 @@ public final class SignalService
 				BigDecimal distLong = PriceUtil.priceDistDown(price, entry.getLgShock(), true);
 
 				String action = "";
-				if ((distShLg.doubleValue() >= 1.5 && distShLg.doubleValue() <= 6.0))
+				if ((distShLg.doubleValue() >= 1.5 && distShLg.doubleValue() <= 8.0))
 				{
 					if ((distShort.doubleValue() <= 0.3 && distShort.doubleValue() > -3.0))
 					{
