@@ -757,6 +757,7 @@ public class FrmCoin extends JFrame implements PriceListener
 	public void ERROR(Exception e)
 	{
 		ERROR(ExceptionUtils.getMessage(e));
+		e.printStackTrace();
 	}
 
 	public void ERROR(String msg)

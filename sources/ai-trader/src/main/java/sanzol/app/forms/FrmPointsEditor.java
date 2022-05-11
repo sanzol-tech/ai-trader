@@ -45,6 +45,8 @@ public class FrmPointsEditor extends JFrame
 
 	private JLabel lblError;
 
+	private JCheckBox chkOnlyFavorites;
+
 	private JButton btnGenerate;
 	private JButton btnSave;
 
@@ -79,7 +81,7 @@ public class FrmPointsEditor extends JFrame
 		btnGenerate = new JButton("GENERATE");
 		btnGenerate.setOpaque(true);
 
-		JCheckBox chkOnlyFavorites = new JCheckBox("Only favorites");
+		chkOnlyFavorites = new JCheckBox("Only favorites");
 		chkOnlyFavorites.setSelected(true);
 		
 		btnSave = new JButton("SAVE");
@@ -159,7 +161,7 @@ public class FrmPointsEditor extends JFrame
 			INFO("GENERATING SHOCKPOINTS...");
 			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-			SignalService.searchShocks();
+			SignalService.searchShocks(chkOnlyFavorites.isSelected());
 			SignalService.saveShocks();
 			textArea.setText(SignalService.toStringShocks());
 

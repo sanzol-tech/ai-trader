@@ -31,7 +31,7 @@ public class Config
 	private static final Integer POSITIONS_MAX = 5;
 	private static final Double POSITION_START_QTY = 0.03;
 	private static final Double POSITION_START_QTY_MAX = 0.035;
-	private static final Double BALANCE_MIN_AVAILABLE = 0.20;
+	private static final Double BALANCE_MIN_AVAILABLE = 0.30;
 
 	private static String favorite_symbols;
 	private static Integer leverage;
@@ -44,8 +44,8 @@ public class Config
 	private static Double position_start_qty;
 	private static Double position_start_qty_max;
 	private static Double balance_min_available;
-	
-	
+
+
 	// -----------------------------------------------------------------------
 
 	public static List<String> getLstFavSymbols()

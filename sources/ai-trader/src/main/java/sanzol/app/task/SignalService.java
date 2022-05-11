@@ -14,6 +14,8 @@ import java.util.TimerTask;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.binance.client.exception.BinanceApiException;
+
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.listener.SignalListener;
@@ -105,30 +107,44 @@ public final class SignalService
 		}
 	}
 
-	public static void searchShocks()
+	public static void searchShocks(boolean onlyFavorites)
 	{
 		errorMessage = "";
 		lstShocks = new ArrayList<SignalEntry>();
 		try
 		{
-			for (String symbol : Config.getLstFavSymbols())
+			List<String> lstSymbols = onlyFavorites ? Config.getLstFavSymbols() : Symbol.getAll();
+
+			for (String symbol : lstSymbols)
 			{
-				Symbol coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
-				OBookService obService = OBookService.getInstance(coin).request().calc();
-
-				BigDecimal distShLg = PriceUtil.priceDistDown(obService.getShortPriceFixed(), obService.getLongPriceFixed(), true);
-				
-				if ((distShLg.doubleValue() < 1.5 || distShLg.doubleValue() > 6.0))
+				try
 				{
-					continue;
-				}
+					Symbol coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
+					OBookService obService = OBookService.getInstance(coin).request().calc();
+	
+					BigDecimal distShLg = PriceUtil.priceDistDown(obService.getShortPriceFixed(), obService.getLongPriceFixed(), true);
+					
+					if ((distShLg.doubleValue() < 1.5 || distShLg.doubleValue() > 6.0))
+					{
+						continue;
+					}
 
-				lstShocks.add(new SignalEntry(coin, obService.getShortPriceFixed(), obService.getLongPriceFixed()));
+					lstShocks.add(new SignalEntry(coin, obService.getShortPriceFixed(), obService.getLongPriceFixed()));
+					
+					// ------- TODO --------
+					Thread.sleep(200);
+					// ------- TODO --------
+				}
+				catch (BinanceApiException ex)
+				{
+					System.err.println("ERR: " + symbol + " : " +  ex.getMessage());
+				}
 			}
 		}
 		catch (Exception e)
 		{
 			errorMessage = e.getMessage();
+			System.err.println(e.getMessage());
 		}
 	}
 
@@ -319,7 +335,7 @@ public final class SignalService
 		System.out.println(toStringShocks());
 		*/
 
-		searchShocks(); 
+		searchShocks(false); 
 		System.out.println(""); 
 		System.out.println(toStringShocks());
 		saveShocks();
@@ -329,5 +345,5 @@ public final class SignalService
 		System.out.println(toStringStatus());
 
 	}
-	
+
 }

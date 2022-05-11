@@ -387,7 +387,7 @@ public class OBookService
 
 	private BigDecimal getBlockSize()
 	{
-		final BigDecimal[] BLOCK_SIZE = { BigDecimal.valueOf(10), BigDecimal.valueOf(1), BigDecimal.valueOf(0.1), BigDecimal.valueOf(0.01), BigDecimal.valueOf(0.001), BigDecimal.valueOf(0.001) };
+		final BigDecimal[] BLOCK_SIZE = { BigDecimal.valueOf(10), BigDecimal.valueOf(1), BigDecimal.valueOf(0.1), BigDecimal.valueOf(0.01), BigDecimal.valueOf(0.001), BigDecimal.valueOf(0.0001) };
 
 		if ("1000SHIB".equalsIgnoreCase(coin.getNameLeft()))
 		{
@@ -398,7 +398,7 @@ public class OBookService
 			return BigDecimal.valueOf(100);
 		}
 
-		return BLOCK_SIZE[coin.getTickSize() - 1];
+		return BLOCK_SIZE[coin.getTickSize() < 1 ? 0 : coin.getTickSize() - 1];
 	}
 
 	// ------------------------------------------------------------------------

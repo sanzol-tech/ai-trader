@@ -115,7 +115,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		setContentPane(contentPane);
 
 		btnCoin = new JButton("COIN");
-		btnCoin.setToolTipText("Edit shock points");
 		btnCoin.setOpaque(true);
 		btnCoin.setBounds(16, 11, 92, 28);
 		contentPane.add(btnCoin);
@@ -131,19 +130,16 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		contentPane.add(btnCalcOrder);
 
 		btnShockMonitor = new JButton("MONITOR ALL");
-		btnShockMonitor.setToolTipText("Monitor shock points");
 		btnShockMonitor.setOpaque(true);
 		btnShockMonitor.setBounds(556, 66, 130, 28);
 		contentPane.add(btnShockMonitor);
 
 		btnShockEditor = new JButton("EDIT POINTS");
-		btnShockEditor.setToolTipText("Edit shock points");
 		btnShockEditor.setOpaque(true);
 		btnShockEditor.setBounds(696, 66, 130, 28);
 		contentPane.add(btnShockEditor);
 
 		btnBot = new JButton("BOT");
-		btnBot.setToolTipText("Edit shock points");
 		btnBot.setOpaque(true);
 		btnBot.setBounds(442, 11, 92, 28);
 		contentPane.add(btnBot);

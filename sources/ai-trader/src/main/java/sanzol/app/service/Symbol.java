@@ -3,6 +3,7 @@ package sanzol.app.service;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.TreeSet;
@@ -59,7 +60,7 @@ public class Symbol
 		}
 	}
 
-	public static String getAll()
+	public static List<String> getAll()
 	{
 		TreeSet<String> list = new TreeSet<String>();
 		getExInfEntries();
@@ -71,7 +72,7 @@ public class Symbol
 				list.add(symbolName);
 			}
 		}
-		return StringUtils.join(list, ",");
+		return new ArrayList<String>(list);
 	}
 
 	// ------------------------------------------------------------------------
@@ -183,7 +184,10 @@ public class Symbol
 
 	public static void main(String[] args)
 	{
-		System.out.println(getAll());
-	}	
+		for(String symbol : getAll()) 
+		{
+			System.out.println(symbol);
+		}
+	}
 
 }
