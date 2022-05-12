@@ -5,13 +5,13 @@
 #
 :warning: **THIS PROJECT IS UNDER CONSTRUCTION** :warning: and is very buggy yet
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/1698016b6e03498583a8a8fa2ec0d9e3)](https://www.codacy.com/gh/sanzol-tech/ai-trader/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sanzol-tech/ai-trader&amp;utm_campaign=Badge_Grade)
+![image](https://user-images.githubusercontent.com/68629815/168096986-5209191c-3cfc-4c18-935e-4bcc23badf41.png)
 
-![image](https://user-images.githubusercontent.com/68629815/167231415-e99780d5-4e19-4067-a3f3-301d683e0ccb.png)
+![image](https://user-images.githubusercontent.com/68629815/168097083-0b0c458c-b251-49b0-bcc9-53303d516f96.png)
 
-![2022-05-05_11-50-19](https://user-images.githubusercontent.com/68629815/166961185-8e822ae5-3b44-4cc7-932a-6777ebec752a.png)
+![image](https://user-images.githubusercontent.com/68629815/168097566-8afc7f02-fd20-4ef9-acd3-b99fcd0163a5.png)
 
-![2022-05-05_11-49-54](https://user-images.githubusercontent.com/68629815/166961128-c0e47c2d-794d-46ed-be83-d6537f4b8cf4.png)
+![image](https://user-images.githubusercontent.com/68629815/168097769-28ff0d62-6e71-495a-9d7b-1c32bb8c3042.png)
 
 ![2022-05-05_11-51-57](https://user-images.githubusercontent.com/68629815/166961226-670f8fb9-5250-4a29-aeea-02d3b1306b00.png)
 
