@@ -33,10 +33,11 @@ public class Styles
 	public static Color COLOR_BTN_LONG;
 
 	public static MatteBorder BORDER_UP;
+	public static MatteBorder BORDER_DOWN;
 	
 	public static void setLight() throws UnsupportedLookAndFeelException
 	{
-		COLOR_BORDER_LINE = new Color(192, 192, 192);
+		COLOR_BORDER_LINE = new Color(214, 214, 214);
 
 		COLOR_LINK = new Color(65, 105, 225);
 		COLOR_TEXT_ALT1 = new Color(65, 105, 225);
@@ -55,6 +56,7 @@ public class Styles
 		COLOR_BTN_LONG = new Color(100, 200, 90);
 
 		BORDER_UP = BorderFactory.createMatteBorder(1, 0, 0, 0, COLOR_BORDER_LINE);
+		BORDER_DOWN = BorderFactory.createMatteBorder(1, 0, 1, 0, COLOR_BORDER_LINE);
 
 		// -------------------------------------------------------------------
 		UIManager.setLookAndFeel(new FlatLightLaf());
@@ -65,7 +67,7 @@ public class Styles
 
 	public static void setNight() throws UnsupportedLookAndFeelException
 	{
-		COLOR_BORDER_LINE = new Color(192, 192, 192);
+		COLOR_BORDER_LINE = new Color(46, 80, 112);
 
 		COLOR_LINK = new Color(137, 255, 253);
 		COLOR_TEXT_ALT1 = new Color(137, 255, 253);
@@ -84,6 +86,7 @@ public class Styles
 		COLOR_BTN_LONG = new Color(30, 120, 0);
 
 		BORDER_UP = BorderFactory.createMatteBorder(1, 0, 0, 0, COLOR_BORDER_LINE);
+		BORDER_DOWN = BorderFactory.createMatteBorder(1, 0, 1, 0, COLOR_BORDER_LINE);
 
 		// -------------------------------------------------------------------
 		UIManager.setLookAndFeel(new FlatCarbonIJTheme());
