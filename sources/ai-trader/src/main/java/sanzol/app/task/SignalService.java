@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
@@ -224,6 +226,9 @@ public final class SignalService
 			errorMessage = e.getMessage();
 		}
 
+		Comparator<SignalEntry> comparator = Comparator.comparing(SignalEntry::bestDistance);
+		Collections.sort(list, comparator);
+
 		lstShockStatus = list;
 	}
 
@@ -336,16 +341,16 @@ public final class SignalService
 
 		Thread.sleep(2000);
 
-		/*
 		loadShocks();
 		System.out.println("");
 		System.out.println(toStringShocks());
-		*/
 
+		/*
 		searchShocks(false); 
 		System.out.println(""); 
 		System.out.println(toStringShocks());
 		saveShocks();
+		*/
 
 		verifyShocks();
 		System.out.println("");

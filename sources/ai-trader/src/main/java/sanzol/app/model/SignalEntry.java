@@ -133,6 +133,15 @@ public class SignalEntry
 		return coin.priceToStr(lgShock);
 	}
 
+	public BigDecimal bestDistance()
+	{
+		if (distShort == null || distLong == null)
+			return BigDecimal.valueOf(1000);
+
+		return distShort.min(distLong);
+	}
+	
+	// -------------------------------------------------------------------------
 	// -------------------------------------------------------------------------
 
 	@Override

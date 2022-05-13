@@ -99,12 +99,10 @@ public final class BotService
 		BigDecimal tpPrice = order.getPrice();
 		BigDecimal tpQty = order.getOrigQty();
 
-		info("TPR", "REARRANGEMENT " + order.getSymbol());
-		info("TPR", "OLD TP qty: " + tpQty + " price: " + tpPrice);
-		info("TPR", "NEW TP qty: " + newQty + " price: " + newPrice);
-
 		if (isTpRearrangement)
 		{
+			info("TPR", String.format("%s TP-REARRANGEMENT [qty: %f price: %f] --> [qty: %f price: %f]", order.getSymbol(), tpQty, tpPrice, newQty, newPrice));
+
 			// CANCEL ORDER
 			RequestOptions options = new RequestOptions();
 			SyncRequestClient syncRequestClient = SyncRequestClient.create(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, options);
