@@ -1,6 +1,5 @@
 package sanzol.app.forms;
 
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -16,13 +15,14 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
@@ -44,10 +44,6 @@ public class FrmPointsEditor extends JFrame
 	private JTextArea textArea;
 
 	private JLabel lblError;
-
-	private JCheckBox chkOnlyFavorites;
-
-	private JButton btnGenerate;
 	private JButton btnSave;
 
 	public FrmPointsEditor()
@@ -77,49 +73,35 @@ public class FrmPointsEditor extends JFrame
 
 		scrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setBorder(UIManager.getBorder("TextField.border"));
-
-		btnGenerate = new JButton("GENERATE");
-		btnGenerate.setOpaque(true);
-
-		chkOnlyFavorites = new JCheckBox("Only favorites");
-		chkOnlyFavorites.setSelected(true);
 		
 		btnSave = new JButton("SAVE");
 		btnSave.setOpaque(true);
 		
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(scrollPane, Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
-                    .addGroup(Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(btnGenerate)
-                        .addGap(6, 6, 6)
-                        .addComponent(chkOnlyFavorites, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(lblError, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnSave)))
-                .addContainerGap())
+        	layout.createParallelGroup(Alignment.TRAILING)
+        		.addGroup(layout.createSequentialGroup()
+        			.addContainerGap()
+        			.addGroup(layout.createParallelGroup(Alignment.TRAILING)
+        				.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
+        				.addGroup(layout.createSequentialGroup()
+        					.addComponent(lblError, GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE)
+        					.addGap(18)
+        					.addComponent(btnSave)))
+        			.addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(Alignment.TRAILING)
-                    .addComponent(chkOnlyFavorites)
-                    .addComponent(btnGenerate))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(Alignment.TRAILING)
-                    .addComponent(lblError, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSave))
-                .addContainerGap())
+        	layout.createParallelGroup(Alignment.TRAILING)
+        		.addGroup(layout.createSequentialGroup()
+        			.addContainerGap()
+        			.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE)
+        			.addPreferredGap(ComponentPlacement.UNRELATED)
+        			.addGroup(layout.createParallelGroup(Alignment.TRAILING)
+        				.addComponent(lblError, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+        				.addComponent(btnSave))
+        			.addContainerGap())
         );
+        getContentPane().setLayout(layout);
 
         pack();
 
@@ -134,14 +116,6 @@ public class FrmPointsEditor extends JFrame
 			}
 		});
 
-		btnGenerate.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				generate();
-			}
-		});
-
 		btnSave.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -150,29 +124,6 @@ public class FrmPointsEditor extends JFrame
 			}
 		});
 
-	}
-
-	// ------------------------------------------------------------------------
-
-	private void generate()
-	{
-		try
-		{
-			INFO("GENERATING SHOCKPOINTS...");
-			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-			SignalService.searchShocks(chkOnlyFavorites.isSelected());
-			SignalService.saveShocks();
-			textArea.setText(SignalService.toStringShocks());
-
-			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-
-			INFO("New points generated !");
-		}
-		catch (Exception e)
-		{
-			ERROR(e);
-		}
 	}
 
 	private void load()

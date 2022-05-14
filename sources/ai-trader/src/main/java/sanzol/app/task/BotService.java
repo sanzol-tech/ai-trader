@@ -102,7 +102,7 @@ public final class BotService
 
 		if (isTpRearrangement)
 		{
-			info("%s TP-REARRANGEMENT");
+			info(symbol.getNameLeft() + " TP-REARRANGEMENT");
 			info(String.format("[qty: %f price: %f] --> [qty: %f price: %f]", tpQty, tpPrice, newQty, newPrice));
 			BeepUtils.beep2();
 

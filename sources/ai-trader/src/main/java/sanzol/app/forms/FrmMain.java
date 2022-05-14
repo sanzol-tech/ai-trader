@@ -59,13 +59,12 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	private List<SignalEntry> lstShockStatus = null;
 
 	private JButton btnBot;
+	private JButton btnSignals;
 	private JButton btnCoin;
 	private JButton btnGrid;
 	private JButton btnPositions;
 	private JButton btnSaveConfig;
 	private JButton btnSaveKey;
-	private JButton btnShockEditor;
-	private JButton btnShockMonitor;
 	private JButton btnShoot;
 	private JButton btnSkin;
 
@@ -123,6 +122,8 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		pnlStatusBar = new JPanel();
 		pnlStatusBar.setBorder(Styles.BORDER_UP);
 
+		btnSignals = new JButton();
+		btnSignals.setText("SIGNALS");
 		btnBot = new JButton();
 		btnBot.setText("BOT");
 		btnCoin = new JButton();
@@ -171,7 +172,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 		JScrollPane scrollFavorites = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollFavorites.setBorder(UIManager.getBorder("TextField.border"));
-		scrollFavorites.setBounds(15, 12, 235, 203);
+		scrollFavorites.setBounds(15, 38, 235, 190);
 		pnlContent.add(scrollFavorites);
 
 		listFavorites = new JList<String>();
@@ -182,7 +183,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		
 		JScrollPane scrollSignals = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollSignals.setBorder(UIManager.getBorder("TextField.border"));
-		scrollSignals.setBounds(273, 49, 550, 180);
+		scrollSignals.setBounds(273, 38, 550, 190);
 		pnlContent.add(scrollSignals);
 
 		listSignals = new JList<String>();
@@ -191,20 +192,10 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		listSignals.setForeground(Styles.COLOR_TEXT_AREA_FG);
 		scrollSignals.setViewportView(listSignals);
 		
-		btnShockEditor = new JButton("EDIT POINTS");
-		btnShockEditor.setOpaque(true);
-		btnShockEditor.setBounds(693, 11, 130, 28);
-		pnlContent.add(btnShockEditor);
-		
-		btnShockMonitor = new JButton("MONITOR ALL");
-		btnShockMonitor.setOpaque(true);
-		btnShockMonitor.setBounds(553, 11, 130, 28);
-		pnlContent.add(btnShockMonitor);
-		
 		JLabel lblSignals = new JLabel("Short or Long Entries");
 		lblSignals.setHorizontalAlignment(SwingConstants.LEFT);
-		lblSignals.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblSignals.setBounds(273, 21, 200, 20);
+		lblSignals.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblSignals.setBounds(275, 12, 200, 20);
 		pnlContent.add(lblSignals);
 		
 		JPanel panelConfig = new JPanel();
@@ -334,7 +325,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		chkOnlyFavorites = new JCheckBox("Only favorites");
 		chkOnlyFavorites.setSelected(true);
 		chkOnlyFavorites.setHorizontalAlignment(SwingConstants.TRAILING);
-		chkOnlyFavorites.setBounds(128, 220, 120, 23);
+		chkOnlyFavorites.setBounds(130, 12, 120, 23);
 		pnlContent.add(chkOnlyFavorites);
 
 		JPanel panelKey = new JPanel();
@@ -367,7 +358,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		btnSaveKey.setOpaque(true);
 		btnSaveKey.setBounds(728, 30, 72, 20);
 		panelKey.add(btnSaveKey);
-
 		
 		// --------------------------------------------------------------------
 		GroupLayout pnlTopBarLayout = new GroupLayout(pnlTopBar);
@@ -383,9 +373,11 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnPositions)
 					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnSignals)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnBot)
-					.addPreferredGap(ComponentPlacement.RELATED, 236, Short.MAX_VALUE)
-					.addComponent(lnkGitHub, GroupLayout.PREFERRED_SIZE, 182, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 158, Short.MAX_VALUE)
+					.addComponent(lnkGitHub, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
 					.addComponent(btnSkin)
 					.addContainerGap())
@@ -394,12 +386,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 			pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(pnlTopBarLayout.createSequentialGroup()
 					.addGroup(pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(pnlTopBarLayout.createSequentialGroup()
-							.addGap(13)
-							.addComponent(lnkGitHub))
-						.addGroup(pnlTopBarLayout.createSequentialGroup()
-							.addGap(12)
-							.addComponent(btnSkin))
 						.addGroup(pnlTopBarLayout.createSequentialGroup()
 							.addGap(12)
 							.addComponent(btnCoin))
@@ -414,7 +400,16 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 							.addComponent(btnPositions))
 						.addGroup(pnlTopBarLayout.createSequentialGroup()
 							.addGap(12)
-							.addComponent(btnBot)))
+							.addComponent(btnSignals))
+						.addGroup(pnlTopBarLayout.createSequentialGroup()
+							.addGap(12)
+							.addComponent(btnBot))
+						.addGroup(pnlTopBarLayout.createSequentialGroup()
+							.addGap(12)
+							.addComponent(btnSkin))
+						.addGroup(pnlTopBarLayout.createSequentialGroup()
+							.addGap(13)
+							.addComponent(lnkGitHub)))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		pnlTopBar.setLayout(pnlTopBarLayout);
@@ -438,6 +433,12 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		);
 		getContentPane().setLayout(layout);
 		pnlContent.setLayout(null);
+		
+		JLabel lblSymbols = new JLabel("Symbols");
+		lblSymbols.setHorizontalAlignment(SwingConstants.LEFT);
+		lblSymbols.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblSymbols.setBounds(17, 12, 100, 20);
+		pnlContent.add(lblSymbols);
 		
 		// --------------------------------------------------------------------
 		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);
@@ -508,6 +509,12 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 			}
 		});
 					
+		btnSignals.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				showSignals();
+			}
+		});
+		
 		btnBot.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				showBot();
@@ -581,18 +588,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 					int index = list.locationToIndex(e.getPoint());
 					tradeFromSignal(index);
 				}
-			}
-		});
-
-		btnShockEditor.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				editShockPoints();
-			}
-		});
-
-		btnShockMonitor.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				FrmSignalsMonitor.launch();
 			}
 		});
 
@@ -682,14 +677,14 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		FrmShoot.launch();
 	}
 
+	private void showSignals()
+	{
+		FrmSignals.launch();
+	}
+
 	private void showBot()
 	{
 		FrmBot.launch();
-	}
-
-	private void editShockPoints()
-	{
-		FrmPointsEditor.launch();
 	}
 
 	public static void launch()
