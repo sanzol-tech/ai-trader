@@ -341,16 +341,16 @@ public final class SignalService
 
 		Thread.sleep(2000);
 
+		/*
 		loadShocks();
 		System.out.println("");
 		System.out.println(toStringShocks());
+		*/
 
-		/*
 		searchShocks(false); 
 		System.out.println(""); 
 		System.out.println(toStringShocks());
 		saveShocks();
-		*/
 
 		verifyShocks();
 		System.out.println("");
