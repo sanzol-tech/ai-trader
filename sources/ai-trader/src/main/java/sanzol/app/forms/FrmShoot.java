@@ -42,11 +42,11 @@ import sanzol.app.task.PriceService;
 import sanzol.app.util.Convert;
 import sanzol.lib.util.ExceptionUtils;
 
-public class FrmAddOrder extends JFrame implements PriceListener
+public class FrmShoot extends JFrame implements PriceListener
 {
 	private static final long serialVersionUID = 1L;
 
-	private static final String TITLE = Constants.APP_NAME + " - Add order";
+	private static final String TITLE = Constants.APP_NAME + " - Shoot";
 
 	private static boolean isOpen = false;
 
@@ -68,7 +68,6 @@ public class FrmAddOrder extends JFrame implements PriceListener
 	private JRadioButton rbLong;
 
 	private JLabel lbl24Hs;
-	private JLabel lblTprofit;
 
 	private JTextField txtSymbolLeft;
 	private JTextField txtSymbolRight;
@@ -86,21 +85,9 @@ public class FrmAddOrder extends JFrame implements PriceListener
 	private JTextField txtResultPrice;
 	private JTextField txtResultQty;
 	private JTextField txtResultUsd;
-	private JTextField txtOthersQty;
-	private JTextField txtOthersPrice;
-	private JTextField txtOthersUsd;
-	private JTextField txtSLDist;
-	private JTextField txtSLPrice;
-	private JTextField txtSLQty;
-	private JTextField txtSLUsd;
-	private JTextField txtTPDist;
-	private JTextField txtTPPrice;
-	private JTextField txtTPQty;
-	private JTextField txtTPUsd;
 	private JTextField txtShootDist;
-	private JTextField txtOthersDist;
 
-	public FrmAddOrder()
+	public FrmShoot()
 	{
 		setResizable(false);
 		initComponents();
@@ -111,7 +98,7 @@ public class FrmAddOrder extends JFrame implements PriceListener
 	{
 		setTitle(TITLE);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 550, 560);
+		setBounds(100, 100, 550, 460);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmMain.class.getResource("/resources/upDown.png")));
 		setLocationRelativeTo(null);
 
@@ -122,7 +109,7 @@ public class FrmAddOrder extends JFrame implements PriceListener
 
 		JPanel pnlBottom = new JPanel();
 		pnlBottom.setBorder(Styles.BORDER_UP);
-		pnlBottom.setBounds(10, 490, 514, 22);
+		pnlBottom.setBounds(10, 381, 514, 22);
 		contentPane.add(pnlBottom);
 		pnlBottom.setLayout(new BorderLayout(0, 0));
 		
@@ -262,13 +249,12 @@ public class FrmAddOrder extends JFrame implements PriceListener
 
 		rbShort = new JRadioButton("SHORT");
 		rbShort.setHorizontalAlignment(SwingConstants.LEFT);
-		rbShort.setBounds(327, 369, 76, 23);
+		rbShort.setBounds(327, 265, 76, 23);
 		contentPane.add(rbShort);
 
 		rbLong = new JRadioButton("LONG");
 		rbLong.setHorizontalAlignment(SwingConstants.RIGHT);
-		rbLong.setSelected(true);
-		rbLong.setBounds(413, 369, 76, 23);
+		rbLong.setBounds(413, 265, 76, 23);
 		contentPane.add(rbLong);
 
 		ButtonGroup bg1 = new javax.swing.ButtonGroup();
@@ -277,91 +263,34 @@ public class FrmAddOrder extends JFrame implements PriceListener
 		
 		btnCalc05 = new JButton("x 0.5");
 		btnCalc05.setOpaque(true);
-		btnCalc05.setBounds(31, 369, 70, 23);
+		btnCalc05.setBounds(31, 265, 70, 23);
 		contentPane.add(btnCalc05);
 
 		btnCalc075 = new JButton("x 0.75");
 		btnCalc075.setOpaque(true);
-		btnCalc075.setBounds(108, 369, 70, 23);
+		btnCalc075.setBounds(108, 265, 70, 23);
 		contentPane.add(btnCalc075);
 		
 		btnX1 = new JButton("x 1");
 		btnX1.setOpaque(true);
-		btnX1.setBounds(187, 369, 70, 23);
+		btnX1.setBounds(187, 265, 70, 23);
 		contentPane.add(btnX1);
 
 		btnX2 = new JButton("x 2");
 		btnX2.setOpaque(true);
-		btnX2.setBounds(187, 403, 70, 23);
+		btnX2.setBounds(187, 299, 70, 23);
 		contentPane.add(btnX2);
 
 		btnCalc = new JButton("CALC");
-		btnCalc.setBounds(31, 436, 226, 23);
+		btnCalc.setBounds(31, 332, 226, 23);
 		btnCalc.setOpaque(true);
 		contentPane.add(btnCalc);
 
 		btnPost = new JButton("POST ORDER");
 		btnPost.setIcon(Styles.IMAGE_EXECUTE);
-		btnPost.setBounds(327, 409, 162, 40);
+		btnPost.setBounds(327, 305, 162, 40);
 		btnPost.setOpaque(true);
 		contentPane.add(btnPost);
-		
-		txtOthersPrice = new JTextField();
-		txtOthersPrice.setEditable(false);
-		txtOthersPrice.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtOthersPrice.setColumns(10);
-		txtOthersPrice.setBounds(108, 235, 86, 20);
-		contentPane.add(txtOthersPrice);
-		
-		txtOthersQty = new JTextField();
-		txtOthersQty.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtOthersQty.setEditable(false);
-		txtOthersQty.setColumns(10);
-		txtOthersQty.setBounds(205, 235, 86, 20);
-		contentPane.add(txtOthersQty);
-		
-		txtOthersUsd = new JTextField();
-		txtOthersUsd.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtOthersUsd.setEditable(false);
-		txtOthersUsd.setColumns(10);
-		txtOthersUsd.setBounds(300, 235, 86, 20);
-		contentPane.add(txtOthersUsd);
-		
-		txtSLUsd = new JTextField();
-		txtSLUsd.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtSLUsd.setEditable(false);
-		txtSLUsd.setColumns(10);
-		txtSLUsd.setBounds(300, 275, 86, 20);
-		contentPane.add(txtSLUsd);
-		
-		txtSLQty = new JTextField();
-		txtSLQty.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtSLQty.setEditable(false);
-		txtSLQty.setColumns(10);
-		txtSLQty.setBounds(205, 275, 86, 20);
-		contentPane.add(txtSLQty);
-		
-		txtSLPrice = new JTextField();
-		txtSLPrice.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtSLPrice.setColumns(10);
-		txtSLPrice.setBounds(108, 275, 86, 20);
-		contentPane.add(txtSLPrice);
-		
-		JLabel lblOthers = new JLabel("OTHERS");
-		lblOthers.setBounds(31, 239, 67, 14);
-		contentPane.add(lblOthers);
-		
-		JLabel lblStopLss = new JLabel("S-MARKET");
-		lblStopLss.setBounds(31, 279, 67, 14);
-		contentPane.add(lblStopLss);
-		
-		txtSLDist = new JTextField();
-		txtSLDist.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtSLDist.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		txtSLDist.setEditable(false);
-		txtSLDist.setColumns(10);
-		txtSLDist.setBounds(403, 275, 86, 20);
-		contentPane.add(txtSLDist);
 		
 		txt24h = new JTextField();
 		txt24h.setForeground(Styles.COLOR_TEXT_ALT1);
@@ -375,30 +304,6 @@ public class FrmAddOrder extends JFrame implements PriceListener
 		lbl24Hs.setHorizontalAlignment(SwingConstants.TRAILING);
 		lbl24Hs.setBounds(404, 24, 85, 14);
 		contentPane.add(lbl24Hs);
-		
-		lblTprofit = new JLabel("T. PROFIT");
-		lblTprofit.setBounds(31, 309, 67, 14);
-		contentPane.add(lblTprofit);
-		
-		txtTPPrice = new JTextField();
-		txtTPPrice.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtTPPrice.setColumns(10);
-		txtTPPrice.setBounds(108, 305, 86, 20);
-		contentPane.add(txtTPPrice);
-		
-		txtTPQty = new JTextField();
-		txtTPQty.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtTPQty.setEditable(false);
-		txtTPQty.setColumns(10);
-		txtTPQty.setBounds(205, 305, 86, 20);
-		contentPane.add(txtTPQty);
-		
-		txtTPUsd = new JTextField();
-		txtTPUsd.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtTPUsd.setEditable(false);
-		txtTPUsd.setColumns(10);
-		txtTPUsd.setBounds(300, 305, 86, 20);
-		contentPane.add(txtTPUsd);
 		
 		txtPositionUsd = new JTextField();
 		txtPositionUsd.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -416,14 +321,6 @@ public class FrmAddOrder extends JFrame implements PriceListener
 		txtResultUsd.setBounds(300, 206, 86, 20);
 		contentPane.add(txtResultUsd);
 		
-		txtTPDist = new JTextField();
-		txtTPDist.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtTPDist.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		txtTPDist.setEditable(false);
-		txtTPDist.setColumns(10);
-		txtTPDist.setBounds(403, 305, 86, 20);
-		contentPane.add(txtTPDist);
-		
 		txtShootDist = new JTextField();
 		txtShootDist.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtShootDist.setEditable(false);
@@ -431,26 +328,19 @@ public class FrmAddOrder extends JFrame implements PriceListener
 		txtShootDist.setBounds(403, 175, 86, 20);
 		contentPane.add(txtShootDist);
 		
-		txtOthersDist = new JTextField();
-		txtOthersDist.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtOthersDist.setEditable(false);
-		txtOthersDist.setColumns(10);
-		txtOthersDist.setBounds(403, 235, 86, 20);
-		contentPane.add(txtOthersDist);
-		
 		btnCalc125 = new JButton("x 1.25");
 		btnCalc125.setOpaque(true);
-		btnCalc125.setBounds(31, 403, 70, 23);
+		btnCalc125.setBounds(31, 299, 70, 23);
 		contentPane.add(btnCalc125);
 		
 		btnCalc150 = new JButton("x 1.5");
 		btnCalc150.setOpaque(true);
-		btnCalc150.setBounds(108, 403, 70, 23);
+		btnCalc150.setBounds(108, 299, 70, 23);
 		contentPane.add(btnCalc150);
 
 		// ---------------------------------------------------------------------
 		
-		FrmAddOrder thisFrm = this;
+		FrmShoot thisFrm = this;
 
 		addWindowListener(new WindowAdapter()
 		{
@@ -533,21 +423,6 @@ public class FrmAddOrder extends JFrame implements PriceListener
 		txtResultPrice.setText("");
 		txtResultQty.setText("");
 		txtResultUsd.setText("");
-
-		txtOthersQty.setText("");
-		txtOthersPrice.setText("");
-		txtOthersUsd.setText("");
-		txtOthersDist.setText("");
-
-		txtSLDist.setText("");
-		txtSLPrice.setText("");
-		txtSLQty.setText("");
-		txtSLUsd.setText("");
-
-		txtTPDist.setText("");
-		txtTPPrice.setText("");
-		txtTPQty.setText("");
-		txtTPUsd.setText("");
 	}
 
 	private void search()
@@ -651,31 +526,6 @@ public class FrmAddOrder extends JFrame implements PriceListener
 			txtResultQty.setText(coin.qtyToStr(mapPosition.get("RESULT").getCoins()));
 			txtResultUsd.setText(Convert.usdToStr(mapPosition.get("RESULT").getUsd()));
 			txtResultDist.setText(Convert.dblToStrPercent(mapPosition.get("RESULT").getDist()));
-
-			if (mapPosition.containsKey("OTHERS"))
-			{
-				txtOthersPrice.setText(coin.priceToStr(mapPosition.get("OTHERS").getPrice()));
-				txtOthersQty.setText(coin.qtyToStr(mapPosition.get("OTHERS").getCoins()));
-				txtOthersUsd.setText(Convert.usdToStr(mapPosition.get("OTHERS").getUsd()));
-				txtOthersDist.setText(Convert.dblToStrPercent(mapPosition.get("OTHERS").getDist()));
-			}
-
-			if (mapPosition.containsKey("SL"))
-			{
-				txtSLPrice.setText(coin.priceToStr(mapPosition.get("SL").getPrice()));
-				txtSLQty.setText(coin.qtyToStr(mapPosition.get("SL").getCoins()));
-				txtSLUsd.setText(Convert.usdToStr(mapPosition.get("SL").getUsd()));
-				txtSLDist.setText(Convert.dblToStrPercent(mapPosition.get("SL").getDist()));
-			}
-
-			if (mapPosition.containsKey("TP"))
-			{
-				txtTPPrice.setText(coin.priceToStr(mapPosition.get("TP").getPrice()));
-				txtTPQty.setText(coin.qtyToStr(mapPosition.get("TP").getCoins()));
-				txtTPUsd.setText(Convert.usdToStr(mapPosition.get("TP").getUsd()));
-				txtTPDist.setText(Convert.dblToStrPercent(mapPosition.get("TP").getDist()));
-			}
-
 		}
 		catch (Exception e)
 		{
@@ -767,7 +617,7 @@ public class FrmAddOrder extends JFrame implements PriceListener
 			{
 				try
 				{
-					FrmAddOrder frame = new FrmAddOrder();
+					FrmShoot frame = new FrmShoot();
 					frame.setVisible(true);
 				}
 				catch (Exception e)

@@ -16,7 +16,6 @@ import com.binance.client.model.enums.WorkingType;
 import com.binance.client.model.trade.Order;
 import com.binance.client.model.trade.PositionRisk;
 
-import sanzol.app.config.Config;
 import sanzol.app.config.PrivateConfig;
 import sanzol.app.model.GOrder;
 import sanzol.app.task.PositionService;
@@ -48,43 +47,6 @@ public class SimpleTrader
 		BigDecimal resultPrice = resultUSD.divide(resultQty, RoundingMode.HALF_UP);
 		mapPosition.put("RESULT", new GOrder(resultPrice, resultQty, resultUSD));
 
-		// --- OTHERS ---------------------------------------------------------
-		BigDecimal othersPrice = null;
-		BigDecimal othersQty = null;
-		BigDecimal othersUSD = null;
-		if (positionExists)
-		{
-			othersQty = resultQty;
-			othersUSD = resultUSD;
-			for (Order entry : PositionService.getLstOpenOrders(coin.getName()))
-			{
-				if ("LIMIT".equals(entry.getType()) && posSide.equals(entry.getSide()))
-				{
-					othersQty = othersQty.add(entry.getOrigQty());
-					othersUSD = entry.getOrigQty().multiply(entry.getPrice());
-				}
-			}
-			othersPrice = othersUSD.divide(othersQty, RoundingMode.HALF_UP);
-			mapPosition.put("OTHERS", new GOrder(othersPrice, othersQty, othersUSD));
-		}
-
-		// --- STOP LOSS ------------------------------------------------------
-		BigDecimal slPrice;
-		BigDecimal slAmt;
-		if (positionExists)	{
-			slPrice = othersPrice.multiply(BigDecimal.valueOf(1 - Config.getStoploss_increment()));
-			slAmt = othersQty;
-		} else {
-			slPrice = resultPrice.multiply(BigDecimal.valueOf(1 - Config.getStoploss_increment()));
-			slAmt = resultQty;
-		}
-		mapPosition.put("SL", new GOrder(slPrice, slAmt));
-
-		// --- TAKE PROFIT ----------------------------------------------------
-		BigDecimal tpAmt = posQty;
-		BigDecimal tpPrice = resultPrice.multiply(BigDecimal.valueOf(1 + Config.getTakeprofit()));
-		mapPosition.put("TP", new GOrder(tpPrice, tpAmt));
-
 		// --- DISTANCES ------------------------------------------------------
 		if ("BUY".equals(posSide))
 		{
@@ -92,8 +54,6 @@ public class SimpleTrader
 			mapPosition.get("SHOOT").setDist(shootDist);
 			BigDecimal resultDist = BigDecimal.ONE.subtract(resultPrice.divide(shootPrice, RoundingMode.HALF_UP));
 			mapPosition.get("RESULT").setDist(resultDist);
-			BigDecimal tptDist = BigDecimal.ONE.subtract(tpPrice.divide(shootPrice, RoundingMode.HALF_UP));
-			mapPosition.get("TP").setDist(tptDist);
 		}
 		else if ("SELL".equals(posSide))
 		{
@@ -101,8 +61,6 @@ public class SimpleTrader
 			mapPosition.get("SHOOT").setDist(shootDist);
 			BigDecimal resultDist = resultPrice.divide(shootPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
 			mapPosition.get("RESULT").setDist(resultDist);
-			BigDecimal tptDist = tpPrice.divide(shootPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
-			mapPosition.get("TP").setDist(tptDist);
 		}		
 
 		return mapPosition;

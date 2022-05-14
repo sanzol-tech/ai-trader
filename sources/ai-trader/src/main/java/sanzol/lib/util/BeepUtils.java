@@ -51,17 +51,30 @@ public class BeepUtils
 			tone(2000, 100, 1.0);
 			Thread.sleep(20);
 			tone(1600, 200, 1.0);
+			tone(1600, 200);
 		}
 		catch (Exception e)
 		{
 			//
 		}
-		tone(1600,200);
 	}
-	
+
+	public static void beep2()
+	{
+		try
+		{
+			tone(400, 100, 1.0);
+			tone(600, 100, 1.0);
+		}
+		catch (Exception e)
+		{
+			//
+		}
+	}
+
 	public static void main(String[] args) throws InterruptedException
 	{
-		beep();
+		beep2();
 	}
 
 }

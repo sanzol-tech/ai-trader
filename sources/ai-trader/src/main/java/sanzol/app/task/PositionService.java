@@ -164,7 +164,7 @@ public final class PositionService
 		}
 		catch (Exception e)
 		{
-			BotService.error("PositionService.getPositions", e.getMessage());
+			BotService.error("PositionService.getPositions " + e.getMessage());
 		}
 
 		try
@@ -174,7 +174,7 @@ public final class PositionService
 		}
 		catch (Exception e)
 		{
-			BotService.error("PositionService.getPositions", e.getMessage());
+			BotService.error("PositionService.getPositions " + e.getMessage());
 		}
 	}
 

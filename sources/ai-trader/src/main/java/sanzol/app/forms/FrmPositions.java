@@ -62,7 +62,7 @@ public class FrmPositions extends JFrame implements PositionListener
 		textArea.setBackground(Styles.COLOR_TEXT_AREA_BG);
 		textArea.setForeground(Styles.COLOR_TEXT_AREA_FG);
 		textArea.setEditable(false);
-		textArea.setBorder(new EmptyBorder(5, 5, 5, 5));
+		textArea.setBorder(new EmptyBorder(10, 10, 10, 10));
 		textArea.setFont(new Font("Courier New", Font.PLAIN, 12));
 
         scrollPane = new JScrollPane();

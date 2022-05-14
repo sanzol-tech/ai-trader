@@ -101,7 +101,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 	public FrmMain()
 	{
-		setResizable(false);
 		initComponents();
 		pageload();
 		PriceService.attachRefreshObserver(this);
@@ -116,6 +115,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 860, 600);
 		setLocationRelativeTo(null);
+		setResizable(false);
 
 		pnlTopBar = new JPanel();
 		pnlTopBar.setBorder(Styles.BORDER_DOWN);
@@ -679,7 +679,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 	private void showCalcOrder()
 	{
-		FrmAddOrder.launch();
+		FrmShoot.launch();
 	}
 
 	private void showBot()

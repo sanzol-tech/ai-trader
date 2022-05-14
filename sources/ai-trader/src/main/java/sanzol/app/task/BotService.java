@@ -20,6 +20,7 @@ import sanzol.app.config.PrivateConfig;
 import sanzol.app.listener.BotListener;
 import sanzol.app.service.SimpleTrader;
 import sanzol.app.service.Symbol;
+import sanzol.lib.util.BeepUtils;
 
 public final class BotService
 {
@@ -38,13 +39,13 @@ public final class BotService
 
 	public static void setTpRearrangement(boolean isTpRearrangement)
 	{
-		info("setTpRearrangement", String.valueOf(isTpRearrangement));
+		info("TP Rearrangement " + String.valueOf(isTpRearrangement));
 		BotService.isTpRearrangement = isTpRearrangement;
 	}
 
 	public static void setSlRearrangement(boolean isSlRearrangement)
 	{
-		info("setSlRearrangement", String.valueOf(isSlRearrangement));
+		info("SL Rearrangement " + String.valueOf(isSlRearrangement));
 		BotService.isSlRearrangement = isSlRearrangement;
 	}
 
@@ -101,13 +102,15 @@ public final class BotService
 
 		if (isTpRearrangement)
 		{
-			info("TPR", String.format("%s TP-REARRANGEMENT [qty: %f price: %f] --> [qty: %f price: %f]", order.getSymbol(), tpQty, tpPrice, newQty, newPrice));
+			info("%s TP-REARRANGEMENT");
+			info(String.format("[qty: %f price: %f] --> [qty: %f price: %f]", order.getSymbol(), tpQty, tpPrice, newQty, newPrice));
+			BeepUtils.beep2();
 
 			// CANCEL ORDER
 			RequestOptions options = new RequestOptions();
 			SyncRequestClient syncRequestClient = SyncRequestClient.create(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, options);
 			syncRequestClient.cancelOrder(order.getSymbol(), order.getOrderId(), null);
-	
+
 			// ADD NEW ORDER
 			SimpleTrader.postTprofit(symbol, side, newPrice, newQty);
 		}
@@ -139,33 +142,33 @@ public final class BotService
 		logLines = new LinkedList<String>();
 	}
 
-	public static void log(String type, String source, String msg)
+	public static void log(String type, String msg)
 	{
 		String datetime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-		String text = String.format("%-20s : %-5s : %s : %s", datetime, type, source, msg);
+		String text = String.format("%-19s : %s : %s", datetime, type, msg);
 
-		logLines.addFirst(text);
+		logLines.add(text);
 		if (logLines.size() > LOG_MAXSIZE)
 		{
-			logLines.removeLast();
+			logLines.removeFirst();
 		}
 
 		notifyAllLogObservers();
 	}
 
-	public static void info(String source, String msg)
+	public static void info(String msg)
 	{
-		log("INFO", source, msg);
+		log("INFO", msg);
 	}
 
-	public static void warn(String source, String msg)
+	public static void warn(String msg)
 	{
-		log("WARN", source, msg);
+		log("WARN", msg);
 	}
 
-	public static void error(String source, String msg)
+	public static void error(String msg)
 	{
-		log("ERROR", source, msg);
+		log("ERROR", msg);
 	}
 
 	// ------------------------------------------------------------------------	

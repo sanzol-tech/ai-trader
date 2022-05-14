@@ -1,8 +1,6 @@
 package sanzol.app.forms;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -11,6 +9,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -38,28 +39,33 @@ public class FrmBot extends JFrame implements BotListener
 	private static final String TITLE = Constants.APP_NAME + " - BOT";
 
 	private static boolean isOpen = false;
-
-	private JPanel contentPane;
+	
 	private JLabel lblError;
 
-	private JButton btnSave;
-	private JButton btnTPSave;
-	private JButton btnSLSave;
-
+	private JPanel pnlContent;
+	private JPanel pnlStatusBar;
+	private JScrollPane scrollResult;
+	private JLabel lblBot;
+	private JLabel lblTakeProfit;
+	private JPanel pnlBot;
 	private JCheckBox chkAuto1;
 	private JCheckBox chkAuto2;
+	private JButton btnSave;
+	private JPanel pnlTProfit;
 	private JCheckBox chkTPRearrangement;
-	private JCheckBox chkSLRearrangement;
-
-	private JScrollPane scrollResult;
-	private JTextArea txtResult;
-
 	private JTextField txtTPPercent;
+	private JButton btnTPSave;
+	private JLabel lblStopLoss;
+	private JPanel pnlStopLoss;
+	private JCheckBox chkSLRearrangement;
 	private JTextField txtSLPercent;
+	private JButton btnSLSave;
+	private JTextArea txtResult;
 
 	public FrmBot()
 	{
 		initComponents();
+		pageload();
 		BotService.attachRefreshObserver(this);
 		isOpen = true;
 	}
@@ -69,47 +75,62 @@ public class FrmBot extends JFrame implements BotListener
 		setTitle(TITLE);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 840, 600);
+		setBounds(100, 100, 800, 500);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmMain.class.getResource("/resources/bot.png")));
 		setLocationRelativeTo(null);
-
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(null);
-		setContentPane(contentPane);
-
-		JPanel pnlBottom = new JPanel();
-		pnlBottom.setBorder(Styles.BORDER_UP);
-		pnlBottom.setBounds(30, 532, 770, 22);
-		pnlBottom.setLayout(new BorderLayout(0, 0));
-		contentPane.add(pnlBottom);
+		setResizable(false);
 		
+		pnlContent = new JPanel();
+		pnlStatusBar = new JPanel();
+		pnlStatusBar.setBorder(Styles.BORDER_UP);
+
 		lblError = new JLabel();
-		lblError.setMinimumSize(new Dimension(100, 20));
-		lblError.setBorder(new EmptyBorder(5, 0, 5, 5));
-		pnlBottom.add(lblError, BorderLayout.CENTER);
+
+		// --------------------------------------------------------------------
+		GroupLayout layout = new GroupLayout(getContentPane());
+		layout.setHorizontalGroup(
+			layout.createParallelGroup(Alignment.LEADING)
+				.addComponent(pnlStatusBar, GroupLayout.DEFAULT_SIZE, 790, Short.MAX_VALUE)
+				.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 790, Short.MAX_VALUE)
+		);
+		layout.setVerticalGroup(
+			layout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(layout.createSequentialGroup()
+					.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(pnlStatusBar, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE))
+		);
+		getContentPane().setLayout(layout);
+		pnlContent.setLayout(null);
 		
 		scrollResult = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollResult.setBounds(30, 31, 770, 303);
 		scrollResult.setBorder(UIManager.getBorder("TextField.border"));
-		contentPane.add(scrollResult);
-
+		scrollResult.setBounds(10, 11, 770, 282);
+		pnlContent.add(scrollResult);
+		
 		txtResult = new JTextArea();
 		txtResult.setFont(new Font("Courier New", Font.PLAIN, 12));
 		txtResult.setBackground(Styles.COLOR_TEXT_AREA_BG);
+		txtResult.setForeground(Styles.COLOR_TEXT_AREA_FG);
 		txtResult.setEditable(false);
+		txtResult.setBorder(new EmptyBorder(10, 10, 10, 10));
 		scrollResult.setViewportView(txtResult);
 		
-		JLabel lblBot = new JLabel();
+		lblBot = new JLabel();
 		lblBot.setText("Bot");
-		lblBot.setBounds(30, 359, 100, 14);
-		contentPane.add(lblBot);
-
-		JPanel pnlBot = new JPanel();
-		pnlBot.setBorder(UIManager.getBorder("TextField.border"));
-		pnlBot.setBounds(30, 377, 375, 130);
+		lblBot.setBounds(10, 304, 100, 14);
+		pnlContent.add(lblBot);
+		
+		lblTakeProfit = new JLabel();
+		lblTakeProfit.setText("Take profit");
+		lblTakeProfit.setBounds(400, 304, 100, 14);
+		pnlContent.add(lblTakeProfit);
+		
+		pnlBot = new JPanel();
 		pnlBot.setLayout(null);
-		contentPane.add(pnlBot);
+		pnlBot.setBorder(UIManager.getBorder("TextField.border"));
+		pnlBot.setBounds(10, 322, 380, 130);
+		pnlContent.add(pnlBot);
 		
 		chkAuto1 = new JCheckBox("Auto star position from signal");
 		chkAuto1.setBounds(22, 22, 280, 23);
@@ -121,47 +142,42 @@ public class FrmBot extends JFrame implements BotListener
 		
 		btnSave = new JButton("SAVE");
 		btnSave.setOpaque(true);
-		btnSave.setBounds(280, 96, 80, 20);
+		btnSave.setBounds(290, 99, 80, 20);
 		pnlBot.add(btnSave);
 		
-		JLabel lblTakeProfit = new JLabel();
-		lblTakeProfit.setBounds(425, 359, 100, 14);
-		contentPane.add(lblTakeProfit);
-		lblTakeProfit.setText("Take profit");
-
-		JPanel pnlTProfit = new JPanel();
-		pnlTProfit.setBorder(UIManager.getBorder("TextField.border"));
+		pnlTProfit = new JPanel();
 		pnlTProfit.setLayout(null);
-		pnlTProfit.setBounds(425, 377, 375, 50);
-		contentPane.add(pnlTProfit);
+		pnlTProfit.setBorder(UIManager.getBorder("TextField.border"));
+		pnlTProfit.setBounds(400, 322, 380, 50);
+		pnlContent.add(pnlTProfit);
 		
 		chkTPRearrangement = new JCheckBox();
 		chkTPRearrangement.setText("Rearrangement %");
 		chkTPRearrangement.setSelected(false);
 		chkTPRearrangement.setBounds(16, 14, 128, 23);
 		pnlTProfit.add(chkTPRearrangement);
-
+		
 		txtTPPercent = new JTextField();
 		txtTPPercent.setText("0");
 		txtTPPercent.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtTPPercent.setBounds(156, 16, 68, 20);
 		pnlTProfit.add(txtTPPercent);
-	
+		
 		btnTPSave = new JButton("SAVE");
 		btnTPSave.setOpaque(true);
-		btnTPSave.setBounds(280, 16, 80, 20);
+		btnTPSave.setBounds(290, 15, 80, 20);
 		pnlTProfit.add(btnTPSave);
 		
-		JLabel lblStopLoss = new JLabel();
+		lblStopLoss = new JLabel();
 		lblStopLoss.setText("Stop loss");
-		lblStopLoss.setBounds(425, 438, 100, 14);
-		contentPane.add(lblStopLoss);
-
-		JPanel pnlStopLoss = new JPanel();
+		lblStopLoss.setBounds(400, 383, 100, 14);
+		pnlContent.add(lblStopLoss);
+		
+		pnlStopLoss = new JPanel();
 		pnlStopLoss.setLayout(null);
 		pnlStopLoss.setBorder(UIManager.getBorder("TextField.border"));
-		pnlStopLoss.setBounds(425, 456, 375, 50);
-		contentPane.add(pnlStopLoss);
+		pnlStopLoss.setBounds(400, 401, 380, 50);
+		pnlContent.add(pnlStopLoss);
 		
 		chkSLRearrangement = new JCheckBox();
 		chkSLRearrangement.setText("Rearrangement %");
@@ -177,9 +193,29 @@ public class FrmBot extends JFrame implements BotListener
 		
 		btnSLSave = new JButton("SAVE");
 		btnSLSave.setOpaque(true);
-		btnSLSave.setBounds(280, 16, 80, 20);
+		btnSLSave.setBounds(290, 15, 80, 20);
 		pnlStopLoss.add(btnSLSave);
+		
+		// --------------------------------------------------------------------
+		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);
+		pnlStatusBarLayout.setHorizontalGroup(
+			pnlStatusBarLayout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(Alignment.LEADING, pnlStatusBarLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblError, GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE)
+					.addContainerGap())
+		);
+		pnlStatusBarLayout.setVerticalGroup(
+			pnlStatusBarLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(pnlStatusBarLayout.createSequentialGroup()
+					.addGap(7)
+					.addComponent(lblError, GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
+					.addGap(7))
+		);
+		pnlStatusBar.setLayout(pnlStatusBarLayout);
 
+		pack();
+		
 		// ---------------------------------------------------------------------
 
 		FrmBot thisFrm = this;
@@ -211,15 +247,26 @@ public class FrmBot extends JFrame implements BotListener
 				saveSLConfig();
 			}
 		});
-
+		
 	}
 
+	private void pageload()
+	{
+		try
+		{
+			chkTPRearrangement.setSelected(BotService.isTpRearrangement());
+		}
+		catch(Exception e)
+		{
+			ERROR(e);
+		}
+	}	
 	// ----------------------------------------------------------------------------------
 
 	private void saveBotConfig()
 	{
-		BotService.info("BOT", "Under construction");
-		INFO("Under construction !");
+		BotService.info("BOT under construction !");
+		INFO("BOT under construction !");
 	}
 
 	private void saveTPConfig()
@@ -231,7 +278,7 @@ public class FrmBot extends JFrame implements BotListener
 	private void saveSLConfig()
 	{
 		BotService.setSlRearrangement(chkSLRearrangement.isSelected());		
-		INFO("Under construction !");
+		INFO("SL rearrangement under construction !");
 	}
 
 	// ----------------------------------------------------------------------------------

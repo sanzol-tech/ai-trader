@@ -1,6 +1,10 @@
 package sanzol.app.config;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.file.StandardOpenOption;
 
 import sanzol.app.forms.FrmMain;
 import sanzol.app.task.BalanceService;
@@ -22,6 +26,8 @@ public final class Application
 		try
 		{
 			verifyFolders();
+			PreventLaunchingMultiple();
+
 			PrivateConfig.loadKey();
 			Config.load();
 			PriceService.start();
@@ -52,6 +58,26 @@ public final class Application
 		if (!pathExport.exists()) 
 		{
 			pathExport.mkdirs();
+		}
+	}
+
+	private static void PreventLaunchingMultiple()
+	{
+		File file = new File(Constants.DEFAULT_USER_FOLDER, "ai-trader.lock");
+		try
+		{
+			FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+			FileLock lock = fc.tryLock();
+			if (lock == null)
+			{
+				System.out.println("another instance is running");
+				System.exit(0);
+			}
+		}
+		catch (IOException e)
+		{
+			System.err.println(e.getMessage());
+			System.exit(-1);
 		}
 	}
 
