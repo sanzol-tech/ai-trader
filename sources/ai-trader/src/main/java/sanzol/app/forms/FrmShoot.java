@@ -1,12 +1,12 @@
 package sanzol.app.forms;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
@@ -14,6 +14,8 @@ import java.math.RoundingMode;
 import java.util.Map;
 
 import javax.swing.ButtonGroup;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,8 +23,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
 
 import com.binance.client.model.event.SymbolTickerEvent;
 import com.binance.client.model.trade.AccountBalance;
@@ -52,8 +54,9 @@ public class FrmShoot extends JFrame implements PriceListener
 
 	private Symbol coin;
 
-	private JPanel contentPane;
 	private JLabel lblError;
+	private JPanel pnlContent;
+	private JPanel pnlStatusBar;
 
 	private JButton btnCalc05;
 	private JButton btnCalc075;
@@ -89,101 +92,95 @@ public class FrmShoot extends JFrame implements PriceListener
 
 	public FrmShoot()
 	{
-		setResizable(false);
 		initComponents();
 		PriceService.attachRefreshObserver(this);
 	}
 
-	private void initComponents() 
+	private void initComponents()
 	{
 		setTitle(TITLE);
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 550, 460);
+		setBounds(100, 100, 550, 500);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmMain.class.getResource("/resources/upDown.png")));
 		setLocationRelativeTo(null);
+		setResizable(false);
 
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(null);
-		setContentPane(contentPane);
+		pnlContent = new JPanel();
+		pnlStatusBar = new JPanel();
+		pnlStatusBar.setBorder(Styles.BORDER_UP);
 
-		JPanel pnlBottom = new JPanel();
-		pnlBottom.setBorder(Styles.BORDER_UP);
-		pnlBottom.setBounds(10, 381, 514, 22);
-		contentPane.add(pnlBottom);
-		pnlBottom.setLayout(new BorderLayout(0, 0));
-		
 		lblError = new JLabel();
-		lblError.setMinimumSize(new Dimension(100, 20));
-		lblError.setBorder(new EmptyBorder(5, 0, 5, 5));
-		pnlBottom.add(lblError, BorderLayout.CENTER);
+		
 		
 		txtShootPrice = new JTextField();
 		txtShootPrice.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtShootPrice.setBounds(108, 175, 86, 20);
-		contentPane.add(txtShootPrice);
+		pnlContent.add(txtShootPrice);
 		txtShootPrice.setColumns(10);
 
 		txtShootQty = new JTextField();
 		txtShootQty.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtShootQty.setBounds(204, 175, 86, 20);
-		contentPane.add(txtShootQty);
+		pnlContent.add(txtShootQty);
 		txtShootQty.setColumns(10);
 
 		txtPositionPrice = new JTextField();
+		txtPositionPrice.setEditable(false);
 		txtPositionPrice.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtPositionPrice.setBounds(108, 145, 86, 20);
-		contentPane.add(txtPositionPrice);
+		pnlContent.add(txtPositionPrice);
 		txtPositionPrice.setColumns(10);
 
 		JButton btnSearch = new JButton(Styles.IMAGE_SEARCH);
 		btnSearch.setOpaque(true);
 		btnSearch.setBounds(31, 69, 178, 22);
-		contentPane.add(btnSearch);
+		pnlContent.add(btnSearch);
 
 		JLabel lblNewLabel = new JLabel("Price");
 		lblNewLabel.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblNewLabel.setBounds(108, 122, 86, 14);
-		contentPane.add(lblNewLabel);
+		pnlContent.add(lblNewLabel);
 
 		JLabel lblQuantity = new JLabel("Quantity");
 		lblQuantity.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblQuantity.setBounds(204, 122, 86, 14);
-		contentPane.add(lblQuantity);
+		pnlContent.add(lblQuantity);
 
 		JLabel lblShoot = new JLabel("SHOOT");
 		lblShoot.setBounds(31, 179, 67, 14);
-		contentPane.add(lblShoot);
+		pnlContent.add(lblShoot);
 
 		JLabel lblPosition = new JLabel("POSITION");
 		lblPosition.setBounds(31, 149, 67, 14);
-		contentPane.add(lblPosition);
+		pnlContent.add(lblPosition);
 
 		txtSymbolLeft = new JTextField();
 		txtSymbolLeft.setColumns(10);
 		txtSymbolLeft.setBounds(31, 43, 86, 20);
-		contentPane.add(txtSymbolLeft);
+		pnlContent.add(txtSymbolLeft);
 
 		txtPositionQty = new JTextField();
+		txtPositionQty.setEditable(false);
 		txtPositionQty.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtPositionQty.setColumns(10);
 		txtPositionQty.setBounds(204, 145, 86, 20);
-		contentPane.add(txtPositionQty);
+		pnlContent.add(txtPositionQty);
 
 		JLabel lblNewLabel_2_1 = new JLabel("COIN");
 		lblNewLabel_2_1.setBounds(31, 24, 86, 14);
-		contentPane.add(lblNewLabel_2_1);
+		pnlContent.add(lblNewLabel_2_1);
 
 		txtSymbolRight = new JTextField();
 		txtSymbolRight.setEditable(false);
 		txtSymbolRight.setText(Constants.DEFAULT_SYMBOL_RIGHT);
 		txtSymbolRight.setColumns(10);
 		txtSymbolRight.setBounds(123, 43, 86, 20);
-		contentPane.add(txtSymbolRight);
+		pnlContent.add(txtSymbolRight);
 
 		JLabel lblResult = new JLabel("RESULT");
 		lblResult.setBounds(31, 209, 67, 14);
-		contentPane.add(lblResult);
+		pnlContent.add(lblResult);
 
 		txtResultPrice = new JTextField();
 		txtResultPrice.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -191,7 +188,7 @@ public class FrmShoot extends JFrame implements PriceListener
 		txtResultPrice.setEditable(false);
 		txtResultPrice.setColumns(10);
 		txtResultPrice.setBounds(108, 205, 86, 20);
-		contentPane.add(txtResultPrice);
+		pnlContent.add(txtResultPrice);
 
 		txtResultQty = new JTextField();
 		txtResultQty.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -199,7 +196,7 @@ public class FrmShoot extends JFrame implements PriceListener
 		txtResultQty.setEditable(false);
 		txtResultQty.setColumns(10);
 		txtResultQty.setBounds(204, 205, 86, 20);
-		contentPane.add(txtResultQty);
+		pnlContent.add(txtResultQty);
 
 		txtShootUsd = new JTextField();
 		txtShootUsd.setFont(new Font("Tahoma", Font.PLAIN, 11));
@@ -207,19 +204,19 @@ public class FrmShoot extends JFrame implements PriceListener
 		txtShootUsd.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtShootUsd.setColumns(10);
 		txtShootUsd.setBounds(300, 175, 86, 20);
-		contentPane.add(txtShootUsd);
+		pnlContent.add(txtShootUsd);
 
 		JLabel lblUsd = new JLabel("USD");
 		lblUsd.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblUsd.setBounds(300, 122, 86, 14);
-		contentPane.add(lblUsd);
+		pnlContent.add(lblUsd);
 
 		txtPositionDist = new JTextField();
 		txtPositionDist.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtPositionDist.setEditable(false);
 		txtPositionDist.setColumns(10);
 		txtPositionDist.setBounds(403, 145, 86, 20);
-		contentPane.add(txtPositionDist);
+		pnlContent.add(txtPositionDist);
 
 		txtResultDist = new JTextField();
 		txtResultDist.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -227,12 +224,12 @@ public class FrmShoot extends JFrame implements PriceListener
 		txtResultDist.setEditable(false);
 		txtResultDist.setColumns(10);
 		txtResultDist.setBounds(403, 205, 86, 20);
-		contentPane.add(txtResultDist);
+		pnlContent.add(txtResultDist);
 
 		JLabel lblDistPercent = new JLabel("Dist %");
 		lblDistPercent.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblDistPercent.setBounds(403, 122, 86, 14);
-		contentPane.add(lblDistPercent);
+		pnlContent.add(lblDistPercent);
 
 		txtMarkPrice = new JTextField();
 		txtMarkPrice.setEditable(false);
@@ -240,106 +237,146 @@ public class FrmShoot extends JFrame implements PriceListener
 		txtMarkPrice.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtMarkPrice.setColumns(10);
 		txtMarkPrice.setBounds(300, 43, 86, 20);
-		contentPane.add(txtMarkPrice);
+		pnlContent.add(txtMarkPrice);
 
 		JLabel lblMarkPrice = new JLabel("Price");
 		lblMarkPrice.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblMarkPrice.setBounds(301, 24, 85, 14);
-		contentPane.add(lblMarkPrice);
+		pnlContent.add(lblMarkPrice);
 
 		rbShort = new JRadioButton("SHORT");
 		rbShort.setHorizontalAlignment(SwingConstants.LEFT);
 		rbShort.setBounds(327, 265, 76, 23);
-		contentPane.add(rbShort);
+		pnlContent.add(rbShort);
 
 		rbLong = new JRadioButton("LONG");
 		rbLong.setHorizontalAlignment(SwingConstants.RIGHT);
 		rbLong.setBounds(413, 265, 76, 23);
-		contentPane.add(rbLong);
+		pnlContent.add(rbLong);
 
 		ButtonGroup bg1 = new javax.swing.ButtonGroup();
 		bg1.add(rbShort);
 		bg1.add(rbLong);
-		
+
 		btnCalc05 = new JButton("x 0.5");
 		btnCalc05.setOpaque(true);
 		btnCalc05.setBounds(31, 265, 70, 23);
-		contentPane.add(btnCalc05);
+		pnlContent.add(btnCalc05);
 
 		btnCalc075 = new JButton("x 0.75");
 		btnCalc075.setOpaque(true);
 		btnCalc075.setBounds(108, 265, 70, 23);
-		contentPane.add(btnCalc075);
-		
+		pnlContent.add(btnCalc075);
+
 		btnX1 = new JButton("x 1");
 		btnX1.setOpaque(true);
 		btnX1.setBounds(187, 265, 70, 23);
-		contentPane.add(btnX1);
+		pnlContent.add(btnX1);
 
 		btnX2 = new JButton("x 2");
 		btnX2.setOpaque(true);
 		btnX2.setBounds(187, 299, 70, 23);
-		contentPane.add(btnX2);
+		pnlContent.add(btnX2);
 
 		btnCalc = new JButton("CALC");
 		btnCalc.setBounds(31, 332, 226, 23);
 		btnCalc.setOpaque(true);
-		contentPane.add(btnCalc);
+		pnlContent.add(btnCalc);
 
 		btnPost = new JButton("POST ORDER");
 		btnPost.setIcon(Styles.IMAGE_EXECUTE);
 		btnPost.setBounds(327, 305, 162, 40);
 		btnPost.setOpaque(true);
-		contentPane.add(btnPost);
-		
+		pnlContent.add(btnPost);
+
 		txt24h = new JTextField();
 		txt24h.setForeground(Styles.COLOR_TEXT_ALT1);
 		txt24h.setHorizontalAlignment(SwingConstants.RIGHT);
 		txt24h.setEditable(false);
 		txt24h.setColumns(10);
 		txt24h.setBounds(403, 43, 86, 20);
-		contentPane.add(txt24h);
-		
+		pnlContent.add(txt24h);
+
 		lbl24Hs = new JLabel("24h %");
 		lbl24Hs.setHorizontalAlignment(SwingConstants.TRAILING);
 		lbl24Hs.setBounds(404, 24, 85, 14);
-		contentPane.add(lbl24Hs);
-		
+		pnlContent.add(lbl24Hs);
+
 		txtPositionUsd = new JTextField();
 		txtPositionUsd.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtPositionUsd.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		txtPositionUsd.setEditable(false);
 		txtPositionUsd.setColumns(10);
 		txtPositionUsd.setBounds(300, 145, 86, 20);
-		contentPane.add(txtPositionUsd);
-		
+		pnlContent.add(txtPositionUsd);
+
 		txtResultUsd = new JTextField();
 		txtResultUsd.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtResultUsd.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		txtResultUsd.setEditable(false);
 		txtResultUsd.setColumns(10);
 		txtResultUsd.setBounds(300, 206, 86, 20);
-		contentPane.add(txtResultUsd);
-		
+		pnlContent.add(txtResultUsd);
+
 		txtShootDist = new JTextField();
 		txtShootDist.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtShootDist.setEditable(false);
 		txtShootDist.setColumns(10);
 		txtShootDist.setBounds(403, 175, 86, 20);
-		contentPane.add(txtShootDist);
-		
+		pnlContent.add(txtShootDist);
+
 		btnCalc125 = new JButton("x 1.25");
 		btnCalc125.setOpaque(true);
 		btnCalc125.setBounds(31, 299, 70, 23);
-		contentPane.add(btnCalc125);
-		
+		pnlContent.add(btnCalc125);
+
 		btnCalc150 = new JButton("x 1.5");
 		btnCalc150.setOpaque(true);
 		btnCalc150.setBounds(108, 299, 70, 23);
-		contentPane.add(btnCalc150);
+		pnlContent.add(btnCalc150);
 
-		// ---------------------------------------------------------------------
+
+		// --------------------------------------------------------------------
+		GroupLayout layout = new GroupLayout(getContentPane());
+		layout.setHorizontalGroup(
+			layout.createParallelGroup(Alignment.LEADING)
+				.addComponent(pnlStatusBar, GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
+				.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
+		);
+		layout.setVerticalGroup(
+			layout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(layout.createSequentialGroup()
+					.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(pnlStatusBar, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE))
+		);
+		getContentPane().setLayout(layout);
+		pnlContent.setLayout(null);
+
+
+		// --------------------------------------------------------------------
+		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);
+		pnlStatusBarLayout.setHorizontalGroup(
+			pnlStatusBarLayout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(Alignment.LEADING, pnlStatusBarLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblError, GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
+					.addContainerGap())
+		);
+		pnlStatusBarLayout.setVerticalGroup(
+			pnlStatusBarLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(pnlStatusBarLayout.createSequentialGroup()
+					.addGap(7)
+					.addComponent(lblError, GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
+					.addGap(7))
+		);
+		pnlStatusBar.setLayout(pnlStatusBarLayout);
+
 		
+		pack();
+		
+		// ---------------------------------------------------------------------
+
 		FrmShoot thisFrm = this;
 
 		addWindowListener(new WindowAdapter()
@@ -352,12 +389,24 @@ public class FrmShoot extends JFrame implements PriceListener
 			}
 		});
 
+		rbShort.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					btnPost.setBackground(Styles.COLOR_BTN_SHORT);
+					btnPost.setIcon(Styles.IMAGE_EXECUTE_LIGHT);
+				}
+				else if (e.getStateChange() == ItemEvent.DESELECTED) {
+					btnPost.setBackground(Styles.COLOR_BTN_LONG);					
+					btnPost.setIcon(Styles.IMAGE_EXECUTE_LIGHT);
+				}
+			}
+		});
+
 		btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				search();
 			}
 		});
-
 
 		btnCalc05.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -389,7 +438,6 @@ public class FrmShoot extends JFrame implements PriceListener
 				calc(BigDecimal.valueOf(2.0));
 			}
 		});
-
 		
 		btnCalc.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -425,6 +473,20 @@ public class FrmShoot extends JFrame implements PriceListener
 		txtResultUsd.setText("");
 	}
 
+	private void enableControls(boolean isPosition)
+	{
+		btnCalc05.setEnabled(isPosition);
+		btnCalc075.setEnabled(isPosition);
+		btnCalc125.setEnabled(isPosition);
+		btnCalc150.setEnabled(isPosition);
+		btnX1.setEnabled(isPosition);
+		btnX2.setEnabled(isPosition);
+		btnCalc.setEnabled(isPosition);
+
+		rbShort.setEnabled(!isPosition);
+		rbLong.setEnabled(!isPosition);
+	}
+	
 	private void search()
 	{
 		INFO("");
@@ -449,7 +511,10 @@ public class FrmShoot extends JFrame implements PriceListener
 				txt24h.setText(priceChangePercent);
 	
 				PositionRisk positionRisk = PositionService.getPositionRisk(coin.getName());
-				if (positionRisk != null && positionRisk.getPositionAmt().compareTo(BigDecimal.ZERO) != 0)
+				boolean isPosition = positionRisk != null && positionRisk.getPositionAmt().compareTo(BigDecimal.ZERO) != 0;
+				enableControls(isPosition);
+
+				if (isPosition)
 				{
 					txtPositionPrice.setText(coin.priceToStr(positionRisk.getEntryPrice()));
 		
@@ -463,6 +528,8 @@ public class FrmShoot extends JFrame implements PriceListener
 		
 						rbShort.setSelected(true);
 						btnPost.setBackground(Styles.COLOR_BTN_SHORT);
+						btnPost.setIcon(Styles.IMAGE_EXECUTE_LIGHT);
+
 					}
 					else
 					{
@@ -471,6 +538,7 @@ public class FrmShoot extends JFrame implements PriceListener
 		
 						rbLong.setSelected(true);
 						btnPost.setBackground(Styles.COLOR_BTN_LONG);
+						btnPost.setIcon(Styles.IMAGE_EXECUTE_LIGHT);
 					}
 				}
 			}
@@ -533,6 +601,15 @@ public class FrmShoot extends JFrame implements PriceListener
 		}
 	}
 
+	private static boolean insufficientBalance(Double usdt)
+	{
+		AccountBalance accBalance = BalanceService.getAccountBalanceNow();
+		double balance = accBalance.getBalance().doubleValue();
+		double withdrawAvailable = accBalance.getWithdrawAvailable().doubleValue();
+
+		return  (withdrawAvailable - (usdt / Config.getLeverage()) < balance * Config.getBalance_min_available());
+	}
+
 	private void exec()
 	{
 		INFO("");
@@ -543,10 +620,7 @@ public class FrmShoot extends JFrame implements PriceListener
 			BigDecimal coins = new BigDecimal(txtShootQty.getText());
 
 			// ----------------------------------------------------------------
-			AccountBalance accBalance = BalanceService.getAccountBalanceNow();
-			double balance = accBalance.getBalance().doubleValue();
-			double withdrawAvailable = accBalance.getWithdrawAvailable().doubleValue();
-			if (withdrawAvailable - (price.doubleValue() * coins.doubleValue()) < balance * Config.getBalance_min_available())
+			if (insufficientBalance(price.doubleValue() * coins.doubleValue()))
 			{
 				ERROR("Insufficient withdrawal available");
 				return;

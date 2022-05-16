@@ -23,7 +23,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
 
 import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
@@ -89,11 +88,40 @@ public class FrmSignals extends JFrame implements SignalListener
 		txtWithdrawal.setEditable(false);
 
 		lblError = new JLabel();
-		
-		JButton btnCopy = new JButton();
-		btnCopy.setText("Copy to clipboard");
+
+		JButton btnCopy = new JButton(Styles.IMAGE_COPY);
+		btnCopy.setToolTipText("Copy to clipboard");
 		btnCopy.setOpaque(true);
-		
+
+		// --------------------------------------------------------------------
+        txtResult = new javax.swing.JTextArea();
+		txtResult.setFont(new Font("Courier New", Font.PLAIN, 12));
+		txtResult.setBackground(Styles.COLOR_TEXT_AREA_BG);
+		txtResult.setForeground(Styles.COLOR_TEXT_AREA_FG);
+		txtResult.setEditable(false);
+        txtResult.setColumns(20);
+        txtResult.setRows(5);
+
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setViewportView(txtResult);
+
+        GroupLayout pnlContentLayout = new GroupLayout(pnlContent);
+        pnlContent.setLayout(pnlContentLayout);
+        pnlContentLayout.setHorizontalGroup(
+            pnlContentLayout.createParallelGroup(Alignment.LEADING)
+            .addGroup(pnlContentLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 760, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        pnlContentLayout.setVerticalGroup(
+            pnlContentLayout.createParallelGroup(Alignment.LEADING)
+            .addGroup(pnlContentLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
 		// --------------------------------------------------------------------
 		GroupLayout pnlTopBarLayout = new GroupLayout(pnlTopBar);
 		pnlTopBarLayout.setHorizontalGroup(
@@ -105,8 +133,8 @@ public class FrmSignals extends JFrame implements SignalListener
 					.addComponent(btnGenerateFavs, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(btnEdit)
-					.addPreferredGap(ComponentPlacement.RELATED, 243, Short.MAX_VALUE)
-					.addComponent(btnCopy, GroupLayout.PREFERRED_SIZE, 137, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 336, Short.MAX_VALUE)
+					.addComponent(btnCopy)
 					.addContainerGap())
 		);
 		pnlTopBarLayout.setVerticalGroup(
@@ -114,11 +142,11 @@ public class FrmSignals extends JFrame implements SignalListener
 				.addGroup(pnlTopBarLayout.createSequentialGroup()
 					.addGap(12)
 					.addGroup(pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(btnCopy)
 						.addGroup(pnlTopBarLayout.createParallelGroup(Alignment.BASELINE)
 							.addComponent(btnGenerateAll)
 							.addComponent(btnGenerateFavs)
-							.addComponent(btnEdit))
-						.addComponent(btnCopy))
+							.addComponent(btnEdit)))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		pnlTopBar.setLayout(pnlTopBarLayout);
@@ -141,19 +169,6 @@ public class FrmSignals extends JFrame implements SignalListener
 					.addComponent(pnlStatusBar, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE))
 		);
 		getContentPane().setLayout(layout);
-		pnlContent.setLayout(null);
-		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 11, 760, 438);
-		pnlContent.add(scrollPane);
-		
-		txtResult = new JTextArea();
-		txtResult.setFont(new Font("Courier New", Font.PLAIN, 12));
-		txtResult.setBackground(Styles.COLOR_TEXT_AREA_BG);
-		txtResult.setForeground(Styles.COLOR_TEXT_AREA_FG);
-		txtResult.setEditable(false);
-		txtResult.setBorder(new EmptyBorder(10, 10, 10, 10));
-		scrollPane.setViewportView(txtResult);
 		
 		// --------------------------------------------------------------------
 		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);

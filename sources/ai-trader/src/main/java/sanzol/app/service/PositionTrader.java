@@ -226,18 +226,24 @@ public class PositionTrader
 	// POST
 	// ------------------------------------------------------------------------
 
+	private static boolean insufficientBalance(Double usdt)
+	{
+		AccountBalance accBalance = BalanceService.getAccountBalanceNow();
+		double balance = accBalance.getBalance().doubleValue();
+		double withdrawAvailable = accBalance.getWithdrawAvailable().doubleValue();
+
+		return  (withdrawAvailable - (usdt / Config.getLeverage()) < balance * Config.getBalance_min_available());
+	}
+
 	public String post(PostStyle postStyle) throws Exception
 	{
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------
-		AccountBalance accBalance = BalanceService.getAccountBalanceNow();
-		double balance = accBalance.getBalance().doubleValue();
-		double withdrawAvailable = accBalance.getWithdrawAvailable().doubleValue();
-		if (withdrawAvailable - (position.getSumUsd() / Config.getLeverage()) < balance * Config.getBalance_min_available())
+		if (insufficientBalance(position.getSumUsd()))
 		{
 			return "Insufficient withdrawal available";
 		}
-
+		
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------
 		if (postStyle != PostStyle.OTHERS)

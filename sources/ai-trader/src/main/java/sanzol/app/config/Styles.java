@@ -18,6 +18,10 @@ public class Styles
 	
 	public static ImageIcon IMAGE_SEARCH = new FlatSVGIcon(Styles.class.getResource("/resources/search.svg"));
 	public static ImageIcon IMAGE_EXECUTE = new FlatSVGIcon(Styles.class.getResource("/resources/execute.svg"));
+	public static ImageIcon IMAGE_EXECUTE_LIGHT = new FlatSVGIcon(Styles.class.getResource("/resources/executeLight.svg"));
+	public static ImageIcon IMAGE_MOON  = new FlatSVGIcon(Styles.class.getResource("/resources/moon.svg"));
+	public static ImageIcon IMAGE_SUN  = new FlatSVGIcon(Styles.class.getResource("/resources/sun.svg"));
+	public static ImageIcon IMAGE_COPY  = new FlatSVGIcon(Styles.class.getResource("/resources/copy.svg"));
 
 	public static Color COLOR_BORDER_LINE;
 	public static Color COLOR_LINK;

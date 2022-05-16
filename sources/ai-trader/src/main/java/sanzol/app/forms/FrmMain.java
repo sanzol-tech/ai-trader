@@ -37,7 +37,6 @@ import javax.swing.border.TitledBorder;
 import com.binance.client.model.trade.AccountBalance;
 
 import sanzol.app.config.Application;
-import sanzol.app.config.CharConstants;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.PrivateConfig;
@@ -134,8 +133,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		btnPositions.setText("POSITIONS");
 		btnShoot = new JButton();
 		btnShoot.setText("SHOOT");
-		btnSkin = new JButton();
-		btnSkin.setText(CharConstants.MOON);
+		btnSkin = new JButton(Styles.IMAGE_MOON);
 
 		lnkGitHub = new JLabel();
 		lnkGitHub.setText("ai-trader on GitHub");
@@ -630,7 +628,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		{
 			ERROR(Application.getError());
 			
-			btnSkin.setText(Styles.isNight ? CharConstants.SUN : CharConstants.MOON);
+			btnSkin.setIcon(Styles.isNight ? Styles.IMAGE_SUN : Styles.IMAGE_MOON);
 
 			txtApiKey.setText(PrivateConfig.API_KEY);
 			txtSecretKey.setText(PrivateConfig.SECRET_KEY);
