@@ -26,10 +26,12 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 import sanzol.app.config.Application;
+import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.listener.BotListener;
 import sanzol.app.task.BotService;
+import sanzol.app.util.Convert;
 import sanzol.lib.util.ExceptionUtils;
 
 public class FrmBot extends JFrame implements BotListener
@@ -53,14 +55,16 @@ public class FrmBot extends JFrame implements BotListener
 	private JButton btnSave;
 	private JPanel pnlTProfit;
 	private JCheckBox chkTPRearrangement;
-	private JTextField txtTPPercent;
+	private JTextField txtTProfit;
 	private JButton btnTPSave;
 	private JLabel lblStopLoss;
 	private JPanel pnlStopLoss;
 	private JCheckBox chkSLRearrangement;
-	private JTextField txtSLPercent;
+	private JTextField txtSlUsd;
 	private JButton btnSLSave;
 	private JTextArea txtResult;
+	private JLabel lblTpPercent;
+	private JLabel lblSlUsd;
 
 	public FrmBot()
 	{
@@ -152,21 +156,25 @@ public class FrmBot extends JFrame implements BotListener
 		pnlContent.add(pnlTProfit);
 		
 		chkTPRearrangement = new JCheckBox();
-		chkTPRearrangement.setText("Rearrangement %");
+		chkTPRearrangement.setText("Rearrangement");
 		chkTPRearrangement.setSelected(false);
 		chkTPRearrangement.setBounds(16, 14, 128, 23);
 		pnlTProfit.add(chkTPRearrangement);
 		
-		txtTPPercent = new JTextField();
-		txtTPPercent.setText("0");
-		txtTPPercent.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtTPPercent.setBounds(156, 16, 68, 20);
-		pnlTProfit.add(txtTPPercent);
+		txtTProfit = new JTextField();
+		txtTProfit.setText("0");
+		txtTProfit.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtTProfit.setBounds(156, 16, 68, 20);
+		pnlTProfit.add(txtTProfit);
 		
 		btnTPSave = new JButton("SAVE");
 		btnTPSave.setOpaque(true);
 		btnTPSave.setBounds(290, 15, 80, 20);
 		pnlTProfit.add(btnTPSave);
+		
+		lblTpPercent = new JLabel("%");
+		lblTpPercent.setBounds(230, 18, 20, 14);
+		pnlTProfit.add(lblTpPercent);
 		
 		lblStopLoss = new JLabel();
 		lblStopLoss.setText("Stop loss");
@@ -180,21 +188,25 @@ public class FrmBot extends JFrame implements BotListener
 		pnlContent.add(pnlStopLoss);
 		
 		chkSLRearrangement = new JCheckBox();
-		chkSLRearrangement.setText("Rearrangement %");
+		chkSLRearrangement.setText("Rearrangement");
 		chkSLRearrangement.setSelected(false);
 		chkSLRearrangement.setBounds(16, 14, 128, 23);
 		pnlStopLoss.add(chkSLRearrangement);
 		
-		txtSLPercent = new JTextField();
-		txtSLPercent.setText("0");
-		txtSLPercent.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtSLPercent.setBounds(156, 16, 68, 20);
-		pnlStopLoss.add(txtSLPercent);
+		txtSlUsd = new JTextField();
+		txtSlUsd.setText("0");
+		txtSlUsd.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtSlUsd.setBounds(156, 16, 68, 20);
+		pnlStopLoss.add(txtSlUsd);
 		
 		btnSLSave = new JButton("SAVE");
 		btnSLSave.setOpaque(true);
 		btnSLSave.setBounds(290, 15, 80, 20);
 		pnlStopLoss.add(btnSLSave);
+		
+		lblSlUsd = new JLabel("usd");
+		lblSlUsd.setBounds(230, 18, 38, 14);
+		pnlStopLoss.add(lblSlUsd);
 		
 		// --------------------------------------------------------------------
 		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);
@@ -255,12 +267,14 @@ public class FrmBot extends JFrame implements BotListener
 		try
 		{
 			chkTPRearrangement.setSelected(BotService.isTpRearrangement());
+			txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
 		}
 		catch(Exception e)
 		{
 			ERROR(e);
 		}
-	}	
+	}
+
 	// ----------------------------------------------------------------------------------
 
 	private void saveBotConfig()
@@ -271,14 +285,16 @@ public class FrmBot extends JFrame implements BotListener
 
 	private void saveTPConfig()
 	{
+		BotService.setTpPercent(Convert.strPercentToDbl(txtTProfit.getText()));
 		BotService.setTpRearrangement(chkTPRearrangement.isSelected());
 		INFO("TP rearrangement updated !");
 	}
 
 	private void saveSLConfig()
 	{
+		BotService.setSlUsd(Double.valueOf(txtSlUsd.getText()));
 		BotService.setSlRearrangement(chkSLRearrangement.isSelected());		
-		INFO("SL rearrangement under construction !");
+		INFO("SL rearrangement updated !");
 	}
 
 	// ----------------------------------------------------------------------------------
@@ -340,5 +356,4 @@ public class FrmBot extends JFrame implements BotListener
 		Application.initializeUI();
 		launch();
 	}
-
 }

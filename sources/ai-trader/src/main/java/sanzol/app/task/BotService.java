@@ -15,7 +15,6 @@ import com.binance.client.SyncRequestClient;
 import com.binance.client.model.trade.Order;
 import com.binance.client.model.trade.PositionRisk;
 
-import sanzol.app.config.Config;
 import sanzol.app.config.PrivateConfig;
 import sanzol.app.listener.BotListener;
 import sanzol.app.service.SimpleTrader;
@@ -25,16 +24,39 @@ import sanzol.lib.util.BeepUtils;
 public final class BotService
 {
 	private static boolean isTpRearrangement = false;
+	private static Double tpPercent = null;
+
 	private static boolean isSlRearrangement = false;
+	private static Double slUsd = null;
 
 	public static boolean isTpRearrangement()
 	{
 		return isTpRearrangement;
 	}
 
+	public static Double getTpPercent()
+	{
+		return tpPercent;
+	}
+
+	public static void setTpPercent(Double tpPercent)
+	{
+		BotService.tpPercent = tpPercent;
+	}
+
 	public static boolean isSlRearrangement()
 	{
 		return isSlRearrangement;
+	}
+
+	public static Double getSlUsd()
+	{
+		return slUsd;
+	}
+
+	public static void setSlUsd(Double slUsd)
+	{
+		BotService.slUsd = slUsd;
 	}
 
 	public static void setTpRearrangement(boolean isTpRearrangement)
@@ -76,7 +98,7 @@ public final class BotService
 							BigDecimal tpQty = tpOrder.getOrigQty();
 							if (qty.compareTo(tpQty) != 0)
 							{
-								BigDecimal tpCoef = "SHORT".equals(side) ? BigDecimal.valueOf(1 - Config.getTakeprofit()) : BigDecimal.valueOf(1 + Config.getTakeprofit());
+								BigDecimal tpCoef = "SHORT".equals(side) ? BigDecimal.valueOf(1 - tpPercent) : BigDecimal.valueOf(1 + tpPercent);
 								BigDecimal newTpPrice = price.multiply(tpCoef).setScale(symbol.getTickSize(), RoundingMode.HALF_UP);
 
 								tpRearrangement(symbol, side, tpOrder, newTpPrice, qty);
