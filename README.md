@@ -5,21 +5,17 @@
 #
 :warning: **THIS PROJECT IS UNDER CONSTRUCTION** :warning: and is very buggy yet
 
-![image](https://user-images.githubusercontent.com/68629815/168096986-5209191c-3cfc-4c18-935e-4bcc23badf41.png)
+![image](https://user-images.githubusercontent.com/68629815/168664268-0b4c8d99-42c8-4964-bdeb-2bf2b4f9758b.png)
 
-![image](https://user-images.githubusercontent.com/68629815/168097083-0b0c458c-b251-49b0-bcc9-53303d516f96.png)
+![image](https://user-images.githubusercontent.com/68629815/168664375-2cf6493f-8f36-4928-9e96-7c7985248422.png)
 
-![image](https://user-images.githubusercontent.com/68629815/168097566-8afc7f02-fd20-4ef9-acd3-b99fcd0163a5.png)
+![image](https://user-images.githubusercontent.com/68629815/168664765-85af1b24-9792-4635-b763-cf883a5e17d1.png)
 
-![image](https://user-images.githubusercontent.com/68629815/168097769-28ff0d62-6e71-495a-9d7b-1c32bb8c3042.png)
+![image](https://user-images.githubusercontent.com/68629815/168664840-2862cc15-18de-4dc5-8adf-87ffc5f9ddb6.png)
 
-![2022-05-05_11-51-57](https://user-images.githubusercontent.com/68629815/166961226-670f8fb9-5250-4a29-aeea-02d3b1306b00.png)
+![image](https://user-images.githubusercontent.com/68629815/168664532-80882f21-a67c-4eec-a783-29ec828e83e7.png)
 
-![2022-05-05_11-52-41](https://user-images.githubusercontent.com/68629815/166961307-f06389cf-f2a4-4f73-ad08-f586db1efdc3.png)
-
-![2022-05-05_11-53-15](https://user-images.githubusercontent.com/68629815/166961348-ef19e0da-288b-4506-b789-0f5bb92b720f.png)
-
-![image](https://user-images.githubusercontent.com/68629815/167231485-e844b55c-0f86-4c33-a562-66fbb55e3baf.png)
+![image](https://user-images.githubusercontent.com/68629815/168664674-8c71ce73-803d-4cc1-a3a4-fe0eae1aec31.png)
 
 
 ### Getting started
