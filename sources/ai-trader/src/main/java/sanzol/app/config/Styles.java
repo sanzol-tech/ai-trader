@@ -9,8 +9,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.MatteBorder;
 
 import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.IntelliJTheme;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import com.formdev.flatlaf.intellijthemes.FlatCarbonIJTheme;
 
 public class Styles
 {
@@ -93,7 +93,8 @@ public class Styles
 		BORDER_DOWN = BorderFactory.createMatteBorder(1, 0, 1, 0, COLOR_BORDER_LINE);
 
 		// -------------------------------------------------------------------
-		UIManager.setLookAndFeel(new FlatCarbonIJTheme());
+		//UIManager.setLookAndFeel(new FlatCarbonIJTheme());
+		IntelliJTheme.setup(Styles.class.getResourceAsStream("/resources/theme.json"));
 		// -------------------------------------------------------------------
 
 		isNight = true;

@@ -134,6 +134,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		btnShoot = new JButton();
 		btnShoot.setText("SHOOT");
 		btnSkin = new JButton(Styles.IMAGE_MOON);
+		btnSkin.setToolTipText("Skin mode");
 
 		lnkGitHub = new JLabel();
 		lnkGitHub.setText("ai-trader on GitHub");
