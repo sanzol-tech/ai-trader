@@ -46,6 +46,14 @@ public final class Convert
 		return String.valueOf(DoubleRounder.round(d * 100, 2));
 	}
 
+	public static BigDecimal strPercentToBigDecimal(String str)
+	{
+		if (str == null)
+			return null;
+
+		return (new BigDecimal(str)).divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+	}
+
 	public static Double strPercentToDbl(String str)
 	{
 		if (str == null)
@@ -60,6 +68,5 @@ public final class Convert
 		Format format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return format.format(date);
 	}
-	
 
 }

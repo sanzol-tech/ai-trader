@@ -10,12 +10,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.binance.client.RequestOptions;
-import com.binance.client.SyncRequestClient;
 import com.binance.client.model.trade.Order;
 import com.binance.client.model.trade.PositionRisk;
 
-import sanzol.app.config.PrivateConfig;
+import sanzol.app.config.Constants;
 import sanzol.app.listener.BotListener;
 import sanzol.app.service.SimpleTrader;
 import sanzol.app.service.Symbol;
@@ -24,22 +22,22 @@ import sanzol.lib.util.BeepUtils;
 public final class BotService
 {
 	private static boolean isTpRearrangement = false;
-	private static Double tpPercent = null;
+	private static BigDecimal tpPercent = null;
 
 	private static boolean isSlRearrangement = false;
-	private static Double slUsd = null;
+	private static BigDecimal slUsd = null;
 
 	public static boolean isTpRearrangement()
 	{
 		return isTpRearrangement;
 	}
 
-	public static Double getTpPercent()
+	public static BigDecimal getTpPercent()
 	{
 		return tpPercent;
 	}
 
-	public static void setTpPercent(Double tpPercent)
+	public static void setTpPercent(BigDecimal tpPercent)
 	{
 		BotService.tpPercent = tpPercent;
 	}
@@ -49,12 +47,12 @@ public final class BotService
 		return isSlRearrangement;
 	}
 
-	public static Double getSlUsd()
+	public static BigDecimal getSlUsd()
 	{
 		return slUsd;
 	}
 
-	public static void setSlUsd(Double slUsd)
+	public static void setSlUsd(BigDecimal slUsd)
 	{
 		BotService.slUsd = slUsd;
 	}
@@ -89,60 +87,94 @@ public final class BotService
 					if (symbol != null)
 					{
 						String side = (entry.getPositionAmt().doubleValue() < 0 ? "SHORT" : "LONG");
-						BigDecimal price = entry.getEntryPrice();
-						BigDecimal qty = entry.getPositionAmt().abs();
+						BigDecimal posPrice = entry.getEntryPrice();
+						BigDecimal posQty = entry.getPositionAmt().abs();
 
-						Order tpOrder = PositionService.getTpOrder(symbol.getName(), side);
-						if (tpOrder != null)
-						{
-							BigDecimal tpQty = tpOrder.getOrigQty();
-							if (qty.compareTo(tpQty) != 0)
-							{
-								BigDecimal tpCoef = "SHORT".equals(side) ? BigDecimal.valueOf(1 - tpPercent) : BigDecimal.valueOf(1 + tpPercent);
-								BigDecimal newTpPrice = price.multiply(tpCoef).setScale(symbol.getTickSize(), RoundingMode.HALF_UP);
-
-								tpRearrangement(symbol, side, tpOrder, newTpPrice, qty);
-							}
-						}
-
-						Order slOrder = PositionService.getSlOrder(symbol.getName(), side);
-						if (slOrder != null)
-						{
-							slRearrangement(symbol);
-						}
-
+						// ---------------------------------------------
+						tpRearrangement(symbol, side, posQty, posPrice);
+						slRearrangement(symbol, side, posQty, posPrice);
 					}
 				}
 			}
 		}
 	}
 
-	private static void tpRearrangement(Symbol symbol, String side, Order order, BigDecimal newPrice, BigDecimal newQty)
+	private static void tpRearrangement(Symbol symbol, String side, BigDecimal posQty, BigDecimal price)
 	{
-		BigDecimal tpPrice = order.getPrice();
-		BigDecimal tpQty = order.getOrigQty();
-
 		if (isTpRearrangement)
 		{
-			info(symbol.getNameLeft() + " TP-REARRANGEMENT");
-			info(String.format("[qty: %f price: %f] --> [qty: %f price: %f]", tpQty, tpPrice, newQty, newPrice));
-			BeepUtils.beep2();
+			BigDecimal tpCoef = "SHORT".equals(side) ? BigDecimal.ONE.subtract(tpPercent) : BigDecimal.ONE.add(tpPercent);
+			BigDecimal newPrice = price.multiply(tpCoef).setScale(symbol.getTickSize(), RoundingMode.HALF_UP);
 
-			// CANCEL ORDER
-			RequestOptions options = new RequestOptions();
-			SyncRequestClient syncRequestClient = SyncRequestClient.create(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, options);
-			syncRequestClient.cancelOrder(order.getSymbol(), order.getOrderId(), null);
+			Order tpOrder = PositionService.getTpOrder(symbol.getName(), side);
+			if (tpOrder != null)
+			{
+				BigDecimal tpQty = tpOrder.getOrigQty();
+				BigDecimal tpPrice = tpOrder.getPrice();
 
-			// ADD NEW ORDER
-			SimpleTrader.postTprofit(symbol, side, newPrice, newQty);
+				if (posQty.compareTo(tpQty) != 0)
+				{
+					info(symbol.getNameLeft() + " TP-REARRANGEMENT");
+					info(String.format("[qty: %f price: %f] --> [qty: %f price: %f]", tpQty, tpPrice, posQty, newPrice));
+					BeepUtils.beep2();
+		
+					// CANCEL ORDER
+					SimpleTrader.cancelOrder(tpOrder);
+		
+					// ADD NEW ORDER
+					SimpleTrader.postTprofit(symbol, side, newPrice, posQty);
+				}
+			}
+			else
+			{
+				info(symbol.getNameLeft() + " TP-REARRANGEMENT");
+				info(String.format("NONE -> [qty: %f price: %f]", posQty, newPrice));
+				BeepUtils.beep2();
+
+				// ADD NEW ORDER
+				SimpleTrader.postTprofit(symbol, side, newPrice, posQty);
+			}
 		}
 	}
 
-	private static void slRearrangement(Symbol symbol)
+	private static void slRearrangement(Symbol symbol, String side, BigDecimal posQty, BigDecimal posPrice)
 	{
 		if (isSlRearrangement)
 		{
-			//
+			BigDecimal slPriceNew;
+			if ("SHORT".equals(side)) {
+				slPriceNew = slUsd.add(posPrice.multiply(posQty)).divide(posQty, symbol.getTickSize(), RoundingMode.HALF_UP);
+			} else {
+				slPriceNew = ((posPrice.multiply(posQty)).subtract(slUsd)).divide(posQty, symbol.getTickSize(), RoundingMode.HALF_UP);
+			}
+
+			Order slOrder = PositionService.getSlOrder(symbol.getName(), side);
+			if (slOrder == null)
+			{
+				info(symbol.getNameLeft() + " SL-REARRANGEMENT");
+				info(String.format("(%f %s) : NONE -> [price: %f]", slUsd, Constants.DEFAULT_SYMBOL_RIGHT, slPriceNew));
+				BeepUtils.beep2();
+
+				// ADD NEW SL-ORDER
+				SimpleTrader.postSMarket(symbol, side, slPriceNew);
+			}
+			else
+			{
+				BigDecimal slPriceCur = slOrder.getStopPrice();
+				boolean isBad = "LONG".equals(side) && slPriceCur.doubleValue() < slPriceNew.doubleValue() || "SHORT".equals(side) && slPriceCur.doubleValue() > slPriceNew.doubleValue();
+				if (isBad)
+				{
+					info(symbol.getNameLeft() + " SL-REARRANGEMENT");
+					info(String.format("(%f %s) : [price: %f] --> [price: %f]", slUsd, Constants.DEFAULT_SYMBOL_RIGHT, slPriceCur, slPriceNew));
+					BeepUtils.beep2();
+	
+					// CANCEL SL-ORDER
+					SimpleTrader.cancelOrder(slOrder);
+	
+					// ADD NEW SL-ORDER
+					SimpleTrader.postSMarket(symbol, side, slPriceNew);
+				}
+			}
 		}
 	}
 

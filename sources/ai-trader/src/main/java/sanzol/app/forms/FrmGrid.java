@@ -670,7 +670,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 				txtIterations.setText("5");
 				txtPriceIncr.setText("1.8");
 				txtSLossDist.setText("10");
-				txtQtyIncr.setText("200");
+				txtQtyIncr.setText("125");
 			}
 			else if (templaneNro == 2)
 			{

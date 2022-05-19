@@ -106,6 +106,30 @@ public class SimpleTrader
 		return (orderResult != null ? orderResult.getStatus() : "n/a");
 	}
 	
+	public static String postSMarket(Symbol symbol, String side, BigDecimal price)
+	{
+		Order orderResult = null;
+
+		if ("SHORT".equals(side))
+		{
+			//
+		}
+		else if ("LONG".equals(side))
+		{
+			//
+		}
+
+		return (orderResult != null ? orderResult.getStatus() : "n/a");
+	}		
+
+	public static void cancelOrder(Order order)
+	{
+		RequestOptions options = new RequestOptions();
+		SyncRequestClient syncRequestClient = SyncRequestClient.create(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, options);
+
+		syncRequestClient.cancelOrder(order.getSymbol(), order.getOrderId(), null);
+	}
+	
 	private static Order postOrder(Symbol symbol, OrderSide side, OrderType orderType, TimeInForce timeInForce, 
 								   String quantity, String price, String reduceOnly, String newClientOrderId,
 								   String stopPrice, WorkingType workingType, NewOrderRespType newOrderRespType, String closePosition)
@@ -116,5 +140,5 @@ public class SimpleTrader
 		return syncRequestClient.postOrder(symbol.getName(), side, PositionSide.BOTH, orderType, timeInForce, 
 								   		   quantity, price, reduceOnly, newClientOrderId, stopPrice, workingType, newOrderRespType, closePosition);
 	}
-
+	
 }

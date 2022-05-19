@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.math.BigDecimal;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -70,6 +71,7 @@ public class FrmBot extends JFrame implements BotListener
 	{
 		initComponents();
 		pageload();
+		txtResult.setText(BotService.getLOG());
 		BotService.attachRefreshObserver(this);
 		isOpen = true;
 	}
@@ -259,7 +261,7 @@ public class FrmBot extends JFrame implements BotListener
 				saveSLConfig();
 			}
 		});
-		
+
 	}
 
 	private void pageload()
@@ -267,7 +269,16 @@ public class FrmBot extends JFrame implements BotListener
 		try
 		{
 			chkTPRearrangement.setSelected(BotService.isTpRearrangement());
-			txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
+			if (BotService.isTpRearrangement())
+				txtTProfit.setText(Convert.dblToStrPercent(BotService.getTpPercent()));
+			else
+				txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
+
+			chkSLRearrangement.setSelected(BotService.isSlRearrangement());
+			if (BotService.isSlRearrangement())
+				txtSlUsd.setText(BotService.getSlUsd().toPlainString());
+			else
+				txtSlUsd.setText("0");
 		}
 		catch(Exception e)
 		{
@@ -285,14 +296,14 @@ public class FrmBot extends JFrame implements BotListener
 
 	private void saveTPConfig()
 	{
-		BotService.setTpPercent(Convert.strPercentToDbl(txtTProfit.getText()));
+		BotService.setTpPercent(Convert.strPercentToBigDecimal(txtTProfit.getText()));
 		BotService.setTpRearrangement(chkTPRearrangement.isSelected());
 		INFO("TP rearrangement updated !");
 	}
 
 	private void saveSLConfig()
 	{
-		BotService.setSlUsd(Double.valueOf(txtSlUsd.getText()));
+		BotService.setSlUsd(new BigDecimal(txtSlUsd.getText()));
 		BotService.setSlRearrangement(chkSLRearrangement.isSelected());		
 		INFO("SL rearrangement updated !");
 	}
