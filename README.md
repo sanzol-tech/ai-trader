@@ -17,7 +17,7 @@
 
 ![image](https://user-images.githubusercontent.com/68629815/169188305-06d72c1a-52fe-4782-88e3-9cbe660e149a.png)
 
-![image](https://user-images.githubusercontent.com/68629815/168664674-8c71ce73-803d-4cc1-a3a4-fe0eae1aec31.png)
+![image](https://user-images.githubusercontent.com/68629815/169203512-ebd084cb-85e3-4fa8-acb6-150b4d9b9c46.png)
 
 
 ### Getting started
