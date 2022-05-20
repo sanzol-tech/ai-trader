@@ -101,8 +101,14 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	{
 		initComponents();
 		pageload();
+
+		onPriceUpdate();
 		PriceService.attachRefreshObserver(this);
+		
+		onSignalUpdate();
 		SignalService.attachRefreshObserver(this);
+		
+		onBalanceUpdate();
 		BalanceService.attachRefreshObserver(this);
 	}
 
@@ -604,25 +610,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		
 	}
 
-	private void setLookFeel(boolean isNight)
-	{
-		try
-		{
-			if (isNight)
-			{
-				Styles.setNight();
-			} else {
-				Styles.setLight();
-			}
-			dispose();
-			FrmMain.launch();
-		}
-		catch (Exception e)
-		{
-			ERROR(e);
-		}
-	}
-
 	private void pageload()
 	{
 		try
@@ -684,6 +671,34 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	private void showBot()
 	{
 		FrmBot.launch();
+	}
+
+	private void setLookFeel(boolean isNight)
+	{
+		try
+		{
+			if (isNight)
+			{
+				Styles.setNight();
+			} else {
+				Styles.setLight();
+			}
+
+			dispose();
+			FrmMain.launch();
+
+			/*
+			initComponents();			
+			for(Window window: Window.getWindows()) {
+			    SwingUtilities.updateComponentTreeUI(window);
+			}
+ 			*/
+
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
 	}
 
 	public static void launch()

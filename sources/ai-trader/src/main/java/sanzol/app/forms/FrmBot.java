@@ -31,6 +31,7 @@ import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.listener.BotListener;
+import sanzol.app.task.BalanceService;
 import sanzol.app.task.BotService;
 import sanzol.app.util.Convert;
 import sanzol.lib.util.ExceptionUtils;
@@ -296,14 +297,29 @@ public class FrmBot extends JFrame implements BotListener
 
 	private void saveTPConfig()
 	{
-		BotService.setTpPercent(Convert.strPercentToBigDecimal(txtTProfit.getText()));
+		BigDecimal value = Convert.strPercentToBigDecimal(txtTProfit.getText());
+		if (value.doubleValue() <= 0 || value.doubleValue() > 100)
+		{
+			ERROR("TP rearrangement is not valid");
+			return;
+		}
+
+		BotService.setTpPercent(value);
 		BotService.setTpRearrangement(chkTPRearrangement.isSelected());
 		INFO("TP rearrangement updated !");
 	}
 
 	private void saveSLConfig()
 	{
-		BotService.setSlUsd(new BigDecimal(txtSlUsd.getText()));
+		BigDecimal maxValue = BalanceService.getAccountBalance().getBalance();
+		BigDecimal value = new BigDecimal(txtSlUsd.getText());
+		if (value.doubleValue() <= 0 || value.doubleValue() > maxValue.doubleValue())
+		{
+			ERROR("SL rearrangement is not valid");
+			return;
+		}
+
+		BotService.setSlUsd(value);
 		BotService.setSlRearrangement(chkSLRearrangement.isSelected());		
 		INFO("SL rearrangement updated !");
 	}

@@ -68,57 +68,37 @@ public class SimpleTrader
 
 	public static String postOrder(Symbol symbol, String side, BigDecimal price, BigDecimal coins)
 	{
-		Order orderResult = null;
+		OrderSide orderSide = "SHORT".equals(side) ? OrderSide.SELL : "LONG".equals(side) ? OrderSide.BUY : null;
 
-		if ("SHORT".equals(side))
-		{
-			orderResult = postOrder(symbol, OrderSide.SELL, OrderType.LIMIT, TimeInForce.GTC, 
-									symbol.qtyToStr(coins), symbol.priceToStr(price), null, null, null, WorkingType.CONTRACT_PRICE,
-									NewOrderRespType.RESULT, null);
-		}
-		else if ("LONG".equals(side))
-		{
-			orderResult = postOrder(symbol, OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC, 
-									symbol.qtyToStr(coins), symbol.priceToStr(price), null, null, null, WorkingType.CONTRACT_PRICE,
-									NewOrderRespType.RESULT, null);
-		}
+		Order orderResult = postOrder(
+								symbol, orderSide, OrderType.LIMIT, TimeInForce.GTC, 
+								symbol.qtyToStr(coins), symbol.priceToStr(price), null, null, null, WorkingType.CONTRACT_PRICE,
+								NewOrderRespType.RESULT, null);
 
 		return (orderResult != null ? orderResult.getStatus() : "n/a");
 	}
 
 	public static String postTprofit(Symbol symbol, String side, BigDecimal price, BigDecimal coins)
 	{
-		Order orderResult = null;
+		OrderSide orderSide = "SHORT".equals(side) ? OrderSide.BUY : "LONG".equals(side) ? OrderSide.SELL : null;
 
-		if ("SHORT".equals(side))
-		{
-			orderResult = postOrder(symbol, OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC, 
-									symbol.qtyToStr(coins), symbol.priceToStr(price), "true", null, null, WorkingType.CONTRACT_PRICE, 
-									NewOrderRespType.RESULT, null);
-		}
-		else if ("LONG".equals(side))
-		{
-			orderResult = postOrder(symbol, OrderSide.SELL, OrderType.LIMIT, TimeInForce.GTC,
-									symbol.qtyToStr(coins), symbol.priceToStr(price), "true", null, null, WorkingType.CONTRACT_PRICE, 
-									NewOrderRespType.RESULT, null);
-		}
+		Order orderResult = postOrder(
+								symbol, orderSide, OrderType.LIMIT, TimeInForce.GTC, 
+								symbol.qtyToStr(coins), symbol.priceToStr(price), "true", null, null, WorkingType.CONTRACT_PRICE, 
+								NewOrderRespType.RESULT, null);
 
 		return (orderResult != null ? orderResult.getStatus() : "n/a");
 	}
 	
 	public static String postSMarket(Symbol symbol, String side, BigDecimal price)
 	{
-		Order orderResult = null;
+		OrderSide orderSide = "SHORT".equals(side) ? OrderSide.BUY : "LONG".equals(side) ? OrderSide.SELL : null;
 
-		if ("SHORT".equals(side))
-		{
-			//
-		}
-		else if ("LONG".equals(side))
-		{
-			//
-		}
-
+		Order orderResult = postOrder(
+								symbol, orderSide, OrderType.STOP_MARKET, TimeInForce.GTE_GTC,
+								null, null, null, null, symbol.priceToStr(price), WorkingType.CONTRACT_PRICE, 
+								NewOrderRespType.RESULT, "true");	
+		
 		return (orderResult != null ? orderResult.getStatus() : "n/a");
 	}		
 
@@ -140,5 +120,5 @@ public class SimpleTrader
 		return syncRequestClient.postOrder(symbol.getName(), side, PositionSide.BOTH, orderType, timeInForce, 
 								   		   quantity, price, reduceOnly, newClientOrderId, stopPrice, workingType, newOrderRespType, closePosition);
 	}
-	
+
 }

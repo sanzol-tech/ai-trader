@@ -40,7 +40,7 @@ public final class PriceService
 		return label;
 	}
 
-	public static BigDecimal getLastPrice(Symbol coin) throws Exception
+	public static BigDecimal getLastPrice(Symbol coin)
 	{
 		if (!mapTickers.containsKey(coin.getName()))
 		{
@@ -50,7 +50,7 @@ public final class PriceService
 		return mapTickers.get(coin.getName()).getLastPrice();
 	}
 
-	public static SymbolTickerEvent getSymbolTickerEvent(Symbol coin) throws Exception
+	public static SymbolTickerEvent getSymbolTickerEvent(Symbol coin)
 	{
 		if (!mapTickers.containsKey(coin.getName()))
 		{

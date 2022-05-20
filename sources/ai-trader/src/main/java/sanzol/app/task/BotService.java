@@ -161,8 +161,8 @@ public final class BotService
 			else
 			{
 				BigDecimal slPriceCur = slOrder.getStopPrice();
-				boolean isBad = "LONG".equals(side) && slPriceCur.doubleValue() < slPriceNew.doubleValue() || "SHORT".equals(side) && slPriceCur.doubleValue() > slPriceNew.doubleValue();
-				if (isBad)
+				boolean isFix = stopLossFix(symbol, side, slPriceCur, slPriceNew);
+				if (isFix)
 				{
 					info(symbol.getNameLeft() + " SL-REARRANGEMENT");
 					info(String.format("(%f %s) : [price: %f] --> [price: %f]", slUsd, Constants.DEFAULT_SYMBOL_RIGHT, slPriceCur, slPriceNew));
@@ -176,6 +176,22 @@ public final class BotService
 				}
 			}
 		}
+	}
+
+	private static boolean stopLossFix(Symbol symbol, String side, BigDecimal slPriceCur, BigDecimal slPriceNew)
+	{
+		BigDecimal lastPrice = PriceService.getLastPrice(symbol);
+
+		if ("LONG".equals(side))
+		{
+			return slPriceCur.doubleValue() < slPriceNew.doubleValue() && lastPrice.doubleValue() > slPriceNew.doubleValue();
+		}
+		else if ("SHORT".equals(side))
+		{
+			return slPriceCur.doubleValue() > slPriceNew.doubleValue() && lastPrice.doubleValue() < slPriceNew.doubleValue();
+		}
+
+		return false;
 	}
 
 	// ------------------------------------------------------------------------

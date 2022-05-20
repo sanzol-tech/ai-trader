@@ -354,14 +354,14 @@ public class PositionTrader
 		else if (pOrder.getType() == Type.SL_BUY)
 		{
 			double stopPrice = pOrder.getPrice();
-			orderResult = postOrder(OrderSide.BUY, OrderType.STOP_MARKET, TimeInForce.GTC,
+			orderResult = postOrder(OrderSide.BUY, OrderType.STOP_MARKET, TimeInForce.GTE_GTC,
 									null, null,
 									null, null, getSymbol().priceToStr(stopPrice), WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, "true");
 		}
 		else if (pOrder.getType() == Type.SL_SELL)
 		{
 			double stopPrice = pOrder.getPrice();
-			orderResult = postOrder(OrderSide.SELL, OrderType.STOP_MARKET, TimeInForce.GTC,
+			orderResult = postOrder(OrderSide.SELL, OrderType.STOP_MARKET, TimeInForce.GTE_GTC,
 									null, null,
 									null, null, getSymbol().priceToStr(stopPrice), WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, "true");
 		}
