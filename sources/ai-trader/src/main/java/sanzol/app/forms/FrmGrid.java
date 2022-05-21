@@ -69,8 +69,9 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 	private static final String TITLE = Constants.APP_NAME;
 
-	private Symbol coin;
+	private Symbol symbol;
 	private PositionTrader pMaker;
+	private boolean isBotMode = false;
 	private boolean isOpenPosition = false;
 
 	private JPanel contentPane;
@@ -605,13 +606,21 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 		btnPostFirst.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				postOrders(PostStyle.FIRST);
+				int resultOption = JOptionPane.showConfirmDialog(null, "Do you like post this position ?", "Confirm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if (resultOption == 0)
+				{
+					post(PostStyle.FIRST);
+				}
 			}
 		});
 
 		btnPostOthers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				postOrders(PostStyle.OTHERS);
+				int resultOption = JOptionPane.showConfirmDialog(null, "Do you like post orders ?", "Confirm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if (resultOption == 0)
+				{
+					post(PostStyle.OTHERS);
+				}
 			}
 		});
 
@@ -739,10 +748,10 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 	public static void launch()
 	{
-		launch(null, null, null);
+		launch(null, null, null, false);
 	}
 
-	public static void launch(String symbolLeft, String side, String price)
+	public static void launch(String symbolLeft, String side, String price, boolean isBotMode)
 	{
 		EventQueue.invokeLater(new Runnable()
 		{
@@ -776,6 +785,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 						else
 							frame.createLong();
 					}
+
+					frame.isBotMode = isBotMode;
 				}
 				catch (Exception e)
 				{
@@ -792,11 +803,11 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	{
 		try
 		{
-			if (coin != null)
+			if (symbol != null)
 			{
-				BigDecimal price = PriceService.getLastPrice(coin);
-				txtPriceShow.setText(coin.priceToStr(price));
-				txtMarkPrice.setText(coin.priceToStr(price));
+				BigDecimal price = PriceService.getLastPrice(symbol);
+				txtPriceShow.setText(symbol.priceToStr(price));
+				txtMarkPrice.setText(symbol.priceToStr(price));
 				
 				searchPosition();
 			}
@@ -812,9 +823,10 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	{
 		try
 		{
-			if (coin != null)
+			if (symbol != null)
 			{
 				searchPosition();
+				autoPostOthers();
 			}
 		}
 		catch (Exception e)
@@ -831,16 +843,16 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		try
 		{
 			txtSymbolLeft.setText(txtSymbolLeft.getText().toUpperCase());
-			String symbol = txtSymbolLeft.getText();
-			coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
+			String symbolLeft = txtSymbolLeft.getText();
+			symbol = Symbol.getInstance(Symbol.getFullSymbol(symbolLeft));
 
-			if (coin != null)
+			if (symbol != null)
 			{
 				setTitle(TITLE + " - " + symbol);
 
-				BigDecimal price = PriceService.getLastPrice(coin);
-				txtPriceShow.setText(coin.priceToStr(price));
-				txtMarkPrice.setText(coin.priceToStr(price));
+				BigDecimal price = PriceService.getLastPrice(symbol);
+				txtPriceShow.setText(symbol.priceToStr(price));
+				txtMarkPrice.setText(symbol.priceToStr(price));
 				
 				searchPosition();
 			}
@@ -858,14 +870,13 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 	private void searchPosition()
 	{
-		//PositionRisk positionRisk = PositionService.getPositionRisk("BTCBUSD");
-		PositionRisk positionRisk = PositionService.getPositionRisk(coin.getName());
+		PositionRisk positionRisk = PositionService.getPositionRisk(symbol.getName());
 		isOpenPosition = (positionRisk != null && positionRisk.getPositionAmt().compareTo(BigDecimal.ZERO) != 0);
 		if (isOpenPosition)
 		{
-			txtPositionPrice.setText(coin.priceToStr(positionRisk.getEntryPrice()));
+			txtPositionPrice.setText(symbol.priceToStr(positionRisk.getEntryPrice()));
 			double amt = positionRisk.getPositionAmt().doubleValue();
-			txtPositionQty.setText(coin.qtyToStr(amt));
+			txtPositionQty.setText(symbol.qtyToStr(amt));
 
 			if (amt > 0)
 				btnShort.setEnabled(false);
@@ -894,6 +905,29 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			rbQtyBalance.setEnabled(true);
 			txtQty.setEnabled(true);
 			txtBalancePercent.setEnabled(true);
+		}
+	}
+
+	private void autoPostOthers()
+	{
+		if (isBotMode)
+		{
+			if (!PositionService.existsPosition(symbol.getName()))
+			{
+				post(PostStyle.FIRST);
+			}
+			else
+			{
+				/*
+				PositionRisk positionRisk = PositionService.getPositionRisk(symbol.getName());
+				double inQty = pMaker.getPosition().getInQty();
+				double posQty = positionRisk.getPositionAmt().doubleValue();
+				if (posQty == inQty)
+				{
+					post(PostStyle.OTHERS);
+				}
+				*/
+			}
 		}
 	}
 
@@ -1075,7 +1109,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		Double tProfit = Convert.strPercentToDbl(txtTProfit.getText());
 		List<PriceQty> lstPriceQty = acquireGrid();
 
-		Position position = new Position(coin, side, distBeforeSL, tProfit, lstPriceQty);
+		Position position = new Position(symbol, side, distBeforeSL, tProfit, lstPriceQty);
 
 		Double inPrice = getInPrice();
 		position.setInPrice(inPrice);
@@ -1104,7 +1138,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		else
 		{
-			BigDecimal lastPrice = PriceService.getLastPrice(coin);
+			BigDecimal lastPrice = PriceService.getLastPrice(symbol);
 			return lastPrice.doubleValue();
 		}
 
@@ -1132,7 +1166,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			double balancePercent = Convert.strPercentToDbl(txtBalancePercent.getText());
 			AccountBalance accBalance = BalanceService.getAccountBalance();
 			double balance = accBalance.getBalance().doubleValue();
-			return DoubleRounder.round(Math.max(5, balance * balancePercent) / inPrice, coin.getQuantityPrecision(), RoundingMode.CEILING);
+			return DoubleRounder.round(Math.max(5, balance * balancePercent) / inPrice, symbol.getQuantityPrecision(), RoundingMode.CEILING);
 		}
 
 		ERROR("Invalid quantity");
@@ -1148,7 +1182,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 	private void createShort()
 	{
-		if (coin == null)
+		if (symbol == null)
 		{
 			ERROR("Select symbol");
 			return;
@@ -1176,7 +1210,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 	private void createLong()
 	{
-		if (coin == null)
+		if (symbol == null)
 		{
 			ERROR("Select symbol");
 			return;
@@ -1213,38 +1247,34 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	}
 
 	// ------------------------------------------------------------------------
-
-	private void postOrders(PostStyle postStyle)
+	
+	private void post(PostStyle postStyle)
 	{
 		INFO("");
 		try
 		{
-			int resultOption = JOptionPane.showConfirmDialog(null, "Do you like post this position ?", "Confirm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-			if (resultOption == 0)
+			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+			String result = pMaker.post(postStyle);
+			if (result != null)
 			{
-				setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-				String result = pMaker.post(postStyle);
-				if (result != null)
-				{
-					ERROR(result);
-				}
-
-				txtResult.setForeground(pMaker.getPosition().getSide() == PositionSide.SHORT ? Styles.COLOR_TEXT_SHORT : Styles.COLOR_TEXT_LONG);
-				txtResult.setText(pMaker.getPosition().toString());
-				save(coin.getName() + "_" + pMaker.getPosition().getSide().name());
-
-				// ------------------------------------------------------------
-				btnPostFirst.setEnabled(false);
-				btnPostOthers.setEnabled(postStyle.equals(PostStyle.FIRST));
-
-				setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				ERROR(result);
 			}
+
+			txtResult.setForeground(pMaker.getPosition().getSide() == PositionSide.SHORT ? Styles.COLOR_TEXT_SHORT : Styles.COLOR_TEXT_LONG);
+			txtResult.setText(pMaker.getPosition().toString());
+			save(symbol.getName() + "_" + pMaker.getPosition().getSide().name());
+
+			// ------------------------------------------------------------
+			btnPostFirst.setEnabled(false);
+			btnPostOthers.setEnabled(postStyle.equals(PostStyle.FIRST));
+
+			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
 		catch(Exception e)
 		{
 			ERROR(e);
-		}
+		}	
 	}
 
 	public void save(String filename)

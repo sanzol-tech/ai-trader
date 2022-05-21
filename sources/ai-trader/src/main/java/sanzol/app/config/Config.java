@@ -13,6 +13,8 @@ import java.util.Properties;
 
 public class Config
 {
+	private static final boolean IS_DARK_MODE = false;
+
 	private static final String[] FAVORITE_SYMBOLS = new String[]
 		{"1000SHIB", "ADA", "ALGO", "ALICE", "ALPHA", "ANC", "APE", "ATOM", 
 		 "AUDIO", "AVAX", "BAT", "BCH", "BLZ", "BNB", "BTC", "BTS", "CELO", 
@@ -33,34 +35,40 @@ public class Config
 	private static final Double POSITION_START_QTY_MAX = 0.035;
 	private static final Double BALANCE_MIN_AVAILABLE = 0.30;
 
-	private static String favorite_symbols;
+	private static Boolean isDarkMode;
+	private static String favoriteSymbols;
 	private static Integer leverage;
 	private static Integer iterations;
-	private static Double price_increment;
-	private static Double stoploss_increment;
-	private static Double coins_increment;
+	private static Double priceIncrement;
+	private static Double stoplossIncrement;
+	private static Double coinsIncrement;
 	private static Double takeprofit;
-	private static Integer positions_max;
-	private static Double position_start_qty;
-	private static Double position_start_qty_max;
-	private static Double balance_min_available;
+	private static Integer positionsMax;
+	private static Double positionStartQty;
+	private static Double positionStartQtyMax;
+	private static Double balanceMinAvailable;
 
 
 	// -----------------------------------------------------------------------
 
 	public static List<String> getLstFavSymbols()
 	{
-		if (favorite_symbols == null || favorite_symbols.isEmpty())
+		if (favoriteSymbols == null || favoriteSymbols.isEmpty())
 			return Arrays.asList(FAVORITE_SYMBOLS);
 		else
-			return Arrays.asList(favorite_symbols.split("\\s*,\\s*"));
+			return Arrays.asList(favoriteSymbols.split("\\s*,\\s*"));
 	}
 
 	// -----------------------------------------------------------------------
 
+	public static Boolean isDarkMode()
+	{
+		return isDarkMode != null ? isDarkMode : IS_DARK_MODE;
+	}
+
 	public static String getFavorite_symbols()
 	{
-		return favorite_symbols != null ? favorite_symbols : String.join(",", FAVORITE_SYMBOLS);
+		return favoriteSymbols != null ? favoriteSymbols : String.join(",", FAVORITE_SYMBOLS);
 	}
 
 	public static Integer getLeverage()
@@ -75,17 +83,17 @@ public class Config
 
 	public static Double getPrice_increment()
 	{
-		return price_increment != null ? price_increment : PRICE_INCREMENT;
+		return priceIncrement != null ? priceIncrement : PRICE_INCREMENT;
 	}
 
 	public static Double getStoploss_increment()
 	{
-		return stoploss_increment != null ? stoploss_increment : STOPLOSS_INCREMENT;
+		return stoplossIncrement != null ? stoplossIncrement : STOPLOSS_INCREMENT;
 	}
 
 	public static Double getCoins_increment()
 	{
-		return coins_increment != null ? coins_increment : COINS_INCREMENT;
+		return coinsIncrement != null ? coinsIncrement : COINS_INCREMENT;
 	}
 
 	public static Double getTakeprofit()
@@ -95,29 +103,34 @@ public class Config
 
 	public static Integer getPositions_max()
 	{
-		return positions_max != null ? positions_max : POSITIONS_MAX;
+		return positionsMax != null ? positionsMax : POSITIONS_MAX;
 	}
 
 	public static Double getPosition_start_qty()
 	{
-		return position_start_qty != null ? position_start_qty : POSITION_START_QTY;
+		return positionStartQty != null ? positionStartQty : POSITION_START_QTY;
 	}
 
 	public static Double getPosition_start_qty_max()
 	{
-		return position_start_qty_max != null ? position_start_qty_max : POSITION_START_QTY_MAX;
+		return positionStartQtyMax != null ? positionStartQtyMax : POSITION_START_QTY_MAX;
 	}
 
 	public static Double getBalance_min_available()
 	{
-		return balance_min_available != null ? balance_min_available : BALANCE_MIN_AVAILABLE;
+		return balanceMinAvailable != null ? balanceMinAvailable : BALANCE_MIN_AVAILABLE;
 	}
 
 	// -----------------------------------------------------------------------
 
-	public static void setFavorite_symbols(String favorite_symbols)
+	public static void setFavoriteSymbols(String favoriteSymbols)
 	{
-		Config.favorite_symbols = favorite_symbols;
+		Config.favoriteSymbols = favoriteSymbols;
+	}
+
+	public static void setDarkMode(boolean isDarkMode)
+	{
+		Config.isDarkMode = isDarkMode;
 	}
 
 	public static void setLeverage(Integer leverage)
@@ -140,34 +153,34 @@ public class Config
 		Config.iterations = Integer.valueOf(iterations);
 	}
 
-	public static void setPrice_increment(Double price_increment)
+	public static void setPriceIncrement(Double priceIncrement)
 	{
-		Config.price_increment = price_increment;
+		Config.priceIncrement = priceIncrement;
 	}
 
-	public static void setPrice_increment(String price_increment)
+	public static void setPriceIncrement(String price_increment)
 	{
-		Config.price_increment = Double.valueOf(price_increment);
+		Config.priceIncrement = Double.valueOf(price_increment);
 	}
 
-	public static void setStoploss_increment(Double stoploss_increment)
+	public static void setStoplossIncrement(Double stoplossIncrement)
 	{
-		Config.stoploss_increment = stoploss_increment;
+		Config.stoplossIncrement = stoplossIncrement;
 	}
 
-	public static void setStoploss_increment(String stoploss_increment)
+	public static void setStoplossIncrement(String stoplossIncrement)
 	{
-		Config.stoploss_increment = Double.valueOf(stoploss_increment);
+		Config.stoplossIncrement = Double.valueOf(stoplossIncrement);
 	}
 
-	public static void setCoins_increment(Double coins_increment)
+	public static void setCoinsIncrement(Double coinsIncrement)
 	{
-		Config.coins_increment = coins_increment;
+		Config.coinsIncrement = coinsIncrement;
 	}
 
-	public static void setCoins_increment(String coins_increment)
+	public static void setCoinsIncrement(String coinsIncrement)
 	{
-		Config.coins_increment = Double.valueOf(coins_increment);
+		Config.coinsIncrement = Double.valueOf(coinsIncrement);
 	}
 
 	public static void setTakeprofit(Double takeprofit)
@@ -180,29 +193,29 @@ public class Config
 		Config.takeprofit = Double.valueOf(takeprofit);
 	}
 
-	public static void setPositions_max(Integer positions_max)
+	public static void setPositionsMax(Integer positionsMax)
 	{
-		Config.positions_max = positions_max;
+		Config.positionsMax = positionsMax;
 	}
 
-	public static void setPositions_max(String positions_max)
+	public static void setPositionsMax(String positionsMax)
 	{
-		Config.positions_max = Integer.valueOf(positions_max);
+		Config.positionsMax = Integer.valueOf(positionsMax);
 	}
 
-	public static void setPosition_start_qty(Double position_start_qty)
+	public static void setPositionStartQty(Double positionStartQty)
 	{
-		Config.position_start_qty = position_start_qty;
+		Config.positionStartQty = positionStartQty;
 	}
 
-	public static void setPosition_start_qty_max(Double position_start_qty_max)
+	public static void setPositionStartQtyMax(Double positionStartQtyMax)
 	{
-		Config.position_start_qty_max = position_start_qty_max;
+		Config.positionStartQtyMax = positionStartQtyMax;
 	}
 
-	public static void setBalance_min_available(Double balance_min_available)
+	public static void setBalanceMinAvailable(Double balanceMinAvailable)
 	{
-		Config.balance_min_available = balance_min_available;
+		Config.balanceMinAvailable = balanceMinAvailable;
 	}
 
 	// -----------------------------------------------------------------------
@@ -214,17 +227,18 @@ public class Config
 		{
 			Properties prop = new Properties();
 
-			prop.setProperty("favorite_symbols", favorite_symbols);
+			prop.setProperty("is_dark_mode", String.valueOf(isDarkMode));
+			prop.setProperty("favorite_symbols", favoriteSymbols);
 			prop.setProperty("leverage", String.valueOf(leverage));
 			prop.setProperty("iterations", String.valueOf(iterations));
-			prop.setProperty("price_increment", String.valueOf(price_increment));
-			prop.setProperty("stoploss_increment", String.valueOf(stoploss_increment));
-			prop.setProperty("coins_increment", String.valueOf(coins_increment));
+			prop.setProperty("price_increment", String.valueOf(priceIncrement));
+			prop.setProperty("stoploss_increment", String.valueOf(stoplossIncrement));
+			prop.setProperty("coins_increment", String.valueOf(coinsIncrement));
 			prop.setProperty("takeprofit", String.valueOf(takeprofit));
-			prop.setProperty("positions_max", String.valueOf(positions_max));
-			prop.setProperty("position_start_qty", String.valueOf(position_start_qty));
-			prop.setProperty("position_start_qty_max", String.valueOf(position_start_qty_max));
-			prop.setProperty("balance_min_available", String.valueOf(balance_min_available));
+			prop.setProperty("positions_max", String.valueOf(positionsMax));
+			prop.setProperty("position_start_qty", String.valueOf(positionStartQty));
+			prop.setProperty("position_start_qty_max", String.valueOf(positionStartQtyMax));
+			prop.setProperty("balance_min_available", String.valueOf(balanceMinAvailable));
 			
 			prop.store(output, null);
 
@@ -244,27 +258,29 @@ public class Config
 				prop.load(input);
 
 				if (prop.containsKey("favorite_symbols"))
-					favorite_symbols = prop.getProperty("favorite_symbols");
+					favoriteSymbols = prop.getProperty("favorite_symbols");
+				if (prop.containsKey("is_dark_mode"))
+					isDarkMode =  "true".equalsIgnoreCase(prop.getProperty("is_dark_mode"));
 				if (prop.containsKey("leverage"))
 					leverage = Integer.valueOf(prop.getProperty("leverage"));
 				if (prop.containsKey("iterations"))
 					iterations = Integer.valueOf(prop.getProperty("iterations"));
 				if (prop.containsKey("price_increment"))
-					price_increment = Double.valueOf(prop.getProperty("price_increment"));
+					priceIncrement = Double.valueOf(prop.getProperty("price_increment"));
 				if (prop.containsKey("stoploss_increment"))
-					stoploss_increment = Double.valueOf(prop.getProperty("stoploss_increment"));
+					stoplossIncrement = Double.valueOf(prop.getProperty("stoploss_increment"));
 				if (prop.containsKey("coins_increment"))
-					coins_increment = Double.valueOf(prop.getProperty("coins_increment"));
+					coinsIncrement = Double.valueOf(prop.getProperty("coins_increment"));
 				if (prop.containsKey("takeprofit"))
 					takeprofit = Double.valueOf(prop.getProperty("takeprofit"));
 				if (prop.containsKey("positions_max"))
-					positions_max = Integer.valueOf(prop.getProperty("positions_max"));
+					positionsMax = Integer.valueOf(prop.getProperty("positions_max"));
 				if (prop.containsKey("position_start_qty"))
-					position_start_qty = Double.valueOf(prop.getProperty("position_start_qty"));
+					positionStartQty = Double.valueOf(prop.getProperty("position_start_qty"));
 				if (prop.containsKey("position_start_qty_max"))
-					position_start_qty_max = Double.valueOf(prop.getProperty("position_start_qty_max"));
+					positionStartQtyMax = Double.valueOf(prop.getProperty("position_start_qty_max"));
 				if (prop.containsKey("balance_min_available"))
-					balance_min_available = Double.valueOf(prop.getProperty("balance_min_available"));
+					balanceMinAvailable = Double.valueOf(prop.getProperty("balance_min_available"));
 
 			}
 		}

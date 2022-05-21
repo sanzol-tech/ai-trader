@@ -124,16 +124,16 @@ public final class SignalService
 				{
 					Symbol coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
 					OBookService obService = OBookService.getInstance(coin).request().calc();
-	
+
 					BigDecimal distShLg = PriceUtil.priceDistDown(obService.getShortPriceFixed(), obService.getLongPriceFixed(), true);
-					
+
 					if ((distShLg.doubleValue() < 1.5 || distShLg.doubleValue() > 8.0))
 					{
 						continue;
 					}
 
 					lstShocks.add(new SignalEntry(coin, obService.getShortPriceFixed(), obService.getLongPriceFixed()));
-					
+
 					// ------- TODO --------
 					count++;
 					if (count > 20)	{
@@ -143,6 +143,7 @@ public final class SignalService
 						Thread.sleep(300);
 					}
 					// ------- TODO --------
+
 				}
 				catch (BinanceApiException ex)
 				{

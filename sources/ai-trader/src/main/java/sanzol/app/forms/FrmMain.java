@@ -59,6 +59,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 	private JButton btnBot;
 	private JButton btnSignals;
+	private JButton btnSignalsAlt;
 	private JButton btnCoin;
 	private JButton btnGrid;
 	private JButton btnPositions;
@@ -129,6 +130,8 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 		btnSignals = new JButton();
 		btnSignals.setText("SIGNALS");
+		btnSignalsAlt = new JButton();
+		btnSignalsAlt.setText("LAB");
 		btnBot = new JButton();
 		btnBot.setText("BOT");
 		btnCoin = new JButton();
@@ -381,7 +384,9 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 					.addComponent(btnSignals)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnBot)
-					.addPreferredGap(ComponentPlacement.RELATED, 158, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnSignalsAlt)
+					.addPreferredGap(ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
 					.addComponent(lnkGitHub, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
 					.addComponent(btnSkin)
@@ -408,7 +413,9 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 							.addComponent(btnSignals))
 						.addGroup(pnlTopBarLayout.createSequentialGroup()
 							.addGap(12)
-							.addComponent(btnBot))
+							.addGroup(pnlTopBarLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(btnBot)
+								.addComponent(btnSignalsAlt)))
 						.addGroup(pnlTopBarLayout.createSequentialGroup()
 							.addGap(12)
 							.addComponent(btnSkin))
@@ -510,13 +517,19 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 		btnSkin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				setLookFeel(!Styles.isNight);
+				setLookFeel(!Config.isDarkMode());
 			}
 		});
 					
 		btnSignals.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				showSignals();
+			}
+		});
+
+		btnSignalsAlt.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				showSignalsAlt();
 			}
 		});
 		
@@ -616,7 +629,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		{
 			ERROR(Application.getError());
 			
-			btnSkin.setIcon(Styles.isNight ? Styles.IMAGE_SUN : Styles.IMAGE_MOON);
+			btnSkin.setIcon(Config.isDarkMode() ? Styles.IMAGE_SUN : Styles.IMAGE_MOON);
 
 			txtApiKey.setText(PrivateConfig.API_KEY);
 			txtSecretKey.setText(PrivateConfig.SECRET_KEY);
@@ -668,32 +681,26 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		FrmSignals.launch();
 	}
 
+	private void showSignalsAlt()
+	{
+		FrmSignalsAlt.launch();
+	}
+
 	private void showBot()
 	{
 		FrmBot.launch();
 	}
 
-	private void setLookFeel(boolean isNight)
+	private void setLookFeel(boolean isDarkMode)
 	{
 		try
 		{
-			if (isNight)
-			{
-				Styles.setNight();
-			} else {
-				Styles.setLight();
-			}
+			Config.setDarkMode(isDarkMode);
+			Config.save();
+			Styles.applyStyle();
 
 			dispose();
 			FrmMain.launch();
-
-			/*
-			initComponents();			
-			for(Window window: Window.getWindows()) {
-			    SwingUtilities.updateComponentTreeUI(window);
-			}
- 			*/
-
 		}
 		catch (Exception e)
 		{
@@ -798,17 +805,19 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 	private void tradeFromSignal(int index)
 	{
+		boolean isBotMode = false;
+		
 		SignalEntry entry = lstShockStatus.get(index);
 
 		if (entry.getAction().startsWith("SHORT"))
 		{
 			Double price = Math.max(entry.getPrice().doubleValue(), entry.getShShock().doubleValue());
-			FrmGrid.launch(entry.getCoin().getNameLeft(), "SHORT", entry.getCoin().priceToStr(price));
+			FrmGrid.launch(entry.getCoin().getNameLeft(), "SHORT", entry.getCoin().priceToStr(price), isBotMode);
 		}
 		else
 		{
 			Double price = Math.min(entry.getPrice().doubleValue(), entry.getLgShock().doubleValue());
-			FrmGrid.launch(entry.getCoin().getNameLeft(), "LONG", entry.getCoin().priceToStr(price));
+			FrmGrid.launch(entry.getCoin().getNameLeft(), "LONG", entry.getCoin().priceToStr(price), isBotMode);
 		}
 	}
 
@@ -818,17 +827,17 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	{
 		try
 		{
-			Config.setFavorite_symbols(txtFavCoins.getText());
+			Config.setFavoriteSymbols(txtFavCoins.getText());
 
 			Config.setIterations(txtIterations.getText());
-			Config.setPrice_increment(Convert.strPercentToDbl(txtPriceIncr.getText()));
-			Config.setCoins_increment(Convert.strPercentToDbl(txtCoinsIncr.getText()));
-			Config.setStoploss_increment(Convert.strPercentToDbl(txtDistBeforeSL.getText()));
+			Config.setPriceIncrement(Convert.strPercentToDbl(txtPriceIncr.getText()));
+			Config.setCoinsIncrement(Convert.strPercentToDbl(txtCoinsIncr.getText()));
+			Config.setStoplossIncrement(Convert.strPercentToDbl(txtDistBeforeSL.getText()));
 			Config.setTakeprofit(Convert.strPercentToDbl(txtTProfit.getText()));
-			Config.setPositions_max(txtPositionsMax.getText());
-			Config.setPosition_start_qty(Convert.strPercentToDbl(txtPositionQty.getText()));
-			Config.setPosition_start_qty_max(Convert.strPercentToDbl(txtPositionQtyMax.getText()));
-			Config.setBalance_min_available(Convert.strPercentToDbl(txtBalanceMinAvailable.getText()));
+			Config.setPositionsMax(txtPositionsMax.getText());
+			Config.setPositionStartQty(Convert.strPercentToDbl(txtPositionQty.getText()));
+			Config.setPositionStartQtyMax(Convert.strPercentToDbl(txtPositionQtyMax.getText()));
+			Config.setBalanceMinAvailable(Convert.strPercentToDbl(txtBalanceMinAvailable.getText()));
 			Config.setLeverage(txtLeverage.getText());
 
 			Config.save();

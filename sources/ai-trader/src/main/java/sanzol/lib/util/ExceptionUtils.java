@@ -18,7 +18,7 @@ public final class ExceptionUtils
 		}
 		else
 		{
-			return e.getClass().getName() + " : " + e.getMessage();
+			return e.getClass().getSimpleName() + " : " + e.getMessage();
 		}
 	}
 

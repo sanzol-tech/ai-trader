@@ -508,32 +508,32 @@ public class FrmCoin extends JFrame implements PriceListener
 
 		btnShortShockBB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(coin.getNameLeft(), "SHORT", txtShortPrice.getText());
+				FrmGrid.launch(coin.getNameLeft(), "SHORT", txtShortPrice.getText(), false);
 			}
 		});
 		btnLongShockBB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(coin.getNameLeft(), "LONG", txtLongPrice.getText());
+				FrmGrid.launch(coin.getNameLeft(), "LONG", txtLongPrice.getText(), false);
 			}
 		});
 		btnShortShockFP.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(coin.getNameLeft(), "SHORT", txtShortPriceFP.getText());
+				FrmGrid.launch(coin.getNameLeft(), "SHORT", txtShortPriceFP.getText(), false);
 			}
 		});
 		btnLongShockFP.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(coin.getNameLeft(), "LONG", txtLongPriceFP.getText());
+				FrmGrid.launch(coin.getNameLeft(), "LONG", txtLongPriceFP.getText(), false);
 			}
 		});
 		btnShortShockWA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(coin.getNameLeft(), "SHORT", txtShortPriceWA.getText());
+				FrmGrid.launch(coin.getNameLeft(), "SHORT", txtShortPriceWA.getText(), false);
 			}
 		});
 		btnLongShockWA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(coin.getNameLeft(), "LONG", txtLongPriceWA.getText());
+				FrmGrid.launch(coin.getNameLeft(), "LONG", txtLongPriceWA.getText(), false);
 			}
 		});
 

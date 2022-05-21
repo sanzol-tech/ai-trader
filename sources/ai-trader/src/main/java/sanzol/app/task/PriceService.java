@@ -60,6 +60,11 @@ public final class PriceService
 		return mapTickers.get(coin.getName());
 	}
 
+	public static Map<String, SymbolTickerEvent> getMapTickers()
+	{
+		return mapTickers;
+	}
+
 	public static void start()
 	{
 		loadFavorites();

@@ -79,6 +79,31 @@ public final class PositionService
 		}
 		return list;
 	}
+	
+	public static boolean existsPosition(String symbolName)
+	{
+		if (lstPositionRisk != null && !lstPositionRisk.isEmpty())
+		{
+			for (PositionRisk entry : lstPositionRisk)
+			{
+				if (entry.getSymbol().equals(symbolName) && entry.getPositionAmt().compareTo(BigDecimal.ZERO) != 0)
+				{
+					return true;
+				}
+			}
+		}
+		if (lstOpenOrders != null && !lstOpenOrders.isEmpty())
+		{
+			for (Order entry : lstOpenOrders)
+			{
+				if (entry.getSymbol().equals(symbolName) && "NEW".equals(entry.getStatus()))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	public static Order getTpOrder(String symbolName, String side)
 	{

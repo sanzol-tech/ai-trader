@@ -85,7 +85,7 @@ public final class Application
 	{
 		try
 		{
-			Styles.setLight();
+			Styles.applyStyle();
 		}
 		catch (Exception e)
 		{

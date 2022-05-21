@@ -14,8 +14,6 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 public class Styles
 {
-	public static boolean isNight = false;
-	
 	public static ImageIcon IMAGE_SEARCH = new FlatSVGIcon(Styles.class.getResource("/resources/search.svg"));
 	public static ImageIcon IMAGE_EXECUTE = new FlatSVGIcon(Styles.class.getResource("/resources/execute.svg"));
 	public static ImageIcon IMAGE_EXECUTE_LIGHT = new FlatSVGIcon(Styles.class.getResource("/resources/executeLight.svg"));
@@ -39,6 +37,24 @@ public class Styles
 	public static MatteBorder BORDER_UP;
 	public static MatteBorder BORDER_DOWN;
 	
+	public static void applyStyle() throws UnsupportedLookAndFeelException
+	{
+		if (Config.isDarkMode())
+			setNight();
+		else
+			setLight();
+	}
+
+	public void repaintAll()
+	{
+		/*
+		initComponents();			
+		for(Window window: Window.getWindows()) {
+		    SwingUtilities.updateComponentTreeUI(window);
+		}
+		*/
+	}
+
 	public static void setLight() throws UnsupportedLookAndFeelException
 	{
 		COLOR_BORDER_LINE = new Color(214, 214, 214);
@@ -65,8 +81,6 @@ public class Styles
 		// -------------------------------------------------------------------
 		UIManager.setLookAndFeel(new FlatLightLaf());
 		// -------------------------------------------------------------------
-
-		isNight = false;
 	}
 
 	public static void setNight() throws UnsupportedLookAndFeelException
@@ -96,8 +110,6 @@ public class Styles
 		//UIManager.setLookAndFeel(new FlatCarbonIJTheme());
 		IntelliJTheme.setup(Styles.class.getResourceAsStream("/resources/theme.json"));
 		// -------------------------------------------------------------------
-
-		isNight = true;
 	}
 
 }
