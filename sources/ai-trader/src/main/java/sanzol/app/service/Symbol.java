@@ -24,6 +24,7 @@ public class Symbol
 	private String nameLeft;
 	private int tickSize;
 	private int quantityPrecision;
+	private BigDecimal minQty;
 
 	public String getName()
 	{
@@ -45,18 +46,25 @@ public class Symbol
 		return quantityPrecision;
 	}
 
+	public BigDecimal getMinQty()
+	{
+		return minQty;
+	}
+
 	// ------------------------------------------------------------------------
 
 	private static List<ExchangeInfoEntry> lstExInfEntries = null;
+	private static long exInfTime;
 
 	private static void getExInfEntries()
 	{
-		if (lstExInfEntries == null)
+		if (lstExInfEntries == null || exInfTime + 1000 * 60 * 30 < System.currentTimeMillis())
 		{
 			RequestOptions options = new RequestOptions();
 			SyncRequestClient syncRequestClient = SyncRequestClient.create(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, options);
 			ExchangeInformation exInf = syncRequestClient.getExchangeInformation();
 			lstExInfEntries = exInf.getSymbols();
+			exInfTime = System.currentTimeMillis();
 		}
 	}
 
@@ -95,6 +103,9 @@ public class Symbol
 
 				String ts = eInfoEntry.getFilters().get(0).get(3).get("tickSize");
 				coin.tickSize = (int) Math.log10(Double.valueOf(ts)) * -1;
+				
+				String mq = eInfoEntry.getFilters().get(1).get(3).get("minQty");
+				coin.minQty = new BigDecimal(mq);
 
 				coin.quantityPrecision = eInfoEntry.getQuantityPrecision().intValue();
 				

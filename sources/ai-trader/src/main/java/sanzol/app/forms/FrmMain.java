@@ -644,18 +644,18 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 	private void loadConfig()
 	{
-		txtFavCoins.setText(Config.getFavorite_symbols());
+		txtFavCoins.setText(Config.getFavoriteSymbols());
 
 		txtIterations.setText(String.valueOf(Config.getIterations()));
-		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPrice_increment())); 
-		txtCoinsIncr.setText(Convert.dblToStrPercent(Config.getCoins_increment()));
-		txtDistBeforeSL.setText(Convert.dblToStrPercent(Config.getStoploss_increment()));
+		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPriceIncrement())); 
+		txtCoinsIncr.setText(Convert.dblToStrPercent(Config.getCoinsIncrement()));
+		txtDistBeforeSL.setText(Convert.dblToStrPercent(Config.getStoplossIncrement()));
 		txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
 
-		txtPositionsMax.setText(String.valueOf(Config.getPositions_max()));
-		txtPositionQty.setText(Convert.dblToStrPercent(Config.getPosition_start_qty()));
-		txtPositionQtyMax.setText(Convert.dblToStrPercent(Config.getPosition_start_qty_max()));
-		txtBalanceMinAvailable.setText(Convert.dblToStrPercent(Config.getBalance_min_available()));
+		txtPositionsMax.setText(String.valueOf(Config.getPositionsMax()));
+		txtPositionQty.setText(Convert.dblToStrPercent(Config.getPositionStartQty()));
+		txtPositionQtyMax.setText(Convert.dblToStrPercent(Config.getPositionStartQtyMax()));
+		txtBalanceMinAvailable.setText(Convert.dblToStrPercent(Config.getBalanceMinAvailable()));
 		txtLeverage.setText(String.valueOf(Config.getLeverage()));
 
 		txtPair.setText(Constants.DEFAULT_SYMBOL_RIGHT);

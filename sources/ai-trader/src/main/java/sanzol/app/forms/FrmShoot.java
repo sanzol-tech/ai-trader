@@ -607,7 +607,7 @@ public class FrmShoot extends JFrame implements PriceListener
 		double balance = accBalance.getBalance().doubleValue();
 		double withdrawAvailable = accBalance.getWithdrawAvailable().doubleValue();
 
-		return  (withdrawAvailable - (usdt / Config.getLeverage()) < balance * Config.getBalance_min_available());
+		return  (withdrawAvailable - (usdt / Config.getLeverage()) < balance * Config.getBalanceMinAvailable());
 	}
 
 	private void exec()

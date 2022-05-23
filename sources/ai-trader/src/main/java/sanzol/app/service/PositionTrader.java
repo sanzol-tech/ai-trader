@@ -232,7 +232,7 @@ public class PositionTrader
 		double balance = accBalance.getBalance().doubleValue();
 		double withdrawAvailable = accBalance.getWithdrawAvailable().doubleValue();
 
-		return  (withdrawAvailable - (usdt / Config.getLeverage()) < balance * Config.getBalance_min_available());
+		return  (withdrawAvailable - (usdt / Config.getLeverage()) < balance * Config.getBalanceMinAvailable());
 	}
 
 	public String post(PostStyle postStyle) throws Exception

@@ -1,5 +1,6 @@
 package sanzol.app.forms;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -10,6 +11,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,14 +26,19 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
-
-import com.binance.client.model.event.SymbolTickerEvent;
-
 import javax.swing.SwingConstants;
+
+import com.binance.client.RequestOptions;
+import com.binance.client.SyncRequestClient;
+import com.binance.client.examples.constants.PrivateConfig;
+import com.binance.client.model.enums.CandlestickInterval;
+import com.binance.client.model.event.SymbolTickerEvent;
+import com.binance.client.model.market.Candlestick;
 
 import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
+import sanzol.app.service.Symbol;
 import sanzol.app.task.PriceService;
 import sanzol.app.task.SignalService;
 import sanzol.app.util.PriceUtil;
@@ -205,16 +213,38 @@ public class FrmSignalsAlt extends JFrame
 
 	// ------------------------------------------------------------------------
 
+	private static Candlestick lastCandlestick_5m(Symbol symbol)
+	{
+		RequestOptions options = new RequestOptions();
+		SyncRequestClient syncRequestClient = SyncRequestClient.create(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, options);
+
+		Candlestick candlestick = syncRequestClient.getCandlestick(symbol.getName(), CandlestickInterval.FIVE_MINUTES, null, null, 1).get(0);
+
+		return candlestick;
+	}
+
+	private static BigDecimal distance(Candlestick candlestick)
+	{
+		return (candlestick.getHigh().divide(candlestick.getLow(), 4, RoundingMode.HALF_UP).subtract(BigDecimal.ONE)).multiply(BigDecimal.valueOf(100));
+	}
+	
 	private String calc()
 	{
+		final double MIN_USDT = 50; 
+		final double MIN_VOLUME = 50000000;
+		
 		List<String> lst = new ArrayList<String>();
-
-		for (SymbolTickerEvent entry : PriceService.getMapTickers().values())
+		
+		List<SymbolTickerEvent> lstSymbolTickerEvent = new ArrayList<SymbolTickerEvent>();
+		lstSymbolTickerEvent.addAll(PriceService.getMapTickers().values());
+		for (SymbolTickerEvent entry : lstSymbolTickerEvent)
 		{
+			Symbol symbol = Symbol.getInstance(entry.getSymbol());
+
 			double lastPrice = entry.getLastPrice().doubleValue();
 			double volume = entry.getTotalTradedQuoteAssetVolume().doubleValue(); 
 			String priceChangePercent = String.format("%.2f", entry.getPriceChangePercent());
-			
+
 			double high = entry.getHigh().doubleValue();
 			double low = entry.getLow().doubleValue();
 			double avgPrice = entry.getWeightedAvgPrice().doubleValue();
@@ -222,19 +252,38 @@ public class FrmSignalsAlt extends JFrame
 			double avgHigh = (avgPrice + high) / 2;
 			double avgLow =  (avgPrice + low) / 2;
 
-			if (lastPrice > 50)
-				lst.add(String.format("HIGH PRICE   %-12s %8s %%  %12f   vol %s", entry.getSymbol(), priceChangePercent, lastPrice, PriceUtil.cashFormat(volume, 0)));
+			double min_usdt = symbol.getMinQty().doubleValue() * lastPrice;
+
+			if (min_usdt > MIN_USDT)
+			{
+				lst.add(String.format("6 MIN QTY      %-12s  vol %5s  24Hs %8s %%  Price %12f", symbol.getNameLeft(), PriceUtil.cashFormat(volume, 0), priceChangePercent, lastPrice));
+			}
 			else
-			if (volume < 80000000)
-				lst.add(String.format("LOW VOLUME   %-12s %8s %%  %12f   vol %s", entry.getSymbol(), priceChangePercent, lastPrice, PriceUtil.cashFormat(volume, 0)));
+			if (volume < MIN_VOLUME)
+			{
+				lst.add(String.format("4 LOW VOLUME   %-12s  vol %5s  24Hs %8s %%  Price %12f", symbol.getNameLeft(), PriceUtil.cashFormat(volume, 0), priceChangePercent, lastPrice));
+			}
+			else
+			if (entry.getPriceChangePercent().abs().doubleValue() > 8)
+			{
+				lst.add(String.format("5 HIGH MOVE    %-12s  vol %5s  24Hs %8s %%  Price %12f", symbol.getNameLeft(), PriceUtil.cashFormat(volume, 0), priceChangePercent, lastPrice));
+			}
 			else
 			if (lastPrice > avgHigh)
-				lst.add(String.format("SHORT        %-12s %8s %%  %12f   vol %s", entry.getSymbol(), priceChangePercent, lastPrice, PriceUtil.cashFormat(volume, 0)));
+			{
+				double dist_5m = distance(lastCandlestick_5m(symbol)).doubleValue();
+				lst.add(String.format("1 SHORT        %-12s  vol %5s  24Hs %8s %%  Price %12f 5m %f", symbol.getNameLeft(), PriceUtil.cashFormat(volume, 0), priceChangePercent, lastPrice, dist_5m));
+			}
 			else
 			if (lastPrice < avgLow)
-				lst.add(String.format("LONG         %-12s %8s %%  %12f   vol %s", entry.getSymbol(), priceChangePercent, lastPrice, PriceUtil.cashFormat(volume, 0)));
+			{
+				double dist_5m = distance(lastCandlestick_5m(symbol)).doubleValue();
+				lst.add(String.format("2 LONG         %-12s  vol %5s  24Hs %8s %%  Price %12f 5m %f", symbol.getNameLeft(), PriceUtil.cashFormat(volume, 0), priceChangePercent, lastPrice, dist_5m));
+			}
 			else
-				lst.add(String.format("N/A          %-12s %8s %%  %12f   vol %s", entry.getSymbol(), priceChangePercent, lastPrice, PriceUtil.cashFormat(volume, 0)));
+			{
+				lst.add(String.format("3 N/A          %-12s  vol %5s  24Hs %8s %%  Price %12f", symbol.getNameLeft(), PriceUtil.cashFormat(volume, 0), priceChangePercent, lastPrice));
+			}
 		}
 
 		java.util.Collections.sort(lst);
@@ -252,7 +301,10 @@ public class FrmSignalsAlt extends JFrame
 	{
 		try
 		{
+			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			txtResult.setText(calc());
+			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			
 			INFO("Last modification: " + SignalService.getModified());
 		}
 		catch (Exception e)

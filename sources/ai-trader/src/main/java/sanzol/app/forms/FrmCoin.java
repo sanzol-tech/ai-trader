@@ -50,7 +50,7 @@ public class FrmCoin extends JFrame implements PriceListener
 
 	private static final String TITLE = Constants.APP_NAME;
 
-	private Symbol coin;
+	private Symbol symbol;
 	private OBookService obService = null;
 	private boolean beepDone = false;	
 
@@ -493,7 +493,7 @@ public class FrmCoin extends JFrame implements PriceListener
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
-					Desktop.getDesktop().browse(new URI("https://es.tradingview.com/chart/?symbol=BINANCE%3A" + coin.getName()));
+					Desktop.getDesktop().browse(new URI("https://es.tradingview.com/chart/?symbol=BINANCE%3A" + symbol.getName()));
 				} catch (Exception ex) {
 					System.err.println(ex.getMessage());
 				}
@@ -508,32 +508,32 @@ public class FrmCoin extends JFrame implements PriceListener
 
 		btnShortShockBB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(coin.getNameLeft(), "SHORT", txtShortPrice.getText(), false);
+				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtShortPrice.getText(), false);
 			}
 		});
 		btnLongShockBB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(coin.getNameLeft(), "LONG", txtLongPrice.getText(), false);
+				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtLongPrice.getText(), false);
 			}
 		});
 		btnShortShockFP.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(coin.getNameLeft(), "SHORT", txtShortPriceFP.getText(), false);
+				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtShortPriceFP.getText(), false);
 			}
 		});
 		btnLongShockFP.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(coin.getNameLeft(), "LONG", txtLongPriceFP.getText(), false);
+				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtLongPriceFP.getText(), false);
 			}
 		});
 		btnShortShockWA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(coin.getNameLeft(), "SHORT", txtShortPriceWA.getText(), false);
+				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtShortPriceWA.getText(), false);
 			}
 		});
 		btnLongShockWA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(coin.getNameLeft(), "LONG", txtLongPriceWA.getText(), false);
+				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtLongPriceWA.getText(), false);
 			}
 		});
 
@@ -559,13 +559,13 @@ public class FrmCoin extends JFrame implements PriceListener
 	{
 		try
 		{
-			if (coin != null)
+			if (symbol != null)
 			{
-				SymbolTickerEvent symbolTicker = PriceService.getSymbolTickerEvent(coin);
+				SymbolTickerEvent symbolTicker = PriceService.getSymbolTickerEvent(symbol);
 				if (symbolTicker != null)
 				{
-					BigDecimal mrkPrice = PriceService.getLastPrice(coin);
-					txtMarkPrice.setText(coin.priceToStr(mrkPrice));
+					BigDecimal mrkPrice = PriceService.getLastPrice(symbol);
+					txtMarkPrice.setText(symbol.priceToStr(mrkPrice));
 					String priceChangePercent = String.format("%.2f", symbolTicker.getPriceChangePercent());
 					txt24h.setText(priceChangePercent);
 					txtVolume.setText(PriceUtil.cashFormat(symbolTicker.getTotalTradedQuoteAssetVolume().doubleValue(), 0));
@@ -590,12 +590,12 @@ public class FrmCoin extends JFrame implements PriceListener
 		try
 		{
 			txtSymbolLeft.setText(txtSymbolLeft.getText().toUpperCase());
-			String symbol = txtSymbolLeft.getText();
-			coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
+			String symbolLeft = txtSymbolLeft.getText();
+			symbol = Symbol.getInstance(Symbol.getFullSymbol(symbolLeft));
 
-			if (coin != null)
+			if (symbol != null)
 			{
-				setTitle(TITLE + " - " + symbol);
+				setTitle(TITLE + " - " + symbol.getNameLeft());
 
 				loadOBook(false);
 			}
@@ -612,7 +612,7 @@ public class FrmCoin extends JFrame implements PriceListener
 
 	private void loadOBook(boolean isFull)
 	{
-		if (coin == null)
+		if (symbol == null)
 		{
 			ERROR("No coin selected");
 			return;
@@ -624,7 +624,7 @@ public class FrmCoin extends JFrame implements PriceListener
 			{
 				setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				
-				obService = OBookService.getInstance(coin).request().subscribeDiffDepthEvent();
+				obService = OBookService.getInstance(symbol).request().subscribeDiffDepthEvent();
 				Thread.sleep(30000);
 				obService.calc();
 
@@ -632,21 +632,21 @@ public class FrmCoin extends JFrame implements PriceListener
 			}
 			else
 			{
-				obService = OBookService.getInstance(coin).request().calc();
+				obService = OBookService.getInstance(symbol).request().calc();
 			}
 			
 			txtOBookAsk.setText(obService.printAsksGrp());
 			txtOBookBid.setText(obService.printBidsGrp());
 			txtOBookBid.setCaretPosition(0);
 
-			txtShortPrice.setText(coin.priceToStr(obService.getShortPriceBBlk()));
-			txtLongPrice.setText(coin.priceToStr(obService.getLongPriceBBlk()));
+			txtShortPrice.setText(symbol.priceToStr(obService.getShortPriceBBlk()));
+			txtLongPrice.setText(symbol.priceToStr(obService.getLongPriceBBlk()));
 
-			txtShortPriceWA.setText(coin.priceToStr(obService.getShortPriceWAvg()));
-			txtLongPriceWA.setText(coin.priceToStr(obService.getLongPriceWAvg()));
+			txtShortPriceWA.setText(symbol.priceToStr(obService.getShortPriceWAvg()));
+			txtLongPriceWA.setText(symbol.priceToStr(obService.getLongPriceWAvg()));
 			
-			txtShortPriceFP.setText(coin.priceToStr(obService.getShortPriceFixed()));
-			txtLongPriceFP.setText(coin.priceToStr(obService.getLongPriceFixed()));
+			txtShortPriceFP.setText(symbol.priceToStr(obService.getShortPriceFixed()));
+			txtLongPriceFP.setText(symbol.priceToStr(obService.getLongPriceFixed()));
 		}
 		catch (Exception e)
 		{
@@ -663,7 +663,7 @@ public class FrmCoin extends JFrame implements PriceListener
 
 		try
 		{
-			BigDecimal mrkPrice = PriceService.getLastPrice(coin);
+			BigDecimal mrkPrice = PriceService.getLastPrice(symbol);
 
 			BigDecimal distSh = PriceUtil.priceDistUp(mrkPrice, obService.getShortPriceBBlk(), false);
 			txtShortDist.setText(Convert.dblToStrPercent(distSh) + " %");

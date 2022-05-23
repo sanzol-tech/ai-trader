@@ -695,7 +695,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 				txtIterations.setText("5");
 				txtPriceIncr.setText("2");
 				txtSLossDist.setText("10");
-				txtQtyIncr.setText("50");
+				txtQtyIncr.setText("40");
 			}
 			else if (templaneNro == 4)
 			{
@@ -737,11 +737,11 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	private void loadConfig()
 	{
 		txtIterations.setText(String.valueOf(Config.getIterations()));
-		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPrice_increment())); 
-		txtQtyIncr.setText(Convert.dblToStrPercent(Config.getCoins_increment()));
-		txtSLossDist.setText(Convert.dblToStrPercent(Config.getStoploss_increment()));
+		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPriceIncrement())); 
+		txtQtyIncr.setText(Convert.dblToStrPercent(Config.getCoinsIncrement()));
+		txtSLossDist.setText(Convert.dblToStrPercent(Config.getStoplossIncrement()));
 		txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
-		txtBalancePercent.setText(Convert.dblToStrPercent(Config.getPosition_start_qty()));
+		txtBalancePercent.setText(Convert.dblToStrPercent(Config.getPositionStartQty()));
 
 		generateGrid();
 	}
@@ -848,7 +848,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 			if (symbol != null)
 			{
-				setTitle(TITLE + " - " + symbol);
+				setTitle(TITLE + " - " + symbol.getNameLeft());
 
 				BigDecimal price = PriceService.getLastPrice(symbol);
 				txtPriceShow.setText(symbol.priceToStr(price));
@@ -942,10 +942,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		if (iterations >= 1)
 		{
 			txtGPrice1.setText(Convert.dblToStrPercent(priceIncr));
-			if (qtyIncr < 2)
-				txtGQty1.setText("0.0");
-			else
-				txtGQty1.setText("100.0");
+			txtGQty1.setText(Convert.dblToStrPercent(qtyIncr));
 		}
 		else
 		{
