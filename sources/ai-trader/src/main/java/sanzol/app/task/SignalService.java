@@ -18,10 +18,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.binance.client.exception.BinanceApiException;
 
-import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.listener.SignalListener;
 import sanzol.app.model.SignalEntry;
+import sanzol.app.model.SymbolInfo;
 import sanzol.app.service.OBookService;
 import sanzol.app.service.Symbol;
 import sanzol.app.util.PriceUtil;
@@ -109,20 +109,20 @@ public final class SignalService
 		}
 	}
 
-	public static void searchShocks(boolean onlyFavorites)
+	public static void searchShocks(boolean onlyFavorites, boolean onlyBetters)
 	{
 		errorMessage = "";
 		lstShocks = new ArrayList<SignalEntry>();
 		try
 		{
-			List<String> lstSymbols = onlyFavorites ? Config.getLstFavSymbols() : Symbol.getAll();
+			List<SymbolInfo> lstSymbolsInfo = Symbol.getLstSymbolsInfo(onlyFavorites, onlyBetters);
 
 			int count = 0;
-			for (String symbol : lstSymbols)
+			for (SymbolInfo symbolInfo : lstSymbolsInfo)
 			{
 				try
 				{
-					Symbol coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
+					Symbol coin = symbolInfo.getSymbol();
 					OBookService obService = OBookService.getInstance(coin).request().calc();
 
 					BigDecimal distShLg = PriceUtil.priceDistDown(obService.getShortPriceFixed(), obService.getLongPriceFixed(), true);
@@ -147,7 +147,7 @@ public final class SignalService
 				}
 				catch (BinanceApiException ex)
 				{
-					System.err.println("ERR: " + symbol + " : " +  ex.getMessage());
+					System.err.println("ERR: " + symbolInfo.getSymbolName() + " : " +  ex.getMessage());
 				}
 			}
 		}
@@ -348,7 +348,7 @@ public final class SignalService
 		System.out.println(toStringShocks());
 		*/
 
-		searchShocks(false); 
+		searchShocks(true, true); 
 		System.out.println(""); 
 		System.out.println(toStringShocks());
 		saveShocks();

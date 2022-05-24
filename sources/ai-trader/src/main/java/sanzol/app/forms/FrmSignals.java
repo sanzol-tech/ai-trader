@@ -1,6 +1,5 @@
 package sanzol.app.forms;
 
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -15,6 +14,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -39,7 +39,7 @@ public class FrmSignals extends JFrame implements SignalListener
 
 	private static boolean isOpen = false;
 	
-	private JButton btnGenerateAll;
+	private JButton btnGenerate;
 	private JButton btnEdit;
 
 	private JLabel lblError;
@@ -49,7 +49,6 @@ public class FrmSignals extends JFrame implements SignalListener
 	private JPanel pnlTopBar;
 	private JTextField txtWithdrawal;
 	private JTextArea txtResult;
-	private JButton btnGenerateFavs;
 
 	public FrmSignals()
 	{
@@ -72,10 +71,8 @@ public class FrmSignals extends JFrame implements SignalListener
 		pnlContent = new JPanel();
 		pnlStatusBar = new JPanel();
 		pnlStatusBar.setBorder(Styles.BORDER_UP);
-		btnGenerateAll = new JButton();
-		btnGenerateAll.setText("GENERATE ALL");
-		btnGenerateFavs = new JButton();
-		btnGenerateFavs.setText("GENERATE FAVS");
+		btnGenerate = new JButton();
+		btnGenerate.setText("GENERATE");
 		btnEdit = new JButton();
 		btnEdit.setText("EDIT");
 
@@ -128,12 +125,10 @@ public class FrmSignals extends JFrame implements SignalListener
 			pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(pnlTopBarLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(btnGenerateAll, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(btnGenerateFavs, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
+					.addComponent(btnGenerate, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(btnEdit)
-					.addPreferredGap(ComponentPlacement.RELATED, 336, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED, 496, Short.MAX_VALUE)
 					.addComponent(btnCopy)
 					.addContainerGap())
 		);
@@ -144,8 +139,7 @@ public class FrmSignals extends JFrame implements SignalListener
 					.addGroup(pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(btnCopy)
 						.addGroup(pnlTopBarLayout.createParallelGroup(Alignment.BASELINE)
-							.addComponent(btnGenerateAll)
-							.addComponent(btnGenerateFavs)
+							.addComponent(btnGenerate)
 							.addComponent(btnEdit)))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
@@ -202,18 +196,12 @@ public class FrmSignals extends JFrame implements SignalListener
 			}
 		});
 
-		btnGenerateAll.addActionListener(new ActionListener() {
+		btnGenerate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				generate(false);
+				generate();
 			}
 		});
 		
-		btnGenerateFavs.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				generate(true);
-			}
-		});
-
 		btnEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				FrmPointsEditor.launch();
@@ -232,20 +220,13 @@ public class FrmSignals extends JFrame implements SignalListener
 
 	// ------------------------------------------------------------------------
 
-	private void generate(boolean onlyFavorites)
+	private void generate()
 	{
 		try
 		{
-			INFO("GENERATING SHOCKPOINTS...");
-			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-			SignalService.searchShocks(onlyFavorites);
-			SignalService.saveShocks();
-			txtResult.setText(SignalService.toStringShocks());
-
-			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-
-			INFO("New points generated !");
+			ConfirmGenPoints dialog = new ConfirmGenPoints();
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setVisible(true);
 		}
 		catch (Exception e)
 		{
@@ -271,7 +252,6 @@ public class FrmSignals extends JFrame implements SignalListener
 		catch (Exception e)
 		{
 			ERROR(e);
-			e.printStackTrace();
 		}
 	}
 

@@ -566,12 +566,16 @@ public class FrmCoin extends JFrame implements PriceListener
 				{
 					BigDecimal mrkPrice = PriceService.getLastPrice(symbol);
 					txtMarkPrice.setText(symbol.priceToStr(mrkPrice));
+
 					String priceChangePercent = String.format("%.2f", symbolTicker.getPriceChangePercent());
 					txt24h.setText(priceChangePercent);
-					txtVolume.setText(PriceUtil.cashFormat(symbolTicker.getTotalTradedQuoteAssetVolume().doubleValue(), 0));
+					
+					BigDecimal usdVolume24h = symbolTicker.getTotalTradedQuoteAssetVolume();
+					txtVolume.setText(PriceUtil.cashFormat(usdVolume24h));
+
 					txtHigh.setText(symbolTicker.getHigh().toPlainString());
 					txtLow.setText(symbolTicker.getLow().toPlainString());
-					
+
 					getDistances();
 				}
 			}

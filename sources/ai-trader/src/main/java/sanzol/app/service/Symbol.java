@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.TreeSet;
@@ -13,11 +15,15 @@ import org.decimal4j.util.DoubleRounder;
 
 import com.binance.client.RequestOptions;
 import com.binance.client.SyncRequestClient;
+import com.binance.client.model.event.SymbolTickerEvent;
 import com.binance.client.model.market.ExchangeInfoEntry;
 import com.binance.client.model.market.ExchangeInformation;
 
+import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.PrivateConfig;
+import sanzol.app.model.SymbolInfo;
+import sanzol.app.task.PriceService;
 
 public class Symbol
 {
@@ -193,6 +199,40 @@ public class Symbol
 
 	// ------------------------------------------------------------------------
 
+	public static List<SymbolInfo> getLstSymbolsInfo(boolean onlyFavorites, boolean onlyBetters)
+	{
+		List<String> lstFavorites = Config.getLstFavSymbols();
+
+		List<SymbolInfo> lstSymbolsInfo = new ArrayList<SymbolInfo>();
+
+		List<SymbolTickerEvent> lstSymbolTickerEvent = new ArrayList<SymbolTickerEvent>();
+		lstSymbolTickerEvent.addAll(PriceService.getMapTickers().values());
+
+		for (SymbolTickerEvent entry : lstSymbolTickerEvent)
+		{
+			SymbolInfo symbolInfo = new SymbolInfo(entry);
+
+			if (onlyFavorites && !lstFavorites.contains(symbolInfo.getSymbol().getNameLeft()))
+			{
+				continue;
+			}
+
+			if (onlyBetters && (symbolInfo.isLowVolume() || symbolInfo.isHighMove()))
+			{
+				continue;
+			}
+
+			lstSymbolsInfo.add(symbolInfo);
+		}
+
+		Comparator<SymbolInfo> orderComparator = Comparator.comparing(SymbolInfo::getSymbolName);
+		Collections.sort(lstSymbolsInfo, orderComparator);
+
+		return lstSymbolsInfo;
+	}
+
+	// ------------------------------------------------------------------------
+	
 	public static void main(String[] args)
 	{
 		for(String symbol : getAll()) 

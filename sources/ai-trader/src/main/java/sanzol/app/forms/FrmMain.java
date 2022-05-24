@@ -59,7 +59,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 	private JButton btnBot;
 	private JButton btnSignals;
-	private JButton btnSignalsAlt;
+	private JButton btnSymbols;
 	private JButton btnCoin;
 	private JButton btnGrid;
 	private JButton btnPositions;
@@ -130,10 +130,10 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 		btnSignals = new JButton();
 		btnSignals.setText("SIGNALS");
-		btnSignalsAlt = new JButton();
-		btnSignalsAlt.setText("LAB");
 		btnBot = new JButton();
 		btnBot.setText("BOT");
+		btnSymbols = new JButton();
+		btnSymbols.setText("SYMBOLS");
 		btnCoin = new JButton();
 		btnCoin.setText("COIN");
 		btnGrid = new JButton();
@@ -373,6 +373,8 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 			pnlTopBarLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(pnlTopBarLayout.createSequentialGroup()
 					.addContainerGap()
+					.addComponent(btnSymbols)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnCoin)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnGrid)
@@ -384,9 +386,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 					.addComponent(btnSignals)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnBot)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnSignalsAlt)
-					.addPreferredGap(ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED, 152, Short.MAX_VALUE)
 					.addComponent(lnkGitHub, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
 					.addComponent(btnSkin)
@@ -396,6 +396,9 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 			pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(pnlTopBarLayout.createSequentialGroup()
 					.addGroup(pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(pnlTopBarLayout.createSequentialGroup()
+							.addGap(12)
+							.addComponent(btnSymbols))
 						.addGroup(pnlTopBarLayout.createSequentialGroup()
 							.addGap(12)
 							.addComponent(btnCoin))
@@ -413,9 +416,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 							.addComponent(btnSignals))
 						.addGroup(pnlTopBarLayout.createSequentialGroup()
 							.addGap(12)
-							.addGroup(pnlTopBarLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnBot)
-								.addComponent(btnSignalsAlt)))
+							.addComponent(btnBot))
 						.addGroup(pnlTopBarLayout.createSequentialGroup()
 							.addGap(12)
 							.addComponent(btnSkin))
@@ -526,12 +527,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 				showSignals();
 			}
 		});
-
-		btnSignalsAlt.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				showSignalsAlt();
-			}
-		});
 		
 		btnBot.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -554,6 +549,12 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		btnGrid.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				FrmGrid.launch();
+			}
+		});
+
+		btnSymbols.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				FrmSymbols.launch();
 			}
 		});
 
@@ -679,11 +680,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	private void showSignals()
 	{
 		FrmSignals.launch();
-	}
-
-	private void showSignalsAlt()
-	{
-		FrmSignalsAlt.launch();
 	}
 
 	private void showBot()

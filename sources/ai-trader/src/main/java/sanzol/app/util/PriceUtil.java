@@ -28,7 +28,17 @@ public final class PriceUtil
 			return r;
 	}
 
-	public static String cashFormat(double n, int iteration)
+	public static String cashFormat(double n)
+	{
+		return cashFormat(n, 0);
+	}
+
+	public static String cashFormat(BigDecimal n)
+	{
+		return cashFormat(n.doubleValue(), 0);
+	}
+
+	private static String cashFormat(double n, int iteration)
 	{
 		char[] suff = new char[] { 'K', 'M', 'B', 'T' };
 
