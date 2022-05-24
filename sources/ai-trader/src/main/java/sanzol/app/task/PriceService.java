@@ -2,7 +2,6 @@ package sanzol.app.task;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -91,6 +90,7 @@ public final class PriceService
 		client.unsubscribeAll();
 	}
 
+/*
 	public static List<String> getSymbols(boolean onlyFavorites)
 	{
 		List<String> list = new ArrayList<String>();
@@ -111,6 +111,7 @@ public final class PriceService
 		Collections.sort(list);
 		return list;
 	}
+*/
 
 	private static void loadFavorites()
 	{
@@ -147,11 +148,7 @@ public final class PriceService
 
 	public static void main(String[] args) throws InterruptedException
 	{
-		start();
-
-		Thread.sleep(3000);
-
-		System.out.println(getSymbols(true));
+		System.out.println("...");
 	}
 
 }

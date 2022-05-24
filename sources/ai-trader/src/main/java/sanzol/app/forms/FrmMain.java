@@ -45,6 +45,7 @@ import sanzol.app.listener.BalanceListener;
 import sanzol.app.listener.PriceListener;
 import sanzol.app.listener.SignalListener;
 import sanzol.app.model.SignalEntry;
+import sanzol.app.service.Symbol;
 import sanzol.app.task.BalanceService;
 import sanzol.app.task.PriceService;
 import sanzol.app.task.SignalService;
@@ -69,6 +70,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	private JButton btnSkin;
 
 	private JCheckBox chkOnlyFavorites;
+	private JCheckBox chkOnlyBetters;
 
 	private JLabel lblError;
 	private JLabel lnkGitHub;
@@ -332,9 +334,15 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 		chkOnlyFavorites = new JCheckBox("Only favorites");
 		chkOnlyFavorites.setSelected(true);
-		chkOnlyFavorites.setHorizontalAlignment(SwingConstants.TRAILING);
-		chkOnlyFavorites.setBounds(130, 12, 120, 23);
+		chkOnlyFavorites.setHorizontalAlignment(SwingConstants.LEADING);
+		chkOnlyFavorites.setBounds(15, 12, 120, 23);
 		pnlContent.add(chkOnlyFavorites);
+
+		chkOnlyBetters = new JCheckBox("Only betters");
+		chkOnlyBetters.setSelected(true);
+		chkOnlyBetters.setHorizontalAlignment(SwingConstants.TRAILING);
+		chkOnlyBetters.setBounds(137, 12, 113, 23);
+		pnlContent.add(chkOnlyBetters);
 
 		JPanel panelKey = new JPanel();
 		panelKey.setLayout(null);
@@ -446,12 +454,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		);
 		getContentPane().setLayout(layout);
 		pnlContent.setLayout(null);
-		
-		JLabel lblSymbols = new JLabel("Symbols");
-		lblSymbols.setHorizontalAlignment(SwingConstants.LEFT);
-		lblSymbols.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblSymbols.setBounds(17, 12, 100, 20);
-		pnlContent.add(lblSymbols);
 		
 		// --------------------------------------------------------------------
 		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);
@@ -765,7 +767,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	{
 		try
 		{
-			listFavorites.setModel(toListModel(PriceService.getSymbols(chkOnlyFavorites.isSelected())));
+			listFavorites.setModel(toListModel(Symbol.getLstSymbolsMini(chkOnlyFavorites.isSelected(), chkOnlyBetters.isSelected())));
 
 			setTitle(Constants.APP_NAME + " - "+ PriceService.btcLabel());
 		}
