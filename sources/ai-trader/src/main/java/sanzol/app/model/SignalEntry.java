@@ -7,7 +7,7 @@ import sanzol.app.service.Symbol;
 
 public class SignalEntry
 {
-	private Symbol coin;
+	private Symbol symbol;
 	private BigDecimal price;
 	private BigDecimal shShock;
 	private BigDecimal lgShock;
@@ -21,16 +21,16 @@ public class SignalEntry
 		//
 	}
 
-	public SignalEntry(Symbol coin, BigDecimal shShock, BigDecimal lgShock)
+	public SignalEntry(Symbol symbol, BigDecimal shShock, BigDecimal lgShock)
 	{
-		this.coin = coin;
+		this.symbol = symbol;
 		this.shShock = shShock;
 		this.lgShock = lgShock;
 	}
 
-	public SignalEntry(Symbol coin, BigDecimal price, BigDecimal shShock, BigDecimal lgShock, BigDecimal distShLg, BigDecimal distShort, BigDecimal distLong, String action)
+	public SignalEntry(Symbol symbol, BigDecimal price, BigDecimal shShock, BigDecimal lgShock, BigDecimal distShLg, BigDecimal distShort, BigDecimal distLong, String action)
 	{
-		this.coin = coin;
+		this.symbol = symbol;
 		this.price = price;
 		this.shShock = shShock;
 		this.lgShock = lgShock;
@@ -40,14 +40,14 @@ public class SignalEntry
 		this.action = action;
 	}
 
-	public Symbol getCoin()
+	public Symbol getSymbol()
 	{
-		return coin;
+		return symbol;
 	}
 
-	public void setCoin(Symbol coin)
+	public void setSymbol(Symbol symbol)
 	{
-		this.coin = coin;
+		this.symbol = symbol;
 	}
 
 	public BigDecimal getPrice()
@@ -125,12 +125,12 @@ public class SignalEntry
 
 	public String getStrShort()
 	{
-		return coin.priceToStr(shShock);
+		return symbol.priceToStr(shShock);
 	}
 
 	public String getStrLong()
 	{
-		return coin.priceToStr(lgShock);
+		return symbol.priceToStr(lgShock);
 	}
 
 	public BigDecimal bestDistance()
@@ -147,7 +147,7 @@ public class SignalEntry
 	@Override
 	public String toString()
 	{
-		return String.format("%s;%s;%s\n", coin.getNameLeft(), coin.priceToStr(shShock), coin.priceToStr(lgShock));
+		return String.format("%s;%s;%s\n", symbol.getNameLeft(), symbol.priceToStr(shShock), symbol.priceToStr(lgShock));
 	}
 
 	public String toStringAll()
@@ -157,7 +157,7 @@ public class SignalEntry
 			return "";
 		}
 
-		return String.format("%-8s %14s %14s %14s %7.2f %% %7.2f %% %7.2f %%  %s\n", coin.getNameLeft(), coin.priceToStr(shShock), coin.priceToStr(price), coin.priceToStr(lgShock), distShLg, distShort, distLong, action);
+		return String.format("%-8s %14s %14s %14s %7.2f %% %7.2f %% %7.2f %%  %s\n", symbol.getNameLeft(), symbol.priceToStr(shShock), symbol.priceToStr(price), symbol.priceToStr(lgShock), distShLg, distShort, distLong, action);
 	}
 
 	public String toStringSmart()
@@ -168,9 +168,9 @@ public class SignalEntry
 		}
 
 		if (action.startsWith("SHORT"))
-			return String.format("%-8s :  %-10s %6.2f %%   %s", coin.getNameLeft(), action, distShort, coin.priceToStr(shShock) + " " + CharConstants.ARROW_RIGHT + " " + coin.priceToStr(price));
+			return String.format("%-8s :  %-10s %6.2f %%   %s", symbol.getNameLeft(), action, distShort, symbol.priceToStr(shShock) + " " + CharConstants.ARROW_RIGHT + " " + symbol.priceToStr(price));
 		else
-			return String.format("%-8s :  %-10s %6.2f %%   %s", coin.getNameLeft(), action, distLong, coin.priceToStr(lgShock) + " " + CharConstants.ARROW_RIGHT + " " + coin.priceToStr(price));
+			return String.format("%-8s :  %-10s %6.2f %%   %s", symbol.getNameLeft(), action, distLong, symbol.priceToStr(lgShock) + " " + CharConstants.ARROW_RIGHT + " " + symbol.priceToStr(price));
 	}
 
 }

@@ -4,8 +4,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -14,7 +12,6 @@ import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -30,12 +27,14 @@ import javax.swing.table.DefaultTableModel;
 import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
+import sanzol.app.listener.PriceListener;
 import sanzol.app.model.SymbolInfo;
 import sanzol.app.service.Symbol;
+import sanzol.app.task.PriceService;
 import sanzol.app.util.PriceUtil;
 import sanzol.lib.util.ExceptionUtils;
 
-public class FrmSymbols extends JFrame
+public class FrmSymbols extends JFrame implements PriceListener
 {
 	private static final long serialVersionUID = 1L;
 
@@ -43,6 +42,8 @@ public class FrmSymbols extends JFrame
 
 	private static boolean isOpen = false;
 
+    DefaultTableModel tableModel;
+	
 	private JLabel lblError;
 
 	private JPanel pnlContent;
@@ -57,6 +58,10 @@ public class FrmSymbols extends JFrame
 	{
 		initComponents();
 		isOpen = true;
+
+		createTable();
+
+		PriceService.attachRefreshObserver(this);
 	}
 
 	private void initComponents()
@@ -88,8 +93,8 @@ public class FrmSymbols extends JFrame
         table.setShowHorizontalLines(true);
         table.setShowVerticalLines(true);
 
-        JScrollPane scrollPane1 = new JScrollPane();
-        scrollPane1.setViewportView(table);
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setViewportView(table);
 
 		// --------------------------------------------------------------------
         GroupLayout pnlContentLayout = new GroupLayout(pnlContent);
@@ -97,34 +102,31 @@ public class FrmSymbols extends JFrame
         	pnlContentLayout.createParallelGroup(Alignment.TRAILING)
         		.addGroup(Alignment.LEADING, pnlContentLayout.createSequentialGroup()
         			.addContainerGap()
-        			.addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 760, Short.MAX_VALUE)
+        			.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 760, Short.MAX_VALUE)
         			.addContainerGap())
         );
         pnlContentLayout.setVerticalGroup(
         	pnlContentLayout.createParallelGroup(Alignment.LEADING)
         		.addGroup(Alignment.TRAILING, pnlContentLayout.createSequentialGroup()
         			.addContainerGap()
-        			.addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE)
+        			.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE)
         			.addContainerGap())
         );
         pnlContent.setLayout(pnlContentLayout);
 
 		chkOnlyBetters = new JCheckBox("Only betters");
 		chkOnlyFavorites = new JCheckBox("Only favorites");
-		JButton btnSearch = new JButton("SEARCH");
 
 		// --------------------------------------------------------------------
 		GroupLayout pnlTopBarLayout = new GroupLayout(pnlTopBar);
 		pnlTopBarLayout.setHorizontalGroup(
-			pnlTopBarLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(Alignment.LEADING, pnlTopBarLayout.createSequentialGroup()
+			pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(pnlTopBarLayout.createSequentialGroup()
 					.addGap(15)
 					.addComponent(chkOnlyFavorites)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(chkOnlyBetters)
-					.addGap(18)
-					.addComponent(btnSearch)
-					.addContainerGap(514, Short.MAX_VALUE))
+					.addContainerGap(585, Short.MAX_VALUE))
 		);
 		pnlTopBarLayout.setVerticalGroup(
 			pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
@@ -132,8 +134,7 @@ public class FrmSymbols extends JFrame
 					.addGap(12)
 					.addGroup(pnlTopBarLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(chkOnlyFavorites)
-						.addComponent(chkOnlyBetters)
-						.addComponent(btnSearch))
+						.addComponent(chkOnlyBetters))
 					.addContainerGap(11, Short.MAX_VALUE))
 		);
 		pnlTopBar.setLayout(pnlTopBarLayout);
@@ -179,11 +180,14 @@ public class FrmSymbols extends JFrame
 
 		// --------------------------------------------------------------------
 
+		FrmSymbols thisFrm = this;
+
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
 			public void windowClosed(WindowEvent e)
 			{
+				PriceService.deattachRefreshObserver(thisFrm);				
 				isOpen = false;
 			}
 		});
@@ -199,15 +203,17 @@ public class FrmSymbols extends JFrame
                 }
             }
         });
-
-		btnSearch.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				loadTable();
-			}
-		});
 		
 	}
 
+	// ------------------------------------------------------------------------
+	
+	@Override
+	public void onPriceUpdate()
+	{
+		loadTable();
+	}
+	
 	// ------------------------------------------------------------------------
 
 	public class TableModel extends DefaultTableModel
@@ -221,68 +227,80 @@ public class FrmSymbols extends JFrame
 		}
 	}
 
-    private DefaultTableModel createTableModel()
+    private void createTable()
     {
-        DefaultTableModel model = new TableModel();
+		try
+		{
+	    	tableModel = new TableModel();
 
-        model.addColumn("Symbol");
-        model.addColumn("Change 24Hs");
-		model.addColumn("");
-        model.addColumn("Volume");
-		model.addColumn("");
-        model.addColumn("Price");
-		model.addColumn("Better side");
+	    	tableModel.addColumn("Symbol");
+	    	tableModel.addColumn("Change 24Hs");
+	    	tableModel.addColumn("");
+	    	tableModel.addColumn("Volume");
+	    	tableModel.addColumn("");
+	    	tableModel.addColumn("Price");
+	    	tableModel.addColumn("Better side");
 
-        return model;
+			table.setModel(tableModel);
+			
+	        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+	        rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
+	        
+	        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+	        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+
+	        table.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
+	        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+	        table.getColumnModel().getColumn(3).setCellRenderer(rightRenderer);
+	        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
+	        table.getColumnModel().getColumn(5).setCellRenderer(rightRenderer);
+	        table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
+
+	        table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
+    }
+
+    private void loadTable(List<SymbolInfo> lstSymbolsInfo)
+	{
+    	tableModel.setRowCount(0);
+
+		for (SymbolInfo entry : lstSymbolsInfo)
+		{
+        	Object row[] = { 
+    				entry.getSymbol().getNameLeft(),
+    				String.format("%.2f %%", entry.getPriceChangePercent()),
+					!entry.isHighMove() ? "" : "RISKY",
+    				PriceUtil.cashFormat(entry.getUsdVolume()),
+					!entry.isLowVolume() ? "" : "< " + PriceUtil.cashFormat(SymbolInfo.MIN_VOLUME),
+    				entry.getLastPrice(),
+					entry.isBestShort() ? "SHORT" : entry.isBestLong() ? "LONG" : ""
+        		};
+
+			tableModel.addRow(row);
+        }
     }
 
 	private void loadTable()
 	{
+		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
 		try
 		{
-			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-			DefaultTableModel model = createTableModel();
-			table.setModel(model);
-
 			List<SymbolInfo> lstSymbolsInfo = Symbol.getLstSymbolsInfo(chkOnlyFavorites.isSelected(), chkOnlyBetters.isSelected());
-
-			for (SymbolInfo entry : lstSymbolsInfo)
-			{
-            	Object row[] = { 
-        				entry.getSymbol().getNameLeft(),
-        				String.format("%6.2f %%", entry.getPriceChangePercent()),
-						!entry.isHighMove() ? "" : "RISKY",
-        				PriceUtil.cashFormat(entry.getUsdVolume()),
-						!entry.isLowVolume() ? "" : "< " + PriceUtil.cashFormat(SymbolInfo.MIN_VOLUME),
-        				entry.getLastPrice(),
-						entry.isBestShort() ? "SHORT" : entry.isBestLong() ? "LONG" : ""
-            		};
-
-				model.addRow(row);
-            }
-
-            DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-            rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
-            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-            centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-
-            table.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
-            table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
-            table.getColumnModel().getColumn(3).setCellRenderer(rightRenderer);
-            table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
-            table.getColumnModel().getColumn(5).setCellRenderer(rightRenderer);
-            table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
-
-            table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-
-			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        }
-        catch (Exception e)
-        {
+			loadTable(lstSymbolsInfo);
+			tableModel.fireTableDataChanged();
+		}
+		catch (Exception e)
+		{
 			ERROR(e);
-        }
-    }
+		}
+
+		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+	}
 
 	// ------------------------------------------------------------------------
 
@@ -301,8 +319,6 @@ public class FrmSymbols extends JFrame
 				{
 					FrmSymbols frame = new FrmSymbols();
 					frame.setVisible(true);
-
-					frame.loadTable();
 				}
 				catch (Exception e)
 				{

@@ -1,15 +1,17 @@
 package sanzol.app.forms;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Font;
 import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.math.BigDecimal;
+import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -19,15 +21,20 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.listener.SignalListener;
+import sanzol.app.model.Price;
+import sanzol.app.model.SignalEntry;
+import sanzol.app.service.Symbol;
 import sanzol.app.task.SignalService;
 import sanzol.lib.util.ExceptionUtils;
 
@@ -39,22 +46,27 @@ public class FrmSignals extends JFrame implements SignalListener
 
 	private static boolean isOpen = false;
 	
+    DefaultTableModel tableModel;
+
+    private JLabel lblError;
+	
 	private JButton btnGenerate;
 	private JButton btnEdit;
-
-	private JLabel lblError;
 
 	private JPanel pnlContent;
 	private JPanel pnlStatusBar;
 	private JPanel pnlTopBar;
 	private JTextField txtWithdrawal;
-	private JTextArea txtResult;
+	private JTable table;
 
 	public FrmSignals()
 	{
 		initComponents();
-		SignalService.attachRefreshObserver(this);
 		isOpen = true;
+		
+		createTable();
+		
+		SignalService.attachRefreshObserver(this);
 	}
 
 	private void initComponents()
@@ -85,39 +97,31 @@ public class FrmSignals extends JFrame implements SignalListener
 		txtWithdrawal.setEditable(false);
 
 		lblError = new JLabel();
-
-		JButton btnCopy = new JButton(Styles.IMAGE_COPY);
-		btnCopy.setToolTipText("Copy to clipboard");
-		btnCopy.setOpaque(true);
-
-		// --------------------------------------------------------------------
-        txtResult = new javax.swing.JTextArea();
-		txtResult.setFont(new Font("Courier New", Font.PLAIN, 12));
-		txtResult.setBackground(Styles.COLOR_TEXT_AREA_BG);
-		txtResult.setForeground(Styles.COLOR_TEXT_AREA_FG);
-		txtResult.setEditable(false);
-        txtResult.setColumns(20);
-        txtResult.setRows(5);
-
+        
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setViewportView(txtResult);
 
         GroupLayout pnlContentLayout = new GroupLayout(pnlContent);
-        pnlContent.setLayout(pnlContentLayout);
         pnlContentLayout.setHorizontalGroup(
-            pnlContentLayout.createParallelGroup(Alignment.LEADING)
-            .addGroup(pnlContentLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 760, Short.MAX_VALUE)
-                .addContainerGap())
+        	pnlContentLayout.createParallelGroup(Alignment.LEADING)
+        		.addGroup(pnlContentLayout.createSequentialGroup()
+        			.addContainerGap()
+        			.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 760, Short.MAX_VALUE)
+        			.addContainerGap())
         );
         pnlContentLayout.setVerticalGroup(
-            pnlContentLayout.createParallelGroup(Alignment.LEADING)
-            .addGroup(pnlContentLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
-                .addContainerGap())
+        	pnlContentLayout.createParallelGroup(Alignment.LEADING)
+        		.addGroup(pnlContentLayout.createSequentialGroup()
+        			.addContainerGap()
+        			.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE)
+        			.addContainerGap())
         );
+
+        table = new JTable();
+        table.setShowVerticalLines(true);
+        table.setShowHorizontalLines(true);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        scrollPane.setViewportView(table);
+        pnlContent.setLayout(pnlContentLayout);
 
 		// --------------------------------------------------------------------
 		GroupLayout pnlTopBarLayout = new GroupLayout(pnlTopBar);
@@ -128,20 +132,16 @@ public class FrmSignals extends JFrame implements SignalListener
 					.addComponent(btnGenerate, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(btnEdit)
-					.addPreferredGap(ComponentPlacement.RELATED, 496, Short.MAX_VALUE)
-					.addComponent(btnCopy)
-					.addContainerGap())
+					.addContainerGap(555, Short.MAX_VALUE))
 		);
 		pnlTopBarLayout.setVerticalGroup(
 			pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(pnlTopBarLayout.createSequentialGroup()
 					.addGap(12)
-					.addGroup(pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(btnCopy)
-						.addGroup(pnlTopBarLayout.createParallelGroup(Alignment.BASELINE)
-							.addComponent(btnGenerate)
-							.addComponent(btnEdit)))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					.addGroup(pnlTopBarLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnGenerate)
+						.addComponent(btnEdit))
+					.addContainerGap(11, Short.MAX_VALUE))
 		);
 		pnlTopBar.setLayout(pnlTopBarLayout);
 
@@ -196,6 +196,17 @@ public class FrmSignals extends JFrame implements SignalListener
 			}
 		});
 
+        table.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mousePressed(MouseEvent mouseEvent) {
+                JTable table =(JTable) mouseEvent.getSource();
+                if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
+					int index = table.getSelectedRow();
+					tradeFromSignal(index);
+                }
+            }
+        });
+		
 		btnGenerate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				generate();
@@ -207,15 +218,38 @@ public class FrmSignals extends JFrame implements SignalListener
 				FrmPointsEditor.launch();
 			}
 		});
-
-		btnCopy.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				StringSelection stringSelection = new StringSelection(txtResult.getText());
-				Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-				clipboard.setContents(stringSelection, null);
-			}
-		});
 		
+	}
+
+	// ------------------------------------------------------------------------
+
+	private void tradeFromSignal(int index)
+	{
+		try
+		{
+			boolean isBotMode = false;
+
+			Symbol symbol = (Symbol) table.getValueAt(index, 0);
+			Price shShort = (Price) table.getValueAt(index, 1);
+			Price cellPrice = (Price) table.getValueAt(index, 2);
+			Price lgShock = (Price) table.getValueAt(index, 3);
+			String cellAction = (String) table.getValueAt(index, 7);
+
+			if (cellAction.startsWith("SHORT"))
+			{
+				BigDecimal price = cellPrice.toBigDecimal().max(shShort.toBigDecimal());
+				FrmGrid.launch(symbol.getNameLeft(), "SHORT", symbol.priceToStr(price), isBotMode);
+			}
+			else
+			{
+				BigDecimal price = cellPrice.toBigDecimal().max(lgShock.toBigDecimal());
+				FrmGrid.launch(symbol.getNameLeft(), "LONG", symbol.priceToStr(price), isBotMode);
+			}
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
 	}
 
 	// ------------------------------------------------------------------------
@@ -239,21 +273,101 @@ public class FrmSignals extends JFrame implements SignalListener
 	@Override
 	public void onSignalUpdate()
 	{
-		getSignals();
+		loadTable();
 	}
 
-	private void getSignals()
+	// ------------------------------------------------------------------------
+
+	public class TableModel extends DefaultTableModel
 	{
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public boolean isCellEditable(int row, int column)
+		{
+			return false;
+		}
+	}
+
+    private void createTable()
+    {
 		try
 		{
-			txtResult.setText(SignalService.toStringStatus());
-			INFO("Last modification: " + SignalService.getModified());
+	    	tableModel = new TableModel();
+
+	    	tableModel.addColumn("SYMBOL");
+	    	tableModel.addColumn("SHORT");
+	    	tableModel.addColumn("PRICE");
+	    	tableModel.addColumn("LONG");
+	    	tableModel.addColumn("DIST%");
+	    	tableModel.addColumn("SH%");
+	    	tableModel.addColumn("LG%");
+	    	tableModel.addColumn("ACTION");
+
+			table.setModel(tableModel);
+
+	        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+	        rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
+	        
+	        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+	        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+
+	        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+	        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+	        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+	        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
+	        table.getColumnModel().getColumn(5).setCellRenderer(centerRenderer);
+	        table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
+
+	        table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		}
 		catch (Exception e)
 		{
 			ERROR(e);
 		}
+    }
+
+    private void loadTable(List<SignalEntry> lstSignalEntry)
+	{
+    	tableModel.setRowCount(0);
+    	
+		for (SignalEntry entry : lstSignalEntry)
+		{
+			Symbol symbol = entry.getSymbol();
+        	Object row[] = {
+        			entry.getSymbol(),
+    				new Price(symbol, entry.getShShock()),
+    				new Price(symbol, entry.getPrice()),
+    				new Price(symbol, entry.getLgShock()),
+    				String.format("%.2f %%", entry.getDistShLg()),
+    				String.format("%.2f %%", entry.getDistShort()),
+    				String.format("%.2f %%", entry.getDistLong()),
+    				entry.getAction()
+        		};
+
+			tableModel.addRow(row);
+        }
 	}
+
+	private void loadTable()
+	{
+		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+		try
+		{
+			List<SignalEntry> lstSignalEntry = SignalService.getLstShockStatus();
+			loadTable(lstSignalEntry);
+			tableModel.fireTableDataChanged();
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
+
+		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+	}
+
+	// ------------------------------------------------------------------------
 
 	public static void launch()
 	{

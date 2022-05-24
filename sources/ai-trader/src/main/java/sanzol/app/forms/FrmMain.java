@@ -385,13 +385,13 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnCoin)
 					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnSignals)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnGrid)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnShoot)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnPositions)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnSignals)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnBot)
 					.addPreferredGap(ComponentPlacement.RELATED, 152, Short.MAX_VALUE)
@@ -412,6 +412,9 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 							.addComponent(btnCoin))
 						.addGroup(pnlTopBarLayout.createSequentialGroup()
 							.addGap(12)
+							.addComponent(btnSignals))
+						.addGroup(pnlTopBarLayout.createSequentialGroup()
+							.addGap(12)
 							.addComponent(btnGrid))
 						.addGroup(pnlTopBarLayout.createSequentialGroup()
 							.addGap(12)
@@ -419,9 +422,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 						.addGroup(pnlTopBarLayout.createSequentialGroup()
 							.addGap(12)
 							.addComponent(btnPositions))
-						.addGroup(pnlTopBarLayout.createSequentialGroup()
-							.addGap(12)
-							.addComponent(btnSignals))
 						.addGroup(pnlTopBarLayout.createSequentialGroup()
 							.addGap(12)
 							.addComponent(btnBot))
@@ -810,12 +810,12 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		if (entry.getAction().startsWith("SHORT"))
 		{
 			Double price = Math.max(entry.getPrice().doubleValue(), entry.getShShock().doubleValue());
-			FrmGrid.launch(entry.getCoin().getNameLeft(), "SHORT", entry.getCoin().priceToStr(price), isBotMode);
+			FrmGrid.launch(entry.getSymbol().getNameLeft(), "SHORT", entry.getSymbol().priceToStr(price), isBotMode);
 		}
 		else
 		{
 			Double price = Math.min(entry.getPrice().doubleValue(), entry.getLgShock().doubleValue());
-			FrmGrid.launch(entry.getCoin().getNameLeft(), "LONG", entry.getCoin().priceToStr(price), isBotMode);
+			FrmGrid.launch(entry.getSymbol().getNameLeft(), "LONG", entry.getSymbol().priceToStr(price), isBotMode);
 		}
 	}
 

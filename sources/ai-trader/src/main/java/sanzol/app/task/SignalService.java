@@ -175,7 +175,7 @@ public final class SignalService
 		{
 			for (SignalEntry entry : list)
 			{
-				BigDecimal price = PriceService.getLastPrice(entry.getCoin());
+				BigDecimal price = PriceService.getLastPrice(entry.getSymbol());
 				if (price == null || price.equals(BigDecimal.valueOf(-1)))
 				{
 					continue;
@@ -259,7 +259,7 @@ public final class SignalService
 				String text = "";
 				for (SignalEntry entry : lstShocks)
 				{
-					text += entry.getCoin().getNameLeft() + ";" + entry.getShShock() + ";" + entry.getLgShock() + "\n";
+					text += entry.getSymbol().getNameLeft() + ";" + entry.getShShock() + ";" + entry.getLgShock() + "\n";
 				}
 
 				Path path = Paths.get(Constants.DEFAULT_USER_FOLDER, Constants.SHOCKPOINTS_FILENAME);

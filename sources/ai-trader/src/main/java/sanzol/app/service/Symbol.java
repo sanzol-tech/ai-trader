@@ -246,7 +246,15 @@ public class Symbol
 	}
 
 	// ------------------------------------------------------------------------
-	
+
+	@Override
+	public String toString()
+	{
+		return nameLeft;
+	}
+
+	// ------------------------------------------------------------------------
+
 	public static void main(String[] args)
 	{
 		for(String symbol : getAll()) 
@@ -254,5 +262,6 @@ public class Symbol
 			System.out.println(symbol);
 		}
 	}
+
 
 }
