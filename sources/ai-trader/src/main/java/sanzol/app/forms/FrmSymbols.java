@@ -249,11 +249,11 @@ public class FrmSymbols extends JFrame implements PriceListener
 	        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 	        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 
-	        table.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
+	        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
 	        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(3).setCellRenderer(rightRenderer);
+	        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
 	        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(5).setCellRenderer(rightRenderer);
+	        table.getColumnModel().getColumn(5).setCellRenderer(centerRenderer);
 	        table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
 
 	        table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);

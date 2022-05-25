@@ -339,7 +339,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		lblDistFP.setBounds(206, 11, 46, 14);
 		pnlFP.add(lblDistFP);
 
-		lblTitlePoints2 = new JLabel("Weighted average (Max accum 50% / Max dist 20%)");
+		lblTitlePoints2 = new JLabel("Weighted average (Max accum 40% / Max dist 15%)");
 		lblTitlePoints2.setBounds(30, 258, 370, 14);
 		contentPane.add(lblTitlePoints2);
 

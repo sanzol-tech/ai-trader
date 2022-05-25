@@ -14,9 +14,9 @@ import sanzol.app.util.PriceUtil;
 
 public class SymbolInfo
 {
-	public static final double MIN_VOLUME = 50000000;
+	public static final double MIN_VOLUME = 100000000;
 	public static final double MIN_USDT = 50;
-	public static final double MAX_CHANGE_PERCENTE = 8;
+	public static final double MAX_CHANGE_PERCENTE = 10;
 
 	private Symbol symbol;
 

@@ -46,7 +46,7 @@ public class OBookService
 
 	private BigDecimal shortPriceFixed;
 	private BigDecimal longPriceFixed;
-	
+
 	public static OBookService getInstance(Symbol coin)
 	{
 		OBookService obServise = new OBookService();
@@ -101,14 +101,14 @@ public class OBookService
 
 	public OBookService calc()
 	{
-		return calc(0.5, 0.2);
+		return calc(0.4, 0.15);
 	}
-	
+
 	public OBookService calc(double waMaxAccc, double waMaxDist)
 	{
 		if (client != null)
 			client.unsubscribeAll();
-		
+
 		loadAsks();
 		loadBids();
 		loadAsksGrp();
@@ -497,7 +497,7 @@ public class OBookService
 	{
 		Application.initialize();
 
-		String symbol = "ETH";
+		String symbol = "BTC";
 		Symbol coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
 
 		OBookService obService = OBookService.getInstance(coin).request().subscribeDiffDepthEvent();

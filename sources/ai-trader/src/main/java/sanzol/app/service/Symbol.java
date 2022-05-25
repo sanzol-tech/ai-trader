@@ -28,6 +28,8 @@ import sanzol.app.task.PriceService;
 public class Symbol
 {
 	private String nameLeft;
+	private String pricePattern;
+	private String quantityPattern;
 	private int tickSize;
 	private int quantityPrecision;
 	private BigDecimal minQty;
@@ -109,12 +111,22 @@ public class Symbol
 
 				String ts = eInfoEntry.getFilters().get(0).get(3).get("tickSize");
 				coin.tickSize = (int) Math.log10(Double.valueOf(ts)) * -1;
+				coin.pricePattern = "#0";
+				if (coin.tickSize > 0)
+				{
+					coin.pricePattern += "." + StringUtils.repeat("0", coin.tickSize);
+				}
 				
+				coin.quantityPrecision = eInfoEntry.getQuantityPrecision().intValue();
+				coin.quantityPattern = "#0";
+				if (coin.quantityPrecision > 0)
+				{
+					coin.quantityPattern += "." + StringUtils.repeat("0", coin.quantityPrecision);
+				}
+
 				String mq = eInfoEntry.getFilters().get(1).get(3).get("minQty");
 				coin.minQty = new BigDecimal(mq);
 
-				coin.quantityPrecision = eInfoEntry.getQuantityPrecision().intValue();
-				
 				return coin;
 			}
 		}
@@ -125,46 +137,22 @@ public class Symbol
 
 	public String priceToStr(BigDecimal price)
 	{
-		String pattern = "#0";
-		if (tickSize > 0)
-		{
-			pattern += "." + StringUtils.repeat("0", tickSize);
-		}
-
-		return new DecimalFormat(pattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(price.doubleValue());
+		return new DecimalFormat(pricePattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(price.doubleValue());
 	}
 
 	public String priceToStr(double price)
 	{
-		String pattern = "#0";
-		if (tickSize > 0)
-		{
-			pattern += "." + StringUtils.repeat("0", tickSize);
-		}
-
-		return new DecimalFormat(pattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(price);
+		return new DecimalFormat(pricePattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(price);
 	}
 
 	public String qtyToStr(BigDecimal coins)
 	{
-		String pattern = "#0";
-		if (quantityPrecision > 0)
-		{
-			pattern += "." + StringUtils.repeat("0", quantityPrecision);
-		}
-
-		return new DecimalFormat(pattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(coins.doubleValue());
+		return new DecimalFormat(quantityPattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(coins.doubleValue());
 	}
 
 	public String qtyToStr(double coins)
 	{
-		String pattern = "#0";
-		if (quantityPrecision > 0)
-		{
-			pattern += "." + StringUtils.repeat("0", quantityPrecision);
-		}
-
-		return new DecimalFormat(pattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(coins);
+		return new DecimalFormat(quantityPattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(coins);
 	}
 
 	public double roundPrice(double price)
@@ -254,7 +242,7 @@ public class Symbol
 	}
 
 	// ------------------------------------------------------------------------
-
+	
 	public static void main(String[] args)
 	{
 		for(String symbol : getAll()) 
@@ -262,6 +250,5 @@ public class Symbol
 			System.out.println(symbol);
 		}
 	}
-
 
 }
