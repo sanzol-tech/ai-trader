@@ -102,7 +102,7 @@ public class FrmShoot extends JFrame implements PriceListener
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 550, 500);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmMain.class.getResource("/resources/upDown.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmShoot.class.getResource("/resources/upDown.png")));
 		setLocationRelativeTo(null);
 		setResizable(false);
 
@@ -726,7 +726,6 @@ public class FrmShoot extends JFrame implements PriceListener
 	public static void main(String[] args)
 	{
 		Application.initialize();
-		Application.initializeUI();
 		launch();
 	}
 }

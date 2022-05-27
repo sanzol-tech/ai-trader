@@ -94,7 +94,7 @@ public class FrmConfig extends JFrame
 		JPanel panelPositions = new JPanel();
 		panelPositions.setLayout(null);
 		panelPositions.setBorder(new TitledBorder(null, " Balance / Positions ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panelPositions.setBounds(425, 159, 400, 128);
+		panelPositions.setBounds(425, 145, 400, 128);
 		pnlContent.add(panelPositions);
 		
 		JLabel lblQty = new JLabel("Min qty %");
@@ -183,10 +183,10 @@ public class FrmConfig extends JFrame
 		GroupLayout pnlTopBarLayout = new GroupLayout(pnlTopBar);
 		pnlTopBarLayout.setHorizontalGroup(
 			pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(pnlTopBarLayout.createSequentialGroup()
-					.addContainerGap()
+				.addGroup(Alignment.TRAILING, pnlTopBarLayout.createSequentialGroup()
+					.addContainerGap(773, Short.MAX_VALUE)
 					.addComponent(btnSaveConfig)
-					.addContainerGap(773, Short.MAX_VALUE))
+					.addContainerGap())
 		);
 		pnlTopBarLayout.setVerticalGroup(
 			pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
@@ -219,7 +219,7 @@ public class FrmConfig extends JFrame
 		
 		JPanel pnlSymbols = new JPanel();
 		pnlSymbols.setBorder(new TitledBorder(null, " Symbols ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlSymbols.setBounds(15, 25, 400, 149);
+		pnlSymbols.setBounds(15, 11, 400, 149);
 		pnlContent.add(pnlSymbols);
 		pnlSymbols.setLayout(null);
 				
@@ -259,7 +259,7 @@ public class FrmConfig extends JFrame
 
 		JPanel pnlGrid = new JPanel();
 		pnlGrid.setBorder(new TitledBorder(null, " Grid ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlGrid.setBounds(425, 25, 400, 123);
+		pnlGrid.setBounds(425, 11, 400, 123);
 		pnlContent.add(pnlGrid);
 		pnlGrid.setLayout(null);
 
@@ -317,7 +317,7 @@ public class FrmConfig extends JFrame
 		
 		JPanel pnlOBook = new JPanel();
 		pnlOBook.setBorder(new TitledBorder(null, " O.Book ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlOBook.setBounds(15, 185, 400, 101);
+		pnlOBook.setBounds(15, 171, 400, 101);
 		pnlContent.add(pnlOBook);
 		pnlOBook.setLayout(null);
 		
@@ -394,8 +394,6 @@ public class FrmConfig extends JFrame
 	{
 		try
 		{
-			ERROR(Application.getError());
-
 			txtApiKey.setText(PrivateConfig.API_KEY);
 			txtSecretKey.setText(PrivateConfig.SECRET_KEY);
 
@@ -521,7 +519,6 @@ public class FrmConfig extends JFrame
 	public static void main(String[] args)
 	{
 		Application.initialize();
-		Application.initializeUI();
 		launch();
 	}
 }

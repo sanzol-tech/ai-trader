@@ -6,25 +6,31 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
 
+import sanzol.app.service.LogService;
 import sanzol.util.security.Cipher;
 
 public class PrivateConfig
 {
-
 	public static String API_KEY = "";
 	public static String SECRET_KEY = "";
 
-
-	public static String loadKey() throws IOException
+	public static boolean loadKey()
 	{
-		File fileConfig = new File(Constants.DEFAULT_USER_FOLDER, Constants.PRIVATEKEY_FILENAME);
-		String text = FileUtils.readFileToString(fileConfig, StandardCharsets.UTF_8);
-		String key = Cipher.decrypt(text);
-
-		PrivateConfig.API_KEY = key.split("::")[0];
-		PrivateConfig.SECRET_KEY = key.split("::")[1];
-
-		return key;
+		try
+		{
+			File fileConfig = new File(Constants.DEFAULT_USER_FOLDER, Constants.PRIVATEKEY_FILENAME);
+			String text = FileUtils.readFileToString(fileConfig, StandardCharsets.UTF_8);
+			String key = Cipher.decrypt(text);
+	
+			PrivateConfig.API_KEY = key.split("::")[0];
+			PrivateConfig.SECRET_KEY = key.split("::")[1];
+		}
+		catch(Exception e)
+		{
+			LogService.error(e);
+			return false;
+		}
+		return true;
 	}
 
 	public static void setKey(String apiKey, String secretKey) throws IOException

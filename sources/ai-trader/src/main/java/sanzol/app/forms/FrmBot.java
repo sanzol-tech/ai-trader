@@ -83,7 +83,7 @@ public class FrmBot extends JFrame implements BotListener
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 800, 500);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmMain.class.getResource("/resources/bot.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmBot.class.getResource("/resources/bot.png")));
 		setLocationRelativeTo(null);
 		setResizable(false);
 		
@@ -380,7 +380,6 @@ public class FrmBot extends JFrame implements BotListener
 	public static void main(String[] args)
 	{
 		Application.initialize();
-		Application.initializeUI();
 		launch();
 	}
 }

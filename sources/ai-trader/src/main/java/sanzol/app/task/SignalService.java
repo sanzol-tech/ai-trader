@@ -22,6 +22,7 @@ import sanzol.app.config.Constants;
 import sanzol.app.listener.SignalListener;
 import sanzol.app.model.SignalEntry;
 import sanzol.app.model.SymbolInfo;
+import sanzol.app.service.LogService;
 import sanzol.app.service.OBookService;
 import sanzol.app.service.Symbol;
 import sanzol.app.util.PriceUtil;
@@ -147,14 +148,14 @@ public final class SignalService
 				}
 				catch (BinanceApiException ex)
 				{
-					System.err.println("ERR: " + symbolInfo.getSymbolName() + " : " +  ex.getMessage());
+					LogService.error(symbolInfo.getSymbolName() + " : " +  ex.getMessage());
 				}
 			}
 		}
 		catch (Exception e)
 		{
 			errorMessage = e.getMessage();
-			System.err.println(e.getMessage());
+			LogService.error(e.getMessage());
 		}
 	}
 
@@ -270,7 +271,7 @@ public final class SignalService
 		}
 		catch (Exception e)
 		{
-			System.err.println(e.getMessage());
+			LogService.error(e.getMessage());
 		}
 
 		return false;

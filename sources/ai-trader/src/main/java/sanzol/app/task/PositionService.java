@@ -18,6 +18,7 @@ import com.binance.client.model.trade.PositionRisk;
 import sanzol.app.config.Application;
 import sanzol.app.config.PrivateConfig;
 import sanzol.app.listener.PositionListener;
+import sanzol.app.service.LogService;
 import sanzol.app.service.Symbol;
 import sanzol.app.util.Convert;
 
@@ -221,7 +222,7 @@ public final class PositionService
 		}
 		catch (Exception e)
 		{
-			BotService.error("PositionService.getPositions " + e.getMessage());
+			LogService.error("PositionService.getPositions " + e.getMessage());
 		}
 
 		try
@@ -231,7 +232,7 @@ public final class PositionService
 		}
 		catch (Exception e)
 		{
-			BotService.error("PositionService.getPositions " + e.getMessage());
+			LogService.error("PositionService.getPositions " + e.getMessage());
 		}
 	}
 

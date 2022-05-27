@@ -12,6 +12,7 @@ import com.binance.client.model.trade.AccountBalance;
 import sanzol.app.config.Constants;
 import sanzol.app.config.PrivateConfig;
 import sanzol.app.listener.BalanceListener;
+import sanzol.app.service.LogService;
 
 public final class BalanceService
 {
@@ -86,7 +87,7 @@ public final class BalanceService
 		catch (Exception e)
 		{
 			errorMessage = e.getMessage();
-			System.err.println("BalanceService.runGetBalances: " + e.getMessage());
+			LogService.error("BalanceService.runGetBalances: " + e.getMessage());
 		}
 
 	}

@@ -131,7 +131,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 770, 600);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmMain.class.getResource("/resources/monitor.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmCoin.class.getResource("/resources/monitor.png")));
 		setLocationRelativeTo(null);
 
 		contentPane = new JPanel();
@@ -781,7 +781,6 @@ public class FrmCoin extends JFrame implements PriceListener
 	public static void main(String[] args)
 	{
 		Application.initialize();
-		Application.initializeUI();
 		launch();
 	}
 }

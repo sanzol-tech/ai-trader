@@ -6,7 +6,9 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.file.StandardOpenOption;
 
+import sanzol.app.forms.FrmConfig;
 import sanzol.app.forms.FrmMain;
+import sanzol.app.service.LogService;
 import sanzol.app.task.BalanceService;
 import sanzol.app.task.BtcChangeService;
 import sanzol.app.task.PositionService;
@@ -15,51 +17,59 @@ import sanzol.app.task.SignalService;
 
 public final class Application
 {
-	private static String error = "";
-
-	public static String getError()
-	{
-		return error;
-	}
+	private static boolean keyLoadedOK = false;
 
 	public static void initialize()
 	{
+		verifyFolders();
+		PreventLaunchingMultiple();
+		keyLoadedOK = PrivateConfig.loadKey();
+
 		try
 		{
-			verifyFolders();
-			PreventLaunchingMultiple();
-
-			PrivateConfig.loadKey();
 			Config.load();
 			PriceService.start();
 			BtcChangeService.start();
-			BalanceService.start();
-			PositionService.start();
 			SignalService.start();
+
+			if (keyLoadedOK)
+			{
+				BalanceService.start();
+				PositionService.start();
+			}
 		}
 		catch (Exception e)
 		{
-			error = "Application.initialize: " + e.getMessage();
-			System.err.println(e.getMessage());
+			LogService.error(e);
 		}
+		
+		initializeUI();
 	}
 
 	private static void verifyFolders()
 	{
-		File path = new File(Constants.DEFAULT_USER_FOLDER);
-		if (!path.exists()) 
+		try
 		{
-			path.mkdirs();
+			File path = new File(Constants.DEFAULT_USER_FOLDER);
+			if (!path.exists())
+			{
+				path.mkdirs();
+			}
+			File pathLog = new File(Constants.DEFAULT_LOG_FOLDER);
+			if (!pathLog.exists())
+			{
+				pathLog.mkdirs();
+			}
+			File pathExport = new File(Constants.DEFAULT_EXPORT_FOLDER);
+			if (!pathExport.exists())
+			{
+				pathExport.mkdirs();
+			}
 		}
-		File pathLog = new File(Constants.DEFAULT_LOG_FOLDER);
-		if (!pathLog.exists()) 
+		catch (Exception e)
 		{
-			pathLog.mkdirs();
-		}
-		File pathExport = new File(Constants.DEFAULT_EXPORT_FOLDER);
-		if (!pathExport.exists()) 
-		{
-			pathExport.mkdirs();
+			System.err.println(e.getMessage());
+			System.exit(-1);
 		}
 	}
 
@@ -83,7 +93,7 @@ public final class Application
 		}
 	}
 
-	public static void initializeUI()
+	private static void initializeUI()
 	{
 		try
 		{
@@ -91,16 +101,20 @@ public final class Application
 		}
 		catch (Exception e)
 		{
-			error = "Application.initializeUI: " + e.getMessage();
 			System.err.println(e.getMessage());
+			System.exit(-1);
 		}
 	}
 
 	public static void main(String[] args)
 	{
 		initialize();
-		initializeUI();
 		FrmMain.launch();
+
+		if (!keyLoadedOK)
+		{
+			FrmConfig.launch();
+		}
 	}
 
 }

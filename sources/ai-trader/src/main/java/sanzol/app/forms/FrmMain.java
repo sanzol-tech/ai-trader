@@ -69,6 +69,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	private JButton btnShoot;
 	private JButton btnConfig;
 	private JButton btnSkin;
+	private JButton btnLog;
 
 	private JCheckBox chkOnlyFavorites;
 	private JCheckBox chkOnlyBetters;
@@ -142,10 +143,12 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		btnGrid.setText("GRID");
 		btnShoot = new JButton();
 		btnShoot.setText("SHOOT");
-		btnConfig = new JButton(Styles.IMAGE_COG);
+		btnConfig = new JButton(Styles.IMAGE_WRENCH);
 		btnConfig.setToolTipText("Config");
 		btnSkin = new JButton(Styles.IMAGE_MOON);
 		btnSkin.setToolTipText("Skin mode");
+		btnLog = new JButton(Styles.IMAGE_BUG);
+		btnLog.setToolTipText("View log messages");
 
 		lnkGitHub = new JLabel();
 		lnkGitHub.setText("ai-trader on GitHub");
@@ -204,19 +207,19 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		
 		JLabel lblSignals = new JLabel("Short or Long Entries");
 		lblSignals.setHorizontalAlignment(SwingConstants.LEFT);
-		lblSignals.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblSignals.setBounds(340, 12, 200, 20);
+		lblSignals.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lblSignals.setBounds(342, 15, 200, 20);
 		pnlContent.add(lblSignals);
 
 		chkOnlyFavorites = new JCheckBox("Only favorites");
 		chkOnlyFavorites.setSelected(true);
 		chkOnlyFavorites.setHorizontalAlignment(SwingConstants.LEADING);
-		chkOnlyFavorites.setBounds(15, 12, 99, 23);
+		chkOnlyFavorites.setBounds(15, 15, 99, 23);
 		pnlContent.add(chkOnlyFavorites);
 
 		chkOnlyBetters = new JCheckBox("Only betters");
 		chkOnlyBetters.setSelected(true);
-		chkOnlyBetters.setBounds(116, 12, 99, 23);
+		chkOnlyBetters.setBounds(116, 15, 99, 23);
 		pnlContent.add(chkOnlyBetters);
 		
 		// --------------------------------------------------------------------
@@ -237,6 +240,8 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnConfig)
 					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnLog)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnSkin)
 					.addContainerGap())
 		);
@@ -254,6 +259,9 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 						.addGroup(pnlTopBarLayout.createSequentialGroup()
 							.addGap(12)
 							.addComponent(btnConfig))
+						.addGroup(pnlTopBarLayout.createSequentialGroup()
+							.addGap(12)
+							.addComponent(btnLog))
 						.addGroup(pnlTopBarLayout.createSequentialGroup()
 							.addGap(12)
 							.addComponent(btnSkin))
@@ -451,6 +459,12 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 				setLookFeel(!Config.isDarkMode());
 			}
 		});
+
+		btnLog.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				FrmLogs.launch();
+			}
+		});
 		
 		btnBot.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -548,8 +562,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	{
 		try
 		{
-			ERROR(Application.getError());
-			
 			btnSkin.setIcon(Config.isDarkMode() ? Styles.IMAGE_SUN : Styles.IMAGE_MOON);
 
 			loadConfig();
@@ -829,7 +841,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	public static void main(String[] args)
 	{
 		Application.initialize();
-		Application.initializeUI();
 		launch();
 	}
 

@@ -218,7 +218,6 @@ public class FrmPointsEditor extends JFrame
 	public static void main(String[] args)
 	{
 		Application.initialize();
-		Application.initializeUI();
 		launch();
 	}
 }

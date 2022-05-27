@@ -75,7 +75,7 @@ public class FrmSignals extends JFrame implements SignalListener
 		setBounds(100, 100, 760, 500);
 		setMinimumSize(new Dimension(760, 400));
 		setTitle(TITLE);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmGrid.class.getResource("/resources/monitor.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmSignals.class.getResource("/resources/monitor.png")));
 		setLocationRelativeTo(null);
 
 		pnlTopBar = new JPanel();
@@ -417,7 +417,6 @@ public class FrmSignals extends JFrame implements SignalListener
 	public static void main(String[] args)
 	{
 		Application.initialize();
-		Application.initializeUI();
 		launch();
 	}
 }

@@ -1327,7 +1327,6 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	public static void main(String[] args)
 	{
 		Application.initialize();
-		Application.initializeUI();
 		launch();
 	}
 

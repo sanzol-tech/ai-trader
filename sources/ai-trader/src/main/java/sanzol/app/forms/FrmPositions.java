@@ -180,7 +180,6 @@ public class FrmPositions extends JFrame implements PositionListener
 	public static void main(String[] args)
 	{
 		Application.initialize();
-		Application.initializeUI();
 		launch();
 	}
 
