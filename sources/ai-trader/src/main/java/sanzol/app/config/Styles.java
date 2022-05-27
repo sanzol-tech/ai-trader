@@ -20,6 +20,7 @@ public class Styles
 	public static ImageIcon IMAGE_MOON  = new FlatSVGIcon(Styles.class.getResource("/resources/moon.svg"));
 	public static ImageIcon IMAGE_SUN  = new FlatSVGIcon(Styles.class.getResource("/resources/sun.svg"));
 	public static ImageIcon IMAGE_COPY  = new FlatSVGIcon(Styles.class.getResource("/resources/copy.svg"));
+	public static ImageIcon IMAGE_COG  = new FlatSVGIcon(Styles.class.getResource("/resources/wrench.svg"));
 
 	public static Color COLOR_BORDER_LINE;
 	public static Color COLOR_LINK;

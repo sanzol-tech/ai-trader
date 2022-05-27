@@ -8,15 +8,14 @@ import java.util.List;
 
 import com.binance.client.model.event.SymbolTickerEvent;
 
+import sanzol.app.config.Config;
 import sanzol.app.service.Symbol;
 import sanzol.app.task.PriceService;
 import sanzol.app.util.PriceUtil;
 
 public class SymbolInfo
 {
-	public static final double MIN_VOLUME = 100000000;
 	public static final double MIN_USDT = 50;
-	public static final double MAX_CHANGE_PERCENTE = 10;
 
 	private Symbol symbol;
 
@@ -57,8 +56,8 @@ public class SymbolInfo
 		minUsdQty = symbol.getMinQty().multiply(high);
 
 		isMinUsdQtyHigh = (minUsdQty.doubleValue() > MIN_USDT);
-		isLowVolume = (usdVolume.doubleValue() < MIN_VOLUME);
-		isHighMove = (priceChangePercent.abs().doubleValue() > MAX_CHANGE_PERCENTE);
+		isLowVolume = (usdVolume.doubleValue() < Config.BETTER_SYMBOLS_MIN_VOLUME);
+		isHighMove = (priceChangePercent.abs().doubleValue() > Config.BETTER_SYMBOLS_MAX_CHANGE);
 		isBestShort = (lastPrice.doubleValue() > avgHigh.doubleValue());
 		isBestLong = (lastPrice.doubleValue() < avgLow.doubleValue());
 

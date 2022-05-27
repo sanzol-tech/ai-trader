@@ -23,22 +23,6 @@ public final class PriceService
 	private static Set<String> setFavorites = new LinkedHashSet<String>();
 	private static Map<String, SymbolTickerEvent> mapTickers = new HashMap<String, SymbolTickerEvent>();
 
-	public static String btcLabel() throws Exception
-	{
-		String symbolName = "BTC" + Constants.DEFAULT_SYMBOL_RIGHT;
-		Symbol coin = Symbol.getInstance(symbolName);
-
-		if (!mapTickers.containsKey(coin.getName()))
-		{
-			return "n/a";
-		}
-
-		BigDecimal price = mapTickers.get(symbolName).getLastPrice();
-		BigDecimal priceChange = mapTickers.get(symbolName).getPriceChangePercent();
-		String label = String.format("BTC  %s  %.2f %%", coin.priceToStr(price), priceChange);
-		return label;
-	}
-
 	public static BigDecimal getLastPrice(Symbol coin)
 	{
 		if (!mapTickers.containsKey(coin.getName()))

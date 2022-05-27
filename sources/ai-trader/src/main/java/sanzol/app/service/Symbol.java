@@ -227,7 +227,7 @@ public class Symbol
 		for (SymbolInfo entry : lstSymbolsInfo)
 		{
 			Symbol coin = entry.getSymbol();
-			list.add(String.format("%-8s %10s %8.2f%%", coin.getNameLeft(), coin.priceToStr(entry.getLastPrice()), entry.getPriceChangePercent()));
+			list.add(String.format("%-8s   %10s   %8.2f %%", coin.getNameLeft(), coin.priceToStr(entry.getLastPrice()), entry.getPriceChangePercent()));
 		}
 		
 		return list;

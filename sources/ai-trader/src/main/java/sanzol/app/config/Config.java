@@ -22,6 +22,14 @@ public class Config
 		 "QTUM", "ROSE", "RUNE", "SAND", "SOL", "SUSHI", "TRX", "UNI", 
 		 "VET", "XLM", "XMR", "XRP", "ZEC"};
 
+	//Better symbols
+	public static final double BETTER_SYMBOLS_MIN_VOLUME = 100000000;
+	public static final double BETTER_SYMBOLS_MAX_CHANGE = 10;
+
+	//O.Book weighted average
+	public static final Double WEIGHTED_AVERAGE_MAX_ACCUM = 0.4;
+	public static final Double WEIGHTED_AVERAGE_MAX_DIST = 0.15;
+	
 	private static final Integer LEVERAGE = 10;
 	private static final Integer ITERATIONS = 6;
 	private static final Double PRICE_INCREMENT = 0.02;

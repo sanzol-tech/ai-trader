@@ -25,6 +25,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import sanzol.app.config.Application;
+import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.listener.PriceListener;
@@ -275,7 +276,7 @@ public class FrmSymbols extends JFrame implements PriceListener
     				String.format("%.2f %%", entry.getPriceChangePercent()),
 					!entry.isHighMove() ? "" : "RISKY",
     				PriceUtil.cashFormat(entry.getUsdVolume()),
-					!entry.isLowVolume() ? "" : "< " + PriceUtil.cashFormat(SymbolInfo.MIN_VOLUME),
+					!entry.isLowVolume() ? "" : "< " + PriceUtil.cashFormat(Config.BETTER_SYMBOLS_MIN_VOLUME),
     				entry.getLastPrice(),
 					entry.isBestShort() ? "SHORT" : entry.isBestLong() ? "LONG" : ""
         		};

@@ -12,7 +12,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
@@ -25,34 +24,37 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
-import javax.swing.border.TitledBorder;
 
+import com.binance.client.model.event.SymbolTickerEvent;
 import com.binance.client.model.trade.AccountBalance;
+import com.binance.client.model.trade.PositionRisk;
 
 import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
-import sanzol.app.config.PrivateConfig;
 import sanzol.app.config.Styles;
 import sanzol.app.listener.BalanceListener;
+import sanzol.app.listener.BtcChangeListener;
+import sanzol.app.listener.PositionListener;
 import sanzol.app.listener.PriceListener;
 import sanzol.app.listener.SignalListener;
 import sanzol.app.model.SignalEntry;
 import sanzol.app.service.Symbol;
 import sanzol.app.task.BalanceService;
+import sanzol.app.task.BtcChangeService;
+import sanzol.app.task.PositionService;
 import sanzol.app.task.PriceService;
 import sanzol.app.task.SignalService;
 import sanzol.app.util.Convert;
 import sanzol.lib.util.ExceptionUtils;
 
-public class FrmMain extends JFrame implements PriceListener, SignalListener, BalanceListener
+public class FrmMain extends JFrame implements PriceListener, SignalListener, BalanceListener, BtcChangeListener, PositionListener
 {
 	private static final long serialVersionUID = 1L;
 
@@ -64,9 +66,8 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	private JButton btnCoin;
 	private JButton btnGrid;
 	private JButton btnPositions;
-	private JButton btnSaveConfig;
-	private JButton btnSaveKey;
 	private JButton btnShoot;
+	private JButton btnConfig;
 	private JButton btnSkin;
 
 	private JCheckBox chkOnlyFavorites;
@@ -82,23 +83,22 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	private JPanel pnlStatusBar;
 	private JPanel pnlTopBar;
 
-	private JPasswordField txtApiKey;
-	private JPasswordField txtSecretKey;
-
 	private JTextField txtBalance;
-	private JTextField txtBalanceMinAvailable;
-	private JTextField txtCoinsIncr;
-	private JTextField txtDistBeforeSL;
-	private JTextField txtFavCoins;
-	private JTextField txtIterations;
-	private JTextField txtLeverage;
 	private JTextField txtPair;
-	private JTextField txtPositionQty;
-	private JTextField txtPositionQtyMax;
-	private JTextField txtPositionsMax;
-	private JTextField txtPriceIncr;
-	private JTextField txtTProfit;
 	private JTextField txtWithdrawal;
+	private JPanel panel;
+	private JLabel lblNewLabel;
+	private JLabel lblChangem;
+	private JLabel lblChangeh;
+	private JLabel lblPrice;
+	private JLabel txtChange30m;
+	private JLabel txtChange24h;
+	private JLabel txtBtcPrice;
+	private JPanel pnlPositions;
+	private JLabel txtShorts;
+	private JLabel lblShorts;
+	private JLabel lblLongs;
+	private JLabel txtLongs;
 
 	public FrmMain()
 	{
@@ -107,12 +107,17 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 		onPriceUpdate();
 		PriceService.attachRefreshObserver(this);
+
+		onBtcChangeUpdate();
+		BtcChangeService.attachRefreshObserver(this);
 		
 		onSignalUpdate();
 		SignalService.attachRefreshObserver(this);
 		
 		onBalanceUpdate();
 		BalanceService.attachRefreshObserver(this);
+		
+		PositionService.attachRefreshObserver(this);
 	}
 
 	private void initComponents()
@@ -129,21 +134,16 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		pnlContent = new JPanel();
 		pnlStatusBar = new JPanel();
 		pnlStatusBar.setBorder(Styles.BORDER_UP);
-
-		btnSignals = new JButton();
-		btnSignals.setText("SIGNALS");
 		btnBot = new JButton();
 		btnBot.setText("BOT");
-		btnSymbols = new JButton();
-		btnSymbols.setText("SYMBOLS");
 		btnCoin = new JButton();
 		btnCoin.setText("COIN");
 		btnGrid = new JButton();
 		btnGrid.setText("GRID");
-		btnPositions = new JButton();
-		btnPositions.setText("POSITIONS");
 		btnShoot = new JButton();
 		btnShoot.setText("SHOOT");
+		btnConfig = new JButton(Styles.IMAGE_COG);
+		btnConfig.setToolTipText("Config");
 		btnSkin = new JButton(Styles.IMAGE_MOON);
 		btnSkin.setToolTipText("Skin mode");
 
@@ -182,7 +182,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 		JScrollPane scrollFavorites = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollFavorites.setBorder(UIManager.getBorder("TextField.border"));
-		scrollFavorites.setBounds(15, 38, 235, 190);
+		scrollFavorites.setBounds(15, 42, 299, 307);
 		pnlContent.add(scrollFavorites);
 
 		listFavorites = new JList<String>();
@@ -193,7 +193,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		
 		JScrollPane scrollSignals = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollSignals.setBorder(UIManager.getBorder("TextField.border"));
-		scrollSignals.setBounds(273, 38, 550, 190);
+		scrollSignals.setBounds(340, 42, 483, 307);
 		pnlContent.add(scrollSignals);
 
 		listSignals = new JList<String>();
@@ -205,175 +205,19 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		JLabel lblSignals = new JLabel("Short or Long Entries");
 		lblSignals.setHorizontalAlignment(SwingConstants.LEFT);
 		lblSignals.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblSignals.setBounds(275, 12, 200, 20);
+		lblSignals.setBounds(340, 12, 200, 20);
 		pnlContent.add(lblSignals);
-		
-		JPanel panelConfig = new JPanel();
-		panelConfig.setLayout(null);
-		panelConfig.setBorder(new TitledBorder(null, " Default values ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panelConfig.setBounds(15, 245, 810, 123);
-		pnlContent.add(panelConfig);
-
-		JLabel lblItarations = new JLabel("Iterations");
-		lblItarations.setHorizontalAlignment(SwingConstants.LEFT);
-		lblItarations.setBounds(20, 26, 80, 14);
-		panelConfig.add(lblItarations);
-
-		txtIterations = new JTextField();
-		txtIterations.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtIterations.setColumns(10);
-		txtIterations.setBounds(20, 43, 72, 20);
-		panelConfig.add(txtIterations);
-
-		txtCoinsIncr = new JTextField();
-		txtCoinsIncr.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtCoinsIncr.setColumns(10);
-		txtCoinsIncr.setBounds(20, 86, 72, 20);
-		panelConfig.add(txtCoinsIncr);
-
-		JLabel lblCoinsIncr = new JLabel("Qty Incr %");
-		lblCoinsIncr.setBounds(20, 70, 80, 14);
-		panelConfig.add(lblCoinsIncr);
-
-		txtPriceIncr = new JTextField();
-		txtPriceIncr.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtPriceIncr.setColumns(10);
-		txtPriceIncr.setBounds(112, 43, 72, 20);
-		panelConfig.add(txtPriceIncr);
-
-		JLabel lblPriceIncr = new JLabel("Price Incr %");
-		lblPriceIncr.setBounds(112, 26, 80, 14);
-		panelConfig.add(lblPriceIncr);
-		
-		JLabel lblTProfit = new JLabel("Take profit %");
-		lblTProfit.setHorizontalAlignment(SwingConstants.LEFT);
-		lblTProfit.setBounds(204, 26, 80, 14);
-		panelConfig.add(lblTProfit);
-		
-		txtTProfit = new JTextField();
-		txtTProfit.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtTProfit.setColumns(10);
-		txtTProfit.setBounds(204, 43, 72, 20);
-		panelConfig.add(txtTProfit);
-		
-		txtDistBeforeSL = new JTextField();
-		txtDistBeforeSL.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtDistBeforeSL.setColumns(10);
-		txtDistBeforeSL.setBounds(112, 86, 72, 20);
-		panelConfig.add(txtDistBeforeSL);
-		
-		JLabel lblDistSL = new JLabel("SL after last %");
-		lblDistSL.setBounds(112, 70, 90, 14);
-		panelConfig.add(lblDistSL);
-		
-		JLabel lblQty = new JLabel("Min qty %");
-		lblQty.setBounds(422, 26, 80, 14);
-		panelConfig.add(lblQty);
-		
-		txtPositionQty = new JTextField();
-		txtPositionQty.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtPositionQty.setColumns(10);
-		txtPositionQty.setBounds(422, 43, 72, 20);
-		panelConfig.add(txtPositionQty);
-		
-		txtFavCoins = new JTextField();
-		txtFavCoins.setColumns(10);
-		txtFavCoins.setBounds(640, 43, 154, 20);
-		panelConfig.add(txtFavCoins);
-
-		JLabel lblFavCoins = new JLabel("Favorite coins");
-		lblFavCoins.setHorizontalAlignment(SwingConstants.LEFT);
-		lblFavCoins.setBounds(640, 26, 90, 14);
-		panelConfig.add(lblFavCoins);
-		
-		txtLeverage = new JTextField();
-		txtLeverage.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtLeverage.setEditable(false);
-		txtLeverage.setColumns(10);
-		txtLeverage.setBounds(514, 43, 72, 20);
-		panelConfig.add(txtLeverage);
-		
-		txtBalanceMinAvailable = new JTextField();
-		txtBalanceMinAvailable.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtBalanceMinAvailable.setColumns(10);
-		txtBalanceMinAvailable.setBounds(330, 86, 72, 20);
-		panelConfig.add(txtBalanceMinAvailable);
-		
-		JLabel lblLeverage = new JLabel("Leverage");
-		lblLeverage.setBounds(514, 26, 80, 14);
-		panelConfig.add(lblLeverage);
-		
-		JLabel lblAvailable = new JLabel("Min balance %");
-		lblAvailable.setBounds(330, 70, 80, 14);
-		panelConfig.add(lblAvailable);
-		
-		btnSaveConfig = new JButton("SAVE");
-		btnSaveConfig.setOpaque(true);
-		btnSaveConfig.setBounds(722, 86, 72, 20);
-		panelConfig.add(btnSaveConfig);
-		
-		JLabel lblPositionsMax = new JLabel("Max positions");
-		lblPositionsMax.setBounds(330, 26, 80, 14);
-		panelConfig.add(lblPositionsMax);
-		
-		JLabel lblQtyMax = new JLabel("Max qty %");
-		lblQtyMax.setBounds(422, 70, 80, 14);
-		panelConfig.add(lblQtyMax);
-		
-		txtPositionsMax = new JTextField();
-		txtPositionsMax.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtPositionsMax.setColumns(10);
-		txtPositionsMax.setBounds(330, 43, 72, 20);
-		panelConfig.add(txtPositionsMax);
-
-		txtPositionQtyMax = new JTextField();
-		txtPositionQtyMax.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtPositionQtyMax.setColumns(10);
-		txtPositionQtyMax.setBounds(422, 86, 72, 20);
-		panelConfig.add(txtPositionQtyMax);
 
 		chkOnlyFavorites = new JCheckBox("Only favorites");
 		chkOnlyFavorites.setSelected(true);
 		chkOnlyFavorites.setHorizontalAlignment(SwingConstants.LEADING);
-		chkOnlyFavorites.setBounds(15, 12, 120, 23);
+		chkOnlyFavorites.setBounds(15, 12, 99, 23);
 		pnlContent.add(chkOnlyFavorites);
 
 		chkOnlyBetters = new JCheckBox("Only betters");
 		chkOnlyBetters.setSelected(true);
-		chkOnlyBetters.setHorizontalAlignment(SwingConstants.TRAILING);
-		chkOnlyBetters.setBounds(137, 12, 113, 23);
+		chkOnlyBetters.setBounds(116, 12, 99, 23);
 		pnlContent.add(chkOnlyBetters);
-
-		JPanel panelKey = new JPanel();
-		panelKey.setLayout(null);
-		panelKey.setBorder(UIManager.getBorder("TextField.border"));
-		panelKey.setBounds(15, 385, 810, 60);
-		pnlContent.add(panelKey);
-
-		JLabel lblApiKey = new JLabel("Api Key");
-		lblApiKey.setBounds(12, 11, 80, 14);
-		panelKey.add(lblApiKey);
-
-		txtApiKey = new JPasswordField();
-		txtApiKey.setFont(new Font("Courier New", Font.PLAIN, 8));
-		txtApiKey.setColumns(10);
-		txtApiKey.setBounds(12, 30, 340, 20);
-		panelKey.add(txtApiKey);
-
-		JLabel lblSecretKey = new JLabel("Secret Key");
-		lblSecretKey.setBounds(358, 11, 80, 14);
-		panelKey.add(lblSecretKey);
-
-		txtSecretKey = new JPasswordField();
-		txtSecretKey.setFont(new Font("Courier New", Font.PLAIN, 8));
-		txtSecretKey.setColumns(10);
-		txtSecretKey.setBounds(358, 30, 340, 20);
-		panelKey.add(txtSecretKey);
-
-		btnSaveKey = new JButton("SAVE");
-		btnSaveKey.setOpaque(true);
-		btnSaveKey.setBounds(728, 30, 72, 20);
-		panelKey.add(btnSaveKey);
 		
 		// --------------------------------------------------------------------
 		GroupLayout pnlTopBarLayout = new GroupLayout(pnlTopBar);
@@ -381,22 +225,18 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 			pnlTopBarLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(pnlTopBarLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(btnSymbols)
-					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnCoin)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnSignals)
-					.addPreferredGap(ComponentPlacement.RELATED)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(btnGrid)
-					.addPreferredGap(ComponentPlacement.RELATED)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(btnShoot)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnPositions)
-					.addPreferredGap(ComponentPlacement.RELATED)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(btnBot)
-					.addPreferredGap(ComponentPlacement.RELATED, 152, Short.MAX_VALUE)
-					.addComponent(lnkGitHub, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE)
-					.addGap(18)
+					.addPreferredGap(ComponentPlacement.RELATED, 271, Short.MAX_VALUE)
+					.addComponent(lnkGitHub, GroupLayout.PREFERRED_SIZE, 175, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnConfig)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnSkin)
 					.addContainerGap())
 		);
@@ -406,25 +246,14 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 					.addGroup(pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(pnlTopBarLayout.createSequentialGroup()
 							.addGap(12)
-							.addComponent(btnSymbols))
+							.addGroup(pnlTopBarLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(btnCoin)
+								.addComponent(btnGrid)
+								.addComponent(btnShoot)
+								.addComponent(btnBot)))
 						.addGroup(pnlTopBarLayout.createSequentialGroup()
 							.addGap(12)
-							.addComponent(btnCoin))
-						.addGroup(pnlTopBarLayout.createSequentialGroup()
-							.addGap(12)
-							.addComponent(btnSignals))
-						.addGroup(pnlTopBarLayout.createSequentialGroup()
-							.addGap(12)
-							.addComponent(btnGrid))
-						.addGroup(pnlTopBarLayout.createSequentialGroup()
-							.addGap(12)
-							.addComponent(btnShoot))
-						.addGroup(pnlTopBarLayout.createSequentialGroup()
-							.addGap(12)
-							.addComponent(btnPositions))
-						.addGroup(pnlTopBarLayout.createSequentialGroup()
-							.addGap(12)
-							.addComponent(btnBot))
+							.addComponent(btnConfig))
 						.addGroup(pnlTopBarLayout.createSequentialGroup()
 							.addGap(12)
 							.addComponent(btnSkin))
@@ -454,6 +283,99 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		);
 		getContentPane().setLayout(layout);
 		pnlContent.setLayout(null);
+		
+		panel = new JPanel();
+		panel.setBorder(UIManager.getBorder("TextField.border"));
+		panel.setBounds(15, 370, 459, 70);
+		pnlContent.add(panel);
+		panel.setLayout(null);
+		
+		lblNewLabel = new JLabel("BTC");
+		lblNewLabel.setFont(new Font("Dialog", Font.PLAIN, 18));
+		lblNewLabel.setBounds(10, 24, 66, 14);
+		panel.add(lblNewLabel);
+		
+		lblChangem = new JLabel("CHANGE 30m");
+		lblChangem.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblChangem.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblChangem.setBounds(181, 11, 124, 14);
+		panel.add(lblChangem);
+		
+		lblChangeh = new JLabel("CHANGE 24h");
+		lblChangeh.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblChangeh.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblChangeh.setBounds(315, 11, 122, 14);
+		panel.add(lblChangeh);
+		
+		lblPrice = new JLabel("PRICE");
+		lblPrice.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblPrice.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblPrice.setBounds(84, 11, 87, 14);
+		panel.add(lblPrice);
+		
+		txtChange30m = new JLabel("---");
+		txtChange30m.setForeground(Styles.COLOR_TEXT_ALT1);
+		txtChange30m.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtChange30m.setFont(new Font("Dialog", Font.PLAIN, 14));
+		txtChange30m.setBounds(181, 36, 124, 14);
+		panel.add(txtChange30m);
+		
+		txtChange24h = new JLabel("---");
+		txtChange24h.setForeground(Styles.COLOR_TEXT_ALT1);
+		txtChange24h.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtChange24h.setFont(new Font("Dialog", Font.PLAIN, 14));
+		txtChange24h.setBounds(315, 36, 122, 14);
+		panel.add(txtChange24h);
+		
+		txtBtcPrice = new JLabel("---");
+		txtBtcPrice.setForeground(Styles.COLOR_TEXT_ALT1);
+		txtBtcPrice.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtBtcPrice.setFont(new Font("Dialog", Font.PLAIN, 14));
+		txtBtcPrice.setBounds(84, 36, 87, 14);
+		panel.add(txtBtcPrice);
+		
+		pnlPositions = new JPanel();
+		pnlPositions.setBorder(UIManager.getBorder("TextField.border"));
+		pnlPositions.setBounds(497, 370, 326, 70);
+		pnlPositions.setLayout(null);
+		pnlContent.add(pnlPositions);
+
+		lblShorts = new JLabel("SHORTS");
+		lblShorts.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblShorts.setBounds(24, 16, 86, 14);
+		pnlPositions.add(lblShorts);
+		
+		lblLongs = new JLabel("LONGS");
+		lblLongs.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblLongs.setBounds(120, 16, 86, 14);
+		pnlPositions.add(lblLongs);
+
+		txtShorts = new JLabel("--");
+		txtShorts.setForeground(Styles.COLOR_TEXT_ALT1);
+		txtShorts.setFont(new Font("Dialog", Font.PLAIN, 14));
+		txtShorts.setBounds(24, 41, 86, 14);
+		pnlPositions.add(txtShorts);
+		
+		txtLongs = new JLabel("--");
+		txtLongs.setForeground(Styles.COLOR_TEXT_ALT1);
+		txtLongs.setFont(new Font("Dialog", Font.PLAIN, 14));
+		txtLongs.setBounds(120, 41, 86, 14);
+		pnlPositions.add(txtLongs);
+
+		btnPositions = new JButton();
+		btnPositions.setBounds(216, 36, 100, 23);
+		btnPositions.setText("POSITIONS");
+		pnlPositions.add(btnPositions);
+		
+		btnSymbols = new JButton();
+		btnSymbols.setBounds(222, 12, 92, 23);
+		btnSymbols.setText("SYMBOLS");
+		pnlContent.add(btnSymbols);
+		
+		btnSignals = new JButton();
+		btnSignals.setBounds(724, 12, 99, 23);
+		btnSignals.setText("SIGNALS");
+		pnlContent.add(btnSignals);
 		
 		// --------------------------------------------------------------------
 		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);
@@ -518,27 +440,21 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 			}
 		});
 
+		btnConfig.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				FrmConfig.launch();
+			}
+		});
+
 		btnSkin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setLookFeel(!Config.isDarkMode());
-			}
-		});
-					
-		btnSignals.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				showSignals();
 			}
 		});
 		
 		btnBot.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				showBot();
-			}
-		});
-	
-		btnPositions.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				showPositions();
 			}
 		});
 		
@@ -554,15 +470,27 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 			}
 		});
 
-		btnSymbols.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				FrmSymbols.launch();
-			}
-		});
-
 		btnCoin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				showCoin();
+			}
+		});
+
+		btnPositions.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				showPositions();
+			}
+		});
+
+		btnSignals.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				showSignals();
+			}
+		});
+		
+		btnSymbols.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				FrmSymbols.launch();
 			}
 		});
 
@@ -578,6 +506,8 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 				PriceService.deattachRefreshObserver(thisFrm);
 				SignalService.deattachRefreshObserver(thisFrm);
 				BalanceService.deattachRefreshObserver(thisFrm);
+				BtcChangeService.deattachRefreshObserver(thisFrm);
+				PositionService.deattachRefreshObserver(thisFrm);
 			}
 		});
 
@@ -611,18 +541,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 				}
 			}
 		});
-
-		btnSaveConfig.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				saveConfig();
-			}
-		});
-
-		btnSaveKey.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				saveKey();
-			}
-		});
 		
 	}
 
@@ -634,9 +552,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 			
 			btnSkin.setIcon(Config.isDarkMode() ? Styles.IMAGE_SUN : Styles.IMAGE_MOON);
 
-			txtApiKey.setText(PrivateConfig.API_KEY);
-			txtSecretKey.setText(PrivateConfig.SECRET_KEY);
-
 			loadConfig();
 		}
 		catch(Exception e)
@@ -647,19 +562,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 	private void loadConfig()
 	{
-		txtFavCoins.setText(Config.getFavoriteSymbols());
-
-		txtIterations.setText(String.valueOf(Config.getIterations()));
-		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPriceIncrement())); 
-		txtCoinsIncr.setText(Convert.dblToStrPercent(Config.getCoinsIncrement()));
-		txtDistBeforeSL.setText(Convert.dblToStrPercent(Config.getStoplossIncrement()));
-		txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
-
-		txtPositionsMax.setText(String.valueOf(Config.getPositionsMax()));
-		txtPositionQty.setText(Convert.dblToStrPercent(Config.getPositionStartQty()));
-		txtPositionQtyMax.setText(Convert.dblToStrPercent(Config.getPositionStartQtyMax()));
-		txtBalanceMinAvailable.setText(Convert.dblToStrPercent(Config.getBalanceMinAvailable()));
-		txtLeverage.setText(String.valueOf(Config.getLeverage()));
 
 		txtPair.setText(Constants.DEFAULT_SYMBOL_RIGHT);
 	}
@@ -768,8 +670,70 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		try
 		{
 			listFavorites.setModel(toListModel(Symbol.getLstSymbolsMini(chkOnlyFavorites.isSelected(), chkOnlyBetters.isSelected())));
+			btcInfo();
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
+	}
 
-			setTitle(Constants.APP_NAME + " - "+ PriceService.btcLabel());
+	@Override
+	public void onBtcChangeUpdate()
+	{
+		try
+		{
+			double percent = BtcChangeService.getBtcChange30m();
+			txtChange30m.setText(percent + " %");
+			txtChange30m.setForeground(percent > 0 ? Styles.COLOR_TEXT_LONG : Styles.COLOR_TEXT_SHORT);
+			txtBtcPrice.setForeground(percent > 0 ? Styles.COLOR_TEXT_LONG : Styles.COLOR_TEXT_SHORT);
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
+	}
+	
+	public void btcInfo()
+	{
+		final String BTC_PAIR_SYMBOL = "BTC" + Constants.DEFAULT_SYMBOL_RIGHT;
+		Symbol coin = Symbol.getInstance(BTC_PAIR_SYMBOL);
+		if (!PriceService.getMapTickers().containsKey(coin.getName()))
+		{
+			return;
+		}
+
+		SymbolTickerEvent ticker = PriceService.getMapTickers().get(BTC_PAIR_SYMBOL);
+		txtBtcPrice.setText(coin.priceToStr(ticker.getLastPrice()));
+		txtChange24h.setText(String.format("%.2f %%", ticker.getPriceChangePercent()));
+		txtChange24h.setForeground(ticker.getPriceChangePercent().doubleValue() > 0 ? Styles.COLOR_TEXT_LONG : Styles.COLOR_TEXT_SHORT);
+	}
+
+	@Override
+	public void onPositionUpdate()
+	{
+		try
+		{
+			int shortCount = 0;
+			int longCount = 0;
+			List<PositionRisk> lstPositionRisk = PositionService.getLstPositionRisk();
+
+			if (lstPositionRisk != null && !lstPositionRisk.isEmpty())
+			{
+				for (PositionRisk entry : lstPositionRisk)
+				{
+					if (entry.getPositionAmt().doubleValue() < 0)
+					{
+						shortCount++;
+					}
+					else if (entry.getPositionAmt().doubleValue() > 0)
+					{
+						longCount++;
+					}
+				}
+			}
+			txtShorts.setText(String.valueOf(shortCount));
+			txtLongs.setText(String.valueOf(longCount));
 		}
 		catch (Exception e)
 		{
@@ -816,48 +780,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		{
 			Double price = Math.min(entry.getPrice().doubleValue(), entry.getLgShock().doubleValue());
 			FrmGrid.launch(entry.getSymbol().getNameLeft(), "LONG", entry.getSymbol().priceToStr(price), isBotMode);
-		}
-	}
-
-	// ------------------------------------------------------------------------
-
-	private void saveConfig()
-	{
-		try
-		{
-			Config.setFavoriteSymbols(txtFavCoins.getText());
-
-			Config.setIterations(txtIterations.getText());
-			Config.setPriceIncrement(Convert.strPercentToDbl(txtPriceIncr.getText()));
-			Config.setCoinsIncrement(Convert.strPercentToDbl(txtCoinsIncr.getText()));
-			Config.setStoplossIncrement(Convert.strPercentToDbl(txtDistBeforeSL.getText()));
-			Config.setTakeprofit(Convert.strPercentToDbl(txtTProfit.getText()));
-			Config.setPositionsMax(txtPositionsMax.getText());
-			Config.setPositionStartQty(Convert.strPercentToDbl(txtPositionQty.getText()));
-			Config.setPositionStartQtyMax(Convert.strPercentToDbl(txtPositionQtyMax.getText()));
-			Config.setBalanceMinAvailable(Convert.strPercentToDbl(txtBalanceMinAvailable.getText()));
-			Config.setLeverage(txtLeverage.getText());
-
-			Config.save();
-			INFO("CONFIG SAVED");
-		}
-		catch(Exception e)
-		{
-			ERROR(e);
-		}
-	}
-
-	@SuppressWarnings("deprecation")
-	private void saveKey()
-	{
-		try
-		{
-			PrivateConfig.setKey(txtApiKey.getText(), txtSecretKey.getText());
-			INFO("KEY SAVED");
-		}
-		catch (IOException e)
-		{
-			ERROR(e);
 		}
 	}
 
@@ -910,4 +832,5 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		Application.initializeUI();
 		launch();
 	}
+
 }

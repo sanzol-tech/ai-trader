@@ -44,6 +44,38 @@ public final class PositionService
 		return lstPositionRisk;
 	}
 
+	public static int getShortCount()
+	{
+		int count = 0;
+		if (lstPositionRisk != null && !lstPositionRisk.isEmpty())
+		{
+			for (PositionRisk entry : lstPositionRisk)
+			{
+				if (entry.getPositionAmt().doubleValue() < 0)
+				{
+					count++;
+				}
+			}
+		}
+		return count;
+	}
+
+	public static int getLongCount()
+	{
+		int count = 0;
+		if (lstPositionRisk != null && !lstPositionRisk.isEmpty())
+		{
+			for (PositionRisk entry : lstPositionRisk)
+			{
+				if (entry.getPositionAmt().doubleValue() > 0)
+				{
+					count++;
+				}
+			}
+		}
+		return count;
+	}
+
 	public static PositionRisk getPositionRisk(String symbolName)
 	{
 		if (lstPositionRisk != null && !lstPositionRisk.isEmpty())

@@ -20,6 +20,7 @@ import com.binance.client.model.market.OrderBook;
 import com.binance.client.model.market.OrderBookEntry;
 
 import sanzol.app.config.Application;
+import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.PrivateConfig;
 import sanzol.app.model.OrderBookElement;
@@ -101,7 +102,7 @@ public class OBookService
 
 	public OBookService calc()
 	{
-		return calc(0.4, 0.15);
+		return calc(Config.WEIGHTED_AVERAGE_MAX_ACCUM, Config.WEIGHTED_AVERAGE_MAX_DIST);
 	}
 
 	public OBookService calc(double waMaxAccc, double waMaxDist)
