@@ -3,6 +3,7 @@ package sanzol.app.forms;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -308,6 +309,7 @@ public class FrmSymbols extends JFrame implements PriceListener
 		if (myJFrame != null)
 		{
 			myJFrame.toFront();
+			myJFrame.setState(Frame.NORMAL);
 			return;
 		}
 

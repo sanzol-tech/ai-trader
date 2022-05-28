@@ -3,6 +3,7 @@ package sanzol.app.forms;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -45,6 +46,7 @@ public class FrmPositions extends JFrame implements PositionListener
 	{
 		initComponents();
 
+		onPositionUpdate();
 		PositionService.attachRefreshObserver(this);
 	}
 
@@ -136,6 +138,7 @@ public class FrmPositions extends JFrame implements PositionListener
 		if (myJFrame != null)
 		{
 			myJFrame.toFront();
+			myJFrame.setState(Frame.NORMAL);
 			return;
 		}
 

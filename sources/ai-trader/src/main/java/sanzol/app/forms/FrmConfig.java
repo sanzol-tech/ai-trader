@@ -2,6 +2,7 @@ package sanzol.app.forms;
 
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -93,7 +94,7 @@ public class FrmConfig extends JFrame
 		
 		JPanel panelPositions = new JPanel();
 		panelPositions.setLayout(null);
-		panelPositions.setBorder(new TitledBorder(null, " Balance / Positions ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelPositions.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Balance / Positions ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelPositions.setBounds(425, 145, 400, 128);
 		pnlContent.add(panelPositions);
 		
@@ -218,7 +219,7 @@ public class FrmConfig extends JFrame
 		pnlContent.setLayout(null);
 		
 		JPanel pnlSymbols = new JPanel();
-		pnlSymbols.setBorder(new TitledBorder(null, " Symbols ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		pnlSymbols.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Symbols ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		pnlSymbols.setBounds(15, 11, 400, 149);
 		pnlContent.add(pnlSymbols);
 		pnlSymbols.setLayout(null);
@@ -258,7 +259,7 @@ public class FrmConfig extends JFrame
 		txtFavCoins.setColumns(10);
 
 		JPanel pnlGrid = new JPanel();
-		pnlGrid.setBorder(new TitledBorder(null, " Grid ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		pnlGrid.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Grid ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		pnlGrid.setBounds(425, 11, 400, 123);
 		pnlContent.add(pnlGrid);
 		pnlGrid.setLayout(null);
@@ -308,7 +309,7 @@ public class FrmConfig extends JFrame
 		JLabel lblDistSL = new JLabel("SL after last %");
 		lblDistSL.setBounds(117, 65, 90, 14);
 		pnlGrid.add(lblDistSL);
-		
+
 		txtDistBeforeSL = new JTextField();
 		txtDistBeforeSL.setBounds(117, 81, 72, 20);
 		pnlGrid.add(txtDistBeforeSL);
@@ -316,7 +317,7 @@ public class FrmConfig extends JFrame
 		txtDistBeforeSL.setColumns(10);
 		
 		JPanel pnlOBook = new JPanel();
-		pnlOBook.setBorder(new TitledBorder(null, " O.Book ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		pnlOBook.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " O.Book ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		pnlOBook.setBounds(15, 171, 400, 101);
 		pnlContent.add(pnlOBook);
 		pnlOBook.setLayout(null);
@@ -432,6 +433,7 @@ public class FrmConfig extends JFrame
 		if (myJFrame != null)
 		{
 			myJFrame.toFront();
+			myJFrame.setState(Frame.NORMAL);
 			return;
 		}
 

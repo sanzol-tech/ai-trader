@@ -3,6 +3,7 @@ package sanzol.app.forms;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -163,6 +164,7 @@ public class FrmLogs extends JFrame implements LogListener
 		if (myJFrame != null)
 		{
 			myJFrame.toFront();
+			myJFrame.setState(Frame.NORMAL);
 			return;
 		}
 

@@ -3,6 +3,7 @@ package sanzol.app.forms;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -372,6 +373,7 @@ public class FrmSignals extends JFrame implements SignalListener
 		if (myJFrame != null)
 		{
 			myJFrame.toFront();
+			myJFrame.setState(Frame.NORMAL);
 			return;
 		}
 

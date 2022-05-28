@@ -295,9 +295,9 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		panel = new JPanel();
 		panel.setBorder(UIManager.getBorder("TextField.border"));
 		panel.setBounds(15, 370, 459, 70);
-		pnlContent.add(panel);
 		panel.setLayout(null);
-		
+		pnlContent.add(panel);
+
 		lblNewLabel = new JLabel("BTC");
 		lblNewLabel.setFont(new Font("Dialog", Font.PLAIN, 18));
 		lblNewLabel.setBounds(10, 24, 66, 14);
