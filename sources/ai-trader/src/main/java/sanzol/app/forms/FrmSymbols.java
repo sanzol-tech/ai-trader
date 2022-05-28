@@ -31,6 +31,7 @@ import sanzol.app.config.Styles;
 import sanzol.app.listener.PriceListener;
 import sanzol.app.model.SymbolInfo;
 import sanzol.app.service.Symbol;
+import sanzol.app.task.LogService;
 import sanzol.app.task.PriceService;
 import sanzol.app.util.PriceUtil;
 import sanzol.lib.util.ExceptionUtils;
@@ -41,7 +42,7 @@ public class FrmSymbols extends JFrame implements PriceListener
 
 	private static final String TITLE = Constants.APP_NAME + " - Symbols";
 
-	private static boolean isOpen = false;
+	private static FrmSymbols myJFrame = null;
 
     DefaultTableModel tableModel;
 	
@@ -58,7 +59,6 @@ public class FrmSymbols extends JFrame implements PriceListener
 	public FrmSymbols()
 	{
 		initComponents();
-		isOpen = true;
 
 		createTable();
 
@@ -181,15 +181,13 @@ public class FrmSymbols extends JFrame implements PriceListener
 
 		// --------------------------------------------------------------------
 
-		FrmSymbols thisFrm = this;
-
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
 			public void windowClosed(WindowEvent e)
 			{
-				PriceService.deattachRefreshObserver(thisFrm);				
-				isOpen = false;
+				PriceService.deattachRefreshObserver(myJFrame);				
+				myJFrame = null;
 			}
 		});
 
@@ -307,8 +305,9 @@ public class FrmSymbols extends JFrame implements PriceListener
 
 	public static void launch()
 	{
-		if (isOpen)
+		if (myJFrame != null)
 		{
+			myJFrame.toFront();
 			return;
 		}
 
@@ -318,12 +317,12 @@ public class FrmSymbols extends JFrame implements PriceListener
 			{
 				try
 				{
-					FrmSymbols frame = new FrmSymbols();
-					frame.setVisible(true);
+					myJFrame = new FrmSymbols();
+					myJFrame.setVisible(true);
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					LogService.error(e);
 				}
 			}
 		});

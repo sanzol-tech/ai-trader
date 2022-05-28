@@ -167,13 +167,13 @@ public class FrmShoot extends JFrame implements PriceListener
 		txtPositionQty.setBounds(204, 145, 86, 20);
 		pnlContent.add(txtPositionQty);
 
-		JLabel lblNewLabel_2_1 = new JLabel("COIN");
-		lblNewLabel_2_1.setBounds(31, 24, 86, 14);
-		pnlContent.add(lblNewLabel_2_1);
+		JLabel lblSymbol = new JLabel("SYMBOL");
+		lblSymbol.setBounds(31, 24, 86, 14);
+		pnlContent.add(lblSymbol);
 
 		txtSymbolRight = new JTextField();
 		txtSymbolRight.setEditable(false);
-		txtSymbolRight.setText(Constants.DEFAULT_SYMBOL_RIGHT);
+		txtSymbolRight.setText(Config.DEFAULT_SYMBOL_RIGHT);
 		txtSymbolRight.setColumns(10);
 		txtSymbolRight.setBounds(123, 43, 86, 20);
 		pnlContent.add(txtSymbolRight);

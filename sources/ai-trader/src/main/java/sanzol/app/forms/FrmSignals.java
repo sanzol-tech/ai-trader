@@ -35,6 +35,7 @@ import sanzol.app.listener.SignalListener;
 import sanzol.app.model.Price;
 import sanzol.app.model.SignalEntry;
 import sanzol.app.service.Symbol;
+import sanzol.app.task.LogService;
 import sanzol.app.task.SignalService;
 import sanzol.lib.util.ExceptionUtils;
 
@@ -44,7 +45,7 @@ public class FrmSignals extends JFrame implements SignalListener
 
 	private static final String TITLE = Constants.APP_NAME + " - Signals";
 
-	private static boolean isOpen = false;
+	private static FrmSignals myJFrame = null;
 	
     DefaultTableModel tableModel;
 
@@ -62,7 +63,6 @@ public class FrmSignals extends JFrame implements SignalListener
 	public FrmSignals()
 	{
 		initComponents();
-		isOpen = true;
 		
 		createTable();
 		
@@ -186,13 +186,11 @@ public class FrmSignals extends JFrame implements SignalListener
 
 		// --------------------------------------------------------------------
 
-		FrmSignals thisFrm = this;
-
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
-				SignalService.deattachRefreshObserver(thisFrm);
-				isOpen = false;
+				SignalService.deattachRefreshObserver(myJFrame);
+				myJFrame = null;
 			}
 		});
 
@@ -258,7 +256,7 @@ public class FrmSignals extends JFrame implements SignalListener
 	{
 		try
 		{
-			ConfirmGenPoints dialog = new ConfirmGenPoints();
+			FrmSignalsConfirm dialog = new FrmSignalsConfirm();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		}
@@ -371,8 +369,9 @@ public class FrmSignals extends JFrame implements SignalListener
 
 	public static void launch()
 	{
-		if (isOpen)
+		if (myJFrame != null)
 		{
+			myJFrame.toFront();
 			return;
 		}
 
@@ -382,12 +381,12 @@ public class FrmSignals extends JFrame implements SignalListener
 			{
 				try
 				{
-					FrmSignals frame = new FrmSignals();
-					frame.setVisible(true);
+					myJFrame = new FrmSignals();
+					myJFrame.setVisible(true);
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					LogService.error(e);
 				}
 			}
 		});

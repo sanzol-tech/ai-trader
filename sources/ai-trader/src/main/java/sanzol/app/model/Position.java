@@ -17,7 +17,7 @@ import sanzol.app.service.Symbol;
 
 public class Position
 {
-	private Symbol coin;
+	private Symbol symbol;
 	
 	private PositionSide side;
 	private boolean markPrice;
@@ -35,15 +35,15 @@ public class Position
 		//
 	}
 
-	public Position(Symbol coin, PositionSide side)
+	public Position(Symbol symbol, PositionSide side)
 	{
-		this.coin = coin;
+		this.symbol = symbol;
 		this.side = side;
 	}
 
-	public Position(Symbol coin, PositionSide side, double distBeforeSL, double takeProfit, List<PriceQty> lstPriceQty)
+	public Position(Symbol symbol, PositionSide side, double distBeforeSL, double takeProfit, List<PriceQty> lstPriceQty)
 	{
-		this.coin = coin;
+		this.symbol = symbol;
 		this.side = side;
 		this.distBeforeSL = distBeforeSL;
 		this.takeProfit = takeProfit;
@@ -54,12 +54,12 @@ public class Position
 
 	public String getSymbol()
 	{
-		return coin.getName();
+		return symbol.getName();
 	}
 
 	public String getSymbolLeft()
 	{
-		return coin.getNameLeft();
+		return symbol.getNameLeft();
 	}
 
 	public boolean isShort()
@@ -74,19 +74,19 @@ public class Position
 
 	public String getInPriceStr()
 	{
-		return coin.priceToStr(inPrice);
+		return symbol.priceToStr(inPrice);
 	}
 
 	public String getInQtyStr()
 	{
-		return coin.qtyToStr(inQty);
+		return symbol.qtyToStr(inQty);
 	}
 
 	// ------------------------------------------------------------------------
 
 	public Symbol getCoin()
 	{
-		return coin;
+		return symbol;
 	}
 
 	public PositionSide getSide()
@@ -178,7 +178,7 @@ public class Position
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("\n");
-		sb.append(String.format("%s %s - in Price: %s - in Coins: %s", side.name(), coin.getNameLeft(), getInPriceStr(), getInQtyStr()));
+		sb.append(String.format("%s %s - in Price: %s - in Coins: %s", side.name(), symbol.getNameLeft(), getInPriceStr(), getInQtyStr()));
 		sb.append("\n\n");
 
 		String labels = String.format("%-3s %8s %8s %12s %12s %12s %12s %12s %12s | %12s %10s %12s %12s", "#", "TYPE", CharConstants.ARROW_UP + " %", "PRICE", "QTY", "USD", CharConstants.SIGNA + " QTY", CharConstants.SIGNA + " USD", "USD LOST", "AVG-PRICE", CharConstants.ARROW_UP_DOWN + " %", "TP-PRICE", "PROFIT");
@@ -200,15 +200,15 @@ public class Position
 					entry.getNumber(), 
 					entry.getType().name(), 
 					entry.getDistance() * 100, 
-					coin.priceToStr(entry.getPrice()),
-					coin.qtyToStr(entry.getCoins()), 
+					symbol.priceToStr(entry.getPrice()),
+					symbol.qtyToStr(entry.getCoins()), 
 					usdToStr(entry.getUsd()), 
-					coin.qtyToStr(entry.getSumCoins()), 
+					symbol.qtyToStr(entry.getSumCoins()), 
 					usdToStr(entry.getSumUsd()), 
 					usdToStr(entry.getLost()), 
-					coin.priceToStr(entry.getNewPrice()), 
+					symbol.priceToStr(entry.getNewPrice()), 
 					entry.getRecoveryNeeded() * 100, 
-					coin.priceToStr(entry.getTakeProfit()), 
+					symbol.priceToStr(entry.getTakeProfit()), 
 					usdToStr(entry.getProfit()));
 
 			sb.append(line);

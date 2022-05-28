@@ -33,6 +33,7 @@ import sanzol.app.config.Styles;
 import sanzol.app.listener.BotListener;
 import sanzol.app.task.BalanceService;
 import sanzol.app.task.BotService;
+import sanzol.app.task.LogService;
 import sanzol.app.util.Convert;
 import sanzol.lib.util.ExceptionUtils;
 
@@ -42,7 +43,7 @@ public class FrmBot extends JFrame implements BotListener
 
 	private static final String TITLE = Constants.APP_NAME + " - BOT";
 
-	private static boolean isOpen = false;
+	private static FrmBot myJFrame = null;
 	
 	private JLabel lblError;
 
@@ -74,7 +75,6 @@ public class FrmBot extends JFrame implements BotListener
 		pageload();
 		txtResult.setText(BotService.getLOG());
 		BotService.attachRefreshObserver(this);
-		isOpen = true;
 	}
 
 	private void initComponents()
@@ -233,15 +233,13 @@ public class FrmBot extends JFrame implements BotListener
 		
 		// ---------------------------------------------------------------------
 
-		FrmBot thisFrm = this;
-
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
 			public void windowClosed(WindowEvent e)
 			{
-				BotService.deattachRefreshObserver(thisFrm);
-				isOpen = false;
+				BotService.deattachRefreshObserver(myJFrame);
+				myJFrame = null;
 			}
 		});
 
@@ -334,8 +332,9 @@ public class FrmBot extends JFrame implements BotListener
 
 	public static void launch()
 	{
-		if (isOpen)
+		if (myJFrame != null)
 		{
+			myJFrame.toFront();
 			return;
 		}
 
@@ -345,12 +344,12 @@ public class FrmBot extends JFrame implements BotListener
 			{
 				try
 				{
-					FrmBot frame = new FrmBot();
-					frame.setVisible(true);
+					myJFrame = new FrmBot();
+					myJFrame.setVisible(true);
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					LogService.error(e);
 				}
 			}
 		});

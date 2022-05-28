@@ -12,7 +12,6 @@ import com.binance.client.SubscriptionClient;
 import com.binance.client.model.event.SymbolTickerEvent;
 
 import sanzol.app.config.Config;
-import sanzol.app.config.Constants;
 import sanzol.app.listener.PriceListener;
 import sanzol.app.service.Symbol;
 
@@ -58,7 +57,7 @@ public final class PriceService
 			List<SymbolTickerEvent> lstSymbolTickerEvent = event;
 			for (SymbolTickerEvent entry : lstSymbolTickerEvent)
 			{
-				if (entry.getSymbol().endsWith(Constants.DEFAULT_SYMBOL_RIGHT))
+				if (entry.getSymbol().endsWith(Config.DEFAULT_SYMBOL_RIGHT))
 				{
 					mapTickers.put(entry.getSymbol(), entry);
 				}
@@ -73,29 +72,6 @@ public final class PriceService
 	{
 		client.unsubscribeAll();
 	}
-
-/*
-	public static List<String> getSymbols(boolean onlyFavorites)
-	{
-		List<String> list = new ArrayList<String>();
-		for (SymbolTickerEvent entry : mapTickers.values())
-		{
-			if (onlyFavorites && !setFavorites.contains(Symbol.getRightSymbol(entry.getSymbol())))
-			{
-				continue;
-			}
-			if (!entry.getSymbol().endsWith(Constants.DEFAULT_SYMBOL_RIGHT))
-			{
-				continue;
-			}
-
-			Symbol coin = Symbol.getInstance(entry.getSymbol());
-			list.add(String.format("%-8s %10s %8.2f%%", coin.getNameLeft(), coin.priceToStr(entry.getLastPrice()), entry.getPriceChangePercent()));
-		}
-		Collections.sort(list);
-		return list;
-	}
-*/
 
 	private static void loadFavorites()
 	{

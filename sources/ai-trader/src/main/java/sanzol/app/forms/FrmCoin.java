@@ -33,6 +33,7 @@ import javax.swing.border.EmptyBorder;
 import com.binance.client.model.event.SymbolTickerEvent;
 
 import sanzol.app.config.Application;
+import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.listener.PriceListener;
@@ -160,13 +161,13 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtSymbolLeft.setBounds(30, 41, 86, 20);
 		contentPane.add(txtSymbolLeft);
 
-		JLabel lblSymbol = new JLabel("COIN");
+		JLabel lblSymbol = new JLabel("SYMBOL");
 		lblSymbol.setBounds(30, 22, 86, 14);
 		contentPane.add(lblSymbol);
 
 		txtSymbolRight = new JTextField();
 		txtSymbolRight.setEditable(false);
-		txtSymbolRight.setText(Constants.DEFAULT_SYMBOL_RIGHT);
+		txtSymbolRight.setText(Config.DEFAULT_SYMBOL_RIGHT);
 		txtSymbolRight.setColumns(10);
 		txtSymbolRight.setBounds(122, 41, 86, 20);
 		contentPane.add(txtSymbolRight);

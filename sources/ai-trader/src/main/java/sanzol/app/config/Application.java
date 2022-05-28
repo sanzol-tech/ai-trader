@@ -8,9 +8,9 @@ import java.nio.file.StandardOpenOption;
 
 import sanzol.app.forms.FrmConfig;
 import sanzol.app.forms.FrmMain;
-import sanzol.app.service.LogService;
 import sanzol.app.task.BalanceService;
 import sanzol.app.task.BtcChangeService;
+import sanzol.app.task.LogService;
 import sanzol.app.task.PositionService;
 import sanzol.app.task.PriceService;
 import sanzol.app.task.SignalService;
@@ -42,7 +42,7 @@ public final class Application
 		{
 			LogService.error(e);
 		}
-		
+
 		initializeUI();
 	}
 

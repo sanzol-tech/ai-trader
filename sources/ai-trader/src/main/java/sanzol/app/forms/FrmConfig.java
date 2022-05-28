@@ -15,6 +15,7 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -28,6 +29,7 @@ import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.PrivateConfig;
 import sanzol.app.config.Styles;
+import sanzol.app.task.LogService;
 import sanzol.app.util.Convert;
 import sanzol.lib.util.ExceptionUtils;
 
@@ -35,8 +37,8 @@ public class FrmConfig extends JFrame
 {
 	private static final long serialVersionUID = 1L;
 
-	private static boolean isOpen = false;
-	
+	private static FrmConfig myJFrame = null;
+
 	private JLabel lblError;
 
 	private JButton btnSaveConfig;
@@ -63,12 +65,10 @@ public class FrmConfig extends JFrame
 	private JTextField txtBSMaxChange24h;
 	private JTextField txtWAMaxAccum;
 	private JTextField txtWAMaxDist;
-
+	
 	public FrmConfig()
 	{
 		initComponents();
-		isOpen = true;
-
 		pageload();
 	}
 
@@ -372,7 +372,7 @@ public class FrmConfig extends JFrame
 			@Override
 			public void windowClosed(WindowEvent e)
 			{
-				isOpen = false;
+				myJFrame = null;
 			}
 		});
 
@@ -429,26 +429,24 @@ public class FrmConfig extends JFrame
 
 	public static void launch()
 	{
-		if (isOpen)
+		if (myJFrame != null)
 		{
+			myJFrame.toFront();
 			return;
 		}
-		
+
 		EventQueue.invokeLater(new Runnable()
 		{
 			public void run()
 			{
-				FrmConfig frame = null;
-
 				try
 				{
-					frame = new FrmConfig();
-					frame.setVisible(true);
+					myJFrame = new FrmConfig();
+					myJFrame.setVisible(true);
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
-					System.exit(1);
+					LogService.error(e);
 				}
 
 			}
@@ -486,8 +484,12 @@ public class FrmConfig extends JFrame
 	{
 		try
 		{
-			PrivateConfig.setKey(txtApiKey.getText(), txtSecretKey.getText());
-			INFO("KEY SAVED");
+			int resultOption = JOptionPane.showConfirmDialog(null, "Are you sure you want to continue ?", "Confirm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if (resultOption == 0)
+			{
+				PrivateConfig.setKey(txtApiKey.getText(), txtSecretKey.getText());
+				INFO("KEY SAVED. PLEASE RESTART !!!");
+			}
 		}
 		catch (IOException e)
 		{

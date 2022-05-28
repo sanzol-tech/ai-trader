@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.binance.client.model.trade.Order;
 import com.binance.client.model.trade.PositionRisk;
 
-import sanzol.app.config.Constants;
+import sanzol.app.config.Config;
 import sanzol.app.listener.BotListener;
 import sanzol.app.service.SimpleTrader;
 import sanzol.app.service.Symbol;
@@ -152,7 +152,7 @@ public final class BotService
 			if (slOrder == null)
 			{
 				info(symbol.getNameLeft() + " SL-REARRANGEMENT");
-				info(String.format("(%f %s) : NONE -> [price: %f]", slUsd, Constants.DEFAULT_SYMBOL_RIGHT, slPriceNew));
+				info(String.format("(%f %s) : NONE -> [price: %f]", slUsd, Config.DEFAULT_SYMBOL_RIGHT, slPriceNew));
 				BeepUtils.beep2();
 
 				// ADD NEW SL-ORDER
@@ -165,7 +165,7 @@ public final class BotService
 				if (isFix)
 				{
 					info(symbol.getNameLeft() + " SL-REARRANGEMENT");
-					info(String.format("(%f %s) : [price: %f] --> [price: %f]", slUsd, Constants.DEFAULT_SYMBOL_RIGHT, slPriceCur, slPriceNew));
+					info(String.format("(%f %s) : [price: %f] --> [price: %f]", slUsd, Config.DEFAULT_SYMBOL_RIGHT, slPriceCur, slPriceNew));
 					BeepUtils.beep2();
 	
 					// CANCEL SL-ORDER

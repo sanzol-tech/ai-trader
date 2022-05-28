@@ -13,15 +13,12 @@ import java.util.TreeSet;
 import org.apache.commons.lang3.StringUtils;
 import org.decimal4j.util.DoubleRounder;
 
-import com.binance.client.RequestOptions;
 import com.binance.client.SyncRequestClient;
 import com.binance.client.model.event.SymbolTickerEvent;
 import com.binance.client.model.market.ExchangeInfoEntry;
 import com.binance.client.model.market.ExchangeInformation;
 
 import sanzol.app.config.Config;
-import sanzol.app.config.Constants;
-import sanzol.app.config.PrivateConfig;
 import sanzol.app.model.SymbolInfo;
 import sanzol.app.task.PriceService;
 
@@ -36,7 +33,7 @@ public class Symbol
 
 	public String getName()
 	{
-		return nameLeft + Constants.DEFAULT_SYMBOL_RIGHT;
+		return nameLeft + Config.DEFAULT_SYMBOL_RIGHT;
 	}
 
 	public String getNameLeft()
@@ -68,8 +65,7 @@ public class Symbol
 	{
 		if (lstExInfEntries == null || exInfTime + 1000 * 60 * 30 < System.currentTimeMillis())
 		{
-			RequestOptions options = new RequestOptions();
-			SyncRequestClient syncRequestClient = SyncRequestClient.create(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, options);
+			SyncRequestClient syncRequestClient = SyncRequestClient.create();
 			ExchangeInformation exInf = syncRequestClient.getExchangeInformation();
 			lstExInfEntries = exInf.getSymbols();
 			exInfTime = System.currentTimeMillis();
@@ -82,9 +78,9 @@ public class Symbol
 		getExInfEntries();
 		for (ExchangeInfoEntry entry : lstExInfEntries)
 		{
-			if (entry.getSymbol().endsWith(Constants.DEFAULT_SYMBOL_RIGHT))
+			if (entry.getSymbol().endsWith(Config.DEFAULT_SYMBOL_RIGHT))
 			{
-				String symbolName = entry.getSymbol().substring(0, entry.getSymbol().length() - Constants.DEFAULT_SYMBOL_RIGHT.length());
+				String symbolName = entry.getSymbol().substring(0, entry.getSymbol().length() - Config.DEFAULT_SYMBOL_RIGHT.length());
 				list.add(symbolName);
 			}
 		}
@@ -95,13 +91,13 @@ public class Symbol
 
 	public static Symbol getInstance(String symbolName)
 	{
-		if (!symbolName.endsWith(Constants.DEFAULT_SYMBOL_RIGHT))
+		if (!symbolName.endsWith(Config.DEFAULT_SYMBOL_RIGHT))
 		{
 			return null;
 		}
 
-		Symbol coin = new Symbol();
-		coin.nameLeft = symbolName.substring(0, symbolName.length() - Constants.DEFAULT_SYMBOL_RIGHT.length());
+		Symbol symbol = new Symbol();
+		symbol.nameLeft = symbolName.substring(0, symbolName.length() - Config.DEFAULT_SYMBOL_RIGHT.length());
 		getExInfEntries();
 		for (ExchangeInfoEntry entry : lstExInfEntries)
 		{
@@ -110,24 +106,24 @@ public class Symbol
 				ExchangeInfoEntry eInfoEntry = entry;
 
 				String ts = eInfoEntry.getFilters().get(0).get(3).get("tickSize");
-				coin.tickSize = (int) Math.log10(Double.valueOf(ts)) * -1;
-				coin.pricePattern = "#0";
-				if (coin.tickSize > 0)
+				symbol.tickSize = (int) Math.log10(Double.valueOf(ts)) * -1;
+				symbol.pricePattern = "#0";
+				if (symbol.tickSize > 0)
 				{
-					coin.pricePattern += "." + StringUtils.repeat("0", coin.tickSize);
+					symbol.pricePattern += "." + StringUtils.repeat("0", symbol.tickSize);
 				}
 				
-				coin.quantityPrecision = eInfoEntry.getQuantityPrecision().intValue();
-				coin.quantityPattern = "#0";
-				if (coin.quantityPrecision > 0)
+				symbol.quantityPrecision = eInfoEntry.getQuantityPrecision().intValue();
+				symbol.quantityPattern = "#0";
+				if (symbol.quantityPrecision > 0)
 				{
-					coin.quantityPattern += "." + StringUtils.repeat("0", coin.quantityPrecision);
+					symbol.quantityPattern += "." + StringUtils.repeat("0", symbol.quantityPrecision);
 				}
 
 				String mq = eInfoEntry.getFilters().get(1).get(3).get("minQty");
-				coin.minQty = new BigDecimal(mq);
+				symbol.minQty = new BigDecimal(mq);
 
-				return coin;
+				return symbol;
 			}
 		}
 		return null;
@@ -177,12 +173,12 @@ public class Symbol
 
 	public static String getFullSymbol(String symbolLeft)
 	{
-		return symbolLeft + Constants.DEFAULT_SYMBOL_RIGHT;
+		return symbolLeft + Config.DEFAULT_SYMBOL_RIGHT;
 	}
 	
 	public static String getRightSymbol(String symbolName)
 	{
-		return symbolName.substring(0, symbolName.length() - Constants.DEFAULT_SYMBOL_RIGHT.length());
+		return symbolName.substring(0, symbolName.length() - Config.DEFAULT_SYMBOL_RIGHT.length());
 	}	
 
 	// ------------------------------------------------------------------------

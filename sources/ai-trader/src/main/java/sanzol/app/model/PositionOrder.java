@@ -29,6 +29,7 @@ public class PositionOrder
 
 	public PositionOrder()
 	{
+		//
 	}
 
 	public PositionOrder(int number, Type type, double distance, double price, double coins, double usd, double sumCoins, double sumUsd, double lost, double newPrice, double takeProfit, double profit, double recoveryNeeded)

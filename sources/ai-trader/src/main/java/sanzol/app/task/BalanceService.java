@@ -9,10 +9,9 @@ import com.binance.client.RequestOptions;
 import com.binance.client.SyncRequestClient;
 import com.binance.client.model.trade.AccountBalance;
 
-import sanzol.app.config.Constants;
+import sanzol.app.config.Config;
 import sanzol.app.config.PrivateConfig;
 import sanzol.app.listener.BalanceListener;
-import sanzol.app.service.LogService;
 
 public final class BalanceService
 {
@@ -22,8 +21,6 @@ public final class BalanceService
 	private static long timestamp = 0;
 
 	private static AccountBalance accountBalance = null;
-
-	private static String errorMessage;
 
 	public static AccountBalance getAccountBalance()
 	{
@@ -38,11 +35,6 @@ public final class BalanceService
 		}
 
 		return accountBalance;
-	}
-
-	public static String getErrorMessage()
-	{
-		return errorMessage;
 	}
 
 	public static void start()
@@ -76,7 +68,7 @@ public final class BalanceService
 			List<AccountBalance> lst = syncRequestClient.getBalance();
 			for (AccountBalance e : lst)
 			{
-				if (e.getAsset().equals(Constants.DEFAULT_SYMBOL_RIGHT))
+				if (e.getAsset().equals(Config.DEFAULT_SYMBOL_RIGHT))
 				{
 					accountBalance = e;
 				}
@@ -86,8 +78,7 @@ public final class BalanceService
 		}
 		catch (Exception e)
 		{
-			errorMessage = e.getMessage();
-			LogService.error("BalanceService.runGetBalances: " + e.getMessage());
+			LogService.error(e);
 		}
 
 	}

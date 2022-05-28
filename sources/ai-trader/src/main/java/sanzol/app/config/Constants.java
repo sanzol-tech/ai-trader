@@ -14,7 +14,4 @@ public class Constants
 	public static final String PROPERTIES_FILENAME = "config.properties";
 	public static final String SHOCKPOINTS_FILENAME = "shockpoints.csv";
 
-	// Pair
-	public static final String DEFAULT_SYMBOL_RIGHT = "USDT";
-
 }

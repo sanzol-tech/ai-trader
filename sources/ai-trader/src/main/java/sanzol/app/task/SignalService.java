@@ -22,7 +22,6 @@ import sanzol.app.config.Constants;
 import sanzol.app.listener.SignalListener;
 import sanzol.app.model.SignalEntry;
 import sanzol.app.model.SymbolInfo;
-import sanzol.app.service.LogService;
 import sanzol.app.service.OBookService;
 import sanzol.app.service.Symbol;
 import sanzol.app.util.PriceUtil;
@@ -35,7 +34,6 @@ public final class SignalService
 	private static List<SignalEntry> lstShockStatus;
 
 	private static String modified = "n/a";
-	private static String errorMessage = "";
 
 	public static List<SignalEntry> getLstShocks()
 	{
@@ -50,11 +48,6 @@ public final class SignalService
 	public static String getModified()
 	{
 		return modified;
-	}
-
-	public static String getErrorMessage()
-	{
-		return errorMessage;
 	}
 
 	// -----------------------------------------------------------------------
@@ -86,7 +79,6 @@ public final class SignalService
 
 	public static void loadShocks()
 	{
-		errorMessage = "";
 		lstShocks = new ArrayList<SignalEntry>();
 		try
 		{
@@ -106,13 +98,12 @@ public final class SignalService
 		}
 		catch (Exception e)
 		{
-			errorMessage = e.getMessage();
+			LogService.error(e);
 		}
 	}
 
 	public static void searchShocks(boolean onlyFavorites, boolean onlyBetters)
 	{
-		errorMessage = "";
 		lstShocks = new ArrayList<SignalEntry>();
 		try
 		{
@@ -148,14 +139,13 @@ public final class SignalService
 				}
 				catch (BinanceApiException ex)
 				{
-					LogService.error(symbolInfo.getSymbolName() + " : " +  ex.getMessage());
+					LogService.error("searchShocks : " + symbolInfo.getSymbolName() + " : " +  ex.getMessage());
 				}
 			}
 		}
 		catch (Exception e)
 		{
-			errorMessage = e.getMessage();
-			LogService.error(e.getMessage());
+			LogService.error(e);
 		}
 	}
 
@@ -163,8 +153,6 @@ public final class SignalService
 
 	private static void verifyShocks()
 	{
-		errorMessage = "";
-
 		if (lstShocks == null || lstShocks.isEmpty())
 		{
 			return;
@@ -225,7 +213,7 @@ public final class SignalService
 		}
 		catch (Exception e)
 		{
-			errorMessage = e.getMessage();
+			LogService.error(e);
 		}
 
 		Comparator<SignalEntry> comparator = Comparator.comparing(SignalEntry::bestDistance);
@@ -271,7 +259,7 @@ public final class SignalService
 		}
 		catch (Exception e)
 		{
-			LogService.error(e.getMessage());
+			LogService.error(e);
 		}
 
 		return false;

@@ -5,6 +5,8 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
+import sanzol.app.task.LogService;
+
 public class BeepUtils
 {
 	public static float SAMPLE_RATE = 8000f;
@@ -17,7 +19,7 @@ public class BeepUtils
 		}
 		catch (Exception e)
 		{
-			System.err.println(e.getMessage());
+			LogService.error(e);
 		}
 	}
 
@@ -55,7 +57,7 @@ public class BeepUtils
 		}
 		catch (Exception e)
 		{
-			//
+			LogService.error(e);
 		}
 	}
 
@@ -68,7 +70,7 @@ public class BeepUtils
 		}
 		catch (Exception e)
 		{
-			//
+			LogService.error(e);
 		}
 	}
 

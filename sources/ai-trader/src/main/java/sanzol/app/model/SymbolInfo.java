@@ -60,30 +60,7 @@ public class SymbolInfo
 		isHighMove = (priceChangePercent.abs().doubleValue() > Config.BETTER_SYMBOLS_MAX_CHANGE);
 		isBestShort = (lastPrice.doubleValue() > avgHigh.doubleValue());
 		isBestLong = (lastPrice.doubleValue() < avgLow.doubleValue());
-
-		/*
-		if (!isMinUsdQtyHigh && !isLowVolume && !isHighMove)
-		{
-			dist5m = distance(lastCandlestick5m(symbol));
-			isLowMove5m = dist5m.doubleValue() < 0.5;
-		}
-		*/
 	}
-
-	/*
-	private static Candlestick lastCandlestick5m(Symbol symbol)
-	{
-		RequestOptions options = new RequestOptions();
-		SyncRequestClient syncRequestClient = SyncRequestClient.create(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, options);
-		Candlestick candlestick = syncRequestClient.getCandlestick(symbol.getName(), CandlestickInterval.FIVE_MINUTES, null, null, 1).get(0);
-		return candlestick;
-	}
-
-	private static BigDecimal distance(Candlestick candlestick)
-	{
-		return (candlestick.getHigh().divide(candlestick.getLow(), 4, RoundingMode.HALF_UP).subtract(BigDecimal.ONE)).multiply(BigDecimal.valueOf(100));
-	}
-	*/
 
 	// ------------------------------------------------------------------------
 

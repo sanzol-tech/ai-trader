@@ -22,6 +22,7 @@ import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.listener.PositionListener;
+import sanzol.app.task.LogService;
 import sanzol.app.task.PositionService;
 import sanzol.lib.util.ExceptionUtils;
 
@@ -31,7 +32,7 @@ public class FrmPositions extends JFrame implements PositionListener
 
 	private static final String TITLE = Constants.APP_NAME + " - Positions";
 
-	private static boolean isOpen = false;
+	private static FrmPositions myJFrame = null;
 
 	private JScrollPane scrollPane;
 	private JTextArea textArea;
@@ -43,8 +44,8 @@ public class FrmPositions extends JFrame implements PositionListener
 	public FrmPositions()
 	{
 		initComponents();
+
 		PositionService.attachRefreshObserver(this);
-		isOpen = true;
 	}
 
 	private void initComponents() 
@@ -102,13 +103,11 @@ public class FrmPositions extends JFrame implements PositionListener
 
 		// -----------------------------------------------------------------
 
-		FrmPositions thisFrm = this;
-		
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
-				PositionService.deattachRefreshObserver(thisFrm);
-				isOpen = false;
+				PositionService.deattachRefreshObserver(myJFrame);
+				myJFrame = null;
 			}
 		});
 
@@ -134,8 +133,9 @@ public class FrmPositions extends JFrame implements PositionListener
 
 	public static void launch()
 	{
-		if (isOpen)
+		if (myJFrame != null)
 		{
+			myJFrame.toFront();
 			return;
 		}
 
@@ -145,12 +145,12 @@ public class FrmPositions extends JFrame implements PositionListener
 			{
 				try
 				{
-					FrmPositions frame = new FrmPositions();
-					frame.setVisible(true);
+					myJFrame = new FrmPositions();
+					myJFrame.setVisible(true);
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					LogService.error(e);
 				}
 			}
 		});

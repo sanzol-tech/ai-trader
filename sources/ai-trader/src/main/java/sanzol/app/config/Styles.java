@@ -112,6 +112,8 @@ public class Styles
 		//UIManager.setLookAndFeel(new FlatCarbonIJTheme());
 		IntelliJTheme.setup(Styles.class.getResourceAsStream("/resources/theme.json"));
 		// -------------------------------------------------------------------
+
+		UIManager.put( "Component.focusWidth", 0.5 );
 	}
 
 }

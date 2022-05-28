@@ -23,7 +23,7 @@ import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.listener.LogListener;
-import sanzol.app.service.LogService;
+import sanzol.app.task.LogService;
 import sanzol.lib.util.ExceptionUtils;
 
 public class FrmLogs extends JFrame implements LogListener
@@ -32,7 +32,7 @@ public class FrmLogs extends JFrame implements LogListener
 
 	private static final String TITLE = Constants.APP_NAME + " - Logs";
 
-	private static boolean isOpen = false;
+	private static FrmLogs myJFrame = null;
 	
     DefaultTableModel tableModel;
 
@@ -46,7 +46,6 @@ public class FrmLogs extends JFrame implements LogListener
 	public FrmLogs()
 	{
 		initComponents();
-		isOpen = true;
 		
 		onLogUpdate();
 		LogService.attachRefreshObserver(this);
@@ -93,7 +92,6 @@ public class FrmLogs extends JFrame implements LogListener
         );
         
         txtResult = new JTextArea();
-		txtResult = new JTextArea();
 		txtResult.setFont(new Font("Courier New", Font.PLAIN, 12));
 		txtResult.setBackground(Styles.COLOR_TEXT_AREA_BG);
 		txtResult.setForeground(Styles.COLOR_TEXT_AREA_FG);
@@ -140,13 +138,11 @@ public class FrmLogs extends JFrame implements LogListener
 
 		// --------------------------------------------------------------------
 
-		FrmLogs thisFrm = this;
-
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
-				LogService.deattachRefreshObserver(thisFrm);
-				isOpen = false;
+				LogService.deattachRefreshObserver(myJFrame);
+				myJFrame = null;
 			}
 		});
 		
@@ -164,8 +160,9 @@ public class FrmLogs extends JFrame implements LogListener
 
 	public static void launch()
 	{
-		if (isOpen)
+		if (myJFrame != null)
 		{
+			myJFrame.toFront();
 			return;
 		}
 
@@ -175,12 +172,12 @@ public class FrmLogs extends JFrame implements LogListener
 			{
 				try
 				{
-					FrmLogs frame = new FrmLogs();
-					frame.setVisible(true);
+					myJFrame = new FrmLogs();
+					myJFrame.setVisible(true);
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					LogService.error(e);
 				}
 			}
 		});

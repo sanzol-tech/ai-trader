@@ -13,7 +13,6 @@ import java.util.TreeMap;
 
 import org.apache.commons.io.FileUtils;
 
-import com.binance.client.RequestOptions;
 import com.binance.client.SubscriptionClient;
 import com.binance.client.SyncRequestClient;
 import com.binance.client.model.market.OrderBook;
@@ -22,7 +21,6 @@ import com.binance.client.model.market.OrderBookEntry;
 import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
-import sanzol.app.config.PrivateConfig;
 import sanzol.app.model.OrderBookElement;
 import sanzol.app.task.PriceService;
 
@@ -57,10 +55,8 @@ public class OBookService
 
 	public OBookService request()
 	{
-		RequestOptions options = new RequestOptions();
-		SyncRequestClient syncRequestClient = SyncRequestClient.create(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, options);
-
-		OrderBook obook = syncRequestClient.getOrderBook(coin.getNameLeft() + Constants.DEFAULT_SYMBOL_RIGHT, 1000);
+		SyncRequestClient syncRequestClient = SyncRequestClient.create();
+		OrderBook obook = syncRequestClient.getOrderBook(coin.getNameLeft() + Config.DEFAULT_SYMBOL_RIGHT, 1000);
 
 		for (OrderBookEntry entry : obook.getAsks())
 		{

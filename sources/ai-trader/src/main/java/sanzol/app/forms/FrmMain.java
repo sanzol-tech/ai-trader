@@ -138,7 +138,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		btnBot = new JButton();
 		btnBot.setText("BOT");
 		btnCoin = new JButton();
-		btnCoin.setText("COIN");
+		btnCoin.setText("SYMBOL");
 		btnGrid = new JButton();
 		btnGrid.setText("GRID");
 		btnShoot = new JButton();
@@ -574,8 +574,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 	private void loadConfig()
 	{
-
-		txtPair.setText(Constants.DEFAULT_SYMBOL_RIGHT);
+		txtPair.setText(Config.DEFAULT_SYMBOL_RIGHT);
 	}
 
 	private void showPositions()
@@ -708,7 +707,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	
 	public void btcInfo()
 	{
-		final String BTC_PAIR_SYMBOL = "BTC" + Constants.DEFAULT_SYMBOL_RIGHT;
+		final String BTC_PAIR_SYMBOL = "BTC" + Config.DEFAULT_SYMBOL_RIGHT;
 		Symbol coin = Symbol.getInstance(BTC_PAIR_SYMBOL);
 		if (!PriceService.getMapTickers().containsKey(coin.getName()))
 		{

@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
 
-import sanzol.app.service.LogService;
+import sanzol.app.task.LogService;
 import sanzol.util.security.Cipher;
 
 public class PrivateConfig

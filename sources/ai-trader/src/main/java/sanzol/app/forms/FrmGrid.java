@@ -211,7 +211,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 		txtSymbolRight = new JTextField();
 		txtSymbolRight.setEditable(false);
-		txtSymbolRight.setText(Constants.DEFAULT_SYMBOL_RIGHT);
+		txtSymbolRight.setText(Config.DEFAULT_SYMBOL_RIGHT);
 		txtSymbolRight.setBounds(132, 28, 104, 22);
 		contentPane.add(txtSymbolRight);
 		txtSymbolRight.setColumns(10);
@@ -312,10 +312,10 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		txtPriceShow.setBounds(132, 60, 104, 22);
 		contentPane.add(txtPriceShow);
 
-		JLabel lblNewLabel = new JLabel("C O I N");
-		lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
-		lblNewLabel.setBounds(16, 10, 203, 14);
-		contentPane.add(lblNewLabel);
+		JLabel lblSymbol = new JLabel("SYMBOL");
+		lblSymbol.setHorizontalAlignment(SwingConstants.LEFT);
+		lblSymbol.setBounds(16, 10, 220, 14);
+		contentPane.add(lblSymbol);
 		
 		txtMarkPrice = new JTextField();
 		txtMarkPrice.setHorizontalAlignment(SwingConstants.TRAILING);

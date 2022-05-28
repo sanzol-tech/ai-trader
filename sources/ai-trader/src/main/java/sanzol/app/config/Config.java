@@ -22,6 +22,9 @@ public class Config
 		 "QTUM", "ROSE", "RUNE", "SAND", "SOL", "SUSHI", "TRX", "UNI", 
 		 "VET", "XLM", "XMR", "XRP", "ZEC"};
 
+	//Pair
+	public static final String DEFAULT_SYMBOL_RIGHT = "USDT";
+	
 	//Better symbols
 	public static final double BETTER_SYMBOLS_MIN_VOLUME = 100000000;
 	public static final double BETTER_SYMBOLS_MAX_CHANGE = 10;

@@ -29,6 +29,7 @@ import javax.swing.border.EmptyBorder;
 import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
+import sanzol.app.task.LogService;
 import sanzol.app.task.SignalService;
 import sanzol.lib.util.ExceptionUtils;
 
@@ -38,7 +39,7 @@ public class FrmPointsEditor extends JFrame
 
 	private static final String TITLE = "Points editor";
 
-	private static boolean isOpen = false;
+	private static FrmPointsEditor myJFrame = null;
 
 	private JScrollPane scrollPane;
 	private JTextArea textArea;
@@ -51,7 +52,6 @@ public class FrmPointsEditor extends JFrame
 		initComponents();
 
 		load();
-		isOpen = true;
 	}
 
 	private void initComponents() 
@@ -112,7 +112,7 @@ public class FrmPointsEditor extends JFrame
 			@Override
 			public void windowClosed(WindowEvent e)
 			{
-				isOpen = false;
+				myJFrame = null;
 			}
 		});
 
@@ -172,8 +172,9 @@ public class FrmPointsEditor extends JFrame
 
 	public static void launch()
 	{
-		if (isOpen)
+		if (myJFrame != null)
 		{
+			myJFrame.toFront();
 			return;
 		}
 
@@ -183,12 +184,12 @@ public class FrmPointsEditor extends JFrame
 			{
 				try
 				{
-					FrmPointsEditor frame = new FrmPointsEditor();
-					frame.setVisible(true);
+					myJFrame = new FrmPointsEditor();
+					myJFrame.setVisible(true);
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					LogService.error(e);
 				}
 			}
 		});

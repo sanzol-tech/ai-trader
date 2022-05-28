@@ -15,7 +15,7 @@ import javax.swing.JCheckBox;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class ConfirmGenPoints extends JDialog
+public class FrmSignalsConfirm extends JDialog
 {
 	private static final long serialVersionUID = 1L;
 	
@@ -23,7 +23,7 @@ public class ConfirmGenPoints extends JDialog
 	private JCheckBox chkOnlyFavorites;
 	private JCheckBox chkOnlyBetters;
 
-	public ConfirmGenPoints()
+	public FrmSignalsConfirm()
 	{
 		setTitle("Confirm");
 		setResizable(false);
@@ -85,7 +85,7 @@ public class ConfirmGenPoints extends JDialog
 	{
 		try
 		{
-			ConfirmGenPoints dialog = new ConfirmGenPoints();
+			FrmSignalsConfirm dialog = new FrmSignalsConfirm();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		}
