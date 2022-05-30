@@ -47,7 +47,7 @@ import sanzol.app.listener.SignalListener;
 import sanzol.app.model.SignalEntry;
 import sanzol.app.service.Symbol;
 import sanzol.app.task.BalanceService;
-import sanzol.app.task.BtcChangeService;
+import sanzol.app.task.CandlestickCache;
 import sanzol.app.task.PositionService;
 import sanzol.app.task.PriceService;
 import sanzol.app.task.SignalService;
@@ -110,7 +110,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		PriceService.attachRefreshObserver(this);
 
 		onBtcChangeUpdate();
-		BtcChangeService.attachRefreshObserver(this);
+		CandlestickCache.attachRefreshObserver(this);
 		
 		onSignalUpdate();
 		SignalService.attachRefreshObserver(this);
@@ -520,7 +520,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 				PriceService.deattachRefreshObserver(thisFrm);
 				SignalService.deattachRefreshObserver(thisFrm);
 				BalanceService.deattachRefreshObserver(thisFrm);
-				BtcChangeService.deattachRefreshObserver(thisFrm);
+				CandlestickCache.deattachRefreshObserver(thisFrm);
 				PositionService.deattachRefreshObserver(thisFrm);
 			}
 		});
@@ -694,7 +694,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	{
 		try
 		{
-			double percent = BtcChangeService.getBtcChange30m();
+			double percent = CandlestickCache.getBtcChange30m();
 			txtChange30m.setText(percent + " %");
 			txtChange30m.setForeground(percent > 0 ? Styles.COLOR_TEXT_LONG : Styles.COLOR_TEXT_SHORT);
 			txtBtcPrice.setForeground(percent > 0 ? Styles.COLOR_TEXT_LONG : Styles.COLOR_TEXT_SHORT);

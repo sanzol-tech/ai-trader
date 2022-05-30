@@ -8,8 +8,9 @@ import java.nio.file.StandardOpenOption;
 
 import sanzol.app.forms.FrmConfig;
 import sanzol.app.forms.FrmMain;
+import sanzol.app.service.OBookCache;
 import sanzol.app.task.BalanceService;
-import sanzol.app.task.BtcChangeService;
+import sanzol.app.task.CandlestickCache;
 import sanzol.app.task.LogService;
 import sanzol.app.task.PositionService;
 import sanzol.app.task.PriceService;
@@ -29,7 +30,9 @@ public final class Application
 		{
 			Config.load();
 			PriceService.start();
-			BtcChangeService.start();
+			CandlestickCache.start();
+			OBookCache.start();
+			
 			SignalService.start();
 
 			if (keyLoadedOK)
@@ -109,6 +112,7 @@ public final class Application
 	public static void main(String[] args)
 	{
 		initialize();
+		
 		FrmMain.launch();
 
 		if (!keyLoadedOK)

@@ -15,6 +15,7 @@ import org.apache.commons.io.FileUtils;
 
 import com.binance.client.SubscriptionClient;
 import com.binance.client.SyncRequestClient;
+import com.binance.client.model.event.OrderBookEvent;
 import com.binance.client.model.market.OrderBook;
 import com.binance.client.model.market.OrderBookEntry;
 
@@ -22,6 +23,7 @@ import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.model.OrderBookElement;
+import sanzol.app.task.LogService;
 import sanzol.app.task.PriceService;
 
 public class OBookService
@@ -58,6 +60,19 @@ public class OBookService
 
 	public OBookService request()
 	{
+		if ("BTC".equals(symbol.getNameLeft()))
+		{
+			return OBookCache.getObServiceBTC();
+		}
+		else if ("ETH".equals(symbol.getNameLeft()))
+		{
+			return OBookCache.getObServiceETH();
+		}
+		else if ("BNB".equals(symbol.getNameLeft()))
+		{
+			return OBookCache.getObServiceBNB();
+		}
+
 		SyncRequestClient syncRequestClient = SyncRequestClient.create();
 		OrderBook obook = syncRequestClient.getOrderBook(symbol.getNameLeft() + Config.DEFAULT_SYMBOL_RIGHT, 1000);
 
@@ -88,10 +103,20 @@ public class OBookService
 	}
 
 	private SubscriptionClient client = null;
+	private OrderBookEvent prevEvent;
 	public OBookService subscribeDiffDepthEvent() 
 	{
 		client = SubscriptionClient.create();
 		client.subscribeDiffDepthEvent(symbol.getName().toLowerCase(), ((event) -> {
+
+			if (prevEvent != null && !event.getLastUpdateIdInlastStream().equals(prevEvent.getLastUpdateId()))
+			{
+				mapAsks.clear();
+				mapBids.clear();
+				prevEvent = null;
+
+				LogService.info(symbol.getName() + " : Reset orderBook cache");
+			}
 
 			for (OrderBookEntry entry : event.getAsks())
 			{
@@ -107,6 +132,8 @@ public class OBookService
 				else
 					mapBids.put(entry.getPrice(), entry.getQty());
 			}
+			
+			prevEvent = event; 
 
 		}), null);
 
@@ -120,9 +147,6 @@ public class OBookService
 
 	public OBookService calc(double waMaxAccc, double waMaxDist)
 	{
-		if (client != null)
-			client.unsubscribeAll();
-
 		loadAsks();
 		loadBids();
 		loadAsksGrp();
@@ -138,7 +162,7 @@ public class OBookService
 		
 		return this;
 	}
-	
+
 	public void fixShocks()
 	{
 		if (shortPriceWAvg != null && shortPriceWAvg.doubleValue() > shortPriceBBlk.doubleValue())
@@ -508,7 +532,8 @@ public class OBookService
 		String symbol = "BTC";
 		Symbol coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
 
-		OBookService obService = OBookService.getInstance(coin).request().subscribeDiffDepthEvent();
+		//OBookService obService = OBookService.getInstance(coin).request().subscribeDiffDepthEvent();
+		OBookService obService = OBookService.getInstance(coin).subscribeDiffDepthEvent();
 		Thread.sleep(20000);
 		obService.calc(1, 1);
 

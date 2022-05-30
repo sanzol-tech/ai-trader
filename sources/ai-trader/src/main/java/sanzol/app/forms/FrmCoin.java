@@ -39,6 +39,7 @@ import sanzol.app.config.Styles;
 import sanzol.app.listener.PriceListener;
 import sanzol.app.service.OBookService;
 import sanzol.app.service.Symbol;
+import sanzol.app.task.LogService;
 import sanzol.app.task.PriceService;
 import sanzol.app.util.Convert;
 import sanzol.app.util.PriceUtil;
@@ -66,7 +67,6 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JPanel pnlWA;
 
 	private JButton btnSearch;
-	private JButton btnRefresh;
 	private JButton btnExport;
 	private JButton btnLongShockBB;
 	private JButton btnLongShockFP;
@@ -465,11 +465,6 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtHigh.setBounds(314, 72, 86, 20);
 		contentPane.add(txtHigh);
 		
-		btnRefresh = new JButton("Full O.Book");
-		btnRefresh.setOpaque(true);
-		btnRefresh.setBounds(430, 22, 100, 22);
-		contentPane.add(btnRefresh);
-		
 		lnkTradingview = new JLabel("TradingView");
 		lnkTradingview.setHorizontalAlignment(SwingConstants.TRAILING);
 		lnkTradingview.setForeground(Styles.COLOR_LINK);
@@ -496,7 +491,7 @@ public class FrmCoin extends JFrame implements PriceListener
 				try {
 					Desktop.getDesktop().browse(new URI("https://es.tradingview.com/chart/?symbol=BINANCE%3A" + symbol.getName()));
 				} catch (Exception ex) {
-					System.err.println(ex.getMessage());
+					LogService.error(ex);
 				}
 			}
 		});
@@ -535,13 +530,6 @@ public class FrmCoin extends JFrame implements PriceListener
 		btnLongShockWA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtLongPriceWA.getText(), false);
-			}
-		});
-
-
-		btnRefresh.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				loadOBook(true);
 			}
 		});
 
@@ -602,7 +590,7 @@ public class FrmCoin extends JFrame implements PriceListener
 			{
 				setTitle(TITLE + " - " + symbol.getNameLeft());
 
-				loadOBook(false);
+				loadOBook();
 			}
 			else
 			{
@@ -615,7 +603,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		}
 	}
 
-	private void loadOBook(boolean isFull)
+	private void loadOBook()
 	{
 		if (symbol == null)
 		{
@@ -625,21 +613,10 @@ public class FrmCoin extends JFrame implements PriceListener
 
 		try
 		{
-			if (isFull)
-			{
-				setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				
-				obService = OBookService.getInstance(symbol).request().subscribeDiffDepthEvent();
-				Thread.sleep(30000);
-				obService.calc();
+			// ----------------------------------------------------------------
+			obService = OBookService.getInstance(symbol).request().calc();
+			// ----------------------------------------------------------------
 
-				setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			}
-			else
-			{
-				obService = OBookService.getInstance(symbol).request().calc();
-			}
-			
 			txtOBookAsk.setText(obService.printAsksGrp());
 			txtOBookBid.setText(obService.printBidsGrp());
 			txtOBookBid.setCaretPosition(0);
