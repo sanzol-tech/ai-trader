@@ -942,7 +942,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		if (iterations >= 1)
 		{
 			txtGPrice1.setText(Convert.dblToStrPercent(priceIncr));
-			txtGQty1.setText(Convert.dblToStrPercent(qtyIncr));
+			txtGQty1.setText(Convert.dblToStrPercent(Config.getCoinsIncrement1()));
 		}
 		else
 		{

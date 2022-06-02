@@ -66,6 +66,7 @@ public class FrmConfig extends JFrame
 	private JTextField txtBSMaxChange24h;
 	private JTextField txtWAMaxAccum;
 	private JTextField txtWAMaxDist;
+	private JTextField txtCoinsIncr1;
 	
 	public FrmConfig()
 	{
@@ -297,24 +298,34 @@ public class FrmConfig extends JFrame
 		txtIterations.setColumns(10);
 								
 		JLabel lblCoinsIncr = new JLabel("Qty Incr %");
-		lblCoinsIncr.setBounds(25, 65, 80, 14);
+		lblCoinsIncr.setBounds(117, 69, 80, 14);
 		pnlGrid.add(lblCoinsIncr);
 		
+		txtCoinsIncr1 = new JTextField();
+		txtCoinsIncr1.setBounds(25, 85, 72, 20);
+		txtCoinsIncr1.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtCoinsIncr1.setColumns(10);
+		pnlGrid.add(txtCoinsIncr1);
+
 		txtCoinsIncr = new JTextField();
-		txtCoinsIncr.setBounds(25, 81, 72, 20);
-		pnlGrid.add(txtCoinsIncr);
+		txtCoinsIncr.setBounds(117, 85, 72, 20);
 		txtCoinsIncr.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtCoinsIncr.setColumns(10);
+		pnlGrid.add(txtCoinsIncr);
 		
 		JLabel lblDistSL = new JLabel("SL after last %");
-		lblDistSL.setBounds(117, 65, 90, 14);
+		lblDistSL.setBounds(209, 69, 90, 14);
 		pnlGrid.add(lblDistSL);
 
 		txtDistBeforeSL = new JTextField();
-		txtDistBeforeSL.setBounds(117, 81, 72, 20);
+		txtDistBeforeSL.setBounds(209, 85, 72, 20);
 		pnlGrid.add(txtDistBeforeSL);
 		txtDistBeforeSL.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtDistBeforeSL.setColumns(10);
+		
+		JLabel lblCoinsIncr1 = new JLabel("Qty Incr %");
+		lblCoinsIncr1.setBounds(25, 69, 80, 14);
+		pnlGrid.add(lblCoinsIncr1);
 		
 		JPanel pnlOBook = new JPanel();
 		pnlOBook.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " O.Book ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -417,6 +428,7 @@ public class FrmConfig extends JFrame
 		
 		txtIterations.setText(String.valueOf(Config.getIterations()));
 		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPriceIncrement())); 
+		txtCoinsIncr1.setText(Convert.dblToStrPercent(Config.getCoinsIncrement1()));
 		txtCoinsIncr.setText(Convert.dblToStrPercent(Config.getCoinsIncrement()));
 		txtDistBeforeSL.setText(Convert.dblToStrPercent(Config.getStoplossIncrement()));
 		txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));

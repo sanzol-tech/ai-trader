@@ -3,7 +3,6 @@ package sanzol.app.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.binance.client.RequestOptions;
 import com.binance.client.SyncRequestClient;
 import com.binance.client.model.enums.NewOrderRespType;
 import com.binance.client.model.enums.OrderSide;
@@ -18,10 +17,11 @@ import sanzol.app.config.Config;
 import sanzol.app.config.PrivateConfig;
 import sanzol.app.model.Position;
 import sanzol.app.model.PositionOrder;
-import sanzol.app.model.PriceQty;
 import sanzol.app.model.PositionOrder.State;
 import sanzol.app.model.PositionOrder.Type;
+import sanzol.app.model.PriceQty;
 import sanzol.app.task.BalanceService;
+import sanzol.app.task.BotService;
 import sanzol.app.task.PriceService;
 
 public class PositionTrader
@@ -33,9 +33,7 @@ public class PositionTrader
 	private Position position;
 
 	// API
-	private RequestOptions options = new RequestOptions();
-	private SyncRequestClient syncRequestClient = SyncRequestClient.create(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, options);
-
+	private SyncRequestClient syncRequestClient = SyncRequestClient.create(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY);
 
 	public Position getPosition()
 	{
@@ -327,6 +325,13 @@ public class PositionTrader
 	{
 		Order orderResult = null;
 
+		if ((pOrder.getType() == Type.TP_BUY || pOrder.getType() == Type.TP_SELL) && BotService.isTpRearrangement())
+		{
+			pOrder.setState(State.DISCARED);
+			pOrder.setResult("TP rearrangement is enabled");
+			return orderResult;
+		}
+
 		if (pOrder.getType() == Type.BUY)
 		{
 			orderResult = postOrder(OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC, 
@@ -339,7 +344,7 @@ public class PositionTrader
 					getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),
 									null, null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
-		if (pOrder.getType() == Type.TP_BUY)
+		else if (pOrder.getType() == Type.TP_BUY)
 		{
 			orderResult = postOrder(OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC, 
 					getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),

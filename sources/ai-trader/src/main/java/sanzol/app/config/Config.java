@@ -34,10 +34,11 @@ public class Config
 	public static final Double WEIGHTED_AVERAGE_MAX_DIST = 0.15;
 	
 	private static final Integer LEVERAGE = 10;
-	private static final Integer ITERATIONS = 6;
+	private static final Integer ITERATIONS = 2;
 	private static final Double PRICE_INCREMENT = 0.02;
 	private static final Double STOPLOSS_INCREMENT = 0.02;
-	private static final Double COINS_INCREMENT = 0.40;
+	private static final Double COINS_INCREMENT_1 = 0.40;
+	private static final Double COINS_INCREMENT = 0.80;
 	private static final Double TAKEPROFIT = 0.01;
 	private static final Integer POSITIONS_MAX = 5;
 	private static final Double POSITION_START_QTY = 0.03;
@@ -50,6 +51,7 @@ public class Config
 	private static Integer iterations;
 	private static Double priceIncrement;
 	private static Double stoplossIncrement;
+	private static Double coinsIncrement1;
 	private static Double coinsIncrement;
 	private static Double takeprofit;
 	private static Integer positionsMax;
@@ -98,6 +100,11 @@ public class Config
 	public static Double getStoplossIncrement()
 	{
 		return stoplossIncrement != null ? stoplossIncrement : STOPLOSS_INCREMENT;
+	}
+
+	public static Double getCoinsIncrement1()
+	{
+		return coinsIncrement1 != null ? coinsIncrement1 : COINS_INCREMENT_1;
 	}
 
 	public static Double getCoinsIncrement()
@@ -182,6 +189,16 @@ public class Config
 		Config.stoplossIncrement = Double.valueOf(stoplossIncrement);
 	}
 
+	public static void setCoinsIncrement1(Double coinsIncrement1)
+	{
+		Config.coinsIncrement1 = coinsIncrement1;
+	}
+
+	public static void setCoinsIncrement1(String coinsIncrement1)
+	{
+		Config.coinsIncrement1 = Double.valueOf(coinsIncrement1);
+	}
+
 	public static void setCoinsIncrement(Double coinsIncrement)
 	{
 		Config.coinsIncrement = coinsIncrement;
@@ -242,6 +259,7 @@ public class Config
 			prop.setProperty("iterations", String.valueOf(getIterations()));
 			prop.setProperty("price_increment", String.valueOf(getPriceIncrement()));
 			prop.setProperty("stoploss_increment", String.valueOf(getStoplossIncrement()));
+			prop.setProperty("coins_increment1", String.valueOf(getCoinsIncrement1()));
 			prop.setProperty("coins_increment", String.valueOf(getCoinsIncrement()));
 			prop.setProperty("takeprofit", String.valueOf(getTakeprofit()));
 			prop.setProperty("positions_max", String.valueOf(getPositionsMax()));
@@ -278,6 +296,8 @@ public class Config
 					priceIncrement = Double.valueOf(prop.getProperty("price_increment"));
 				if (prop.containsKey("stoploss_increment"))
 					stoplossIncrement = Double.valueOf(prop.getProperty("stoploss_increment"));
+				if (prop.containsKey("coins_increment1"))
+					coinsIncrement1 = Double.valueOf(prop.getProperty("coins_increment1"));
 				if (prop.containsKey("coins_increment"))
 					coinsIncrement = Double.valueOf(prop.getProperty("coins_increment"));
 				if (prop.containsKey("takeprofit"))
