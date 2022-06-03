@@ -28,7 +28,10 @@ import sanzol.app.task.PriceService;
 
 public class OBookService
 {
+	private static final int BLOCKS_COUNT = 5;
+
 	private Symbol symbol;
+	private BigDecimal blockSize;
 	private double minPrice;
 	private double maxPrice;
 
@@ -50,11 +53,15 @@ public class OBookService
 	private BigDecimal shortPriceFixed;
 	private BigDecimal longPriceFixed;
 
+	private OBookService()
+	{
+		//
+	}
+	
 	public static OBookService getInstance(Symbol symbol)
 	{
 		OBookService obServise = new OBookService();
 		obServise.symbol = symbol;
-
 		return obServise;
 	}
 
@@ -76,26 +83,28 @@ public class OBookService
 		SyncRequestClient syncRequestClient = SyncRequestClient.create();
 		OrderBook obook = syncRequestClient.getOrderBook(symbol.getNameLeft() + Config.DEFAULT_SYMBOL_RIGHT, 1000);
 
-		maxPrice = obook.getAsks().get(0).getPrice().doubleValue() * 10;
+		//maxPrice = obook.getAsks().get(0).getPrice().doubleValue() * 10;
 		for (OrderBookEntry entry : obook.getAsks())
 		{
+			/*
 			if (entry.getPrice().doubleValue() >= maxPrice)
 			{
 				break;
 			}
-
+			*/
 			mapAsks.put(entry.getPrice(), entry.getQty());
 		}
 
 		//minPrice = Math.pow(10, -symbol.getTickSize()) * 10;
-		minPrice = obook.getBids().get(0).getPrice().doubleValue() / 10;
+		//minPrice = obook.getBids().get(0).getPrice().doubleValue() / 10;
 		for (OrderBookEntry entry : obook.getBids())
 		{
+			/*
 			if (entry.getPrice().doubleValue() <= minPrice)
 			{
 				break;
 			}
-
+			*/
 			mapBids.put(entry.getPrice(), entry.getQty());
 		}
 
@@ -147,16 +156,21 @@ public class OBookService
 
 	public OBookService calc(double waMaxAccc, double waMaxDist)
 	{
+		double price = PriceService.getLastPrice(symbol).doubleValue();
+		blockSize = getBlockSize(price);
+		maxPrice = price + (blockSize.doubleValue() * BLOCKS_COUNT);
+		minPrice = price - (blockSize.doubleValue() * BLOCKS_COUNT);
+		
 		loadAsks();
 		loadBids();
 		loadAsksGrp();
 		loadBidsGrp();
 
 		this.shortPriceBBlk = getBestBlockAsks();
-		this.longPriceBBlk = geBestBlockBids();
+		this.longPriceBBlk = getBestBlockBids();
 
-		this.shortPriceWAvg = weightedAverage(asks, waMaxAccc, waMaxDist);
-		this.longPriceWAvg = weightedAverage(bids, waMaxAccc, waMaxDist);
+		this.shortPriceWAvg = weightedAverageAsks(); // weightedAverage(asks, waMaxAccc, waMaxDist);
+		this.longPriceWAvg = weightedAverageBids(); // weightedAverage(bids, waMaxAccc, waMaxDist);
 
 		fixShocks();
 		
@@ -243,6 +257,11 @@ public class OBookService
 			OrderBookElement eMax = null;
 			for (OrderBookElement e : asksGrp)
 			{
+				if (e.getPrice().doubleValue() > maxPrice)
+				{
+					break;
+				}
+
 				if ((eMax == null) || (eMax.getQty().compareTo(e.getQty()) == -1))
 				{
 					eMax = e;
@@ -253,13 +272,18 @@ public class OBookService
 		return null;
 	}
 
-	public BigDecimal geBestBlockBids()
+	public BigDecimal getBestBlockBids()
 	{
 		if (bidsGrp != null && !bidsGrp.isEmpty())
 		{
 			OrderBookElement eMax = null;
 			for (OrderBookElement e : bidsGrp)
 			{
+				if (e.getPrice().doubleValue() < minPrice)
+				{
+					break;
+				}
+
 				if ((eMax == null) || (eMax.getQty().compareTo(e.getQty()) == -1))
 				{
 					eMax = e;
@@ -270,6 +294,7 @@ public class OBookService
 		return null;
 	}
 
+	/*
 	public static BigDecimal weightedAverage(List<OrderBookElement> lst, double maxAccumPercent, double maxDist)
 	{
 		BigDecimal sumProd = BigDecimal.ZERO;
@@ -287,7 +312,44 @@ public class OBookService
 
 		return sumProd.divide(sumQty, RoundingMode.HALF_UP);
 	}
+	*/
 
+	public BigDecimal weightedAverageAsks()
+	{
+		BigDecimal sumProd = BigDecimal.ZERO;
+		BigDecimal sumQty = BigDecimal.ZERO;
+
+		for (OrderBookElement entry : asks)
+		{
+			if (entry.getPrice().doubleValue() > maxPrice)
+			{
+				break;
+			}
+			sumProd = sumProd.add(entry.getPrice().multiply(entry.getQty()));
+			sumQty = sumQty.add(entry.getQty());
+		}
+
+		return sumProd.divide(sumQty, RoundingMode.HALF_UP);
+	}
+	
+	public BigDecimal weightedAverageBids()
+	{
+		BigDecimal sumProd = BigDecimal.ZERO;
+		BigDecimal sumQty = BigDecimal.ZERO;
+
+		for (OrderBookElement entry : bids)
+		{
+			if (entry.getPrice().doubleValue() < minPrice)
+			{
+				break;
+			}
+			sumProd = sumProd.add(entry.getPrice().multiply(entry.getQty()));
+			sumQty = sumQty.add(entry.getQty());
+		}
+
+		return sumProd.divide(sumQty, RoundingMode.HALF_UP);
+	}
+	
 	// ------------------------------------------------------------------------
 
 	private void loadAsks()
@@ -345,7 +407,7 @@ public class OBookService
 
 		asksGrp = new ArrayList<OrderBookElement>();
 
-		BigDecimal blockSize = getBlockSize();
+		//BigDecimal blockSize = getBlockSize();
 		BigDecimal price = asks.get(0).getPrice();
 		BigDecimal priceBlock = price.add(blockSize);
 		BigDecimal qty = asks.get(0).getQty();
@@ -388,7 +450,7 @@ public class OBookService
 
 		bidsGrp = new ArrayList<OrderBookElement>();
 
-		BigDecimal blockSize = getBlockSize();
+		//BigDecimal blockSize = getBlockSize();
 		BigDecimal price = bids.get(0).getPrice();
 		BigDecimal priceBlock = price.subtract(blockSize);
 		BigDecimal qty = bids.get(0).getQty();
@@ -422,6 +484,7 @@ public class OBookService
 		bidsGrp.add(newElement);
 	}
 
+	/*
 	private BigDecimal getBlockSize()
 	{
 		if ("BTC".equalsIgnoreCase(symbol.getNameLeft()))
@@ -436,10 +499,35 @@ public class OBookService
 		{
 			return BigDecimal.valueOf(0.001);
 		}
+		else if ("DOT".equalsIgnoreCase(symbol.getNameLeft()))
+		{
+			return BigDecimal.valueOf(0.01);
+		}
 		
 		final BigDecimal[] BLOCK_SIZE = { BigDecimal.valueOf(10), BigDecimal.valueOf(1), BigDecimal.valueOf(0.1), BigDecimal.valueOf(0.01), BigDecimal.valueOf(0.001), BigDecimal.valueOf(0.0001) };
 
 		return BLOCK_SIZE[symbol.getTickSize() < 1 ? 0 : symbol.getTickSize() - 1];
+	}
+	*/
+
+	private BigDecimal getBlockSize(double price)
+	{
+		if (price < 0.01)
+			return BigDecimal.valueOf(0.00001);
+		else if (price < 0.1)
+			return BigDecimal.valueOf(0.0001);
+		else if (price < 1)
+			return BigDecimal.valueOf(0.001);
+		else if (price < 10)
+			return BigDecimal.valueOf(0.01);
+		else if (price < 100)
+			return BigDecimal.valueOf(0.1);
+		else if (price < 1000)
+			return BigDecimal.valueOf(1);
+		else if (price < 10000)
+			return BigDecimal.valueOf(10);
+		else
+			return BigDecimal.valueOf(100);
 	}
 
 	// ------------------------------------------------------------------------

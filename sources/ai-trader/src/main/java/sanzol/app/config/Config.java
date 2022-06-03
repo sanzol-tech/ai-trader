@@ -39,7 +39,7 @@ public class Config
 	private static final Double STOPLOSS_INCREMENT = 0.02;
 	private static final Double COINS_INCREMENT_1 = 0.40;
 	private static final Double COINS_INCREMENT = 0.80;
-	private static final Double TAKEPROFIT = 0.01;
+	private static final Double TAKEPROFIT = 0.006;
 	private static final Integer POSITIONS_MAX = 5;
 	private static final Double POSITION_START_QTY = 0.03;
 	private static final Double POSITION_START_QTY_MAX = 0.035;
