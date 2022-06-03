@@ -475,6 +475,7 @@ public class FrmConfig extends JFrame
 
 			Config.setIterations(txtIterations.getText());
 			Config.setPriceIncrement(Convert.strPercentToDbl(txtPriceIncr.getText()));
+			Config.setCoinsIncrement1(Convert.strPercentToDbl(txtCoinsIncr1.getText()));
 			Config.setCoinsIncrement(Convert.strPercentToDbl(txtCoinsIncr.getText()));
 			Config.setStoplossIncrement(Convert.strPercentToDbl(txtDistBeforeSL.getText()));
 			Config.setTakeprofit(Convert.strPercentToDbl(txtTProfit.getText()));

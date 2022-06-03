@@ -1247,11 +1247,11 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	
 	private void post(PostStyle postStyle)
 	{
+		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
 		INFO("");
 		try
 		{
-			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
 			String result = pMaker.post(postStyle);
 			if (result != null)
 			{
@@ -1265,13 +1265,13 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			// ------------------------------------------------------------
 			btnPostFirst.setEnabled(false);
 			btnPostOthers.setEnabled(postStyle.equals(PostStyle.FIRST));
-
-			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
 		catch(Exception e)
 		{
 			ERROR(e);
 		}	
+
+		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 
 	public void save(String filename)

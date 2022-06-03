@@ -24,7 +24,7 @@ public class Config
 
 	//Pair
 	public static final String DEFAULT_SYMBOL_RIGHT = "USDT";
-	
+
 	//Better symbols
 	public static final double BETTER_SYMBOLS_MIN_VOLUME = 100000000;
 	public static final double BETTER_SYMBOLS_MAX_CHANGE = 10;
@@ -32,14 +32,14 @@ public class Config
 	//O.Book weighted average
 	public static final Double WEIGHTED_AVERAGE_MAX_ACCUM = 0.4;
 	public static final Double WEIGHTED_AVERAGE_MAX_DIST = 0.15;
-	
+
 	private static final Integer LEVERAGE = 10;
 	private static final Integer ITERATIONS = 2;
 	private static final Double PRICE_INCREMENT = 0.02;
 	private static final Double STOPLOSS_INCREMENT = 0.02;
-	private static final Double COINS_INCREMENT_1 = 0.40;
-	private static final Double COINS_INCREMENT = 0.80;
-	private static final Double TAKEPROFIT = 0.006;
+	private static final Double COINS_INCREMENT_1 = 0.0;
+	private static final Double COINS_INCREMENT = 1.0;
+	private static final Double TAKEPROFIT = 0.01;
 	private static final Integer POSITIONS_MAX = 5;
 	private static final Double POSITION_START_QTY = 0.03;
 	private static final Double POSITION_START_QTY_MAX = 0.035;
