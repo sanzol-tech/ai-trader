@@ -2,6 +2,14 @@
 *for Binance futures*
 #
 
+- Trading signals
+- Automatic analysis of the order book
+- Automatic take profit rearrangement
+- Automatic stop loss rearrangement
+- Wallet Balances
+- Powerful order forms
+
+
 ![image](https://user-images.githubusercontent.com/68629815/170796997-176f45ae-326f-46df-bb05-6833def5712b.png)
 
 ![image](https://user-images.githubusercontent.com/68629815/168664375-2cf6493f-8f36-4928-9e96-7c7985248422.png)
