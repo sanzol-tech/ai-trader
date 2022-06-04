@@ -28,7 +28,7 @@ import sanzol.app.task.PriceService;
 
 public class OBookService
 {
-	private static final int BLOCKS_COUNT = 5;
+	public static final int BLOCKS_TO_ANALYZE = 6;
 
 	private Symbol symbol;
 	private BigDecimal blockSize;
@@ -158,8 +158,8 @@ public class OBookService
 	{
 		double price = PriceService.getLastPrice(symbol).doubleValue();
 		blockSize = getBlockSize(price);
-		maxPrice = price + (blockSize.doubleValue() * BLOCKS_COUNT);
-		minPrice = price - (blockSize.doubleValue() * BLOCKS_COUNT);
+		maxPrice = price + (blockSize.doubleValue() * BLOCKS_TO_ANALYZE);
+		minPrice = price - (blockSize.doubleValue() * BLOCKS_TO_ANALYZE);
 		
 		loadAsks();
 		loadBids();
@@ -569,7 +569,7 @@ public class OBookService
 			for (int i = asksGrp.size() - 1; i >= 0; i--)
 			{
 				OrderBookElement ele = asksGrp.get(i);
-				sb.append(String.format("%-10s : %10s  %8.2f %%\n", symbol.priceToStr(ele.getPrice()), symbol.qtyToStr(ele.getQty()), ele.getSumPercent().multiply(BigDecimal.valueOf(100.0))));
+				sb.append(String.format("%-12s  %12s  %9.2f %%\n", symbol.priceToStr(ele.getPrice()), symbol.qtyToStr(ele.getQty()), ele.getSumPercent().multiply(BigDecimal.valueOf(100.0))));
 			}
 			return sb.toString();
 		}
@@ -583,7 +583,7 @@ public class OBookService
 			StringBuilder sb = new StringBuilder();
 			for (OrderBookElement ele : bidsGrp)
 			{
-				sb.append(String.format("%-10s : %10s  %8.2f %%\n", symbol.priceToStr(ele.getPrice()), symbol.qtyToStr(ele.getQty()), ele.getSumPercent().multiply(BigDecimal.valueOf(100.0))));
+				sb.append(String.format("%-12s  %12s  %9.2f %%\n", symbol.priceToStr(ele.getPrice()), symbol.qtyToStr(ele.getQty()), ele.getSumPercent().multiply(BigDecimal.valueOf(100.0))));
 			}
 			return sb.toString();
 		}

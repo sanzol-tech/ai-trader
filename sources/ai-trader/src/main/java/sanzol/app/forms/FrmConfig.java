@@ -30,6 +30,7 @@ import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.PrivateConfig;
 import sanzol.app.config.Styles;
+import sanzol.app.service.OBookService;
 import sanzol.app.task.LogService;
 import sanzol.app.util.Convert;
 import sanzol.lib.util.ExceptionUtils;
@@ -64,9 +65,8 @@ public class FrmConfig extends JFrame
 	private JTextField txtTProfit;
 	private JTextField txtBSMinVolume;
 	private JTextField txtBSMaxChange24h;
-	private JTextField txtWAMaxAccum;
-	private JTextField txtWAMaxDist;
 	private JTextField txtCoinsIncr1;
+	private JTextField txtBlocksToAnalyze;
 	
 	public FrmConfig()
 	{
@@ -333,29 +333,16 @@ public class FrmConfig extends JFrame
 		pnlContent.add(pnlOBook);
 		pnlOBook.setLayout(null);
 		
-		txtWAMaxAccum = new JTextField();
-		txtWAMaxAccum.setEditable(false);
-		txtWAMaxAccum.setColumns(10);
-		txtWAMaxAccum.setBounds(22, 63, 86, 20);
-		pnlOBook.add(txtWAMaxAccum);
+		txtBlocksToAnalyze = new JTextField();
+		txtBlocksToAnalyze.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtBlocksToAnalyze.setEditable(false);
+		txtBlocksToAnalyze.setColumns(10);
+		txtBlocksToAnalyze.setBounds(20, 56, 86, 20);
+		pnlOBook.add(txtBlocksToAnalyze);
 		
-		JLabel lblSum = new JLabel("Max accum %");
-		lblSum.setBounds(22, 46, 86, 14);
-		pnlOBook.add(lblSum);
-		
-		JLabel lblDistance = new JLabel("Max dist %");
-		lblDistance.setBounds(111, 46, 86, 14);
-		pnlOBook.add(lblDistance);
-		
-		txtWAMaxDist = new JTextField();
-		txtWAMaxDist.setEditable(false);
-		txtWAMaxDist.setColumns(10);
-		txtWAMaxDist.setBounds(111, 63, 86, 20);
-		pnlOBook.add(txtWAMaxDist);
-		
-		JLabel lblWeightedAverage = new JLabel("Weighted average");
-		lblWeightedAverage.setBounds(22, 26, 173, 14);
-		pnlOBook.add(lblWeightedAverage);
+		JLabel lblBlocksToAnalyze = new JLabel("Blocks to analyze");
+		lblBlocksToAnalyze.setBounds(20, 39, 110, 14);
+		pnlOBook.add(lblBlocksToAnalyze);
 		
 		// --------------------------------------------------------------------
 		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);
@@ -422,10 +409,9 @@ public class FrmConfig extends JFrame
 		txtFavCoins.setText(Config.getFavoriteSymbols());
 		txtBSMinVolume.setText(BigDecimal.valueOf(Config.BETTER_SYMBOLS_MIN_VOLUME).toPlainString());
 		txtBSMaxChange24h.setText(String.valueOf(Config.BETTER_SYMBOLS_MAX_CHANGE));
-
-		txtWAMaxAccum.setText(String.valueOf(Config.WEIGHTED_AVERAGE_MAX_ACCUM));
-		txtWAMaxDist.setText(String.valueOf(Config.WEIGHTED_AVERAGE_MAX_DIST));
 		
+		txtBlocksToAnalyze.setText(String.valueOf(OBookService.BLOCKS_TO_ANALYZE));
+
 		txtIterations.setText(String.valueOf(Config.getIterations()));
 		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPriceIncrement())); 
 		txtCoinsIncr1.setText(Convert.dblToStrPercent(Config.getCoinsIncrement1()));

@@ -1,6 +1,7 @@
 package sanzol.app.forms;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Desktop;
@@ -37,6 +38,7 @@ import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.listener.PriceListener;
+import sanzol.app.model.SymbolInfo;
 import sanzol.app.service.OBookService;
 import sanzol.app.service.Symbol;
 import sanzol.app.task.LogService;
@@ -119,11 +121,15 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JTextField txtShortPriceFP;
 	private JTextField txtShortPriceWA;
 	private JTextField txtVolume;
+	private JTextField txtBlocksToAnalyze;
+	private JTextField txtSymbolInfo;
 
 	public FrmCoin()
 	{
 		initComponents();
 		PriceService.attachRefreshObserver(this);
+		
+		txtBlocksToAnalyze.setText(String.valueOf(OBookService.BLOCKS_TO_ANALYZE));
 	}
 
 	private void initComponents()
@@ -177,8 +183,17 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtMarkPrice.setEditable(false);
 		txtMarkPrice.setForeground(Styles.COLOR_TEXT_ALT1);
 		txtMarkPrice.setColumns(10);
-		txtMarkPrice.setBounds(430, 270, 300, 20);
+		txtMarkPrice.setBounds(430, 270, 147, 20);
 		contentPane.add(txtMarkPrice);
+		
+		txtSymbolInfo = new JTextField();
+		txtSymbolInfo.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtSymbolInfo.setForeground((Color) null);
+		txtSymbolInfo.setFont(new Font("Courier New", Font.BOLD, 12));
+		txtSymbolInfo.setEditable(false);
+		txtSymbolInfo.setColumns(10);
+		txtSymbolInfo.setBounds(583, 270, 147, 20);
+		contentPane.add(txtSymbolInfo);
 		
 		scrollOBookAsk = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollOBookAsk.setBounds(430, 54, 300, 210);
@@ -340,8 +355,8 @@ public class FrmCoin extends JFrame implements PriceListener
 		lblDistFP.setBounds(206, 11, 46, 14);
 		pnlFP.add(lblDistFP);
 
-		lblTitlePoints2 = new JLabel("Weighted average (Max accum 40% / Max dist 15%)");
-		lblTitlePoints2.setBounds(30, 258, 370, 14);
+		lblTitlePoints2 = new JLabel("Weighted average");
+		lblTitlePoints2.setBounds(30, 258, 178, 14);
 		contentPane.add(lblTitlePoints2);
 
 		pnlWA = new JPanel();
@@ -410,7 +425,7 @@ public class FrmCoin extends JFrame implements PriceListener
 
 		btnExport = new JButton("Export");
 		btnExport.setOpaque(true);
-		btnExport.setBounds(643, 22, 87, 22);
+		btnExport.setBounds(643, 24, 87, 22);
 		contentPane.add(btnExport);
 
 		lbl24Hs = new JLabel("24h %");
@@ -430,7 +445,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		
 		lblLow = new JLabel("LOW");
 		lblLow.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblLow.setBounds(230, 100, 72, 14);
+		lblLow.setBounds(240, 100, 62, 14);
 		contentPane.add(lblLow);
 		
 		txt24h = new JTextField();
@@ -471,6 +486,17 @@ public class FrmCoin extends JFrame implements PriceListener
 		lnkTradingview.setBounds(121, 96, 87, 14);
 		lnkTradingview.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		contentPane.add(lnkTradingview);
+		
+		JLabel lblBlocksToAnalyze = new JLabel("blocks to analyze");
+		lblBlocksToAnalyze.setBounds(430, 30, 100, 14);
+		contentPane.add(lblBlocksToAnalyze);
+		
+		txtBlocksToAnalyze = new JTextField();
+		txtBlocksToAnalyze.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtBlocksToAnalyze.setEditable(false);
+		txtBlocksToAnalyze.setBounds(530, 26, 60, 20);
+		contentPane.add(txtBlocksToAnalyze);
+		txtBlocksToAnalyze.setColumns(10);
 
 		// ---------------------------------------------------------------------
 
@@ -553,17 +579,20 @@ public class FrmCoin extends JFrame implements PriceListener
 				SymbolTickerEvent symbolTicker = PriceService.getSymbolTickerEvent(symbol);
 				if (symbolTicker != null)
 				{
-					BigDecimal mrkPrice = PriceService.getLastPrice(symbol);
+					SymbolInfo symbolInfo = new SymbolInfo(symbolTicker);
+					
+					BigDecimal mrkPrice = symbolInfo.getLastPrice();
 					txtMarkPrice.setText(symbol.priceToStr(mrkPrice));
+					txtSymbolInfo.setText(symbolInfo.isBestShort() ? "BEST SHORT" : symbolInfo.isBestLong() ? "BEST LONG" : "");
 
-					String priceChangePercent = String.format("%.2f", symbolTicker.getPriceChangePercent());
+					String priceChangePercent = String.format("%.2f", symbolInfo.getPriceChangePercent());
 					txt24h.setText(priceChangePercent);
 					
-					BigDecimal usdVolume24h = symbolTicker.getTotalTradedQuoteAssetVolume();
+					BigDecimal usdVolume24h = symbolInfo.getUsdVolume();
 					txtVolume.setText(PriceUtil.cashFormat(usdVolume24h));
 
-					txtHigh.setText(symbolTicker.getHigh().toPlainString());
-					txtLow.setText(symbolTicker.getLow().toPlainString());
+					txtHigh.setText(symbolInfo.getHigh().toPlainString());
+					txtLow.setText(symbolInfo.getLow().toPlainString());
 
 					getDistances();
 				}
@@ -585,7 +614,7 @@ public class FrmCoin extends JFrame implements PriceListener
 			txtSymbolLeft.setText(txtSymbolLeft.getText().toUpperCase());
 			String symbolLeft = txtSymbolLeft.getText();
 			symbol = Symbol.getInstance(Symbol.getFullSymbol(symbolLeft));
-
+			
 			if (symbol != null)
 			{
 				setTitle(TITLE + " - " + symbol.getNameLeft());
@@ -665,8 +694,8 @@ public class FrmCoin extends JFrame implements PriceListener
 			BigDecimal distLgFP = PriceUtil.priceDistDown(mrkPrice, obService.getLongPriceFixed(), false);
 			txtLongDistFP.setText(Convert.dblToStrPercent(distLgFP) + " %");
 
-			if (distSh.doubleValue() <= 0.002 || distShWA.doubleValue() <= 0.002 ||
-				distLg.doubleValue() <= 0.002 || distLgWA.doubleValue() <= 0.002)
+			if ((distShFP.doubleValue() <= 0.0025 && distLgFP.doubleValue() >= 0.0075) || 
+				(distLgFP.doubleValue() <= 0.0025 && distShFP.doubleValue() >= 0.0075))
 			{
 				if(!beepDone)
 				{

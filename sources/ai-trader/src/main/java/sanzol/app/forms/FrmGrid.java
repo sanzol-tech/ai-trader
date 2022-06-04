@@ -1,6 +1,5 @@
 package sanzol.app.forms;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -316,35 +315,34 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		lblSymbol.setHorizontalAlignment(SwingConstants.LEFT);
 		lblSymbol.setBounds(16, 10, 220, 14);
 		contentPane.add(lblSymbol);
-		
+
 		txtMarkPrice = new JTextField();
 		txtMarkPrice.setHorizontalAlignment(SwingConstants.TRAILING);
-		txtMarkPrice.setForeground((Color) null);
 		txtMarkPrice.setEditable(false);
 		txtMarkPrice.setColumns(10);
 		txtMarkPrice.setBounds(368, 58, 90, 22);
 		contentPane.add(txtMarkPrice);
-		
+
 		JPanel pndGrid = new JPanel();
 		pndGrid.setBorder(UIManager.getBorder("TextField.border"));
 		pndGrid.setBounds(228, 116, 642, 80);
 		contentPane.add(pndGrid);
 		pndGrid.setLayout(null);
-		
+
 		JLabel lblGrdPrice = new JLabel("Price %");
 		lblGrdPrice.setBounds(20, 20, 53, 14);
 		pndGrid.add(lblGrdPrice);
-		
+
 		JLabel lblGrdQty = new JLabel("Qty %");
 		lblGrdQty.setBounds(20, 47, 53, 14);
 		pndGrid.add(lblGrdQty);
-		
+
 		txtGPrice1 = new JTextField();
 		txtGPrice1.setBounds(83, 18, 60, 20);
 		txtGPrice1.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtGPrice1.setColumns(10);
 		pndGrid.add(txtGPrice1);
-		
+
 		txtGPrice2 = new JTextField();
 		txtGPrice2.setBounds(151, 18, 60, 20);
 		txtGPrice2.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -560,9 +558,11 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					txtQty.setEnabled(false);
+					txtBalancePercent.setEnabled(true);
 				}
 				else if (e.getStateChange() == ItemEvent.DESELECTED) {
 					txtQty.setEnabled(true);
+					txtBalancePercent.setEnabled(false);
 				}
 			}
 		});
@@ -894,17 +894,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		else
 		{
-			btnShort.setEnabled(true);
-			btnLong.setEnabled(true);
-
-			rbPriceLimit.setEnabled(true);
-			rbPriceMark.setEnabled(true);
-			txtPrice.setEnabled(true);
-			txtMarkPrice.setEnabled(true);
-			rbQty.setEnabled(true);
-			rbQtyBalance.setEnabled(true);
-			txtQty.setEnabled(true);
-			txtBalancePercent.setEnabled(true);
+			//
 		}
 	}
 
