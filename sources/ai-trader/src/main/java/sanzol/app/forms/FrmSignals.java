@@ -12,12 +12,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
-import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,10 +32,11 @@ import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.listener.SignalListener;
 import sanzol.app.model.Price;
-import sanzol.app.model.SignalEntry;
+import sanzol.app.model.Signal;
 import sanzol.app.service.Symbol;
 import sanzol.app.task.LogService;
 import sanzol.app.task.SignalService;
+import sanzol.app.util.PriceUtil;
 import sanzol.lib.util.ExceptionUtils;
 
 public class FrmSignals extends JFrame implements SignalListener
@@ -48,18 +47,20 @@ public class FrmSignals extends JFrame implements SignalListener
 
 	private static FrmSignals myJFrame = null;
 	
-    DefaultTableModel tableModel;
+    DefaultTableModel tableModelShort;
+    DefaultTableModel tableModelLong;
 
     private JLabel lblError;
 	
-	private JButton btnGenerate;
-	private JButton btnEdit;
+	private JButton btnRestart;
 
 	private JPanel pnlContent;
 	private JPanel pnlStatusBar;
 	private JPanel pnlTopBar;
 	private JTextField txtWithdrawal;
-	private JTable table;
+	private JTable tableShort;
+	private JScrollPane scrollLong;
+	private JTable tableLong;
 
 	public FrmSignals()
 	{
@@ -84,10 +85,8 @@ public class FrmSignals extends JFrame implements SignalListener
 		pnlContent = new JPanel();
 		pnlStatusBar = new JPanel();
 		pnlStatusBar.setBorder(Styles.BORDER_UP);
-		btnGenerate = new JButton();
-		btnGenerate.setText("GENERATE");
-		btnEdit = new JButton();
-		btnEdit.setText("EDIT");
+		btnRestart = new JButton();
+		btnRestart.setText("RESTART");
 
 		JLabel lblWithdrawal = new JLabel();
 		lblWithdrawal.setText("Withdrawal");
@@ -99,29 +98,44 @@ public class FrmSignals extends JFrame implements SignalListener
 
 		lblError = new JLabel();
         
-        JScrollPane scrollPane = new JScrollPane();
+        JScrollPane scrollShort = new JScrollPane();
+        
+        scrollLong = new JScrollPane();
 
         GroupLayout pnlContentLayout = new GroupLayout(pnlContent);
         pnlContentLayout.setHorizontalGroup(
         	pnlContentLayout.createParallelGroup(Alignment.LEADING)
         		.addGroup(pnlContentLayout.createSequentialGroup()
         			.addContainerGap()
-        			.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 760, Short.MAX_VALUE)
+        			.addGroup(pnlContentLayout.createParallelGroup(Alignment.TRAILING)
+        				.addComponent(scrollShort, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 760, Short.MAX_VALUE)
+        				.addComponent(scrollLong, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 760, Short.MAX_VALUE))
         			.addContainerGap())
         );
         pnlContentLayout.setVerticalGroup(
         	pnlContentLayout.createParallelGroup(Alignment.LEADING)
         		.addGroup(pnlContentLayout.createSequentialGroup()
         			.addContainerGap()
-        			.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE)
+        			.addComponent(scrollShort, GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
+        			.addPreferredGap(ComponentPlacement.UNRELATED)
+        			.addComponent(scrollLong, GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE)
         			.addContainerGap())
         );
 
-        table = new JTable();
-        table.setShowVerticalLines(true);
-        table.setShowHorizontalLines(true);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        scrollPane.setViewportView(table);
+        tableLong = new JTable();
+        tableLong.setForeground(Styles.COLOR_TEXT_LONG);
+        tableLong.setShowVerticalLines(true);
+        tableLong.setShowHorizontalLines(true);
+        tableLong.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        scrollLong.setViewportView(tableLong);
+
+        tableShort = new JTable();
+        tableShort.setForeground(Styles.COLOR_TEXT_SHORT);
+        tableShort.setShowVerticalLines(true);
+        tableShort.setShowHorizontalLines(true);
+        tableShort.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        scrollShort.setViewportView(tableShort);
+
         pnlContent.setLayout(pnlContentLayout);
 
 		// --------------------------------------------------------------------
@@ -130,18 +144,14 @@ public class FrmSignals extends JFrame implements SignalListener
 			pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(pnlTopBarLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(btnGenerate, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(btnEdit)
-					.addContainerGap(555, Short.MAX_VALUE))
+					.addComponent(btnRestart, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(620, Short.MAX_VALUE))
 		);
 		pnlTopBarLayout.setVerticalGroup(
 			pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(pnlTopBarLayout.createSequentialGroup()
 					.addGap(12)
-					.addGroup(pnlTopBarLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnGenerate)
-						.addComponent(btnEdit))
+					.addComponent(btnRestart)
 					.addContainerGap(11, Short.MAX_VALUE))
 		);
 		pnlTopBar.setLayout(pnlTopBarLayout);
@@ -195,7 +205,7 @@ public class FrmSignals extends JFrame implements SignalListener
 			}
 		});
 
-        table.addMouseListener(new MouseAdapter() {
+        tableShort.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mousePressed(MouseEvent mouseEvent) {
                 JTable table =(JTable) mouseEvent.getSource();
@@ -206,18 +216,12 @@ public class FrmSignals extends JFrame implements SignalListener
             }
         });
 		
-		btnGenerate.addActionListener(new ActionListener() {
+		btnRestart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				generate();
 			}
 		});
-		
-		btnEdit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				FrmPointsEditor.launch();
-			}
-		});
-		
+
 	}
 
 	// ------------------------------------------------------------------------
@@ -228,11 +232,11 @@ public class FrmSignals extends JFrame implements SignalListener
 		{
 			boolean isBotMode = false;
 
-			Symbol symbol = (Symbol) table.getValueAt(index, 0);
-			Price shShort = (Price) table.getValueAt(index, 1);
-			Price cellPrice = (Price) table.getValueAt(index, 2);
-			Price lgShock = (Price) table.getValueAt(index, 3);
-			String cellAction = (String) table.getValueAt(index, 7);
+			Symbol symbol = (Symbol) tableShort.getValueAt(index, 0);
+			Price shShort = (Price) tableShort.getValueAt(index, 1);
+			Price cellPrice = (Price) tableShort.getValueAt(index, 2);
+			Price lgShock = (Price) tableShort.getValueAt(index, 3);
+			String cellAction = (String) tableShort.getValueAt(index, 7);
 
 			if (cellAction.startsWith("SHORT"))
 			{
@@ -257,9 +261,7 @@ public class FrmSignals extends JFrame implements SignalListener
 	{
 		try
 		{
-			FrmSignalsConfirm dialog = new FrmSignalsConfirm();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
+			SignalService.restartShocks();
 		}
 		catch (Exception e)
 		{
@@ -292,33 +294,46 @@ public class FrmSignals extends JFrame implements SignalListener
     {
 		try
 		{
-	    	tableModel = new TableModel();
+	    	tableModelShort = new TableModel();
+	    	tableModelShort.addColumn("TYPE");
+	    	tableModelShort.addColumn("SYMBOL");
+	    	tableModelShort.addColumn("TARGET");
+	    	tableModelShort.addColumn("DIST %");
+	    	tableModelShort.addColumn("24Hs %");
+	    	tableModelShort.addColumn("VOLUME");
+			tableShort.setModel(tableModelShort);
 
-	    	tableModel.addColumn("SYMBOL");
-	    	tableModel.addColumn("SHORT");
-	    	tableModel.addColumn("PRICE");
-	    	tableModel.addColumn("LONG");
-	    	tableModel.addColumn("DIST%");
-	    	tableModel.addColumn("SH%");
-	    	tableModel.addColumn("LG%");
-	    	tableModel.addColumn("ACTION");
-
-			table.setModel(tableModel);
+	    	tableModelLong = new TableModel();
+	    	tableModelLong.addColumn("TYPE");
+	    	tableModelLong.addColumn("SYMBOL");
+	    	tableModelLong.addColumn("TARGET");
+	    	tableModelLong.addColumn("DIST %");
+	    	tableModelLong.addColumn("24Hs %");
+	    	tableModelLong.addColumn("VOLUME");
+			tableLong.setModel(tableModelLong);
 
 	        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
 	        rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
-	        
+
 	        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 	        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 
-	        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(5).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
+	        tableShort.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+	        tableShort.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+	        tableShort.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+	        tableShort.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
+	        tableShort.getColumnModel().getColumn(5).setCellRenderer(centerRenderer);
 
-	        table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+	        tableShort.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+	        
+	        tableLong.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+	        tableLong.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+	        tableLong.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+	        tableLong.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
+	        tableLong.getColumnModel().getColumn(5).setCellRenderer(centerRenderer);
+
+	        tableLong.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+
 		}
 		catch (Exception e)
 		{
@@ -326,25 +341,38 @@ public class FrmSignals extends JFrame implements SignalListener
 		}
     }
 
-    private void loadTable(List<SignalEntry> lstSignalEntry)
+    private void loadTable_()
 	{
-    	tableModel.setRowCount(0);
-    	
-		for (SignalEntry entry : lstSignalEntry)
+    	tableModelShort.setRowCount(0);
+
+		for (Signal entry : SignalService.getLstShortSignals())
 		{
-			Symbol symbol = entry.getSymbol();
         	Object row[] = {
+        			"SHORT",
         			entry.getSymbol(),
-    				new Price(symbol, entry.getShShock()),
-    				new Price(symbol, entry.getPrice()),
-    				new Price(symbol, entry.getLgShock()),
-    				String.format("%.2f %%", entry.getDistShLg()),
-    				String.format("%.2f %%", entry.getDistShort()),
-    				String.format("%.2f %%", entry.getDistLong()),
-    				entry.getAction()
+        			entry.getStrTargetPrice(),
+    				String.format("%.2f %%", entry.getDistance()),
+    				String.format("%.2f %%", entry.getChange24h()),
+    				PriceUtil.cashFormat(entry.getVolume())
         		};
 
-			tableModel.addRow(row);
+        	tableModelShort.addRow(row);
+        }
+
+    	tableModelLong.setRowCount(0);
+
+    	for (Signal entry : SignalService.getLstLongSignals())
+		{
+        	Object row[] = {
+        			"LONG",
+        			entry.getSymbol(),
+        			entry.getStrTargetPrice(),
+    				String.format("%.2f %%", entry.getDistance()),
+    				String.format("%.2f %%", entry.getChange24h()),
+    				PriceUtil.cashFormat(entry.getVolume())
+        		};
+
+        	tableModelLong.addRow(row);
         }
 	}
 
@@ -354,9 +382,9 @@ public class FrmSignals extends JFrame implements SignalListener
 
 		try
 		{
-			List<SignalEntry> lstSignalEntry = SignalService.getLstShockStatus();
-			loadTable(lstSignalEntry);
-			tableModel.fireTableDataChanged();
+			loadTable_();
+			tableModelShort.fireTableDataChanged();
+			tableModelLong.fireTableDataChanged();
 		}
 		catch (Exception e)
 		{

@@ -5,22 +5,24 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.binance.client.exception.BinanceApiException;
+import com.binance.client.model.event.SymbolTickerEvent;
 
 import sanzol.app.config.Constants;
 import sanzol.app.listener.SignalListener;
-import sanzol.app.model.SignalEntry;
+import sanzol.app.model.ShockPoint;
+import sanzol.app.model.Signal;
 import sanzol.app.model.SymbolInfo;
 import sanzol.app.service.OBookService;
 import sanzol.app.service.Symbol;
@@ -30,19 +32,27 @@ public final class SignalService
 {
 	private static boolean isStarted = false;
 
-	private static List<SignalEntry> lstShocks;
-	private static List<SignalEntry> lstShockStatus;
+	private static boolean onlyFavorites = true;
+
+	private static Map<String, ShockPoint> mapShockPoints = new HashMap<String, ShockPoint>();
+	private static List<Signal> lstShortSignals;
+	private static List<Signal> lstLongSignals;
 
 	private static String modified = "n/a";
 
-	public static List<SignalEntry> getLstShocks()
+	public static boolean isOnlyFavorites()
 	{
-		return lstShocks;
+		return onlyFavorites;
 	}
 
-	public static List<SignalEntry> getLstShockStatus()
+	public static void setOnlyFavorites(boolean onlyFavorites)
 	{
-		return lstShockStatus;
+		SignalService.onlyFavorites = onlyFavorites;
+	}
+
+	public static List<ShockPoint> getLstShockPoints()
+	{
+		return new ArrayList<ShockPoint>(mapShockPoints.values());
 	}
 
 	public static String getModified()
@@ -56,159 +66,179 @@ public final class SignalService
 	{
 		if (!isStarted)
 		{
-			loadShocks();
+			Timer timer1 = new Timer("SignalService");
+			timer1.schedule(new MyTask1(), 3000, 2000);
 
-			Timer timer = new Timer("SignalService");
-			timer.schedule(new MyTask(), 3000, 2000);
+			Timer timer2 = new Timer("SignalService");
+			timer2.schedule(new MyTask2(), 30000, 10000);
 
 			isStarted = true;
 		}
 	}
 
-	public static class MyTask extends TimerTask
+	public static class MyTask1 extends TimerTask
 	{
 		@Override
 		public void run()
 		{
-			verifyShocks();
+			calcSignals();
 			notifyAllLogObservers();
 		}
 	}
 
-	// -----------------------------------------------------------------------
-
-	public static void loadShocks()
+	public static class MyTask2 extends TimerTask
 	{
-		lstShocks = new ArrayList<SignalEntry>();
-		try
+		@Override
+		public void run()
 		{
-			Path path = Paths.get(Constants.DEFAULT_USER_FOLDER, Constants.SHOCKPOINTS_FILENAME);
-			List<String> lines = Files.readAllLines(path);
-			for (String line : lines)
-			{
-				String[] fields = line.split(";");
-				Symbol coin = Symbol.getInstance(Symbol.getFullSymbol(fields[0]));
-				BigDecimal shShock = new BigDecimal(fields[1]);
-				BigDecimal lgShock = new BigDecimal(fields[2]);
-
-				lstShocks.add(new SignalEntry(coin, shShock, lgShock));
-			}
-
-			modified = (new SimpleDateFormat("dd/MM HH:mm")).format(new Date(path.toFile().lastModified()));
-		}
-		catch (Exception e)
-		{
-			LogService.error(e);
+			searchShocks();
 		}
 	}
 
-	public static void searchShocks(boolean onlyFavorites, boolean onlyBetters)
+	// -----------------------------------------------------------------------
+
+	public static void restartShocks()
 	{
-		lstShocks = new ArrayList<SignalEntry>();
+		mapShockPoints = new HashMap<String, ShockPoint>();
+		lstShortSignals = new ArrayList<Signal>();
+		lstLongSignals = new ArrayList<Signal>();
+	}
+
+	public static void searchShocks()
+	{
 		try
 		{
-			List<SymbolInfo> lstSymbolsInfo = Symbol.getLstSymbolsInfo(onlyFavorites, onlyBetters);
+			List<SymbolInfo> lstSymbolsInfo = Symbol.getLstSymbolsInfo(onlyFavorites, false);
 
 			int count = 0;
 			for (SymbolInfo symbolInfo : lstSymbolsInfo)
 			{
-				try
+				ShockPoint shockPoint = mapShockPoints.get(symbolInfo.getSymbol().getName());
+				if (shockPoint != null)
 				{
-					Symbol coin = symbolInfo.getSymbol();
-					OBookService obService = OBookService.getInstance(coin).request().calc();
-
-					BigDecimal distShLg = PriceUtil.priceDistDown(obService.getShortPriceFixed(), obService.getLongPriceFixed(), true);
-
-					if ((distShLg.doubleValue() < 1.5 || distShLg.doubleValue() > 8.0))
+					Long expirationTime = shockPoint.getExpirationTime();
+					if (expirationTime != null && expirationTime > System.currentTimeMillis())
 					{
 						continue;
 					}
-
-					lstShocks.add(new SignalEntry(coin, obService.getShortPriceFixed(), obService.getLongPriceFixed()));
-
-					// ------- TODO --------
-					count++;
-					if (count > 20)	{
-						count = 0;
-						Thread.sleep(5000);
-					} else {
-						Thread.sleep(300);
-					}
-					// ------- TODO --------
-
 				}
-				catch (BinanceApiException ex)
-				{
-					LogService.error("searchShocks : " + symbolInfo.getSymbolName() + " : " +  ex.getMessage());
+
+				searchShocks(symbolInfo.getSymbol());
+
+				count++;
+				if (count > 10)	{
+					count = 0;
+					Thread.sleep(7500);
+				} else {
+					Thread.sleep(750);
 				}
 			}
 		}
 		catch (Exception e)
 		{
 			LogService.error(e);
+		}
+	}
+
+	private static void searchShocks(Symbol symbol)
+	{
+		try
+		{
+			OBookService obService = OBookService.getInstance(symbol).request().calc();
+
+			BigDecimal distShLg = PriceUtil.priceDistDown(obService.getShortPriceFixed(), obService.getLongPriceFixed(), true);
+
+			if ((distShLg.doubleValue() < 1.5 || distShLg.doubleValue() > 8.0))
+			{
+				updateShockPoint(new ShockPoint(symbol, BigDecimal.ZERO, BigDecimal.ZERO));
+			}
+			else
+			{
+				updateShockPoint(new ShockPoint(symbol, obService.getShortPriceFixed(), obService.getLongPriceFixed()));
+			}
+		}
+		catch (BinanceApiException ex)
+		{
+			LogService.error("reSearchShocks : " + symbol.getName() + " : " +  ex.getMessage());
+		}
+	}
+	
+	private static void updateShockPoint(ShockPoint shockPoint)
+	{
+		if (mapShockPoints.containsKey(shockPoint.getSymbol().getName()))
+		{
+			mapShockPoints.replace(shockPoint.getSymbol().getName(), shockPoint);
+		}
+		else
+		{
+			mapShockPoints.put(shockPoint.getSymbol().getName(), shockPoint);
 		}
 	}
 
 	// -----------------------------------------------------------------------
 
-	private static void verifyShocks()
+	public static List<Signal> getLstShortSignals()
 	{
-		if (lstShocks == null || lstShocks.isEmpty())
+		if (lstShortSignals == null)
+			return new ArrayList<Signal>();
+		else
+			return lstShortSignals;
+	}
+
+	public static List<Signal> getLstLongSignals()
+	{
+		if (lstLongSignals == null)
+			return new ArrayList<Signal>();
+		else
+			return lstLongSignals;
+	}
+
+	private static void expireShocks(Symbol symbol)
+	{
+		mapShockPoints.get(symbol.getName()).setExpirationTime(System.currentTimeMillis());
+	}
+
+	private static void calcSignals()
+	{
+		if (mapShockPoints == null || mapShockPoints.isEmpty())
 		{
 			return;
 		}
-		List<SignalEntry> list = new ArrayList<SignalEntry>();
-		list.addAll(lstShocks);
+		List<Signal> lstShorts = new ArrayList<Signal>();
+		List<Signal> lstLongs = new ArrayList<Signal>();
 
 		try
 		{
-			for (SignalEntry entry : list)
+			for (ShockPoint entry : mapShockPoints.values())
 			{
-				BigDecimal price = PriceService.getLastPrice(entry.getSymbol());
-				if (price == null || price.equals(BigDecimal.valueOf(-1)))
+				SymbolTickerEvent symbolTickerEvent = PriceService.getSymbolTickerEvent(entry.getSymbol());
+				if (symbolTickerEvent == null)
 				{
 					continue;
 				}
 
-				entry.setPrice(price);
+				BigDecimal lastPrice = symbolTickerEvent.getLastPrice();
+				BigDecimal usdVolume = symbolTickerEvent.getTotalTradedQuoteAssetVolume();
+				BigDecimal changePercent = symbolTickerEvent.getPriceChangePercent();
 
-				BigDecimal distShLg = PriceUtil.priceDistDown(entry.getShShock(), entry.getLgShock(), true);
-				BigDecimal distShort = PriceUtil.priceDistUp(price, entry.getShShock(), true);
-				BigDecimal distLong = PriceUtil.priceDistDown(price, entry.getLgShock(), true);
+				BigDecimal distShort = PriceUtil.priceDistUp(lastPrice, entry.getShShock(), true);
+				BigDecimal distLong = PriceUtil.priceDistDown(lastPrice, entry.getLgShock(), true);
 
-				String action = "";
-				if ((distShLg.doubleValue() >= 1.5 && distShLg.doubleValue() <= 8.0))
+				if ((distShort.doubleValue() <= -0.05 || distLong.doubleValue() <= -0.05))
 				{
-					if ((distShort.doubleValue() <= 0.3 && distShort.doubleValue() > -3.0))
-					{
-						action += "SHORT";
-					}
-					else if ((distLong.doubleValue() <= 0.3 && distLong.doubleValue() > -3.0))
-					{
-						action += "LONG";
-					}
-
-					if (!action.isEmpty())
-					{
-						if ((distShort.doubleValue() <= -0.2 || distLong.doubleValue() <= -0.2))
-						{
-							action += " OVFL";
-						}
-						else if ((distShort.doubleValue() <= 0.1 || distLong.doubleValue() <= 0.1))
-						{
-							action += " NOW";
-						}
-						else if ((distShort.doubleValue() <= 0.2 || distLong.doubleValue() <= 0.2))
-						{
-							action += " SOON";
-						}
-					}
+					expireShocks(entry.getSymbol());
+					continue;
 				}
 
-				entry.setDistShLg(distShLg);
-				entry.setDistShort(distShort);
-				entry.setDistLong(distLong);
-				entry.setAction(action);
+				Signal shortSignal = new Signal("SHORT", entry.getSymbol(), lastPrice, entry.getShShock(), distShort);
+				shortSignal.setChange24h(changePercent);
+				shortSignal.setVolume(usdVolume);
+				lstShorts.add(shortSignal);
+
+				Signal longSignal = new Signal("LONG", entry.getSymbol(), lastPrice, entry.getLgShock(), distLong);
+				longSignal.setChange24h(changePercent);
+				longSignal.setVolume(usdVolume);
+				lstLongs.add(longSignal);
 			}
 		}
 		catch (Exception e)
@@ -216,23 +246,25 @@ public final class SignalService
 			LogService.error(e);
 		}
 
-		Comparator<SignalEntry> comparator = Comparator.comparing(SignalEntry::bestDistance);
-		Collections.sort(list, comparator);
+		Comparator<Signal> comparator = Comparator.comparing(Signal::getDistance);
+		Collections.sort(lstShorts, comparator);
+		Collections.sort(lstLongs, comparator);
 
-		lstShockStatus = list;
-	}
+		lstShortSignals = lstShorts;
+		lstLongSignals = lstLongs;
+	}	
 
 	// -----------------------------------------------------------------------
 
 	public static String toStringShocks()
 	{
-		if (lstShocks == null || lstShocks.isEmpty())
+		if (mapShockPoints == null || mapShockPoints.isEmpty())
 		{
 			return "";
 		}
 
 		StringBuilder sb = new StringBuilder();
-		for (SignalEntry entry : lstShocks)
+		for (ShockPoint entry : mapShockPoints.values())
 		{
 			sb.append(entry.toString());
 		}
@@ -243,12 +275,12 @@ public final class SignalService
 	{
 		try
 		{
-			if (lstShocks != null & !lstShocks.isEmpty())
+			if (mapShockPoints != null & !mapShockPoints.isEmpty())
 			{
 				String text = "";
-				for (SignalEntry entry : lstShocks)
+				for (ShockPoint entry : mapShockPoints.values())
 				{
-					text += entry.getSymbol().getNameLeft() + ";" + entry.getShShock() + ";" + entry.getLgShock() + "\n";
+					text += entry.toString() + "\n";
 				}
 
 				Path path = Paths.get(Constants.DEFAULT_USER_FOLDER, Constants.SHOCKPOINTS_FILENAME);
@@ -265,40 +297,40 @@ public final class SignalService
 		return false;
 	}
 
-	public static String toStringStatus()
+	public static String toStringShorts()
 	{
-		if (lstShockStatus == null || lstShockStatus.isEmpty())
+		if (lstShortSignals == null || lstShortSignals.isEmpty())
 		{
 			return "";
 		}
 
-		String text = String.format("\n%-8s %14s %14s %14s %9s %9s %9s\n", "SYMBOL", "SHORT", "PRICE", "LONG", "DIST%", "SH%", "LG%");
-		text += StringUtils.repeat("-", 102) + "\n";
+		String text = String.format("\n%-8s %12s %9s %16s %11s\n", "SYMBOL", "TARGET", "DIST", "24h %", "VOLUME");
+		text += StringUtils.repeat("-", 60) + "\n";
 
-		for (SignalEntry entry : lstShockStatus)
+		for (Signal entry : lstShortSignals)
 		{
-			text += entry.toStringAll();
+			text += entry.toString();
 		}
 
 		return text;
 	}
 
-	public static List<SignalEntry> getShockStatus()
+	public static String toStringLongs()
 	{
-		List<SignalEntry> lst = new ArrayList<SignalEntry>();
-
-		if (lstShockStatus != null && !lstShockStatus.isEmpty())
+		if (lstLongSignals == null || lstLongSignals.isEmpty())
 		{
-			for (SignalEntry entry : lstShockStatus)
-			{
-				if (entry.getAction() != null && !entry.getAction().isEmpty())
-				{
-					lst.add(entry);
-				}
-			}
+			return "";
 		}
 
-		return lst;
+		String text = String.format("\n%-8s %12s %9s %16s %11s\n", "SYMBOL", "TARGET", "DIST", "24h %", "VOLUME");
+		text += StringUtils.repeat("-", 60) + "\n";
+
+		for (Signal entry : lstLongSignals)
+		{
+			text += entry.toString();
+		}
+
+		return text;
 	}
 
 	// ------------------------------------------------------------------------	
@@ -322,30 +354,26 @@ public final class SignalService
 			observer.onSignalUpdate();
 		}
 	}
-	
+
 	// -----------------------------------------------------------------------
 
 	public static void main(String[] args) throws Exception
 	{
 		PriceService.start();
 
-		Thread.sleep(2000);
+		Thread.sleep(5000);
 
-		/*
-		loadShocks();
-		System.out.println("");
-		System.out.println(toStringShocks());
-		*/
-
-		searchShocks(true, true); 
+		searchShocks(); 
 		System.out.println(""); 
 		System.out.println(toStringShocks());
 		saveShocks();
 
-		verifyShocks();
+		calcSignals();
 		System.out.println("");
-		System.out.println(toStringStatus());
+		System.out.println(toStringShorts());
+		System.out.println(toStringLongs());
 
+		System.out.println("!");
 	}
 
 }

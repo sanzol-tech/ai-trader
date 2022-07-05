@@ -44,7 +44,7 @@ import sanzol.app.listener.BtcChangeListener;
 import sanzol.app.listener.PositionListener;
 import sanzol.app.listener.PriceListener;
 import sanzol.app.listener.SignalListener;
-import sanzol.app.model.SignalEntry;
+import sanzol.app.model.Signal;
 import sanzol.app.service.Symbol;
 import sanzol.app.task.BalanceService;
 import sanzol.app.task.CandlestickCache;
@@ -58,7 +58,8 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 {
 	private static final long serialVersionUID = 1L;
 
-	private List<SignalEntry> lstShockStatus = null;
+	private List<Signal> lstShortSignals = null;
+	private List<Signal> lstLongSignals = null;
 
 	private JButton btnBot;
 	private JButton btnSignals;
@@ -78,7 +79,8 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	private JLabel lnkGitHub;
 
 	private JList<String> listFavorites;
-	private JList<String> listSignals;
+	private JList<String> listShortSignals;
+	private JList<String> listLongSignals;
 
 	private JPanel pnlContent;
 	private JPanel pnlStatusBar;
@@ -194,18 +196,29 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		listFavorites.setForeground(Styles.COLOR_TEXT_AREA_FG);
 		scrollFavorites.setViewportView(listFavorites);
 		
-		JScrollPane scrollSignals = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollSignals.setBorder(UIManager.getBorder("TextField.border"));
-		scrollSignals.setBounds(340, 42, 483, 307);
-		pnlContent.add(scrollSignals);
+		JScrollPane scrollShortSignals = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollShortSignals.setBorder(UIManager.getBorder("TextField.border"));
+		scrollShortSignals.setBounds(340, 42, 238, 307);
+		pnlContent.add(scrollShortSignals);
 
-		listSignals = new JList<String>();
-		listSignals.setFont(new Font("Courier New", Font.PLAIN, 11));
-		listSignals.setBackground(Styles.COLOR_TEXT_AREA_BG);
-		listSignals.setForeground(Styles.COLOR_TEXT_AREA_FG);
-		scrollSignals.setViewportView(listSignals);
+		listShortSignals = new JList<String>();
+		listShortSignals.setFont(new Font("Courier New", Font.PLAIN, 11));
+		listShortSignals.setBackground(Styles.COLOR_TEXT_AREA_BG);
+		listShortSignals.setForeground(Styles.COLOR_TEXT_SHORT);
+		scrollShortSignals.setViewportView(listShortSignals);
+
+		JScrollPane scrollLongSignals = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollLongSignals.setBorder(UIManager.getBorder("TextField.border"));
+		scrollLongSignals.setBounds(585, 42, 238, 307);
+		pnlContent.add(scrollLongSignals);
+
+		listLongSignals = new JList<String>();
+		listLongSignals.setFont(new Font("Courier New", Font.PLAIN, 11));
+		listLongSignals.setBackground(Styles.COLOR_TEXT_AREA_BG);
+		listLongSignals.setForeground(Styles.COLOR_TEXT_LONG);
+		scrollLongSignals.setViewportView(listLongSignals);
 		
-		JLabel lblSignals = new JLabel("Short or Long Entries");
+		JLabel lblSignals = new JLabel("SHORTS / LONGS");
 		lblSignals.setHorizontalAlignment(SwingConstants.LEFT);
 		lblSignals.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblSignals.setBounds(342, 15, 200, 20);
@@ -542,7 +555,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 			}
 		});
 
-		listSignals.addMouseListener(new MouseAdapter() {
+		listShortSignals.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) 
 			{
@@ -551,11 +564,25 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 				if (e.getClickCount() == 2)
 				{
 					int index = list.locationToIndex(e.getPoint());
-					tradeFromSignal(index);
+					tradeFromSignal("SHORT", index);
 				}
 			}
 		});
-		
+
+		listLongSignals.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) 
+			{
+				@SuppressWarnings("unchecked")
+				JList<String> list = (JList<String>) e.getSource();
+				if (e.getClickCount() == 2)
+				{
+					int index = list.locationToIndex(e.getPoint());
+					tradeFromSignal("LONG", index);
+				}
+			}
+		});
+
 	}
 
 	private void pageload()
@@ -753,43 +780,60 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	private void loadListSignals()
 	{
-		lstShockStatus = SignalService.getShockStatus();
-
+		lstShortSignals = SignalService.getLstShortSignals();
 		AbstractListModel<String> listModel = new AbstractListModel<String>()
 		{
 			private static final long serialVersionUID = 1L;
 
 			public int getSize()
 			{
-				return lstShockStatus.size();
+				return lstShortSignals.size();
 			}
 
 			public String getElementAt(int index)
 			{
-				return lstShockStatus.get(index).toStringSmart();
+				return lstShortSignals.get(index).toString();
 			}
 		};
+		listShortSignals.setModel(listModel);
 
-		listSignals.setModel(listModel);
+		// -------------------------------------------------------------------
+
+		lstLongSignals = SignalService.getLstLongSignals();
+		AbstractListModel<String> listModel2 = new AbstractListModel<String>()
+		{
+			private static final long serialVersionUID = 1L;
+
+			public int getSize()
+			{
+				return lstLongSignals.size();
+			}
+
+			public String getElementAt(int index)
+			{
+				return lstLongSignals.get(index).toString();
+			}
+		};
+		listLongSignals.setModel(listModel2);
 	}
 
-	private void tradeFromSignal(int index)
+	private void tradeFromSignal(String type, int index)
 	{
 		boolean isBotMode = false;
-		
-		SignalEntry entry = lstShockStatus.get(index);
 
-		if (entry.getAction().startsWith("SHORT"))
+		if ("SHORT".equals(type))
 		{
-			Double price = Math.max(entry.getPrice().doubleValue(), entry.getShShock().doubleValue());
+			Signal entry = lstShortSignals.get(index);
+			Double price = entry.getTargetPrice().doubleValue();
 			FrmGrid.launch(entry.getSymbol().getNameLeft(), "SHORT", entry.getSymbol().priceToStr(price), isBotMode);
 		}
 		else
 		{
-			Double price = Math.min(entry.getPrice().doubleValue(), entry.getLgShock().doubleValue());
+			Signal entry = lstLongSignals.get(index);
+			Double price = entry.getTargetPrice().doubleValue();
 			FrmGrid.launch(entry.getSymbol().getNameLeft(), "LONG", entry.getSymbol().priceToStr(price), isBotMode);
 		}
 	}
@@ -842,5 +886,4 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		Application.initialize();
 		launch();
 	}
-
 }
