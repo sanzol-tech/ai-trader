@@ -11,7 +11,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.math.BigDecimal;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -211,7 +210,18 @@ public class FrmSignals extends JFrame implements SignalListener
                 JTable table =(JTable) mouseEvent.getSource();
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
 					int index = table.getSelectedRow();
-					tradeFromSignal(index);
+					tradeFromSignal("SHORT", index);
+                }
+            }
+        });
+
+        tableLong.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mousePressed(MouseEvent mouseEvent) {
+                JTable table =(JTable) mouseEvent.getSource();
+                if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
+					int index = table.getSelectedRow();
+					tradeFromSignal("LONG", index);
                 }
             }
         });
@@ -226,28 +236,27 @@ public class FrmSignals extends JFrame implements SignalListener
 
 	// ------------------------------------------------------------------------
 
-	private void tradeFromSignal(int index)
+	private void tradeFromSignal(String type, int index)
 	{
 		try
 		{
 			boolean isBotMode = false;
 
-			Symbol symbol = (Symbol) tableShort.getValueAt(index, 0);
-			Price shShort = (Price) tableShort.getValueAt(index, 1);
-			Price cellPrice = (Price) tableShort.getValueAt(index, 2);
-			Price lgShock = (Price) tableShort.getValueAt(index, 3);
-			String cellAction = (String) tableShort.getValueAt(index, 7);
-
-			if (cellAction.startsWith("SHORT"))
+			if ("SHORT".equals(type))
 			{
-				BigDecimal price = cellPrice.toBigDecimal().max(shShort.toBigDecimal());
-				FrmGrid.launch(symbol.getNameLeft(), "SHORT", symbol.priceToStr(price), isBotMode);
+				Symbol symbol = (Symbol) tableShort.getValueAt(index, 1);
+				Price shShort = new Price(symbol, (String) tableShort.getValueAt(index, 2));
+
+				FrmGrid.launch(symbol.getNameLeft(), "SHORT", shShort.toString(), isBotMode);
 			}
 			else
 			{
-				BigDecimal price = cellPrice.toBigDecimal().max(lgShock.toBigDecimal());
-				FrmGrid.launch(symbol.getNameLeft(), "LONG", symbol.priceToStr(price), isBotMode);
+				Symbol symbol = (Symbol) tableLong.getValueAt(index, 1);
+				Price lgShock = new Price(symbol, (String) tableLong.getValueAt(index, 2));
+
+				FrmGrid.launch(symbol.getNameLeft(), "LONG", lgShock.toString(), isBotMode);
 			}
+
 		}
 		catch (Exception e)
 		{

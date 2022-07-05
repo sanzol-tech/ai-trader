@@ -198,7 +198,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		
 		JScrollPane scrollShortSignals = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollShortSignals.setBorder(UIManager.getBorder("TextField.border"));
-		scrollShortSignals.setBounds(340, 42, 238, 307);
+		scrollShortSignals.setBounds(340, 42, 483, 145);
 		pnlContent.add(scrollShortSignals);
 
 		listShortSignals = new JList<String>();
@@ -209,7 +209,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 		JScrollPane scrollLongSignals = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollLongSignals.setBorder(UIManager.getBorder("TextField.border"));
-		scrollLongSignals.setBounds(585, 42, 238, 307);
+		scrollLongSignals.setBounds(340, 203, 483, 145);
 		pnlContent.add(scrollLongSignals);
 
 		listLongSignals = new JList<String>();
