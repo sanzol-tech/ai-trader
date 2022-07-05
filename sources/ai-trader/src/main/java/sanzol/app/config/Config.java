@@ -25,26 +25,28 @@ public class Config
 	//Pair
 	public static final String DEFAULT_SYMBOL_RIGHT = "USDT";
 
+	//Order book
+	private static final int BLOCKS_TO_ANALYZE = 6;
+	
 	//Better symbols
-	public static final double BETTER_SYMBOLS_MIN_VOLUME = 100000000;
-	public static final double BETTER_SYMBOLS_MAX_CHANGE = 10;
+	private static final long BETTER_SYMBOLS_MIN_VOLUME = 100000000;
+	private static final double BETTER_SYMBOLS_MAX_CHANGE = 10;
 
-	//O.Book weighted average
-	public static final Double WEIGHTED_AVERAGE_MAX_ACCUM = 0.4;
-	public static final Double WEIGHTED_AVERAGE_MAX_DIST = 0.15;
+	private static final int LEVERAGE = 10;
+	private static final int ITERATIONS = 2;
+	private static final double PRICE_INCREMENT = 0.02;
+	private static final double STOPLOSS_INCREMENT = 0.02;
+	private static final double COINS_INCREMENT_1 = 0.05;
+	private static final double COINS_INCREMENT = 1.0;
+	private static final double TAKEPROFIT = 0.01;
+	private static final int POSITIONS_MAX = 5;
+	private static final double POSITION_START_QTY = 0.03;
+	private static final double POSITION_START_QTY_MAX = 0.035;
+	private static final double BALANCE_MIN_AVAILABLE = 0.30;
 
-	private static final Integer LEVERAGE = 10;
-	private static final Integer ITERATIONS = 2;
-	private static final Double PRICE_INCREMENT = 0.02;
-	private static final Double STOPLOSS_INCREMENT = 0.02;
-	private static final Double COINS_INCREMENT_1 = 0.05;
-	private static final Double COINS_INCREMENT = 1.0;
-	private static final Double TAKEPROFIT = 0.01;
-	private static final Integer POSITIONS_MAX = 5;
-	private static final Double POSITION_START_QTY = 0.03;
-	private static final Double POSITION_START_QTY_MAX = 0.035;
-	private static final Double BALANCE_MIN_AVAILABLE = 0.30;
-
+	private static Integer blocksToAnalize;
+	private static Long betterSymbolsMinVolume;
+	private static Double betterSymbolsMaxChange;
 	private static Boolean isDarkMode;
 	private static String favoriteSymbols;
 	private static Integer leverage;
@@ -75,6 +77,21 @@ public class Config
 	public static Boolean isDarkMode()
 	{
 		return isDarkMode != null ? isDarkMode : IS_DARK_MODE;
+	}
+
+	public static Integer getBlocksToAnalize()
+	{
+		return blocksToAnalize != null ? blocksToAnalize : BLOCKS_TO_ANALYZE;
+	}
+
+	public static Long getBetterSymbolsMinVolume()
+	{
+		return betterSymbolsMinVolume != null ? betterSymbolsMinVolume : BETTER_SYMBOLS_MIN_VOLUME;
+	}
+
+	public static Double getBetterSymbolsMaxChange()
+	{
+		return betterSymbolsMaxChange != null ? betterSymbolsMaxChange : BETTER_SYMBOLS_MAX_CHANGE;
 	}
 
 	public static String getFavoriteSymbols()
@@ -139,16 +156,46 @@ public class Config
 
 	// -----------------------------------------------------------------------
 
-	public static void setFavoriteSymbols(String favoriteSymbols)
-	{
-		Config.favoriteSymbols = favoriteSymbols;
-	}
-
 	public static void setDarkMode(boolean isDarkMode)
 	{
 		Config.isDarkMode = isDarkMode;
 	}
 
+	public static void setBlocksToAnalize(Integer blocksToAnalize)
+	{
+		Config.blocksToAnalize = blocksToAnalize;
+	}
+	
+	public static void setBlocksToAnalize(String blocksToAnalize)
+	{
+		Config.blocksToAnalize = Integer.valueOf(blocksToAnalize);
+	}
+
+	public static void setBetterSymbolsMinVolume(Long betterSymbolsMinVolume)
+	{
+		Config.betterSymbolsMinVolume = betterSymbolsMinVolume;
+	}
+
+	public static void setBetterSymbolsMinVolume(String betterSymbolsMinVolume)
+	{
+		Config.betterSymbolsMinVolume = Long.valueOf(betterSymbolsMinVolume);
+	}
+
+	public static void setBetterSymbolsMaxChange(Double betterSymbolsMaxChange)
+	{
+		Config.betterSymbolsMaxChange = betterSymbolsMaxChange;
+	}
+	
+	public static void setBetterSymbolsMaxChange(String betterSymbolsMaxChange)
+	{
+		Config.betterSymbolsMaxChange = Double.valueOf(betterSymbolsMaxChange);
+	}
+
+	public static void setFavoriteSymbols(String favoriteSymbols)
+	{
+		Config.favoriteSymbols = favoriteSymbols;
+	}
+	
 	public static void setLeverage(Integer leverage)
 	{
 		Config.leverage = leverage;
@@ -254,6 +301,9 @@ public class Config
 			Properties prop = new Properties();
 
 			prop.setProperty("is_dark_mode", String.valueOf(isDarkMode()));
+			prop.setProperty("better_symbols_min_volume", String.valueOf(getBetterSymbolsMinVolume()));
+			prop.setProperty("better_symbols_max_change", String.valueOf(getBetterSymbolsMaxChange()));
+			prop.setProperty("blocks_to_analize", String.valueOf(getBlocksToAnalize()));
 			prop.setProperty("favorite_symbols", getFavoriteSymbols());
 			prop.setProperty("leverage", String.valueOf(getLeverage()));
 			prop.setProperty("iterations", String.valueOf(getIterations()));
@@ -284,6 +334,12 @@ public class Config
 
 				prop.load(input);
 
+				if (prop.containsKey("better_symbols_min_volume"))
+					betterSymbolsMinVolume = Long.valueOf(prop.getProperty("better_symbols_min_volume"));
+				if (prop.containsKey("better_symbols_max_change"))
+					betterSymbolsMaxChange = Double.valueOf(prop.getProperty("better_symbols_max_change"));
+				if (prop.containsKey("blocks_to_analize"))
+					blocksToAnalize = Integer.valueOf(prop.getProperty("blocks_to_analize"));
 				if (prop.containsKey("favorite_symbols"))
 					favoriteSymbols = prop.getProperty("favorite_symbols");
 				if (prop.containsKey("is_dark_mode"))

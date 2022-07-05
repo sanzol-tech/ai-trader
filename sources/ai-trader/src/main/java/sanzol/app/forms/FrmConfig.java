@@ -30,7 +30,6 @@ import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.PrivateConfig;
 import sanzol.app.config.Styles;
-import sanzol.app.service.OBookService;
 import sanzol.app.task.LogService;
 import sanzol.app.util.Convert;
 import sanzol.lib.util.ExceptionUtils;
@@ -226,13 +225,11 @@ public class FrmConfig extends JFrame
 		pnlSymbols.setLayout(null);
 				
 		txtBSMinVolume = new JTextField();
-		txtBSMinVolume.setEditable(false);
 		txtBSMinVolume.setBounds(24, 111, 86, 20);
 		pnlSymbols.add(txtBSMinVolume);
 		txtBSMinVolume.setColumns(10);
 		
 		txtBSMaxChange24h = new JTextField();
-		txtBSMaxChange24h.setEditable(false);
 		txtBSMaxChange24h.setBounds(113, 111, 86, 20);
 		pnlSymbols.add(txtBSMaxChange24h);
 		txtBSMaxChange24h.setColumns(10);
@@ -335,7 +332,6 @@ public class FrmConfig extends JFrame
 		
 		txtBlocksToAnalyze = new JTextField();
 		txtBlocksToAnalyze.setHorizontalAlignment(SwingConstants.TRAILING);
-		txtBlocksToAnalyze.setEditable(false);
 		txtBlocksToAnalyze.setColumns(10);
 		txtBlocksToAnalyze.setBounds(20, 56, 86, 20);
 		pnlOBook.add(txtBlocksToAnalyze);
@@ -407,13 +403,14 @@ public class FrmConfig extends JFrame
 	private void loadConfig()
 	{
 		txtFavCoins.setText(Config.getFavoriteSymbols());
-		txtBSMinVolume.setText(BigDecimal.valueOf(Config.BETTER_SYMBOLS_MIN_VOLUME).toPlainString());
-		txtBSMaxChange24h.setText(String.valueOf(Config.BETTER_SYMBOLS_MAX_CHANGE));
-		
-		txtBlocksToAnalyze.setText(String.valueOf(OBookService.BLOCKS_TO_ANALYZE));
+
+		txtBSMinVolume.setText(BigDecimal.valueOf(Config.getBetterSymbolsMinVolume()).toPlainString());
+		txtBSMaxChange24h.setText(String.valueOf(Config.getBetterSymbolsMaxChange()));
+
+		txtBlocksToAnalyze.setText(String.valueOf(Config.getBlocksToAnalize()));
 
 		txtIterations.setText(String.valueOf(Config.getIterations()));
-		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPriceIncrement())); 
+		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPriceIncrement()));
 		txtCoinsIncr1.setText(Convert.dblToStrPercent(Config.getCoinsIncrement1()));
 		txtCoinsIncr.setText(Convert.dblToStrPercent(Config.getCoinsIncrement()));
 		txtDistBeforeSL.setText(Convert.dblToStrPercent(Config.getStoplossIncrement()));
@@ -457,8 +454,10 @@ public class FrmConfig extends JFrame
 	{
 		try
 		{
+			Config.setBetterSymbolsMinVolume(txtBSMinVolume.getText());
+			Config.setBetterSymbolsMaxChange(txtBSMaxChange24h.getText());
+			Config.setBlocksToAnalize(txtBlocksToAnalyze.getText());
 			Config.setFavoriteSymbols(txtFavCoins.getText());
-
 			Config.setIterations(txtIterations.getText());
 			Config.setPriceIncrement(Convert.strPercentToDbl(txtPriceIncr.getText()));
 			Config.setCoinsIncrement1(Convert.strPercentToDbl(txtCoinsIncr1.getText()));

@@ -28,8 +28,6 @@ import sanzol.app.task.PriceService;
 
 public class OBookService
 {
-	public static final int BLOCKS_TO_ANALYZE = 6;
-
 	private Symbol symbol;
 	private BigDecimal blockSize;
 	private double minPrice;
@@ -151,15 +149,15 @@ public class OBookService
 
 	public OBookService calc()
 	{
-		return calc(Config.WEIGHTED_AVERAGE_MAX_ACCUM, Config.WEIGHTED_AVERAGE_MAX_DIST);
+		return calc(Config.getBlocksToAnalize());
 	}
 
-	public OBookService calc(double waMaxAccc, double waMaxDist)
+	public OBookService calc(int blocksToAnalize)
 	{
 		double price = PriceService.getLastPrice(symbol).doubleValue();
 		blockSize = getBlockSize(price);
-		maxPrice = price + (blockSize.doubleValue() * BLOCKS_TO_ANALYZE);
-		minPrice = price - (blockSize.doubleValue() * BLOCKS_TO_ANALYZE);
+		maxPrice = price + (blockSize.doubleValue() * blocksToAnalize);
+		minPrice = price - (blockSize.doubleValue() * blocksToAnalize);
 		
 		loadAsks();
 		loadBids();
@@ -169,8 +167,8 @@ public class OBookService
 		this.shortPriceBBlk = getBestBlockAsks();
 		this.longPriceBBlk = getBestBlockBids();
 
-		this.shortPriceWAvg = weightedAverageAsks(); // weightedAverage(asks, waMaxAccc, waMaxDist);
-		this.longPriceWAvg = weightedAverageBids(); // weightedAverage(bids, waMaxAccc, waMaxDist);
+		this.shortPriceWAvg = weightedAverageAsks();
+		this.longPriceWAvg = weightedAverageBids();
 
 		fixShocks();
 		
@@ -631,7 +629,7 @@ public class OBookService
 		//OBookService obService = OBookService.getInstance(coin).request().subscribeDiffDepthEvent();
 		OBookService obService = OBookService.getInstance(coin).subscribeDiffDepthEvent();
 		Thread.sleep(20000);
-		obService.calc(1, 1);
+		obService.calc(6);
 
 		System.out.println("");
 		System.out.println(coin.getNameLeft());

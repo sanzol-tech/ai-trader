@@ -129,7 +129,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		initComponents();
 		PriceService.attachRefreshObserver(this);
 		
-		txtBlocksToAnalyze.setText(String.valueOf(OBookService.BLOCKS_TO_ANALYZE));
+		txtBlocksToAnalyze.setText(String.valueOf(Config.getBlocksToAnalize()));
 	}
 
 	private void initComponents()

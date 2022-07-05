@@ -56,8 +56,8 @@ public class SymbolInfo
 		minUsdQty = symbol.getMinQty().multiply(high);
 
 		isMinUsdQtyHigh = (minUsdQty.doubleValue() > MIN_USDT);
-		isLowVolume = (usdVolume.doubleValue() < Config.BETTER_SYMBOLS_MIN_VOLUME);
-		isHighMove = (priceChangePercent.abs().doubleValue() > Config.BETTER_SYMBOLS_MAX_CHANGE);
+		isLowVolume = (usdVolume.doubleValue() < Config.getBetterSymbolsMinVolume());
+		isHighMove = (priceChangePercent.abs().doubleValue() > Config.getBetterSymbolsMaxChange());
 		isBestShort = (lastPrice.doubleValue() > avgHigh.doubleValue());
 		isBestLong = (lastPrice.doubleValue() < avgLow.doubleValue());
 	}
