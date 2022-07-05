@@ -214,7 +214,7 @@ public class Symbol
 
 		return lstSymbolsInfo;
 	}
-	
+
 	public static List<String> getLstSymbolsMini(boolean onlyFavorites, boolean onlyBetters)
 	{
 		List<String> list = new ArrayList<String>();
@@ -222,8 +222,21 @@ public class Symbol
 		List<SymbolInfo> lstSymbolsInfo = getLstSymbolsInfo(onlyFavorites, onlyBetters);
 		for (SymbolInfo entry : lstSymbolsInfo)
 		{
-			Symbol coin = entry.getSymbol();
-			list.add(String.format("%-8s   %10s   %8.2f %%", coin.getNameLeft(), coin.priceToStr(entry.getLastPrice()), entry.getPriceChangePercent()));
+			Symbol symbol = entry.getSymbol();
+			list.add(String.format("%-8s   %10s   %8.2f %%", symbol.getNameLeft(), symbol.priceToStr(entry.getLastPrice()), entry.getPriceChangePercent()));
+		}
+		
+		return list;
+	}
+
+	public static List<String> getLstSymbolNames(boolean onlyFavorites, boolean onlyBetters)
+	{
+		List<String> list = new ArrayList<String>();
+
+		List<SymbolInfo> lstSymbolsInfo = getLstSymbolsInfo(onlyFavorites, onlyBetters);
+		for (SymbolInfo entry : lstSymbolsInfo)
+		{
+			list.add(entry.getSymbol().getName());
 		}
 		
 		return list;

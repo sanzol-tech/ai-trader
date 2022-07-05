@@ -231,7 +231,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		pnlContent.add(chkOnlyFavorites);
 
 		chkOnlyBetters = new JCheckBox("Only betters");
-		chkOnlyBetters.setSelected(true);
+		chkOnlyBetters.setSelected(false);
 		chkOnlyBetters.setBounds(116, 15, 99, 23);
 		pnlContent.add(chkOnlyBetters);
 		
@@ -731,7 +731,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 			ERROR(e);
 		}
 	}
-	
+
 	public void btcInfo()
 	{
 		final String BTC_PAIR_SYMBOL = "BTC" + Config.DEFAULT_SYMBOL_RIGHT;
@@ -783,6 +783,11 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 	private void loadListSignals()
 	{
+		SignalService.setOnlyFavorites(chkOnlyFavorites.isSelected());
+		SignalService.setOnlyBetters(chkOnlyBetters.isSelected());
+
+		// -------------------------------------------------------------------
+
 		lstShortSignals = SignalService.getLstShortSignals();
 		AbstractListModel<String> listModel = new AbstractListModel<String>()
 		{

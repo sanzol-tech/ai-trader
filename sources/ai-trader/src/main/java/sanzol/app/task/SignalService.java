@@ -9,10 +9,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,6 +36,7 @@ public final class SignalService
 	private static boolean isStarted = false;
 
 	private static boolean onlyFavorites = true;
+	private static boolean onlyBetters = true;
 
 	private static Map<String, ShockPoint> mapShockPoints = new HashMap<String, ShockPoint>();
 	private static List<Signal> lstShortSignals;
@@ -48,6 +52,16 @@ public final class SignalService
 	public static void setOnlyFavorites(boolean onlyFavorites)
 	{
 		SignalService.onlyFavorites = onlyFavorites;
+	}
+
+	public static boolean isOnlyBetters()
+	{
+		return onlyBetters;
+	}
+
+	public static void setOnlyBetters(boolean onlyBetters)
+	{
+		SignalService.onlyBetters = onlyBetters;
 	}
 
 	public static List<ShockPoint> getLstShockPoints()
@@ -67,10 +81,10 @@ public final class SignalService
 		if (!isStarted)
 		{
 			Timer timer1 = new Timer("SignalService");
-			timer1.schedule(new MyTask1(), 3000, 2000);
+			timer1.schedule(new MyTask1(), 32000, 2000);
 
 			Timer timer2 = new Timer("SignalService");
-			timer2.schedule(new MyTask2(), 30000, 10000);
+			timer2.schedule(new MyTask2(), 30000, 20000);
 
 			isStarted = true;
 		}
@@ -108,7 +122,7 @@ public final class SignalService
 	{
 		try
 		{
-			List<SymbolInfo> lstSymbolsInfo = Symbol.getLstSymbolsInfo(onlyFavorites, false);
+			List<SymbolInfo> lstSymbolsInfo = Symbol.getLstSymbolsInfo(onlyFavorites, onlyBetters);
 
 			int count = 0;
 			for (SymbolInfo symbolInfo : lstSymbolsInfo)
@@ -117,7 +131,7 @@ public final class SignalService
 				if (shockPoint != null)
 				{
 					Long expirationTime = shockPoint.getExpirationTime();
-					if (expirationTime != null && expirationTime > System.currentTimeMillis())
+					if (expirationTime != null && expirationTime + TimeUnit.MINUTES.toMillis(2) > System.currentTimeMillis())
 					{
 						continue;
 					}
@@ -145,6 +159,8 @@ public final class SignalService
 		try
 		{
 			OBookService obService = OBookService.getInstance(symbol).request().calc();
+
+			// System.out.println("-> CALC SHOCK " + symbol.getNameLeft() + " <-");
 
 			BigDecimal distShLg = PriceUtil.priceDistDown(obService.getShortPriceFixed(), obService.getLongPriceFixed(), true);
 
@@ -196,6 +212,8 @@ public final class SignalService
 	private static void expireShocks(Symbol symbol)
 	{
 		mapShockPoints.get(symbol.getName()).setExpirationTime(System.currentTimeMillis());
+		
+		// System.out.println("-> EXPIRE SHOCK " + symbol.getNameLeft() + " <-");
 	}
 
 	private static void calcSignals()
@@ -209,8 +227,22 @@ public final class SignalService
 
 		try
 		{
+			List<String> lstSymbols = Symbol.getLstSymbolNames(onlyFavorites, onlyBetters);
+			Set<String> setSymbols = new HashSet<>(lstSymbols);
+
 			for (ShockPoint entry : mapShockPoints.values())
 			{
+				if (!setSymbols.contains(entry.getSymbol().getName()))
+				{
+					continue;
+				}
+
+				if (entry.getExpirationTime() < System.currentTimeMillis() || 
+				   (entry.getShShock().doubleValue() == 0 && entry.getLgShock().doubleValue() == 0))
+				{
+					continue;
+				}
+				
 				SymbolTickerEvent symbolTickerEvent = PriceService.getSymbolTickerEvent(entry.getSymbol());
 				if (symbolTickerEvent == null)
 				{
@@ -304,7 +336,7 @@ public final class SignalService
 			return "";
 		}
 
-		String text = String.format("\n%-8s %12s %9s %16s %11s\n", "SYMBOL", "TARGET", "DIST", "24h %", "VOLUME");
+		String text = String.format("\n%-8s %12s %9s %17s %10s\n", "SYMBOL", "TARGET", "DIST", "24h %", "VOLUME");
 		text += StringUtils.repeat("-", 60) + "\n";
 
 		for (Signal entry : lstShortSignals)
@@ -322,7 +354,7 @@ public final class SignalService
 			return "";
 		}
 
-		String text = String.format("\n%-8s %12s %9s %16s %11s\n", "SYMBOL", "TARGET", "DIST", "24h %", "VOLUME");
+		String text = String.format("\n%-8s %12s %9s %17s %10s\n", "SYMBOL", "TARGET", "DIST", "24h %", "VOLUME");
 		text += StringUtils.repeat("-", 60) + "\n";
 
 		for (Signal entry : lstLongSignals)
@@ -363,7 +395,7 @@ public final class SignalService
 
 		Thread.sleep(5000);
 
-		searchShocks(); 
+		searchShocks();
 		System.out.println(""); 
 		System.out.println(toStringShocks());
 		saveShocks();

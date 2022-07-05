@@ -118,7 +118,7 @@ public class Signal
 
 	public String toString()
 	{
-		return String.format("%-8s %12s %7.2f %%  |  24hs %5.2f %%  vol %6s\n", symbol.getNameLeft(), symbol.priceToStr(targetPrice), distance, change24h, PriceUtil.cashFormat(volume));
+		return String.format("%-8s %12s %7.2f %%  |  24hs %6.2f %%  vol %5s\n", symbol.getNameLeft(), symbol.priceToStr(targetPrice), distance, change24h, PriceUtil.cashFormat(volume));
 	}
 
 }
