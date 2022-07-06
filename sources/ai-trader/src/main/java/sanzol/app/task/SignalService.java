@@ -232,17 +232,12 @@ public final class SignalService
 
 			for (ShockPoint entry : mapShockPoints.values())
 			{
-				if (!setSymbols.contains(entry.getSymbol().getName()))
-				{
-					continue;
-				}
-
 				if (entry.getExpirationTime() < System.currentTimeMillis() || 
 				   (entry.getShShock().doubleValue() == 0 && entry.getLgShock().doubleValue() == 0))
 				{
 					continue;
 				}
-				
+
 				SymbolTickerEvent symbolTickerEvent = PriceService.getSymbolTickerEvent(entry.getSymbol());
 				if (symbolTickerEvent == null)
 				{
@@ -259,6 +254,11 @@ public final class SignalService
 				if ((distShort.doubleValue() <= -0.05 || distLong.doubleValue() <= -0.05))
 				{
 					expireShocks(entry.getSymbol());
+					continue;
+				}
+
+				if (!setSymbols.contains(entry.getSymbol().getName()))
+				{
 					continue;
 				}
 

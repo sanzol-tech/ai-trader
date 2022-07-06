@@ -32,7 +32,7 @@ public final class Application
 			PriceService.start();
 			CandlestickCache.start();
 			OBookCache.start();
-			
+
 			SignalService.start();
 
 			if (keyLoadedOK)

@@ -22,7 +22,6 @@ public class Signal
 
 	public Signal(String type, Symbol symbol, BigDecimal markPrice, BigDecimal targetPrice, BigDecimal distance)
 	{
-		super();
 		this.type = type;
 		this.symbol = symbol;
 		this.markPrice = markPrice;
