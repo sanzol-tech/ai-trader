@@ -14,6 +14,10 @@
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
   <icon>D:\sources\ai-trader\dist\logo.ico</icon>
+  <singleInstance>
+    <mutexName>ai-trader</mutexName>
+    <windowTitle>ai-trader</windowTitle>
+  </singleInstance>
   <jre>
     <path></path>
     <bundledJre64Bit>false</bundledJre64Bit>
