@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.concurrent.TimeUnit;
 
 import sanzol.app.service.Symbol;
+import sanzol.app.util.PriceUtil;
 
 public class ShockPoint
 {
@@ -12,6 +13,8 @@ public class ShockPoint
 	private Symbol symbol;
 	private BigDecimal shShock;
 	private BigDecimal lgShock;
+	private BigDecimal shortTProfit;
+	private BigDecimal longTProfit;
 	private Long expirationTime;
 
 	public ShockPoint()
@@ -19,19 +22,28 @@ public class ShockPoint
 		//
 	}
 
+	public static ShockPoint NULL(Symbol symbol)
+	{
+		return new ShockPoint(symbol, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, System.currentTimeMillis() + EXPIRATION_MILLIS);
+	}
+
 	public ShockPoint(Symbol symbol, BigDecimal shShock, BigDecimal lgShock)
 	{
 		this.symbol = symbol;
 		this.shShock = shShock;
 		this.lgShock = lgShock;
+		this.shortTProfit =  PriceUtil.priceDistDown(shShock, lgShock, true);
+		this.longTProfit =  PriceUtil.priceDistUp(lgShock, shShock, true);
 		this.expirationTime = System.currentTimeMillis() + EXPIRATION_MILLIS;
 	}
 
-	public ShockPoint(Symbol symbol, BigDecimal shShock, BigDecimal lgShock, Long expirationTime)
+	public ShockPoint(Symbol symbol, BigDecimal shShock, BigDecimal lgShock, BigDecimal shTarget, BigDecimal lgTarget, Long expirationTime)
 	{
 		this.symbol = symbol;
 		this.shShock = shShock;
 		this.lgShock = lgShock;
+		this.shortTProfit = shTarget;
+		this.longTProfit = lgTarget;
 		this.expirationTime = expirationTime;
 	}
 
@@ -63,6 +75,26 @@ public class ShockPoint
 	public void setLgShock(BigDecimal lgShock)
 	{
 		this.lgShock = lgShock;
+	}
+
+	public BigDecimal getShortTProfit()
+	{
+		return shortTProfit;
+	}
+
+	public void setShortTProfit(BigDecimal shortTProfit)
+	{
+		this.shortTProfit = shortTProfit;
+	}
+
+	public BigDecimal getLongTProfit()
+	{
+		return longTProfit;
+	}
+
+	public void setLongTProfit(BigDecimal longTProfit)
+	{
+		this.longTProfit = longTProfit;
 	}
 
 	public Long getExpirationTime()

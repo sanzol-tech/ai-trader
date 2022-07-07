@@ -33,15 +33,15 @@ public class Config
 	private static final double BETTER_SYMBOLS_MAX_CHANGE = 10;
 
 	private static final int LEVERAGE = 10;
-	private static final int ITERATIONS = 2;
+	private static final int ITERATIONS = 4;
 	private static final double PRICE_INCREMENT = 0.02;
-	private static final double STOPLOSS_INCREMENT = 0.02;
+	private static final double STOPLOSS_INCREMENT = 0.01;
 	private static final double COINS_INCREMENT_1 = 0.05;
 	private static final double COINS_INCREMENT = 1.0;
-	private static final double TAKEPROFIT = 0.01;
+	private static final double TAKEPROFIT = 0.015;
 	private static final int POSITIONS_MAX = 5;
-	private static final double POSITION_START_QTY = 0.03;
-	private static final double POSITION_START_QTY_MAX = 0.035;
+	private static final double POSITION_START_QTY = 0.1;
+	private static final double POSITION_START_QTY_MAX = 0.1;
 	private static final double BALANCE_MIN_AVAILABLE = 0.30;
 
 	private static Integer blocksToAnalize;

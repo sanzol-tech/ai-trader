@@ -160,22 +160,22 @@ public final class SignalService
 		{
 			OBookService obService = OBookService.getInstance(symbol).request().calc();
 
-			// System.out.println("-> CALC SHOCK " + symbol.getNameLeft() + " <-");
-
 			BigDecimal distShLg = PriceUtil.priceDistDown(obService.getShortPriceFixed(), obService.getLongPriceFixed(), true);
 
-			if ((distShLg.doubleValue() < 1.5 || distShLg.doubleValue() > 8.0))
+			if ((distShLg.doubleValue() < 1.0 || distShLg.doubleValue() > 8.0))
 			{
-				updateShockPoint(new ShockPoint(symbol, BigDecimal.ZERO, BigDecimal.ZERO));
+				updateShockPoint(ShockPoint.NULL(symbol));
+				LogService.info("DISCARD NEW SIGNALS FROM " + symbol.getNameLeft());
 			}
 			else
 			{
 				updateShockPoint(new ShockPoint(symbol, obService.getShortPriceFixed(), obService.getLongPriceFixed()));
+				LogService.info("CALC NEW SIGNALS FROM " + symbol.getNameLeft() + " AT " + obService.getShortPriceFixed() + " & " + obService.getLongPriceFixed());
 			}
 		}
 		catch (BinanceApiException ex)
 		{
-			LogService.error("reSearchShocks : " + symbol.getName() + " : " +  ex.getMessage());
+			LogService.error("searchShocks : " + symbol.getName() + " : " +  ex.getMessage());
 		}
 	}
 	
@@ -213,7 +213,7 @@ public final class SignalService
 	{
 		mapShockPoints.get(symbol.getName()).setExpirationTime(System.currentTimeMillis());
 		
-		// System.out.println("-> EXPIRE SHOCK " + symbol.getNameLeft() + " <-");
+		LogService.info("EXPIRE SIGNALS FROM " + symbol.getNameLeft());
 	}
 
 	private static void calcSignals()
@@ -262,12 +262,12 @@ public final class SignalService
 					continue;
 				}
 
-				Signal shortSignal = new Signal("SHORT", entry.getSymbol(), lastPrice, entry.getShShock(), distShort);
+				Signal shortSignal = new Signal("SHORT", entry.getSymbol(), lastPrice, entry.getShShock(), entry.getShortTProfit(), distShort);
 				shortSignal.setChange24h(changePercent);
 				shortSignal.setVolume(usdVolume);
 				lstShorts.add(shortSignal);
 
-				Signal longSignal = new Signal("LONG", entry.getSymbol(), lastPrice, entry.getLgShock(), distLong);
+				Signal longSignal = new Signal("LONG", entry.getSymbol(), lastPrice, entry.getLgShock(), entry.getLongTProfit(), distLong);
 				longSignal.setChange24h(changePercent);
 				longSignal.setVolume(usdVolume);
 				lstLongs.add(longSignal);

@@ -306,16 +306,18 @@ public class FrmSignals extends JFrame implements SignalListener
 	    	tableModelShort = new TableModel();
 	    	tableModelShort.addColumn("TYPE");
 	    	tableModelShort.addColumn("SYMBOL");
-	    	tableModelShort.addColumn("TARGET");
+	    	tableModelShort.addColumn("PRICE");
+	    	tableModelShort.addColumn("TP %");
 	    	tableModelShort.addColumn("DIST %");
-	    	tableModelShort.addColumn("24Hs %");
-	    	tableModelShort.addColumn("VOLUME");
+	    	tableModelShort.addColumn("CHANGE 24h");
+	    	tableModelShort.addColumn("VOLUME 24h");
 			tableShort.setModel(tableModelShort);
 
 	    	tableModelLong = new TableModel();
 	    	tableModelLong.addColumn("TYPE");
 	    	tableModelLong.addColumn("SYMBOL");
-	    	tableModelLong.addColumn("TARGET");
+	    	tableModelLong.addColumn("PRICE");
+	    	tableModelLong.addColumn("TP %");
 	    	tableModelLong.addColumn("DIST %");
 	    	tableModelLong.addColumn("24Hs %");
 	    	tableModelLong.addColumn("VOLUME");
@@ -332,6 +334,7 @@ public class FrmSignals extends JFrame implements SignalListener
 	        tableShort.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
 	        tableShort.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
 	        tableShort.getColumnModel().getColumn(5).setCellRenderer(centerRenderer);
+	        tableShort.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
 
 	        tableShort.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 	        
@@ -340,6 +343,7 @@ public class FrmSignals extends JFrame implements SignalListener
 	        tableLong.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
 	        tableLong.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
 	        tableLong.getColumnModel().getColumn(5).setCellRenderer(centerRenderer);
+	        tableLong.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
 
 	        tableLong.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
@@ -360,6 +364,7 @@ public class FrmSignals extends JFrame implements SignalListener
         			"SHORT",
         			entry.getSymbol(),
         			entry.getStrTargetPrice(),
+        			String.format("%.2f %%", entry.getTakeProfit()),
     				String.format("%.2f %%", entry.getDistance()),
     				String.format("%.2f %%", entry.getChange24h()),
     				PriceUtil.cashFormat(entry.getVolume())
@@ -376,6 +381,7 @@ public class FrmSignals extends JFrame implements SignalListener
         			"LONG",
         			entry.getSymbol(),
         			entry.getStrTargetPrice(),
+        			String.format("%.2f %%", entry.getTakeProfit()),
     				String.format("%.2f %%", entry.getDistance()),
     				String.format("%.2f %%", entry.getChange24h()),
     				PriceUtil.cashFormat(entry.getVolume())
