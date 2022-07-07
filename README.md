@@ -9,7 +9,7 @@
 - Wallet Balances
 - Powerful order forms
 
-![image](https://user-images.githubusercontent.com/68629815/177242145-bbe5154f-177b-48ff-9918-ea27b0de2a21.png)
+![image](https://user-images.githubusercontent.com/68629815/177672261-04758a7b-b35f-4544-a134-2d2d71752d51.png)
 
 ![image](https://user-images.githubusercontent.com/68629815/168664375-2cf6493f-8f36-4928-9e96-7c7985248422.png)
 
@@ -28,9 +28,11 @@
 *:warning: THIS PROJECT IS UNDER CONSTRUCTION :warning:*
 
 ### Getting started
-> Download
-https://github.com/sanzol-tech/ai-trader/blob/main/deploy/ai-trader.jar
+> Download .jar
+https://github.com/sanzol-tech/ai-trader/blob/main/dist/ai-trader.jar
 
+> Download .exe for Windows
+https://github.com/sanzol-tech/ai-trader/blob/main/dist/ai-trader.exe
 
 ### Requirements
 - JRE/JDK 1.8 or later
