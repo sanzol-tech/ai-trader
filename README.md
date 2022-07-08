@@ -35,7 +35,7 @@ https://github.com/sanzol-tech/ai-trader/blob/main/dist/ai-trader.jar
 https://github.com/sanzol-tech/ai-trader/blob/main/dist/ai-trader.exe
 
 ### Requirements
-- JRE/JDK 1.8 or later
+- JRE/JDK 11.0.8 or later
 - Windows, Linux-based distros or Mac OS
 
 
