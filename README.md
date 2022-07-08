@@ -9,7 +9,7 @@
 - Wallet Balances
 - Powerful order forms
 
-![image](https://user-images.githubusercontent.com/68629815/177672261-04758a7b-b35f-4544-a134-2d2d71752d51.png)
+![image](https://user-images.githubusercontent.com/68629815/178065184-6381c127-4953-4c44-af58-464098522fdc.png)
 
 ![image](https://user-images.githubusercontent.com/68629815/168664375-2cf6493f-8f36-4928-9e96-7c7985248422.png)
 
