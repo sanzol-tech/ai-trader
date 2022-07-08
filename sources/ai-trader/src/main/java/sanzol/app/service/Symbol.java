@@ -21,6 +21,7 @@ import com.binance.client.model.market.ExchangeInformation;
 import sanzol.app.config.Config;
 import sanzol.app.model.SymbolInfo;
 import sanzol.app.task.PriceService;
+import sanzol.app.util.PriceUtil;
 
 public class Symbol
 {
@@ -209,7 +210,7 @@ public class Symbol
 			lstSymbolsInfo.add(symbolInfo);
 		}
 
-		Comparator<SymbolInfo> orderComparator = Comparator.comparing(SymbolInfo::getSymbolName);
+		Comparator<SymbolInfo> orderComparator = Comparator.comparing(SymbolInfo::getUsdVolume).reversed();
 		Collections.sort(lstSymbolsInfo, orderComparator);
 
 		return lstSymbolsInfo;
@@ -223,9 +224,9 @@ public class Symbol
 		for (SymbolInfo entry : lstSymbolsInfo)
 		{
 			Symbol symbol = entry.getSymbol();
-			list.add(String.format("%-8s   %10s   %8.2f %%", symbol.getNameLeft(), symbol.priceToStr(entry.getLastPrice()), entry.getPriceChangePercent()));
+			list.add(String.format("%-10s %10.2f %% %8s", symbol.getNameLeft(), entry.getPriceChangePercent(), PriceUtil.cashFormat(entry.getUsdVolume())));
 		}
-		
+
 		return list;
 	}
 

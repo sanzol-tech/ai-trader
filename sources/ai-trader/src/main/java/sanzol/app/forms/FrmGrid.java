@@ -60,6 +60,7 @@ import sanzol.app.task.BalanceService;
 import sanzol.app.task.PositionService;
 import sanzol.app.task.PriceService;
 import sanzol.app.util.Convert;
+import sanzol.lib.util.BeepUtils;
 import sanzol.lib.util.ExceptionUtils;
 
 public class FrmGrid extends JFrame implements PriceListener, PositionListener
@@ -825,7 +826,6 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		{
 			if (symbol != null)
 			{
-				searchPosition();
 				autoPostOthers();
 			}
 		}
@@ -853,8 +853,6 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 				BigDecimal price = PriceService.getLastPrice(symbol);
 				txtPriceShow.setText(symbol.priceToStr(price));
 				txtMarkPrice.setText(symbol.priceToStr(price));
-				
-				searchPosition();
 			}
 			else
 			{
@@ -871,30 +869,37 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	private void searchPosition()
 	{
 		PositionRisk positionRisk = PositionService.getPositionRisk(symbol.getName());
-		isOpenPosition = (positionRisk != null && positionRisk.getPositionAmt().compareTo(BigDecimal.ZERO) != 0);
 		if (isOpenPosition)
 		{
 			txtPositionPrice.setText(symbol.priceToStr(positionRisk.getEntryPrice()));
 			double amt = positionRisk.getPositionAmt().doubleValue();
 			txtPositionQty.setText(symbol.qtyToStr(amt));
-
-			if (amt > 0)
-				btnShort.setEnabled(false);
-			if (amt < 0)
-				btnLong.setEnabled(false);
-
-			rbPriceLimit.setEnabled(false);
-			rbPriceMark.setEnabled(false);
-			txtPrice.setEnabled(false);
-			txtMarkPrice.setEnabled(false);
-			rbQty.setEnabled(false);
-			rbQtyBalance.setEnabled(false);
-			txtQty.setEnabled(false);
-			txtBalancePercent.setEnabled(false);
 		}
 		else
 		{
-			//
+			isOpenPosition = (positionRisk != null && positionRisk.getPositionAmt().compareTo(BigDecimal.ZERO) != 0);
+			if (isOpenPosition)
+			{
+				txtPositionPrice.setText(symbol.priceToStr(positionRisk.getEntryPrice()));
+				double amt = positionRisk.getPositionAmt().doubleValue();
+				txtPositionQty.setText(symbol.qtyToStr(amt));
+	
+				if (amt > 0)
+					btnShort.setEnabled(false);
+				if (amt < 0)
+					btnLong.setEnabled(false);
+	
+				rbPriceLimit.setEnabled(false);
+				rbPriceMark.setEnabled(false);
+				txtPrice.setEnabled(false);
+				txtMarkPrice.setEnabled(false);
+				rbQty.setEnabled(false);
+				rbQtyBalance.setEnabled(false);
+				txtQty.setEnabled(false);
+				txtBalancePercent.setEnabled(false);
+				
+				BeepUtils.beep3();
+			}
 		}
 	}
 

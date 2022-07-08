@@ -7,9 +7,11 @@ import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 
@@ -30,6 +32,7 @@ public class OBookService
 {
 	private Symbol symbol;
 	private BigDecimal blockSize;
+	private double lastPrice;
 	private double minPrice;
 	private double maxPrice;
 
@@ -154,10 +157,10 @@ public class OBookService
 
 	public OBookService calc(int blocksToAnalize)
 	{
-		double price = PriceService.getLastPrice(symbol).doubleValue();
-		blockSize = getBlockSize(price);
-		maxPrice = price + (blockSize.doubleValue() * blocksToAnalize);
-		minPrice = price - (blockSize.doubleValue() * blocksToAnalize);
+		lastPrice = PriceService.getLastPrice(symbol).doubleValue();
+		blockSize = getBlockSize(lastPrice);
+		maxPrice = lastPrice + (blockSize.doubleValue() * blocksToAnalize);
+		minPrice = lastPrice - (blockSize.doubleValue() * blocksToAnalize);
 		
 		loadAsks();
 		loadBids();
@@ -529,6 +532,100 @@ public class OBookService
 	}
 
 	// ------------------------------------------------------------------------
+	
+	public List<OrderBookElement> searchSuperAskBlocks()
+	{
+		return searchSuperAskBlocks(Config.getBlocksToAnalize() * 2);
+	}
+	
+	public List<OrderBookElement> searchSuperAskBlocks(int blocksToAnalize)
+	{
+		double maxPrice_ = lastPrice + (blockSize.doubleValue() * blocksToAnalize);
+		
+		List<OrderBookElement> list = new ArrayList<OrderBookElement>();
+
+		double avgQty = 0;
+		int count = 0;
+		for (OrderBookElement e : asks)
+		{
+			if (e.getPrice().doubleValue() > maxPrice_)
+			{
+				break;
+			}
+			
+			avgQty += e.getQty().doubleValue();
+			count++;
+		}
+		avgQty = avgQty / count;
+
+		for (OrderBookElement e : asks)
+		{
+			if (e.getPrice().doubleValue() > maxPrice_)
+			{
+				continue;
+			}
+
+			if (e.getQty().doubleValue() < avgQty * 3)
+			{
+				continue;
+			}
+			
+			list.add(new OrderBookElement(e.getPrice(), e.getQty(), e.getSumQty(), e.getSumPercent(), e.getDistance()));
+		}
+		Collections.sort(list, Comparator.comparing(OrderBookElement::getQty).reversed());
+		list = list.stream().limit(10).collect(Collectors.toList());
+		Collections.sort(list, Comparator.comparing(OrderBookElement::getPrice).reversed());
+		
+		return list;
+	}
+
+	public List<OrderBookElement> searchSuperBidBlocks()
+	{
+		return searchSuperBidBlocks(Config.getBlocksToAnalize() * 2);
+	}
+	
+	public List<OrderBookElement> searchSuperBidBlocks(int blocksToAnalize)
+	{
+		double minPrice_ = lastPrice - (blockSize.doubleValue() * blocksToAnalize);
+		
+		List<OrderBookElement> list = new ArrayList<OrderBookElement>();
+
+		double avgQty = 0;
+		int count = 0;
+		for (OrderBookElement e : bids)
+		{
+			if (e.getPrice().doubleValue() < minPrice_)
+			{
+				break;
+			}
+			
+			avgQty += e.getQty().doubleValue();
+			count++;
+		}
+		avgQty = avgQty / count;
+
+		for (OrderBookElement e : bids)
+		{
+			if (e.getPrice().doubleValue() < minPrice_)
+			{
+				continue;
+			}
+
+			if (e.getQty().doubleValue() < avgQty * 3)
+			{
+				continue;
+			}
+			
+			list.add(new OrderBookElement(e.getPrice(), e.getQty(), e.getSumQty(), e.getSumPercent(), e.getDistance()));
+		}
+		Collections.sort(list, Comparator.comparing(OrderBookElement::getQty).reversed());
+		list = list.stream().limit(10).collect(Collectors.toList());
+		Collections.sort(list, Comparator.comparing(OrderBookElement::getPrice).reversed());
+
+		return list;
+	}	
+	
+	// ------------------------------------------------------------------------
 
 	public String printAsks()
 	{
@@ -588,6 +685,20 @@ public class OBookService
 		return null;
 	}
 
+	public String printSuperBlks(List<OrderBookElement> list)
+	{
+		if (list != null && !list.isEmpty())
+		{
+			StringBuilder sb = new StringBuilder();
+			for (OrderBookElement ele : list)
+			{
+				sb.append(String.format("%-10s  %10s\n", symbol.priceToStr(ele.getPrice()), symbol.qtyToStr(ele.getQty())));
+			}
+			return sb.toString();
+		}
+		return "";
+	}
+
 	// -----------------------------------------------------------------------
 
 	public void export() throws IOException
@@ -623,12 +734,13 @@ public class OBookService
 	{
 		Application.initialize();
 
-		String symbol = "BTC";
+		String symbol = "LINK";
 		Symbol coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
 
 		//OBookService obService = OBookService.getInstance(coin).request().subscribeDiffDepthEvent();
-		OBookService obService = OBookService.getInstance(coin).subscribeDiffDepthEvent();
-		Thread.sleep(20000);
+		//OBookService obService = OBookService.getInstance(coin).subscribeDiffDepthEvent();
+		OBookService obService = OBookService.getInstance(coin).request();		
+		Thread.sleep(500);
 		obService.calc(6);
 
 		System.out.println("");
@@ -653,7 +765,15 @@ public class OBookService
 		System.out.println("");
 		System.out.println("LONG B.Blk:   " + obService.getLongPriceBBlk());
 		System.out.println("LONG W.AVG:   " + obService.getLongPriceWAvg());
+		
+		System.out.println("");
+		List<OrderBookElement> listSa = obService.searchSuperAskBlocks();
+		System.out.println(obService.printSuperBlks(listSa));
+
+		System.out.println("");
+		List<OrderBookElement> listSb = obService.searchSuperBidBlocks();
+		System.out.println(obService.printSuperBlks(listSb));
 
 	}
-
+	
 }

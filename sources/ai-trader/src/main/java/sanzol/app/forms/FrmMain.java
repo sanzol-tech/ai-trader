@@ -187,7 +187,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 		JScrollPane scrollFavorites = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollFavorites.setBorder(UIManager.getBorder("TextField.border"));
-		scrollFavorites.setBounds(15, 42, 299, 307);
+		scrollFavorites.setBounds(15, 42, 257, 307);
 		pnlContent.add(scrollFavorites);
 
 		listFavorites = new JList<String>();
@@ -198,7 +198,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		
 		JScrollPane scrollShortSignals = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollShortSignals.setBorder(UIManager.getBorder("TextField.border"));
-		scrollShortSignals.setBounds(340, 42, 483, 145);
+		scrollShortSignals.setBounds(296, 42, 527, 145);
 		pnlContent.add(scrollShortSignals);
 
 		listShortSignals = new JList<String>();
@@ -209,7 +209,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 		JScrollPane scrollLongSignals = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollLongSignals.setBorder(UIManager.getBorder("TextField.border"));
-		scrollLongSignals.setBounds(340, 203, 483, 145);
+		scrollLongSignals.setBounds(296, 203, 527, 145);
 		pnlContent.add(scrollLongSignals);
 
 		listLongSignals = new JList<String>();
@@ -221,18 +221,18 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		JLabel lblSignals = new JLabel("SHORTS / LONGS");
 		lblSignals.setHorizontalAlignment(SwingConstants.LEFT);
 		lblSignals.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lblSignals.setBounds(342, 15, 200, 20);
+		lblSignals.setBounds(296, 12, 141, 20);
 		pnlContent.add(lblSignals);
 
 		chkOnlyFavorites = new JCheckBox("Only favorites");
 		chkOnlyFavorites.setSelected(true);
 		chkOnlyFavorites.setHorizontalAlignment(SwingConstants.LEADING);
-		chkOnlyFavorites.setBounds(15, 15, 99, 23);
+		chkOnlyFavorites.setBounds(15, 12, 99, 23);
 		pnlContent.add(chkOnlyFavorites);
 
 		chkOnlyBetters = new JCheckBox("Only betters");
-		chkOnlyBetters.setSelected(false);
-		chkOnlyBetters.setBounds(116, 15, 99, 23);
+		chkOnlyBetters.setSelected(true);
+		chkOnlyBetters.setBounds(116, 12, 99, 23);
 		pnlContent.add(chkOnlyBetters);
 		
 		// --------------------------------------------------------------------
@@ -389,8 +389,9 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		pnlPositions.add(btnPositions);
 		
 		btnSymbols = new JButton();
-		btnSymbols.setBounds(222, 12, 92, 23);
-		btnSymbols.setText("SYMBOLS");
+		btnSymbols.setToolTipText("Symbols");
+		btnSymbols.setBounds(227, 12, 45, 23);
+		btnSymbols.setText("+");
 		pnlContent.add(btnSymbols);
 		
 		btnSignals = new JButton();

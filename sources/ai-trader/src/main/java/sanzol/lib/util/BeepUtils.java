@@ -74,9 +74,22 @@ public class BeepUtils
 		}
 	}
 
+	public static void beep3()
+	{
+		try
+		{
+			tone(700, 100, 1.0);
+			tone(900, 100, 1.0);
+		}
+		catch (Exception e)
+		{
+			LogService.error(e);
+		}
+	}
+	
 	public static void main(String[] args) throws InterruptedException
 	{
-		beep2();
+		beep();
 	}
 
 }

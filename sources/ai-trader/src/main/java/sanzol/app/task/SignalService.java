@@ -165,7 +165,7 @@ public final class SignalService
 			if ((distShLg.doubleValue() < 1.0 || distShLg.doubleValue() > 8.0))
 			{
 				updateShockPoint(ShockPoint.NULL(symbol));
-				LogService.info("DISCARD NEW SIGNALS FROM " + symbol.getNameLeft());
+				LogService.info("DISCARD NEW SIGNALS FROM " + symbol.getNameLeft() + " - DISTANCE BETWEEN POINTS " + distShLg + " %");
 			}
 			else
 			{
@@ -209,11 +209,11 @@ public final class SignalService
 			return lstLongSignals;
 	}
 
-	private static void expireShocks(Symbol symbol)
+	private static void expireShocks(Symbol symbol, String reason)
 	{
 		mapShockPoints.get(symbol.getName()).setExpirationTime(System.currentTimeMillis());
 		
-		LogService.info("EXPIRE SIGNALS FROM " + symbol.getNameLeft());
+		LogService.info("EXPIRE SIGNALS FROM " + symbol.getNameLeft() + " - " + reason);
 	}
 
 	private static void calcSignals()
@@ -251,9 +251,14 @@ public final class SignalService
 				BigDecimal distShort = PriceUtil.priceDistUp(lastPrice, entry.getShShock(), true);
 				BigDecimal distLong = PriceUtil.priceDistDown(lastPrice, entry.getLgShock(), true);
 
-				if ((distShort.doubleValue() <= -0.05 || distLong.doubleValue() <= -0.05))
+				if (distShort.doubleValue() <= -0.05)
 				{
-					expireShocks(entry.getSymbol());
+					expireShocks(entry.getSymbol(), "REACHED THE SHORT POINT");
+					continue;
+				}
+				if (distLong.doubleValue() <= -0.05)
+				{
+					expireShocks(entry.getSymbol(), "REACHED THE LONG POINT");
 					continue;
 				}
 
