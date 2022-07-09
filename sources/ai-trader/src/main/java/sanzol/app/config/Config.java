@@ -26,7 +26,8 @@ public class Config
 	public static final String DEFAULT_SYMBOL_RIGHT = "USDT";
 
 	//Order book
-	private static final int BLOCKS_TO_ANALYZE = 6;
+	private static final int BLOCKS_TO_ANALYZE_BB = 5;
+	private static final int BLOCKS_TO_ANALYZE_WA = 10;
 	
 	//Better symbols
 	private static final long BETTER_SYMBOLS_MIN_VOLUME = 100000000;
@@ -36,7 +37,7 @@ public class Config
 	private static final int ITERATIONS = 4;
 	private static final double PRICE_INCREMENT = 0.02;
 	private static final double STOPLOSS_INCREMENT = 0.01;
-	private static final double COINS_INCREMENT_1 = 0.05;
+	private static final double COINS_INCREMENT_1 = 0;
 	private static final double COINS_INCREMENT = 1.0;
 	private static final double TAKEPROFIT = 0.015;
 	private static final int POSITIONS_MAX = 5;
@@ -44,7 +45,8 @@ public class Config
 	private static final double POSITION_START_QTY_MAX = 0.1;
 	private static final double BALANCE_MIN_AVAILABLE = 0.30;
 
-	private static Integer blocksToAnalize;
+	private static Integer blocksToAnalizeBB;
+	private static Integer blocksToAnalizeWA;
 	private static Long betterSymbolsMinVolume;
 	private static Double betterSymbolsMaxChange;
 	private static Boolean isDarkMode;
@@ -79,9 +81,14 @@ public class Config
 		return isDarkMode != null ? isDarkMode : IS_DARK_MODE;
 	}
 
-	public static Integer getBlocksToAnalize()
+	public static Integer getBlocksToAnalizeBB()
 	{
-		return blocksToAnalize != null ? blocksToAnalize : BLOCKS_TO_ANALYZE;
+		return blocksToAnalizeBB != null ? blocksToAnalizeBB : BLOCKS_TO_ANALYZE_BB;
+	}
+
+	public static Integer getBlocksToAnalizeWA()
+	{
+		return blocksToAnalizeWA != null ? blocksToAnalizeWA : BLOCKS_TO_ANALYZE_WA;
 	}
 
 	public static Long getBetterSymbolsMinVolume()
@@ -161,14 +168,24 @@ public class Config
 		Config.isDarkMode = isDarkMode;
 	}
 
-	public static void setBlocksToAnalize(Integer blocksToAnalize)
+	public static void setBlocksToAnalizeBB(Integer blocksToAnalizeBB)
 	{
-		Config.blocksToAnalize = blocksToAnalize;
+		Config.blocksToAnalizeBB = blocksToAnalizeBB;
 	}
 	
-	public static void setBlocksToAnalize(String blocksToAnalize)
+	public static void setBlocksToAnalizeBB(String blocksToAnalizeBB)
 	{
-		Config.blocksToAnalize = Integer.valueOf(blocksToAnalize);
+		Config.blocksToAnalizeBB = Integer.valueOf(blocksToAnalizeBB);
+	}
+
+	public static void setBlocksToAnalizeWA(Integer blocksToAnalizeWA)
+	{
+		Config.blocksToAnalizeWA = blocksToAnalizeWA;
+	}
+	
+	public static void setBlocksToAnalizeWA(String blocksToAnalizeWA)
+	{
+		Config.blocksToAnalizeWA = Integer.valueOf(blocksToAnalizeWA);
 	}
 
 	public static void setBetterSymbolsMinVolume(Long betterSymbolsMinVolume)
@@ -303,7 +320,8 @@ public class Config
 			prop.setProperty("is_dark_mode", String.valueOf(isDarkMode()));
 			prop.setProperty("better_symbols_min_volume", String.valueOf(getBetterSymbolsMinVolume()));
 			prop.setProperty("better_symbols_max_change", String.valueOf(getBetterSymbolsMaxChange()));
-			prop.setProperty("blocks_to_analize", String.valueOf(getBlocksToAnalize()));
+			prop.setProperty("blocks_to_analize_bb", String.valueOf(getBlocksToAnalizeBB()));
+			prop.setProperty("blocks_to_analize_wa", String.valueOf(getBlocksToAnalizeWA()));
 			prop.setProperty("favorite_symbols", getFavoriteSymbols());
 			prop.setProperty("leverage", String.valueOf(getLeverage()));
 			prop.setProperty("iterations", String.valueOf(getIterations()));
@@ -338,8 +356,10 @@ public class Config
 					betterSymbolsMinVolume = Long.valueOf(prop.getProperty("better_symbols_min_volume"));
 				if (prop.containsKey("better_symbols_max_change"))
 					betterSymbolsMaxChange = Double.valueOf(prop.getProperty("better_symbols_max_change"));
-				if (prop.containsKey("blocks_to_analize"))
-					blocksToAnalize = Integer.valueOf(prop.getProperty("blocks_to_analize"));
+				if (prop.containsKey("blocks_to_analize_bb"))
+					blocksToAnalizeBB = Integer.valueOf(prop.getProperty("blocks_to_analize_bb"));
+				if (prop.containsKey("blocks_to_analize_wa"))
+					blocksToAnalizeWA = Integer.valueOf(prop.getProperty("blocks_to_analize_wa"));
 				if (prop.containsKey("favorite_symbols"))
 					favoriteSymbols = prop.getProperty("favorite_symbols");
 				if (prop.containsKey("is_dark_mode"))

@@ -33,8 +33,10 @@ public class OBookService
 	private Symbol symbol;
 	private BigDecimal blockSize;
 	private double lastPrice;
-	private double minPrice;
-	private double maxPrice;
+	private double minPriceBB;
+	private double maxPriceBB;
+	private double minPriceWA;
+	private double maxPriceWA;
 
 	private TreeMap<BigDecimal, BigDecimal> mapAsks = new TreeMap<BigDecimal, BigDecimal>();
 	private TreeMap<BigDecimal, BigDecimal> mapBids = new TreeMap<BigDecimal, BigDecimal>(Collections.reverseOrder());
@@ -152,16 +154,18 @@ public class OBookService
 
 	public OBookService calc()
 	{
-		return calc(Config.getBlocksToAnalize());
+		return calc(Config.getBlocksToAnalizeBB(), Config.getBlocksToAnalizeWA());
 	}
 
-	public OBookService calc(int blocksToAnalize)
+	public OBookService calc(int blocksToAnalizeBB, int blocksToAnalizeWA)
 	{
 		lastPrice = PriceService.getLastPrice(symbol).doubleValue();
 		blockSize = getBlockSize(lastPrice);
-		maxPrice = lastPrice + (blockSize.doubleValue() * blocksToAnalize);
-		minPrice = lastPrice - (blockSize.doubleValue() * blocksToAnalize);
-		
+		maxPriceBB = lastPrice + (blockSize.doubleValue() * blocksToAnalizeBB);
+		minPriceBB = lastPrice - (blockSize.doubleValue() * blocksToAnalizeBB);
+		maxPriceWA = lastPrice + (blockSize.doubleValue() * blocksToAnalizeWA);
+		minPriceWA = lastPrice - (blockSize.doubleValue() * blocksToAnalizeWA);
+
 		loadAsks();
 		loadBids();
 		loadAsksGrp();
@@ -174,7 +178,7 @@ public class OBookService
 		this.longPriceWAvg = weightedAverageBids();
 
 		fixShocks();
-		
+
 		return this;
 	}
 
@@ -258,7 +262,7 @@ public class OBookService
 			OrderBookElement eMax = null;
 			for (OrderBookElement e : asksGrp)
 			{
-				if (e.getPrice().doubleValue() > maxPrice)
+				if (e.getPrice().doubleValue() > maxPriceBB)
 				{
 					break;
 				}
@@ -280,7 +284,7 @@ public class OBookService
 			OrderBookElement eMax = null;
 			for (OrderBookElement e : bidsGrp)
 			{
-				if (e.getPrice().doubleValue() < minPrice)
+				if (e.getPrice().doubleValue() < minPriceBB)
 				{
 					break;
 				}
@@ -295,26 +299,6 @@ public class OBookService
 		return null;
 	}
 
-	/*
-	public static BigDecimal weightedAverage(List<OrderBookElement> lst, double maxAccumPercent, double maxDist)
-	{
-		BigDecimal sumProd = BigDecimal.ZERO;
-		BigDecimal sumQty = BigDecimal.ZERO;
-
-		for (OrderBookElement entry : lst)
-		{
-			if (entry.getSumPercent().doubleValue() > maxAccumPercent || entry.getDistance().doubleValue() > maxDist)
-			{
-				break;
-			}
-			sumProd = sumProd.add(entry.getPrice().multiply(entry.getQty()));
-			sumQty = sumQty.add(entry.getQty());
-		}
-
-		return sumProd.divide(sumQty, RoundingMode.HALF_UP);
-	}
-	*/
-
 	public BigDecimal weightedAverageAsks()
 	{
 		BigDecimal sumProd = BigDecimal.ZERO;
@@ -322,7 +306,7 @@ public class OBookService
 
 		for (OrderBookElement entry : asks)
 		{
-			if (entry.getPrice().doubleValue() > maxPrice)
+			if (entry.getPrice().doubleValue() > maxPriceWA)
 			{
 				break;
 			}
@@ -332,7 +316,7 @@ public class OBookService
 
 		return sumProd.divide(sumQty, RoundingMode.HALF_UP);
 	}
-	
+
 	public BigDecimal weightedAverageBids()
 	{
 		BigDecimal sumProd = BigDecimal.ZERO;
@@ -340,7 +324,7 @@ public class OBookService
 
 		for (OrderBookElement entry : bids)
 		{
-			if (entry.getPrice().doubleValue() < minPrice)
+			if (entry.getPrice().doubleValue() < minPriceWA)
 			{
 				break;
 			}
@@ -485,32 +469,6 @@ public class OBookService
 		bidsGrp.add(newElement);
 	}
 
-	/*
-	private BigDecimal getBlockSize()
-	{
-		if ("BTC".equalsIgnoreCase(symbol.getNameLeft()))
-		{
-			return BigDecimal.valueOf(100);
-		}
-		else if ("ETH".equalsIgnoreCase(symbol.getNameLeft()))
-		{
-			return BigDecimal.valueOf(10);
-		}
-		else if ("ADA".equalsIgnoreCase(symbol.getNameLeft()))
-		{
-			return BigDecimal.valueOf(0.001);
-		}
-		else if ("DOT".equalsIgnoreCase(symbol.getNameLeft()))
-		{
-			return BigDecimal.valueOf(0.01);
-		}
-		
-		final BigDecimal[] BLOCK_SIZE = { BigDecimal.valueOf(10), BigDecimal.valueOf(1), BigDecimal.valueOf(0.1), BigDecimal.valueOf(0.01), BigDecimal.valueOf(0.001), BigDecimal.valueOf(0.0001) };
-
-		return BLOCK_SIZE[symbol.getTickSize() < 1 ? 0 : symbol.getTickSize() - 1];
-	}
-	*/
-
 	private BigDecimal getBlockSize(double price)
 	{
 		if (price < 0.01)
@@ -532,12 +490,12 @@ public class OBookService
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	public List<OrderBookElement> searchSuperAskBlocks()
 	{
-		return searchSuperAskBlocks(Config.getBlocksToAnalize() * 2);
+		return searchSuperAskBlocks(Config.getBlocksToAnalizeWA() * 2);
 	}
-	
+
 	public List<OrderBookElement> searchSuperAskBlocks(int blocksToAnalize)
 	{
 		double maxPrice_ = lastPrice + (blockSize.doubleValue() * blocksToAnalize);
@@ -581,9 +539,9 @@ public class OBookService
 
 	public List<OrderBookElement> searchSuperBidBlocks()
 	{
-		return searchSuperBidBlocks(Config.getBlocksToAnalize() * 2);
+		return searchSuperBidBlocks(Config.getBlocksToAnalizeWA() * 2);
 	}
-	
+
 	public List<OrderBookElement> searchSuperBidBlocks(int blocksToAnalize)
 	{
 		double minPrice_ = lastPrice - (blockSize.doubleValue() * blocksToAnalize);
@@ -624,7 +582,21 @@ public class OBookService
 
 		return list;
 	}	
-	
+
+	public String printSuperBlks(List<OrderBookElement> list)
+	{
+		if (list != null && !list.isEmpty())
+		{
+			StringBuilder sb = new StringBuilder();
+			for (OrderBookElement ele : list)
+			{
+				sb.append(String.format("%-10s  %10s\n", symbol.priceToStr(ele.getPrice()), symbol.qtyToStr(ele.getQty())));
+			}
+			return sb.toString();
+		}
+		return "";
+	}
+
 	// ------------------------------------------------------------------------
 
 	public String printAsks()
@@ -685,20 +657,6 @@ public class OBookService
 		return null;
 	}
 
-	public String printSuperBlks(List<OrderBookElement> list)
-	{
-		if (list != null && !list.isEmpty())
-		{
-			StringBuilder sb = new StringBuilder();
-			for (OrderBookElement ele : list)
-			{
-				sb.append(String.format("%-10s  %10s\n", symbol.priceToStr(ele.getPrice()), symbol.qtyToStr(ele.getQty())));
-			}
-			return sb.toString();
-		}
-		return "";
-	}
-
 	// -----------------------------------------------------------------------
 
 	public void export() throws IOException
@@ -741,7 +699,7 @@ public class OBookService
 		//OBookService obService = OBookService.getInstance(coin).subscribeDiffDepthEvent();
 		OBookService obService = OBookService.getInstance(coin).request();		
 		Thread.sleep(500);
-		obService.calc(6);
+		obService.calc(6, 10);
 
 		System.out.println("");
 		System.out.println(coin.getNameLeft());

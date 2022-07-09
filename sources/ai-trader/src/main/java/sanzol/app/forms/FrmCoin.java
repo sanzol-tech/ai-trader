@@ -18,7 +18,6 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.math.BigDecimal;
 import java.net.URI;
-import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -39,7 +38,6 @@ import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.listener.PriceListener;
-import sanzol.app.model.OrderBookElement;
 import sanzol.app.model.SymbolInfo;
 import sanzol.app.service.OBookService;
 import sanzol.app.service.Symbol;
@@ -65,8 +63,6 @@ public class FrmCoin extends JFrame implements PriceListener
 
 	private JScrollPane scrollOBookAsk;
 	private JScrollPane scrollOBookBid;
-	private JScrollPane scrollOBookAskSuperBlks;
-	private JScrollPane scrollOBookBidSuperBlks;
 	
 	private JPanel pnlBB;
 	private JPanel pnlFP;
@@ -105,8 +101,6 @@ public class FrmCoin extends JFrame implements PriceListener
 
 	private JTextArea txtOBookAsk;
 	private JTextArea txtOBookBid;
-	private JTextArea txtOBookAskSuperBlks;
-	private JTextArea txtOBookBidSuperBlks;
 
 	private JTextField txtSymbolLeft;
 	private JTextField txtSymbolRight;
@@ -127,7 +121,8 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JTextField txtShortPriceFP;
 	private JTextField txtShortPriceWA;
 	private JTextField txtVolume;
-	private JTextField txtBlocksToAnalyze;
+	private JTextField txtBlocksToAnalyzeBB;
+	private JTextField txtBlocksToAnalyzeWA;
 	private JTextField txtSymbolInfo;
 
 	public FrmCoin()
@@ -135,11 +130,12 @@ public class FrmCoin extends JFrame implements PriceListener
 		initComponents();
 		PriceService.attachRefreshObserver(this);
 		
-		txtBlocksToAnalyze.setText(String.valueOf(Config.getBlocksToAnalize()));
+		txtBlocksToAnalyzeBB.setText(String.valueOf(Config.getBlocksToAnalizeBB()));
+		txtBlocksToAnalyzeWA.setText(String.valueOf(Config.getBlocksToAnalizeWA()));
 		
-		JLabel lblSuperBlocks = new JLabel("Higher points");
-		lblSuperBlocks.setBounds(757, 30, 100, 14);
-		contentPane.add(lblSuperBlocks);
+		JLabel lblWavg = new JLabel("W.Avg");
+		lblWavg.setBounds(536, 30, 46, 14);
+		contentPane.add(lblWavg);
 	}
 
 	private void initComponents()
@@ -147,7 +143,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		setTitle(TITLE);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 980, 600);
+		setBounds(100, 100, 770, 600);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmCoin.class.getResource("/resources/monitor.png")));
 		setLocationRelativeTo(null);
 
@@ -158,7 +154,7 @@ public class FrmCoin extends JFrame implements PriceListener
 
 		JPanel pnlBottom = new JPanel();
 		pnlBottom.setBorder(Styles.BORDER_UP);
-		pnlBottom.setBounds(30, 532, 905, 22);
+		pnlBottom.setBounds(30, 532, 700, 22);
 		pnlBottom.setLayout(new BorderLayout(0, 0));
 		contentPane.add(pnlBottom);
 		
@@ -228,30 +224,6 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtOBookBid.setFont(new Font("Courier New", Font.PLAIN, 12));
 		txtOBookBid.setEditable(false);
 		scrollOBookBid.setViewportView(txtOBookBid);
-		
-		scrollOBookAskSuperBlks = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollOBookAskSuperBlks.setBorder(UIManager.getBorder("TextField.border"));
-		scrollOBookAskSuperBlks.setBounds(757, 54, 178, 210);
-		contentPane.add(scrollOBookAskSuperBlks);
-		
-		txtOBookAskSuperBlks = new JTextArea();
-		txtOBookAskSuperBlks.setForeground(Styles.COLOR_TEXT_SHORT);
-		txtOBookAskSuperBlks.setFont(new Font("Courier New", Font.PLAIN, 12));
-		txtOBookAskSuperBlks.setEditable(false);
-		txtOBookAskSuperBlks.setBackground(Styles.COLOR_TEXT_AREA_BG);
-		scrollOBookAskSuperBlks.setViewportView(txtOBookAskSuperBlks);
-		
-		scrollOBookBidSuperBlks = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollOBookBidSuperBlks.setBorder(UIManager.getBorder("TextField.border"));
-		scrollOBookBidSuperBlks.setBounds(757, 296, 178, 210);
-		contentPane.add(scrollOBookBidSuperBlks);
-		
-		txtOBookBidSuperBlks = new JTextArea();
-		txtOBookBidSuperBlks.setForeground(Styles.COLOR_TEXT_LONG);
-		txtOBookBidSuperBlks.setFont(new Font("Courier New", Font.PLAIN, 12));
-		txtOBookBidSuperBlks.setEditable(false);
-		txtOBookBidSuperBlks.setBackground(Styles.COLOR_TEXT_AREA_BG);
-		scrollOBookBidSuperBlks.setViewportView(txtOBookBidSuperBlks);
 		
 		pnlBB = new JPanel();
 		pnlBB.setLayout(null);
@@ -521,16 +493,23 @@ public class FrmCoin extends JFrame implements PriceListener
 		lnkTradingview.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		contentPane.add(lnkTradingview);
 		
-		JLabel lblBlocksToAnalyze = new JLabel("blocks to analyze");
-		lblBlocksToAnalyze.setBounds(430, 30, 100, 14);
+		JLabel lblBlocksToAnalyze = new JLabel("B.Block");
+		lblBlocksToAnalyze.setBounds(430, 30, 50, 14);
 		contentPane.add(lblBlocksToAnalyze);
-		
-		txtBlocksToAnalyze = new JTextField();
-		txtBlocksToAnalyze.setHorizontalAlignment(SwingConstants.TRAILING);
-		txtBlocksToAnalyze.setEditable(false);
-		txtBlocksToAnalyze.setBounds(530, 26, 60, 20);
-		contentPane.add(txtBlocksToAnalyze);
-		txtBlocksToAnalyze.setColumns(10);
+
+		txtBlocksToAnalyzeBB = new JTextField();
+		txtBlocksToAnalyzeBB.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtBlocksToAnalyzeBB.setEditable(false);
+		txtBlocksToAnalyzeBB.setColumns(10);
+		txtBlocksToAnalyzeBB.setBounds(480, 26, 40, 20);
+		contentPane.add(txtBlocksToAnalyzeBB);
+
+		txtBlocksToAnalyzeWA = new JTextField();
+		txtBlocksToAnalyzeWA.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtBlocksToAnalyzeWA.setEditable(false);
+		txtBlocksToAnalyzeWA.setColumns(10);
+		txtBlocksToAnalyzeWA.setBounds(584, 26, 40, 20);
+		contentPane.add(txtBlocksToAnalyzeWA);
 
 		// ---------------------------------------------------------------------
 
@@ -692,14 +671,6 @@ public class FrmCoin extends JFrame implements PriceListener
 			
 			txtShortPriceFP.setText(symbol.priceToStr(obService.getShortPriceFixed()));
 			txtLongPriceFP.setText(symbol.priceToStr(obService.getLongPriceFixed()));
-
-			// ----------------------------------------------------------------
-			List<OrderBookElement> list1 = obService.searchSuperAskBlocks();
-			txtOBookAskSuperBlks.setText(obService.printSuperBlks(list1));
-			List<OrderBookElement> list2 = obService.searchSuperBidBlocks();
-			txtOBookBidSuperBlks.setText(obService.printSuperBlks(list2));
-			txtOBookBidSuperBlks.setCaretPosition(0);
-			// ----------------------------------------------------------------
 
 		}
 		catch (Exception e)

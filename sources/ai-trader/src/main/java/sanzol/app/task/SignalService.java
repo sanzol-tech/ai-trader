@@ -80,11 +80,11 @@ public final class SignalService
 	{
 		if (!isStarted)
 		{
-			Timer timer1 = new Timer("SignalService");
-			timer1.schedule(new MyTask1(), 32000, 2000);
+			Timer timer1 = new Timer("calcSignals");
+			timer1.schedule(new MyTask1(), TimeUnit.SECONDS.toMillis(32), TimeUnit.SECONDS.toMillis(2));
 
-			Timer timer2 = new Timer("SignalService");
-			timer2.schedule(new MyTask2(), 30000, 20000);
+			Timer timer2 = new Timer("searchShocks");
+			timer2.schedule(new MyTask2(), TimeUnit.SECONDS.toMillis(30), TimeUnit.SECONDS.toMillis(20));
 
 			isStarted = true;
 		}

@@ -65,8 +65,9 @@ public class FrmConfig extends JFrame
 	private JTextField txtBSMinVolume;
 	private JTextField txtBSMaxChange24h;
 	private JTextField txtCoinsIncr1;
-	private JTextField txtBlocksToAnalyze;
-	
+	private JTextField txtBlocksToAnalyzeBB;
+	private JTextField txtBlocksToAnalyzeWA;
+
 	public FrmConfig()
 	{
 		initComponents();
@@ -329,17 +330,27 @@ public class FrmConfig extends JFrame
 		pnlOBook.setBounds(15, 171, 400, 101);
 		pnlContent.add(pnlOBook);
 		pnlOBook.setLayout(null);
-		
-		txtBlocksToAnalyze = new JTextField();
-		txtBlocksToAnalyze.setHorizontalAlignment(SwingConstants.TRAILING);
-		txtBlocksToAnalyze.setColumns(10);
-		txtBlocksToAnalyze.setBounds(20, 56, 86, 20);
-		pnlOBook.add(txtBlocksToAnalyze);
-		
-		JLabel lblBlocksToAnalyze = new JLabel("Blocks to analyze");
-		lblBlocksToAnalyze.setBounds(20, 39, 110, 14);
-		pnlOBook.add(lblBlocksToAnalyze);
-		
+
+		JLabel lblBlocksToAnalyzeBB = new JLabel("Blocks to analyze BB");
+		lblBlocksToAnalyzeBB.setBounds(20, 39, 110, 14);
+		pnlOBook.add(lblBlocksToAnalyzeBB);
+
+		JLabel lblBlocksToAnalyzeWA = new JLabel("Blocks to analyze WA");
+		lblBlocksToAnalyzeWA.setBounds(140, 39, 110, 14);
+		pnlOBook.add(lblBlocksToAnalyzeWA);
+
+		txtBlocksToAnalyzeBB = new JTextField();
+		txtBlocksToAnalyzeBB.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtBlocksToAnalyzeBB.setColumns(10);
+		txtBlocksToAnalyzeBB.setBounds(20, 56, 86, 20);
+		pnlOBook.add(txtBlocksToAnalyzeBB);
+
+		txtBlocksToAnalyzeWA = new JTextField();
+		txtBlocksToAnalyzeWA.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtBlocksToAnalyzeWA.setColumns(10);
+		txtBlocksToAnalyzeWA.setBounds(140, 56, 86, 20);
+		pnlOBook.add(txtBlocksToAnalyzeWA);
+
 		// --------------------------------------------------------------------
 		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);
 		pnlStatusBarLayout.setHorizontalGroup(
@@ -407,7 +418,8 @@ public class FrmConfig extends JFrame
 		txtBSMinVolume.setText(BigDecimal.valueOf(Config.getBetterSymbolsMinVolume()).toPlainString());
 		txtBSMaxChange24h.setText(String.valueOf(Config.getBetterSymbolsMaxChange()));
 
-		txtBlocksToAnalyze.setText(String.valueOf(Config.getBlocksToAnalize()));
+		txtBlocksToAnalyzeBB.setText(String.valueOf(Config.getBlocksToAnalizeBB()));
+		txtBlocksToAnalyzeWA.setText(String.valueOf(Config.getBlocksToAnalizeWA()));
 
 		txtIterations.setText(String.valueOf(Config.getIterations()));
 		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPriceIncrement()));
@@ -456,7 +468,8 @@ public class FrmConfig extends JFrame
 		{
 			Config.setBetterSymbolsMinVolume(txtBSMinVolume.getText());
 			Config.setBetterSymbolsMaxChange(txtBSMaxChange24h.getText());
-			Config.setBlocksToAnalize(txtBlocksToAnalyze.getText());
+			Config.setBlocksToAnalizeBB(txtBlocksToAnalyzeBB.getText());
+			Config.setBlocksToAnalizeWA(txtBlocksToAnalyzeWA.getText());
 			Config.setFavoriteSymbols(txtFavCoins.getText());
 			Config.setIterations(txtIterations.getText());
 			Config.setPriceIncrement(Convert.strPercentToDbl(txtPriceIncr.getText()));

@@ -8,7 +8,7 @@ import sanzol.app.util.PriceUtil;
 
 public class ShockPoint
 {
-	public static final Long EXPIRATION_MILLIS = TimeUnit.MINUTES.toMillis(60);
+	public static final Long EXPIRATION_MILLIS = TimeUnit.MINUTES.toMillis(120);
 
 	private Symbol symbol;
 	private BigDecimal shShock;
