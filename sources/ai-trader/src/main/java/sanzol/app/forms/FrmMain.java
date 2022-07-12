@@ -548,9 +548,12 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 				if (e.getClickCount() == 2)
 				{
 					int index = list.locationToIndex(e.getPoint());
-					String item = (String) list.getModel().getElementAt(index);
-					String symbolLeft = item.substring(0, item.indexOf(" "));
-					FrmCoin.launch(symbolLeft);
+					if (index > 0)
+					{
+						String item = (String) list.getModel().getElementAt(index);
+						String symbolLeft = item.substring(0, item.indexOf(" "));
+						FrmCoin.launch(symbolLeft);
+					}
 				}
 
 			}
@@ -892,4 +895,5 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		Application.initialize();
 		launch();
 	}
+
 }

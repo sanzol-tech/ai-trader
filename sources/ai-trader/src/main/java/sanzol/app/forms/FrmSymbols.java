@@ -45,7 +45,7 @@ public class FrmSymbols extends JFrame implements PriceListener
 
 	private static FrmSymbols myJFrame = null;
 
-    DefaultTableModel tableModel;
+    private DefaultTableModel tableModel;
 	
 	private JLabel lblError;
 
@@ -216,7 +216,7 @@ public class FrmSymbols extends JFrame implements PriceListener
 	
 	// ------------------------------------------------------------------------
 
-	public class TableModel extends DefaultTableModel
+	private class TableModel extends DefaultTableModel
 	{
 		private static final long serialVersionUID = 1L;
 
@@ -233,13 +233,13 @@ public class FrmSymbols extends JFrame implements PriceListener
 		{
 	    	tableModel = new TableModel();
 
-	    	tableModel.addColumn("Symbol");
-	    	tableModel.addColumn("Change 24Hs");
+	    	tableModel.addColumn("SYMBOL");
+	    	tableModel.addColumn("CHANGE 24h");
 	    	tableModel.addColumn("");
-	    	tableModel.addColumn("Volume");
+	    	tableModel.addColumn("VOLUME 24h");
 	    	tableModel.addColumn("");
-	    	tableModel.addColumn("Price");
-	    	tableModel.addColumn("Better side");
+	    	tableModel.addColumn("PRICE");
+	    	tableModel.addColumn("BETTER");
 
 			table.setModel(tableModel);
 			

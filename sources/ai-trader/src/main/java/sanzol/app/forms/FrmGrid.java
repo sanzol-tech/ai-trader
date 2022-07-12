@@ -97,6 +97,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 	private JRadioButton rbPriceLimit;
 	private JRadioButton rbPriceMark;
+	private JRadioButton rbQtyUsd;
 	private JRadioButton rbQty;
 	private JRadioButton rbQtyBalance;
 
@@ -135,6 +136,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	private JTextField txtSymbolLeft;
 	private JTextField txtSymbolRight;
 	private JTextField txtTProfit;
+	private JTextField txtQtyUsd;
 
 	public FrmGrid()
 	{
@@ -173,49 +175,69 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 		txtPrice = new JTextField();
 		txtPrice.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtPrice.setColumns(10);
 		txtPrice.setBounds(368, 28, 90, 22);
 		contentPane.add(txtPrice);
-		txtPrice.setColumns(10);
 
+		txtQtyUsd = new JTextField();
+		txtQtyUsd.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtQtyUsd.setColumns(10);
+		txtQtyUsd.setBounds(586, 10, 90, 22);
+		txtQtyUsd.setEnabled(false);
+		contentPane.add(txtQtyUsd);
+		
 		txtQty = new JTextField();
 		txtQty.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtQty.setBounds(586, 28, 90, 22);
-		contentPane.add(txtQty);
 		txtQty.setColumns(10);
+		txtQty.setBounds(586, 34, 90, 22);
+		txtQty.setEnabled(false);
+		contentPane.add(txtQty);
 
-		rbPriceMark = new JRadioButton("MARK");
-		rbPriceMark.setBounds(292, 58, 68, 23);
-		contentPane.add(rbPriceMark);
+		txtBalancePercent = new JTextField();
+		txtBalancePercent.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtBalancePercent.setColumns(10);
+		txtBalancePercent.setBounds(586, 58, 90, 22);
+		txtBalancePercent.setEnabled(true);
+		contentPane.add(txtBalancePercent);
 
 		rbPriceLimit = new JRadioButton("PRICE");
 		rbPriceLimit.setSelected(true);
 		rbPriceLimit.setBounds(292, 28, 68, 23);
 		contentPane.add(rbPriceLimit);
 
+		rbPriceMark = new JRadioButton("MARK");
+		rbPriceMark.setBounds(292, 58, 68, 23);
+		contentPane.add(rbPriceMark);
+
+		rbQtyUsd = new JRadioButton("USD");
+		rbQtyUsd.setBounds(480, 10, 100, 23);
+		contentPane.add(rbQtyUsd);
+
+		rbQty = new JRadioButton("COINS");
+		rbQty.setBounds(480, 34, 100, 23);
+		contentPane.add(rbQty);
+
 		rbQtyBalance = new JRadioButton("BALANCE %");
 		rbQtyBalance.setSelected(true);
 		rbQtyBalance.setBounds(480, 58, 100, 23);
 		contentPane.add(rbQtyBalance);
 
-		rbQty = new JRadioButton("COINS QTY");
-		rbQty.setBounds(480, 28, 100, 23);
-		contentPane.add(rbQty);
-
 		ButtonGroup bg1 = new javax.swing.ButtonGroup();
-		bg1.add(rbPriceMark);
 		bg1.add(rbPriceLimit);
+		bg1.add(rbPriceMark);
 
 		ButtonGroup bg2 = new javax.swing.ButtonGroup();
-		bg2.add(rbQtyBalance);
+		bg2.add(rbQtyUsd);
 		bg2.add(rbQty);
+		bg2.add(rbQtyBalance);
 
 		txtSymbolRight = new JTextField();
 		txtSymbolRight.setEditable(false);
 		txtSymbolRight.setText(Config.DEFAULT_SYMBOL_RIGHT);
+		txtSymbolRight.setColumns(10);
 		txtSymbolRight.setBounds(132, 28, 104, 22);
 		contentPane.add(txtSymbolRight);
-		txtSymbolRight.setColumns(10);
-		
+
 		lnkBtnExtreme = new JLabel("Extreme");
 		lnkBtnExtreme.setBounds(228, 100, 60, 14);
 		lnkBtnExtreme.setForeground(Styles.COLOR_LINK);
@@ -227,13 +249,13 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		lnkBtnStrong.setForeground(Styles.COLOR_LINK);
 		lnkBtnStrong.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		contentPane.add(lnkBtnStrong);
-		
+
 		lnkBtnNormal = new JLabel("Normal");
 		lnkBtnNormal.setBounds(368, 100, 60, 14);
 		lnkBtnNormal.setForeground(Styles.COLOR_LINK);
 		lnkBtnNormal.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		contentPane.add(lnkBtnNormal);
-		
+
 		lnkBtnLarge = new JLabel("Large");
 		lnkBtnLarge.setBounds(438, 100, 60, 14);
 		lnkBtnLarge.setForeground(Styles.COLOR_LINK);
@@ -272,12 +294,6 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		txtSymbolLeft.setBounds(15, 28, 106, 22);
 		contentPane.add(txtSymbolLeft);
 		txtSymbolLeft.setColumns(10);
-
-		txtBalancePercent = new JTextField();
-		txtBalancePercent.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtBalancePercent.setColumns(10);
-		txtBalancePercent.setBounds(586, 58, 90, 22);
-		contentPane.add(txtBalancePercent);
 
 		txtError = new JTextField();
 		txtError.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -545,26 +561,39 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			}
 		});
 
+		rbPriceLimit.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				txtPrice.setEnabled(e.getStateChange() == ItemEvent.SELECTED);
+			}
+		});
 		rbPriceMark.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED) {
-					txtPrice.setEnabled(false);
-				}
-				else if (e.getStateChange() == ItemEvent.DESELECTED) {
-					txtPrice.setEnabled(true);
-				}
+				txtPrice.setEnabled(e.getStateChange() != ItemEvent.SELECTED);
+			}
+		});
+
+		rbQtyUsd.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				boolean isSelected = (e.getStateChange() == ItemEvent.SELECTED);
+				txtQtyUsd.setEnabled(isSelected);
+				txtQty.setEnabled(!isSelected);
+				txtBalancePercent.setEnabled(!isSelected);
+			}
+		});
+		rbQty.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				boolean isSelected = (e.getStateChange() == ItemEvent.SELECTED);
+				txtQtyUsd.setEnabled(!isSelected);
+				txtQty.setEnabled(isSelected);
+				txtBalancePercent.setEnabled(!isSelected);
 			}
 		});
 		rbQtyBalance.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED) {
-					txtQty.setEnabled(false);
-					txtBalancePercent.setEnabled(true);
-				}
-				else if (e.getStateChange() == ItemEvent.DESELECTED) {
-					txtQty.setEnabled(true);
-					txtBalancePercent.setEnabled(false);
-				}
+				boolean isSelected = (e.getStateChange() == ItemEvent.SELECTED);
+				txtQtyUsd.setEnabled(!isSelected);
+				txtQty.setEnabled(!isSelected);
+				txtBalancePercent.setEnabled(isSelected);
 			}
 		});
 
@@ -1153,12 +1182,23 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 				return qty;
 			}
 		}
-		else
+		else if (rbQtyBalance.isSelected()) 
 		{
-			double balancePercent = Convert.strPercentToDbl(txtBalancePercent.getText());
-			AccountBalance accBalance = BalanceService.getAccountBalance();
-			double balance = accBalance.getBalance().doubleValue();
-			return DoubleRounder.round(Math.max(5, balance * balancePercent) / inPrice, symbol.getQuantityPrecision(), RoundingMode.CEILING);
+			if (NumberUtils.isCreatable(txtBalancePercent.getText()))
+			{
+				double balancePercent = Convert.strPercentToDbl(txtBalancePercent.getText());
+				AccountBalance accBalance = BalanceService.getAccountBalance();
+				double balance = accBalance.getBalance().doubleValue();
+				return DoubleRounder.round(Math.max(5, balance * balancePercent) / inPrice, symbol.getQuantityPrecision(), RoundingMode.CEILING);
+			}
+		}
+		else if (rbQtyUsd.isSelected()) 
+		{
+			if (NumberUtils.isCreatable(txtQtyUsd.getText()))
+			{
+				double usd = Double.valueOf(txtQtyUsd.getText());
+				return DoubleRounder.round(usd / inPrice, symbol.getQuantityPrecision(), RoundingMode.CEILING);
+			}
 		}
 
 		ERROR("Invalid quantity");
@@ -1324,5 +1364,4 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		Application.initialize();
 		launch();
 	}
-
 }

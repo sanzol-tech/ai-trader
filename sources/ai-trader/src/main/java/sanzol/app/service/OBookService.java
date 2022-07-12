@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -114,10 +115,13 @@ public class OBookService
 		return this;
 	}
 
+	private Long subscriptionTime = null;
 	private SubscriptionClient client = null;
 	private OrderBookEvent prevEvent;
 	public OBookService subscribeDiffDepthEvent() 
 	{
+		subscriptionTime = System.currentTimeMillis();
+
 		client = SubscriptionClient.create();
 		client.subscribeDiffDepthEvent(symbol.getName().toLowerCase(), ((event) -> {
 
@@ -126,6 +130,7 @@ public class OBookService
 				mapAsks.clear();
 				mapBids.clear();
 				prevEvent = null;
+				subscriptionTime = System.currentTimeMillis();
 
 				LogService.info(symbol.getName() + " : Reset orderBook cache");
 			}
@@ -152,6 +157,11 @@ public class OBookService
 		return this;
 	}
 
+	public boolean isSubscriptionTimeOK()
+	{
+		return (subscriptionTime == null || subscriptionTime + TimeUnit.MINUTES.toMillis(3) < System.currentTimeMillis());
+	}
+	
 	public OBookService calc()
 	{
 		return calc(Config.getBlocksToAnalizeBB(), Config.getBlocksToAnalizeWA());

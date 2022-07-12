@@ -46,8 +46,8 @@ public class FrmSignals extends JFrame implements SignalListener
 
 	private static FrmSignals myJFrame = null;
 	
-    DefaultTableModel tableModelShort;
-    DefaultTableModel tableModelLong;
+    private DefaultTableModel tableModelShort;
+    private DefaultTableModel tableModelLong;
 
     private JLabel lblError;
 	
@@ -244,14 +244,14 @@ public class FrmSignals extends JFrame implements SignalListener
 
 			if ("SHORT".equals(type))
 			{
-				Symbol symbol = (Symbol) tableShort.getValueAt(index, 1);
+				Symbol symbol = (Symbol) tableShort.getValueAt(index, 0);
 				Price shShort = new Price(symbol, (String) tableShort.getValueAt(index, 2));
 
 				FrmGrid.launch(symbol.getNameLeft(), "SHORT", shShort.toString(), isBotMode);
 			}
 			else
 			{
-				Symbol symbol = (Symbol) tableLong.getValueAt(index, 1);
+				Symbol symbol = (Symbol) tableLong.getValueAt(index, 0);
 				Price lgShock = new Price(symbol, (String) tableLong.getValueAt(index, 2));
 
 				FrmGrid.launch(symbol.getNameLeft(), "LONG", lgShock.toString(), isBotMode);
@@ -288,7 +288,7 @@ public class FrmSignals extends JFrame implements SignalListener
 
 	// ------------------------------------------------------------------------
 
-	public class TableModel extends DefaultTableModel
+	private class TableModel extends DefaultTableModel
 	{
 		private static final long serialVersionUID = 1L;
 
@@ -304,23 +304,23 @@ public class FrmSignals extends JFrame implements SignalListener
 		try
 		{
 	    	tableModelShort = new TableModel();
-	    	tableModelShort.addColumn("TYPE");
-	    	tableModelShort.addColumn("SYMBOL");
+	    	tableModelShort.addColumn("SHORT");
+	    	tableModelShort.addColumn("DIST %");
 	    	tableModelShort.addColumn("PRICE");
 	    	tableModelShort.addColumn("TP %");
-	    	tableModelShort.addColumn("DIST %");
 	    	tableModelShort.addColumn("CHANGE 24h");
 	    	tableModelShort.addColumn("VOLUME 24h");
+	    	tableModelShort.addColumn("BETTER");
 			tableShort.setModel(tableModelShort);
 
 	    	tableModelLong = new TableModel();
-	    	tableModelLong.addColumn("TYPE");
-	    	tableModelLong.addColumn("SYMBOL");
+	    	tableModelLong.addColumn("LONG");
+	    	tableModelLong.addColumn("DIST %");
 	    	tableModelLong.addColumn("PRICE");
 	    	tableModelLong.addColumn("TP %");
-	    	tableModelLong.addColumn("DIST %");
-	    	tableModelLong.addColumn("24Hs %");
-	    	tableModelLong.addColumn("VOLUME");
+	    	tableModelLong.addColumn("CHANGE 24h");
+	    	tableModelLong.addColumn("VOLUME 24h");
+	    	tableModelLong.addColumn("BETTER");
 			tableLong.setModel(tableModelLong);
 
 	        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
@@ -337,7 +337,7 @@ public class FrmSignals extends JFrame implements SignalListener
 	        tableShort.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
 
 	        tableShort.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-	        
+
 	        tableLong.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
 	        tableLong.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
 	        tableLong.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
@@ -361,13 +361,13 @@ public class FrmSignals extends JFrame implements SignalListener
 		for (Signal entry : SignalService.getLstShortSignals())
 		{
         	Object row[] = {
-        			"SHORT",
         			entry.getSymbol(),
+    				String.format("%.2f %%", entry.getDistance()),
         			entry.getStrTargetPrice(),
         			String.format("%.2f %%", entry.getTakeProfit()),
-    				String.format("%.2f %%", entry.getDistance()),
     				String.format("%.2f %%", entry.getChange24h()),
-    				PriceUtil.cashFormat(entry.getVolume())
+    				PriceUtil.cashFormat(entry.getVolume()),
+    				entry.getBestSide()
         		};
 
         	tableModelShort.addRow(row);
@@ -378,13 +378,13 @@ public class FrmSignals extends JFrame implements SignalListener
     	for (Signal entry : SignalService.getLstLongSignals())
 		{
         	Object row[] = {
-        			"LONG",
         			entry.getSymbol(),
+    				String.format("%.2f %%", entry.getDistance()),
         			entry.getStrTargetPrice(),
         			String.format("%.2f %%", entry.getTakeProfit()),
-    				String.format("%.2f %%", entry.getDistance()),
     				String.format("%.2f %%", entry.getChange24h()),
-    				PriceUtil.cashFormat(entry.getVolume())
+    				PriceUtil.cashFormat(entry.getVolume()),
+    				entry.getBestSide()
         		};
 
         	tableModelLong.addRow(row);

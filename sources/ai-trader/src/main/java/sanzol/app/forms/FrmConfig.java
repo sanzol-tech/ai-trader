@@ -92,7 +92,7 @@ public class FrmConfig extends JFrame
 		btnSaveConfig.setText("SAVE");
 
 		lblError = new JLabel();
-		
+
 		JPanel panelPositions = new JPanel();
 		panelPositions.setLayout(null);
 		panelPositions.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Balance / Positions ", TitledBorder.LEADING, TitledBorder.TOP, null, null));

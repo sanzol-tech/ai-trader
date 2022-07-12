@@ -15,6 +15,7 @@ public class Signal
 	private BigDecimal distance;
 	private BigDecimal change24h;
 	private BigDecimal volume;
+	private String bestSide;
 
 	public Signal()
 	{
@@ -111,6 +112,16 @@ public class Signal
 		this.volume = volume;
 	}
 
+	public String getBestSide()
+	{
+		return bestSide;
+	}
+
+	public void setBestSide(String bestSide)
+	{
+		this.bestSide = bestSide;
+	}
+
 	// -------------------------------------------------------------------------
 	// -------------------------------------------------------------------------
 
@@ -129,7 +140,7 @@ public class Signal
 
 	public String toString()
 	{
-		return String.format("%-8s %6.2f%% %12s   TP:%6.2f%%    24h:%6.2f%%    vol:%5s\n", symbol.getNameLeft(), distance, symbol.priceToStr(targetPrice), takeProfit, change24h, PriceUtil.cashFormat(volume));
+		return String.format("%-8s %6.2f%% %12s   TP:%6.2f%%    chg:%6.2f%%    vol:%5s\n", symbol.getNameLeft(), distance, symbol.priceToStr(targetPrice), takeProfit, change24h, PriceUtil.cashFormat(volume));
 	}
 
 }

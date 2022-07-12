@@ -1,6 +1,7 @@
 package sanzol.app.task;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -81,10 +82,10 @@ public final class SignalService
 		if (!isStarted)
 		{
 			Timer timer1 = new Timer("calcSignals");
-			timer1.schedule(new MyTask1(), TimeUnit.SECONDS.toMillis(32), TimeUnit.SECONDS.toMillis(2));
+			timer1.schedule(new MyTask1(), TimeUnit.SECONDS.toMillis(12), TimeUnit.SECONDS.toMillis(2));
 
 			Timer timer2 = new Timer("searchShocks");
-			timer2.schedule(new MyTask2(), TimeUnit.SECONDS.toMillis(30), TimeUnit.SECONDS.toMillis(20));
+			timer2.schedule(new MyTask2(), TimeUnit.SECONDS.toMillis(10), TimeUnit.SECONDS.toMillis(20));
 
 			isStarted = true;
 		}
@@ -159,6 +160,11 @@ public final class SignalService
 		try
 		{
 			OBookService obService = OBookService.getInstance(symbol).request().calc();
+			if (!obService.isSubscriptionTimeOK())
+			{
+				LogService.info("#$%&#$% FROM " + symbol.getNameLeft());
+				return;
+			}
 
 			BigDecimal distShLg = PriceUtil.priceDistDown(obService.getShortPriceFixed(), obService.getLongPriceFixed(), true);
 
@@ -251,12 +257,12 @@ public final class SignalService
 				BigDecimal distShort = PriceUtil.priceDistUp(lastPrice, entry.getShShock(), true);
 				BigDecimal distLong = PriceUtil.priceDistDown(lastPrice, entry.getLgShock(), true);
 
-				if (distShort.doubleValue() <= -0.05)
+				if (distShort.doubleValue() <= -0.03)
 				{
 					expireShocks(entry.getSymbol(), "REACHED THE SHORT POINT");
 					continue;
 				}
-				if (distLong.doubleValue() <= -0.05)
+				if (distLong.doubleValue() <= -0.03)
 				{
 					expireShocks(entry.getSymbol(), "REACHED THE LONG POINT");
 					continue;
@@ -267,14 +273,24 @@ public final class SignalService
 					continue;
 				}
 
+				BigDecimal high = symbolTickerEvent.getHigh();
+				BigDecimal low = symbolTickerEvent.getLow();
+				BigDecimal avgPrice = symbolTickerEvent.getWeightedAvgPrice();
+				BigDecimal avgHigh = (avgPrice.add(high)).divide(BigDecimal.valueOf(2), entry.getSymbol().getTickSize(), RoundingMode.HALF_UP);
+				BigDecimal avgLow = (avgPrice.add(low)).divide(BigDecimal.valueOf(2), entry.getSymbol().getTickSize(), RoundingMode.HALF_UP);
+				boolean isBestShort = (lastPrice.doubleValue() > avgHigh.doubleValue());
+				boolean isBestLong = (lastPrice.doubleValue() < avgLow.doubleValue());
+				
 				Signal shortSignal = new Signal("SHORT", entry.getSymbol(), lastPrice, entry.getShShock(), entry.getShortTProfit(), distShort);
 				shortSignal.setChange24h(changePercent);
 				shortSignal.setVolume(usdVolume);
+				shortSignal.setBestSide(isBestShort ? "SHORT" : isBestLong ? "LONG" : "");
 				lstShorts.add(shortSignal);
 
 				Signal longSignal = new Signal("LONG", entry.getSymbol(), lastPrice, entry.getLgShock(), entry.getLongTProfit(), distLong);
 				longSignal.setChange24h(changePercent);
 				longSignal.setVolume(usdVolume);
+				longSignal.setBestSide(isBestShort ? "SHORT" : isBestLong ? "LONG" : "");
 				lstLongs.add(longSignal);
 			}
 		}
