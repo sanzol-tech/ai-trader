@@ -52,6 +52,7 @@ public class FrmConfig extends JFrame
 	private JButton btnSaveKey;
 
 	private JPanel pnlContent;
+	private JPanel pnlContent2;
 	private JPanel pnlStatusBar;
 	private JPanel pnlTopBar;
 
@@ -98,61 +99,24 @@ public class FrmConfig extends JFrame
 		setResizable(false);
 
 		pnlTopBar = new JPanel();
-		pnlTopBar.setBorder(Styles.BORDER_DOWN);
+		pnlTopBar.setBorder(Styles.BORDER_UP);
 		pnlContent = new JPanel();
+		pnlContent.setBorder(Styles.BORDER_DOWN);
+		pnlContent2 = new JPanel();
 		pnlStatusBar = new JPanel();
 		pnlStatusBar.setBorder(Styles.BORDER_UP);
-		btnSaveConfig = new JButton();
-		btnSaveConfig.setText("SAVE");
 
 		lblError = new JLabel();
-
-		JPanel panelKey = new JPanel();
-		panelKey.setLayout(null);
-		panelKey.setBorder(UIManager.getBorder("TextField.border"));
-		panelKey.setBounds(15, 342, 810, 64);
-		pnlContent.add(panelKey);
-
-		JLabel lblApiKey = new JLabel("Api Key");
-		lblApiKey.setBounds(12, 11, 80, 14);
-		panelKey.add(lblApiKey);
-
-		txtApiKey = new JPasswordField();
-		txtApiKey.setFont(new Font("Courier New", Font.PLAIN, 8));
-		txtApiKey.setColumns(10);
-		txtApiKey.setBounds(12, 30, 340, 20);
-		panelKey.add(txtApiKey);
-
-		JLabel lblSecretKey = new JLabel("Secret Key");
-		lblSecretKey.setBounds(358, 11, 80, 14);
-		panelKey.add(lblSecretKey);
-
-		txtSecretKey = new JPasswordField();
-		txtSecretKey.setFont(new Font("Courier New", Font.PLAIN, 8));
-		txtSecretKey.setColumns(10);
-		txtSecretKey.setBounds(358, 30, 340, 20);
-		panelKey.add(txtSecretKey);
-
-		btnSaveKey = new JButton("SAVE");
-		btnSaveKey.setOpaque(true);
-		btnSaveKey.setBounds(728, 30, 72, 20);
-		panelKey.add(btnSaveKey);
 
 		// --------------------------------------------------------------------
 		GroupLayout pnlTopBarLayout = new GroupLayout(pnlTopBar);
 		pnlTopBarLayout.setHorizontalGroup(
-			pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, pnlTopBarLayout.createSequentialGroup()
-					.addContainerGap(773, Short.MAX_VALUE)
-					.addComponent(btnSaveConfig)
-					.addContainerGap())
+			pnlTopBarLayout.createParallelGroup(Alignment.TRAILING)
+				.addGap(0, 840, Short.MAX_VALUE)
 		);
 		pnlTopBarLayout.setVerticalGroup(
 			pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(pnlTopBarLayout.createSequentialGroup()
-					.addGap(12)
-					.addComponent(btnSaveConfig)
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+				.addGap(0, 46, Short.MAX_VALUE)
 		);
 		pnlTopBar.setLayout(pnlTopBarLayout);
 
@@ -160,19 +124,49 @@ public class FrmConfig extends JFrame
 		GroupLayout layout = new GroupLayout(getContentPane());
 		layout.setHorizontalGroup(
 			layout.createParallelGroup(Alignment.LEADING)
-				.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 840, Short.MAX_VALUE)
-				.addComponent(pnlStatusBar, GroupLayout.DEFAULT_SIZE, 840, Short.MAX_VALUE)
 				.addComponent(pnlTopBar, GroupLayout.DEFAULT_SIZE, 840, Short.MAX_VALUE)
+				.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 840, Short.MAX_VALUE)
+				.addComponent(pnlContent2, GroupLayout.DEFAULT_SIZE, 840, Short.MAX_VALUE)
+				.addComponent(pnlStatusBar, GroupLayout.DEFAULT_SIZE, 840, Short.MAX_VALUE)
 		);
 		layout.setVerticalGroup(
 			layout.createParallelGroup(Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
-					.addComponent(pnlTopBar, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(pnlStatusBar, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE))
+				.addComponent(pnlTopBar, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(ComponentPlacement.RELATED)
+				.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)
+				.addPreferredGap(ComponentPlacement.RELATED)
+				.addComponent(pnlContent2, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(ComponentPlacement.RELATED)
+				.addComponent(pnlStatusBar, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE))
 		);
+		pnlContent2.setLayout(null);
+		
+		txtApiKey = new JPasswordField();
+		txtApiKey.setBounds(24, 30, 340, 20);
+		pnlContent2.add(txtApiKey);
+		txtApiKey.setFont(new Font("Courier New", Font.PLAIN, 8));
+		txtApiKey.setColumns(10);
+		
+		JLabel lblApiKey = new JLabel("Api Key");
+		lblApiKey.setBounds(24, 11, 80, 14);
+		pnlContent2.add(lblApiKey);
+		
+		JLabel lblSecretKey = new JLabel("Secret Key");
+		lblSecretKey.setBounds(380, 11, 80, 14);
+		pnlContent2.add(lblSecretKey);
+		
+		txtSecretKey = new JPasswordField();
+		txtSecretKey.setBounds(380, 30, 340, 20);
+		pnlContent2.add(txtSecretKey);
+		txtSecretKey.setFont(new Font("Courier New", Font.PLAIN, 8));
+		txtSecretKey.setColumns(10);
+		
+		btnSaveKey = new JButton("SAVE");
+		btnSaveKey.setBounds(753, 27, 72, 22);
+		pnlContent2.add(btnSaveKey);
+		btnSaveKey.setOpaque(true);
+
 		getContentPane().setLayout(layout);
 		pnlContent.setLayout(null);
 		
@@ -192,13 +186,13 @@ public class FrmConfig extends JFrame
 		txtFavCoins.setWrapStyleWord(true);
 
 		JScrollPane scroll = new JScrollPane(txtFavCoins, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.setBorder(UIManager.getBorder("TextField.border"));		
 		scroll.setBounds(24, 46, 440, 72);
-		scroll.setBorder(UIManager.getBorder("TextField.border"));
 		pnlSymbols.add(scroll);
 
 		JPanel pnlGrid = new JPanel();
 		pnlGrid.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Grid ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlGrid.setBounds(15, 178, 590, 145);
+		pnlGrid.setBounds(15, 174, 590, 145);
 		pnlContent.add(pnlGrid);
 		pnlGrid.setLayout(null);
 
@@ -355,7 +349,7 @@ public class FrmConfig extends JFrame
 		txtBlocksToAnalyzeBB.setColumns(10);
 
 		JPanel panelPositions = new JPanel();
-		panelPositions.setBounds(615, 178, 210, 145);
+		panelPositions.setBounds(615, 174, 210, 145);
 		panelPositions.setLayout(null);
 		panelPositions.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Balance / Positions ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		pnlContent.add(panelPositions);
@@ -416,6 +410,10 @@ public class FrmConfig extends JFrame
 		txtBSMinVolume.setBounds(24, 46, 86, 20);
 		pnlBetterSymbols.add(txtBSMinVolume);
 		txtBSMinVolume.setColumns(10);
+		btnSaveConfig = new JButton();
+		btnSaveConfig.setBounds(753, 332, 72, 22);
+		pnlContent.add(btnSaveConfig);
+		btnSaveConfig.setText("SAVE");
 
 		// --------------------------------------------------------------------
 		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);
@@ -447,7 +445,7 @@ public class FrmConfig extends JFrame
 				myJFrame = null;
 			}
 		});
-
+		
 		btnSaveConfig.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				saveConfig();

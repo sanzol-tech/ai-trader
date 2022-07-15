@@ -361,19 +361,19 @@ public class PositionTrader
 		else if (pOrder.getType() == Type.SELL)
 		{
 			orderResult = postOrder(OrderSide.SELL, OrderType.LIMIT, TimeInForce.GTC,
-					getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),
+									getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),
 									null, null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
 		else if (pOrder.getType() == Type.TP_BUY)
 		{
 			orderResult = postOrder(OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC, 
-					getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),
+									getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),
 									"true", null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
 		else if (pOrder.getType() == Type.TP_SELL)
 		{
 			orderResult = postOrder(OrderSide.SELL, OrderType.LIMIT, TimeInForce.GTC,
-					getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),
+									getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),
 									"true", null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
 		else if (pOrder.getType() == Type.SL_BUY)
