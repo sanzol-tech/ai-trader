@@ -637,7 +637,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	{
 		try
 		{
-			Config.setDarkMode(isDarkMode);
+			Config.setIsDarkMode(isDarkMode);
 			Config.save();
 			Styles.applyStyle();
 

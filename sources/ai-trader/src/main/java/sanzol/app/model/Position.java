@@ -18,8 +18,9 @@ import sanzol.app.service.Symbol;
 public class Position
 {
 	private Symbol symbol;
-	
+
 	private PositionSide side;
+	private boolean isArithmetic = true;
 	private boolean markPrice;
 	private Double inPrice = null;
 	private Double inQty = null;
@@ -152,6 +153,16 @@ public class Position
 	public void setSumUsd(double sumUsd)
 	{
 		this.sumUsd = sumUsd;
+	}
+
+	public boolean isArithmetic()
+	{
+		return isArithmetic;
+	}
+
+	public void setArithmetic(boolean isArithmetic)
+	{
+		this.isArithmetic = isArithmetic;
 	}
 
 	public boolean isMarkPrice()

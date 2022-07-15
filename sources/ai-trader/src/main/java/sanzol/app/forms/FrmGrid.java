@@ -88,13 +88,16 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	private JLabel lblPrice;
 	private JLabel lblQty;
 
-	private JLabel lnkBtnExtreme;
-	private JLabel lnkBtnStrong;
-	private JLabel lnkBtnNormal;
-	private JLabel lnkBtnEternal;
-	private JLabel lnkBtnLarge;
-	private JLabel lnkBtnToy;
+	private JLabel lnkBtnSimple;
+	private JLabel lnkBtnClassic1;
+	private JLabel lnkBtnClassic2;
+	private JLabel lnkBtnIncremental1;
+	private JLabel lnkBtnIncremental2;
+	private JLabel lnkBtnIncremental3;
+	private JLabel lnkBtnFast;
 
+	private JRadioButton rbArithmetic;
+	private JRadioButton rbGeometric;
 	private JRadioButton rbPriceLimit;
 	private JRadioButton rbPriceMark;
 	private JRadioButton rbQtyUsd;
@@ -122,7 +125,9 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	private JTextField txtGQty8;
 
 	private JTextField txtError;
-	private JTextField txtBalancePercent;
+	private JTextField txtInQtyBalance;
+	private JTextField txtInQtyUsd;
+	
 	private JTextField txtIterations;
 	private JTextField txtMarkPrice;
 	private JTextField txtPositionPrice;
@@ -136,7 +141,6 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	private JTextField txtSymbolLeft;
 	private JTextField txtSymbolRight;
 	private JTextField txtTProfit;
-	private JTextField txtQtyUsd;
 
 	public FrmGrid()
 	{
@@ -179,12 +183,12 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		txtPrice.setBounds(368, 28, 90, 22);
 		contentPane.add(txtPrice);
 
-		txtQtyUsd = new JTextField();
-		txtQtyUsd.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtQtyUsd.setColumns(10);
-		txtQtyUsd.setBounds(586, 10, 90, 22);
-		txtQtyUsd.setEnabled(false);
-		contentPane.add(txtQtyUsd);
+		txtInQtyUsd = new JTextField();
+		txtInQtyUsd.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtInQtyUsd.setColumns(10);
+		txtInQtyUsd.setBounds(586, 10, 90, 22);
+		txtInQtyUsd.setEnabled(false);
+		contentPane.add(txtInQtyUsd);
 		
 		txtQty = new JTextField();
 		txtQty.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -193,12 +197,12 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		txtQty.setEnabled(false);
 		contentPane.add(txtQty);
 
-		txtBalancePercent = new JTextField();
-		txtBalancePercent.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtBalancePercent.setColumns(10);
-		txtBalancePercent.setBounds(586, 58, 90, 22);
-		txtBalancePercent.setEnabled(true);
-		contentPane.add(txtBalancePercent);
+		txtInQtyBalance = new JTextField();
+		txtInQtyBalance.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtInQtyBalance.setColumns(10);
+		txtInQtyBalance.setBounds(586, 58, 90, 22);
+		txtInQtyBalance.setEnabled(true);
+		contentPane.add(txtInQtyBalance);
 
 		rbPriceLimit = new JRadioButton("PRICE");
 		rbPriceLimit.setSelected(true);
@@ -222,6 +226,14 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		rbQtyBalance.setBounds(480, 58, 100, 23);
 		contentPane.add(rbQtyBalance);
 
+		rbArithmetic = new JRadioButton("Arithmetic");
+		rbArithmetic.setBounds(714, 5, 90, 23);
+		contentPane.add(rbArithmetic);
+
+		rbGeometric = new JRadioButton("Geometric");
+		rbGeometric.setBounds(810, 5, 90, 23);
+		contentPane.add(rbGeometric);
+
 		ButtonGroup bg1 = new javax.swing.ButtonGroup();
 		bg1.add(rbPriceLimit);
 		bg1.add(rbPriceMark);
@@ -231,6 +243,10 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		bg2.add(rbQty);
 		bg2.add(rbQtyBalance);
 
+		ButtonGroup bg3 = new javax.swing.ButtonGroup();
+		bg3.add(rbArithmetic);
+		bg3.add(rbGeometric);
+
 		txtSymbolRight = new JTextField();
 		txtSymbolRight.setEditable(false);
 		txtSymbolRight.setText(Config.DEFAULT_SYMBOL_RIGHT);
@@ -238,41 +254,47 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		txtSymbolRight.setBounds(132, 28, 104, 22);
 		contentPane.add(txtSymbolRight);
 
-		lnkBtnExtreme = new JLabel("Extreme");
-		lnkBtnExtreme.setBounds(228, 100, 60, 14);
-		lnkBtnExtreme.setForeground(Styles.COLOR_LINK);
-		lnkBtnExtreme.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		contentPane.add(lnkBtnExtreme);
+		lnkBtnSimple = new JLabel("Simple 0");
+		lnkBtnSimple.setBounds(228, 100, 60, 14);
+		lnkBtnSimple.setForeground(Styles.COLOR_LINK);
+		lnkBtnSimple.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		contentPane.add(lnkBtnSimple);
 
-		lnkBtnStrong = new JLabel("Strong");
-		lnkBtnStrong.setBounds(298, 100, 60, 14);
-		lnkBtnStrong.setForeground(Styles.COLOR_LINK);
-		lnkBtnStrong.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		contentPane.add(lnkBtnStrong);
+		lnkBtnClassic1 = new JLabel("Classic 6");
+		lnkBtnClassic1.setBounds(298, 100, 60, 14);
+		lnkBtnClassic1.setForeground(Styles.COLOR_LINK);
+		lnkBtnClassic1.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		contentPane.add(lnkBtnClassic1);
 
-		lnkBtnNormal = new JLabel("Normal");
-		lnkBtnNormal.setBounds(368, 100, 60, 14);
-		lnkBtnNormal.setForeground(Styles.COLOR_LINK);
-		lnkBtnNormal.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		contentPane.add(lnkBtnNormal);
+		lnkBtnClassic2 = new JLabel("Classic 8");
+		lnkBtnClassic2.setBounds(368, 100, 60, 14);
+		lnkBtnClassic2.setForeground(Styles.COLOR_LINK);
+		lnkBtnClassic2.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		contentPane.add(lnkBtnClassic2);
 
-		lnkBtnLarge = new JLabel("Large");
-		lnkBtnLarge.setBounds(438, 100, 60, 14);
-		lnkBtnLarge.setForeground(Styles.COLOR_LINK);
-		lnkBtnLarge.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		contentPane.add(lnkBtnLarge);
+		lnkBtnIncremental1 = new JLabel("Incrmtl 1");
+		lnkBtnIncremental1.setBounds(438, 100, 60, 14);
+		lnkBtnIncremental1.setForeground(Styles.COLOR_LINK);
+		lnkBtnIncremental1.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		contentPane.add(lnkBtnIncremental1);
 
-		lnkBtnEternal = new JLabel("Eternal");
-		lnkBtnEternal.setBounds(508, 100, 60, 14);
-		lnkBtnEternal.setForeground(Styles.COLOR_LINK);
-		lnkBtnEternal.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		contentPane.add(lnkBtnEternal);
+		lnkBtnIncremental2 = new JLabel("Incrmtl 2");
+		lnkBtnIncremental2.setBounds(508, 100, 60, 14);
+		lnkBtnIncremental2.setForeground(Styles.COLOR_LINK);
+		lnkBtnIncremental2.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		contentPane.add(lnkBtnIncremental2);
 	
-		lnkBtnToy = new JLabel("Toy");
-		lnkBtnToy.setForeground(Styles.COLOR_LINK);
-		lnkBtnToy.setBounds(578, 100, 50, 14);
-		lnkBtnToy.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		contentPane.add(lnkBtnToy);
+		lnkBtnIncremental3 = new JLabel("Incrmtl 3");
+		lnkBtnIncremental3.setForeground(Styles.COLOR_LINK);
+		lnkBtnIncremental3.setBounds(578, 100, 50, 14);
+		lnkBtnIncremental3.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		contentPane.add(lnkBtnIncremental3);
+
+		lnkBtnFast = new JLabel("Fast 5");
+		lnkBtnFast.setForeground(Styles.COLOR_LINK);
+		lnkBtnFast.setBounds(648, 100, 50, 14);
+		lnkBtnFast.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		contentPane.add(lnkBtnFast);
 		
 		txtResult = new JTextArea();
 		txtResult.setBackground(Styles.COLOR_TEXT_AREA_BG);
@@ -575,25 +597,25 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		rbQtyUsd.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				boolean isSelected = (e.getStateChange() == ItemEvent.SELECTED);
-				txtQtyUsd.setEnabled(isSelected);
+				txtInQtyUsd.setEnabled(isSelected);
 				txtQty.setEnabled(!isSelected);
-				txtBalancePercent.setEnabled(!isSelected);
+				txtInQtyBalance.setEnabled(!isSelected);
 			}
 		});
 		rbQty.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				boolean isSelected = (e.getStateChange() == ItemEvent.SELECTED);
-				txtQtyUsd.setEnabled(!isSelected);
+				txtInQtyUsd.setEnabled(!isSelected);
 				txtQty.setEnabled(isSelected);
-				txtBalancePercent.setEnabled(!isSelected);
+				txtInQtyBalance.setEnabled(!isSelected);
 			}
 		});
 		rbQtyBalance.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				boolean isSelected = (e.getStateChange() == ItemEvent.SELECTED);
-				txtQtyUsd.setEnabled(!isSelected);
+				txtInQtyUsd.setEnabled(!isSelected);
 				txtQty.setEnabled(!isSelected);
-				txtBalancePercent.setEnabled(isSelected);
+				txtInQtyBalance.setEnabled(isSelected);
 			}
 		});
 
@@ -627,7 +649,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 				createShort();
 			}
 		});
-		
+
 		btnLong.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				createLong();
@@ -660,118 +682,66 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			}
 		});
 
-		lnkBtnExtreme.addMouseListener(new MouseAdapter() {
+		lnkBtnSimple.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				loadGridTemplate(1);
 			}
 		});
-		lnkBtnStrong.addMouseListener(new MouseAdapter() {
+		lnkBtnClassic1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				loadGridTemplate(2);
 			}
 		});
-		lnkBtnNormal.addMouseListener(new MouseAdapter() {
+		lnkBtnClassic2.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				loadGridTemplate(3);
 			}
 		});
-		lnkBtnLarge.addMouseListener(new MouseAdapter() {
+		lnkBtnIncremental1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				loadGridTemplate(4);
 			}
 		});
-		lnkBtnEternal.addMouseListener(new MouseAdapter() {
+		lnkBtnIncremental2.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				loadGridTemplate(5);
 			}
 		});		
-		lnkBtnToy.addMouseListener(new MouseAdapter() {
+		lnkBtnIncremental3.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				loadGridTemplate(6);
 			}
 		});		
+		lnkBtnFast.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				loadGridTemplate(7);
+			}
+		});		
 
-	}
-	
-	private void loadGridTemplate(int templaneNro)
-	{
-		try
-		{
-			if (templaneNro == 1)
-			{
-				txtBalancePercent.setText("1");
-				txtIterations.setText("5");
-				txtPriceIncr.setText("1.8");
-				txtSLossDist.setText("10");
-				txtQtyIncr.setText("125");
-			}
-			else if (templaneNro == 2)
-			{
-				txtBalancePercent.setText("3");
-				txtIterations.setText("6");
-				txtPriceIncr.setText("2");
-				txtSLossDist.setText("10");
-				txtQtyIncr.setText("100");
-			}
-			else if (templaneNro == 3)
-			{
-				txtBalancePercent.setText("3");
-				txtIterations.setText("5");
-				txtPriceIncr.setText("2");
-				txtSLossDist.setText("10");
-				txtQtyIncr.setText("40");
-			}
-			else if (templaneNro == 4)
-			{
-				txtBalancePercent.setText("2");
-				txtIterations.setText("7");
-				txtPriceIncr.setText("3");
-				txtSLossDist.setText("10");
-				txtQtyIncr.setText("40");
-			}
-			else if (templaneNro == 5)
-			{
-				txtBalancePercent.setText("1");
-				txtIterations.setText("8");
-				txtPriceIncr.setText("5");
-				txtSLossDist.setText("10");
-				txtQtyIncr.setText("40");
-			}
-			else if (templaneNro == 6)
-			{
-				txtBalancePercent.setText("1");
-				txtIterations.setText("3");
-				txtPriceIncr.setText("2");
-				txtSLossDist.setText("1.5");
-				txtQtyIncr.setText("40");
-			}
-			else
-			{
-				return;
-			}
-
-			generateGrid();
-		}
-		catch (Exception e)
-		{
-			ERROR(e);
-		}
 	}
 
 	private void loadConfig()
 	{
+		rbArithmetic.setSelected("A".equals(Config.getGridType()));
+		rbGeometric.setSelected("G".equals(Config.getGridType()));
+
+		rbQtyUsd.setSelected("U".equals(Config.getInQtyType()));
+		rbQtyBalance.setSelected("B".equals(Config.getInQtyType()));
+		txtInQtyUsd.setText(rbQtyUsd.isSelected() ? Config.getInQty().toString() : "");
+		txtInQtyBalance.setText(rbQtyBalance.isSelected() ? Convert.dblToStrPercent(Config.getInQty()) : "");
+
 		txtIterations.setText(String.valueOf(Config.getIterations()));
 		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPriceIncrement())); 
 		txtQtyIncr.setText(Convert.dblToStrPercent(Config.getCoinsIncrement()));
 		txtSLossDist.setText(Convert.dblToStrPercent(Config.getStoplossIncrement()));
 		txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
-		txtBalancePercent.setText(Convert.dblToStrPercent(Config.getPositionStartQty()));
 
 		generateGrid();
 	}
@@ -925,7 +895,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 				rbQty.setEnabled(false);
 				rbQtyBalance.setEnabled(false);
 				txtQty.setEnabled(false);
-				txtBalancePercent.setEnabled(false);
+				txtInQtyBalance.setEnabled(false);
 				
 				BeepUtils.beep3();
 			}
@@ -957,6 +927,202 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 	// ------------------------------------------------------------------------
 
+	private void loadGridTemplate(int templaneNro)
+	{
+		try
+		{
+			if (templaneNro == 1)
+			{
+				generateGridSimple();
+			}
+			else if (templaneNro == 2)
+			{
+				generateGridClassic1();
+			}
+			else if (templaneNro == 3)
+			{
+				generateGridClassic2();
+			}
+			else if (templaneNro == 4)
+			{
+				generateGridIncremental1();
+			}
+			else if (templaneNro == 5)
+			{
+				generateGridIncremental2();
+			}
+			else if (templaneNro == 6)
+			{
+				generateGridIncremental3();
+			}
+			else if (templaneNro == 7)
+			{
+				generateGridFast();
+			}
+			else
+			{
+				return;
+			}
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
+	}
+
+	private void generateGridSimple()
+	{
+		rbQtyUsd.setSelected(true);
+		txtInQtyUsd.setText("10.0");
+
+		txtInQtyBalance.setText("1");
+		txtIterations.setText("0");
+		txtPriceIncr.setText("2.0");
+		txtSLossDist.setText("1.0");
+		txtTProfit.setText("2.0");
+		txtQtyIncr.setText("100");
+
+		generateGrid();
+	}
+
+	private void generateGridClassic1()
+	{
+		rbQtyUsd.setSelected(true);
+		txtInQtyUsd.setText("5.0");
+
+		txtIterations.setText("6");
+		txtPriceIncr.setText("2.0");
+		txtSLossDist.setText("1.0");
+		txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
+		txtQtyIncr.setText("40");
+
+		generateGrid();
+	}
+
+	private void generateGridClassic2()
+	{
+		rbQtyUsd.setSelected(true);
+		txtInQtyUsd.setText("5.0");
+
+		txtIterations.setText("8");
+		txtPriceIncr.setText("2.0");
+		txtSLossDist.setText("1.0");
+		txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
+		txtQtyIncr.setText("40");
+
+		generateGrid();
+	}
+
+	private void generateGridFast()
+	{
+		rbQtyUsd.setSelected(true);
+		txtInQtyUsd.setText("5.0");
+
+		txtIterations.setText("5");
+		txtPriceIncr.setText("2.0");
+		txtSLossDist.setText("1.0");
+		txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
+		txtQtyIncr.setText("100");
+
+		generateGrid();
+	}
+
+	private void generateGridIncremental1()
+	{
+		rbQtyUsd.setSelected(true);
+		txtInQtyUsd.setText("5.0");
+
+		txtIterations.setText("6");
+
+		rbArithmetic.setSelected(true);
+		txtIterations.setText("5");
+		txtPriceIncr.setText("2.0");
+		txtSLossDist.setText("2.0");
+		txtQtyIncr.setText("50.0");
+
+		txtGPrice1.setText("2.0");
+		txtGQty1.setText("0.0");
+		txtGPrice2.setText("2.0");
+		txtGQty2.setText("100.0");
+		txtGPrice3.setText("2.0");
+		txtGQty3.setText("100.0");
+		txtGPrice4.setText("4.0");
+		txtGQty4.setText("40.0");
+		txtGPrice5.setText("4.0");
+		txtGQty5.setText("40.0");
+		txtGPrice6.setText("4.0");
+		txtGQty6.setText("40.0");
+
+		txtGPrice7.setText("");
+		txtGQty7.setText("");
+		txtGPrice8.setText("");
+		txtGQty8.setText("");
+	}
+
+	private void generateGridIncremental2()
+	{
+		rbQtyUsd.setSelected(true);
+		txtInQtyUsd.setText("5.0");
+		
+		txtIterations.setText("5");
+
+		rbArithmetic.setSelected(true);
+		txtIterations.setText("5");
+		txtPriceIncr.setText("2.0");
+		txtSLossDist.setText("2.0");
+		txtQtyIncr.setText("50.0");
+
+		txtGPrice1.setText("2.0");
+		txtGQty1.setText("0.0");
+		txtGPrice2.setText("2.5");
+		txtGQty2.setText("100.0");
+		txtGPrice3.setText("5.0");
+		txtGQty3.setText("50.0");
+		txtGPrice4.setText("5.0");
+		txtGQty4.setText("50.0");
+		txtGPrice5.setText("10.0");
+		txtGQty5.setText("100.0");
+
+		txtGPrice6.setText("");
+		txtGQty6.setText("");
+		txtGPrice7.setText("");
+		txtGQty7.setText("");
+		txtGPrice8.setText("");
+		txtGQty8.setText("");
+	}
+
+	private void generateGridIncremental3()
+	{
+		rbQtyUsd.setSelected(true);
+		txtInQtyUsd.setText("5.0");
+
+		txtIterations.setText("5");
+		
+		rbArithmetic.setSelected(true);
+		txtIterations.setText("5");
+		txtPriceIncr.setText("2.0");
+		txtSLossDist.setText("1.0");
+		txtQtyIncr.setText("50.0");
+
+		txtGPrice1.setText("2.5");
+		txtGQty1.setText("0.0");
+		txtGPrice2.setText("3.5");
+		txtGQty2.setText("100.0");
+		txtGPrice3.setText("5.5");
+		txtGQty3.setText("50.0");
+		txtGPrice4.setText("7.5");
+		txtGQty4.setText("50.0");
+		txtGPrice5.setText("10");
+		txtGQty5.setText("50.0");
+
+		txtGPrice6.setText("");
+		txtGQty6.setText("");
+		txtGPrice7.setText("");
+		txtGQty7.setText("");
+		txtGPrice8.setText("");
+		txtGQty8.setText("");
+	}
+
 	private void generateGrid()
 	{
 		int iterations = Integer.valueOf(txtIterations.getText());
@@ -965,7 +1131,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 		if (iterations >= 1)
 		{
-			txtGPrice1.setText(Convert.dblToStrPercent(priceIncr));
+			txtGPrice1.setText(Convert.dblToStrPercent(Config.getPriceIncrement1()));
 			txtGQty1.setText(Convert.dblToStrPercent(Config.getCoinsIncrement1()));
 		}
 		else
@@ -1044,7 +1210,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			txtGQty8.setText("");
 		}
 	}
-	
+
 	private List<PriceQty> acquireGrid()
 	{
 		List<PriceQty> lstPriceQty = new ArrayList<PriceQty>();
@@ -1131,7 +1297,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		List<PriceQty> lstPriceQty = acquireGrid();
 
 		Position position = new Position(symbol, side, distBeforeSL, tProfit, lstPriceQty);
-
+		position.setArithmetic(rbArithmetic.isSelected());
+		
 		Double inPrice = getInPrice();
 		position.setInPrice(inPrice);
 		position.setMarkPrice(rbPriceMark.isSelected());
@@ -1184,19 +1351,19 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		else if (rbQtyBalance.isSelected()) 
 		{
-			if (NumberUtils.isCreatable(txtBalancePercent.getText()))
+			if (NumberUtils.isCreatable(txtInQtyBalance.getText()))
 			{
-				double balancePercent = Convert.strPercentToDbl(txtBalancePercent.getText());
+				double balancePercent = Convert.strPercentToDbl(txtInQtyBalance.getText());
 				AccountBalance accBalance = BalanceService.getAccountBalance();
 				double balance = accBalance.getBalance().doubleValue();
 				return DoubleRounder.round(Math.max(5, balance * balancePercent) / inPrice, symbol.getQuantityPrecision(), RoundingMode.CEILING);
 			}
 		}
-		else if (rbQtyUsd.isSelected()) 
+		else if (rbQtyUsd.isSelected())
 		{
-			if (NumberUtils.isCreatable(txtQtyUsd.getText()))
+			if (NumberUtils.isCreatable(txtInQtyUsd.getText()))
 			{
-				double usd = Double.valueOf(txtQtyUsd.getText());
+				double usd = Double.valueOf(txtInQtyUsd.getText());
 				return DoubleRounder.round(usd / inPrice, symbol.getQuantityPrecision(), RoundingMode.CEILING);
 			}
 		}

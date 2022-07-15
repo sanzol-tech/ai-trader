@@ -1,5 +1,6 @@
 package sanzol.app.forms;
 
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Frame;
@@ -11,6 +12,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.math.BigDecimal;
 
+import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -19,8 +21,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
@@ -49,25 +55,33 @@ public class FrmConfig extends JFrame
 	private JPanel pnlStatusBar;
 	private JPanel pnlTopBar;
 
+	private JRadioButton rbArithmetic;
+	private JRadioButton rbGeometric;
+	private JRadioButton rbQtyUsd;
+	private JRadioButton rbQtyBalance;
+	
 	private JPasswordField txtApiKey;
 	private JPasswordField txtSecretKey;
-	private JTextField txtBalanceMinAvailable;
-	private JTextField txtCoinsIncr;
-	private JTextField txtDistBeforeSL;
-	private JTextField txtFavCoins;
-	private JTextField txtIterations;
-	private JTextField txtLeverage;
-	private JTextField txtPositionQty;
-	private JTextField txtPositionQtyMax;
-	private JTextField txtPositionsMax;
-	private JTextField txtPriceIncr;
-	private JTextField txtTProfit;
+
+	private JTextArea txtFavCoins;
 	private JTextField txtBSMinVolume;
 	private JTextField txtBSMaxChange24h;
-	private JTextField txtCoinsIncr1;
 	private JTextField txtBlocksToAnalyzeBB;
 	private JTextField txtBlocksToAnalyzeWA;
-
+	private JTextField txtIterations;
+	private JTextField txtPriceIncr1;
+	private JTextField txtCoinsIncr1;
+	private JTextField txtPIF;
+	private JTextField txtPriceIncr;
+	private JTextField txtCoinsIncr;
+	private JTextField txtDistBeforeSL;
+	private JTextField txtTProfit;
+	private JTextField txtInQtyUsd;
+	private JTextField txtInQtyBalance;
+	private JTextField txtLeverage;
+	private JTextField txtPositionsMax;
+	private JTextField txtBalanceMinAvailable;
+	
 	public FrmConfig()
 	{
 		initComponents();
@@ -93,67 +107,10 @@ public class FrmConfig extends JFrame
 
 		lblError = new JLabel();
 
-		JPanel panelPositions = new JPanel();
-		panelPositions.setLayout(null);
-		panelPositions.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Balance / Positions ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panelPositions.setBounds(425, 145, 400, 128);
-		pnlContent.add(panelPositions);
-		
-		JLabel lblQty = new JLabel("Min qty %");
-		lblQty.setBounds(117, 26, 80, 14);
-		panelPositions.add(lblQty);
-		
-		txtPositionQty = new JTextField();
-		txtPositionQty.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtPositionQty.setColumns(10);
-		txtPositionQty.setBounds(117, 43, 72, 20);
-		panelPositions.add(txtPositionQty);
-		
-		txtLeverage = new JTextField();
-		txtLeverage.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtLeverage.setEditable(false);
-		txtLeverage.setColumns(10);
-		txtLeverage.setBounds(209, 43, 72, 20);
-		panelPositions.add(txtLeverage);
-		
-		txtBalanceMinAvailable = new JTextField();
-		txtBalanceMinAvailable.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtBalanceMinAvailable.setColumns(10);
-		txtBalanceMinAvailable.setBounds(25, 86, 72, 20);
-		panelPositions.add(txtBalanceMinAvailable);
-		
-		JLabel lblLeverage = new JLabel("Leverage");
-		lblLeverage.setBounds(209, 26, 80, 14);
-		panelPositions.add(lblLeverage);
-		
-		JLabel lblAvailable = new JLabel("Min balance %");
-		lblAvailable.setBounds(25, 70, 80, 14);
-		panelPositions.add(lblAvailable);
-		
-		JLabel lblPositionsMax = new JLabel("Max positions");
-		lblPositionsMax.setBounds(25, 26, 80, 14);
-		panelPositions.add(lblPositionsMax);
-		
-		JLabel lblQtyMax = new JLabel("Max qty %");
-		lblQtyMax.setBounds(117, 70, 80, 14);
-		panelPositions.add(lblQtyMax);
-		
-		txtPositionsMax = new JTextField();
-		txtPositionsMax.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtPositionsMax.setColumns(10);
-		txtPositionsMax.setBounds(25, 43, 72, 20);
-		panelPositions.add(txtPositionsMax);
-
-		txtPositionQtyMax = new JTextField();
-		txtPositionQtyMax.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtPositionQtyMax.setColumns(10);
-		txtPositionQtyMax.setBounds(117, 86, 72, 20);
-		panelPositions.add(txtPositionQtyMax);
-
 		JPanel panelKey = new JPanel();
 		panelKey.setLayout(null);
 		panelKey.setBorder(UIManager.getBorder("TextField.border"));
-		panelKey.setBounds(15, 304, 810, 60);
+		panelKey.setBounds(15, 342, 810, 64);
 		pnlContent.add(panelKey);
 
 		JLabel lblApiKey = new JLabel("Api Key");
@@ -180,7 +137,7 @@ public class FrmConfig extends JFrame
 		btnSaveKey.setOpaque(true);
 		btnSaveKey.setBounds(728, 30, 72, 20);
 		panelKey.add(btnSaveKey);
-		
+
 		// --------------------------------------------------------------------
 		GroupLayout pnlTopBarLayout = new GroupLayout(pnlTopBar);
 		pnlTopBarLayout.setHorizontalGroup(
@@ -212,7 +169,7 @@ public class FrmConfig extends JFrame
 				.addGroup(layout.createSequentialGroup()
 					.addComponent(pnlTopBar, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
+					.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(pnlStatusBar, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE))
 		);
@@ -221,135 +178,244 @@ public class FrmConfig extends JFrame
 		
 		JPanel pnlSymbols = new JPanel();
 		pnlSymbols.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Symbols ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlSymbols.setBounds(15, 11, 400, 149);
+		pnlSymbols.setBounds(15, 11, 490, 145);
 		pnlContent.add(pnlSymbols);
 		pnlSymbols.setLayout(null);
-				
-		txtBSMinVolume = new JTextField();
-		txtBSMinVolume.setBounds(24, 111, 86, 20);
-		pnlSymbols.add(txtBSMinVolume);
-		txtBSMinVolume.setColumns(10);
-		
-		txtBSMaxChange24h = new JTextField();
-		txtBSMaxChange24h.setBounds(113, 111, 86, 20);
-		pnlSymbols.add(txtBSMaxChange24h);
-		txtBSMaxChange24h.setColumns(10);
-		
-		JLabel lblVolume = new JLabel("Min Volume");
-		lblVolume.setBounds(24, 94, 86, 14);
-		pnlSymbols.add(lblVolume);
-		
-		JLabel lblChange = new JLabel("Max Change 24h");
-		lblChange.setBounds(113, 94, 100, 14);
-		pnlSymbols.add(lblChange);
-		
-		JLabel lblNewLabel = new JLabel("Better symbols");
-		lblNewLabel.setBounds(24, 75, 175, 14);
-		pnlSymbols.add(lblNewLabel);
-		
+
 		JLabel lblFavCoins = new JLabel("Favorite coins");
 		lblFavCoins.setBounds(24, 27, 90, 14);
 		pnlSymbols.add(lblFavCoins);
 		lblFavCoins.setHorizontalAlignment(SwingConstants.LEFT);
-		
-		txtFavCoins = new JTextField();
-		txtFavCoins.setBounds(24, 44, 350, 20);
-		pnlSymbols.add(txtFavCoins);
-		txtFavCoins.setColumns(10);
+
+		txtFavCoins = new JTextArea();
+		txtFavCoins.setLineWrap(true);
+		txtFavCoins.setWrapStyleWord(true);
+
+		JScrollPane scroll = new JScrollPane(txtFavCoins, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.setBounds(24, 46, 440, 72);
+		scroll.setBorder(UIManager.getBorder("TextField.border"));
+		pnlSymbols.add(scroll);
 
 		JPanel pnlGrid = new JPanel();
 		pnlGrid.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Grid ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlGrid.setBounds(425, 11, 400, 123);
+		pnlGrid.setBounds(15, 178, 590, 145);
 		pnlContent.add(pnlGrid);
 		pnlGrid.setLayout(null);
 
 		JLabel lblItarations = new JLabel("Iterations");
-		lblItarations.setBounds(25, 21, 80, 14);
+		lblItarations.setBounds(24, 27, 80, 14);
 		pnlGrid.add(lblItarations);
 		lblItarations.setHorizontalAlignment(SwingConstants.LEFT);
-		
+
 		JLabel lblPriceIncr = new JLabel("Price Incr %");
-		lblPriceIncr.setBounds(117, 21, 80, 14);
+		lblPriceIncr.setBounds(212, 27, 80, 14);
 		pnlGrid.add(lblPriceIncr);
-		
+
 		JLabel lblTProfit = new JLabel("Take profit %");
-		lblTProfit.setBounds(209, 21, 80, 14);
-		pnlGrid.add(lblTProfit);
+		lblTProfit.setBounds(400, 78, 80, 14);
 		lblTProfit.setHorizontalAlignment(SwingConstants.LEFT);
-		
+		pnlGrid.add(lblTProfit);
+
 		txtTProfit = new JTextField();
-		txtTProfit.setBounds(209, 38, 72, 20);
-		pnlGrid.add(txtTProfit);
+		txtTProfit.setBounds(400, 97, 72, 20);
 		txtTProfit.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtTProfit.setColumns(10);
-	
+		pnlGrid.add(txtTProfit);
+
 		txtPriceIncr = new JTextField();
-		txtPriceIncr.setBounds(117, 38, 72, 20);
-		pnlGrid.add(txtPriceIncr);
+		txtPriceIncr.setBounds(212, 46, 72, 20);
 		txtPriceIncr.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtPriceIncr.setColumns(10);
+		pnlGrid.add(txtPriceIncr);
 
 		txtIterations = new JTextField();
-		txtIterations.setBounds(25, 38, 72, 20);
-		pnlGrid.add(txtIterations);
+		txtIterations.setBounds(24, 46, 72, 20);
 		txtIterations.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtIterations.setColumns(10);
-								
+		pnlGrid.add(txtIterations);
+
 		JLabel lblCoinsIncr = new JLabel("Qty Incr %");
-		lblCoinsIncr.setBounds(117, 69, 80, 14);
+		lblCoinsIncr.setBounds(212, 78, 80, 14);
 		pnlGrid.add(lblCoinsIncr);
-		
+
 		txtCoinsIncr1 = new JTextField();
-		txtCoinsIncr1.setBounds(25, 85, 72, 20);
+		txtCoinsIncr1.setBounds(118, 97, 72, 20);
 		txtCoinsIncr1.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtCoinsIncr1.setColumns(10);
 		pnlGrid.add(txtCoinsIncr1);
 
 		txtCoinsIncr = new JTextField();
-		txtCoinsIncr.setBounds(117, 85, 72, 20);
+		txtCoinsIncr.setBounds(212, 97, 72, 20);
 		txtCoinsIncr.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtCoinsIncr.setColumns(10);
 		pnlGrid.add(txtCoinsIncr);
-		
-		JLabel lblDistSL = new JLabel("SL after last %");
-		lblDistSL.setBounds(209, 69, 90, 14);
-		pnlGrid.add(lblDistSL);
+
+		JLabel lblCoinsIncr1 = new JLabel("1\u00B0 Qty Incr %");
+		lblCoinsIncr1.setBounds(118, 78, 80, 14);
+		pnlGrid.add(lblCoinsIncr1);
+
+		txtPriceIncr1 = new JTextField();
+		txtPriceIncr1.setText("2.0");
+		txtPriceIncr1.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtPriceIncr1.setColumns(10);
+		txtPriceIncr1.setBounds(118, 46, 72, 20);
+		pnlGrid.add(txtPriceIncr1);
+
+		JLabel lblPriceIncr_1 = new JLabel("1\u00B0 Price Incr %");
+		lblPriceIncr_1.setBounds(118, 27, 80, 14);
+		pnlGrid.add(lblPriceIncr_1);
 
 		txtDistBeforeSL = new JTextField();
-		txtDistBeforeSL.setBounds(209, 85, 72, 20);
-		pnlGrid.add(txtDistBeforeSL);
+		txtDistBeforeSL.setBounds(400, 46, 72, 20);
 		txtDistBeforeSL.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtDistBeforeSL.setColumns(10);
+		pnlGrid.add(txtDistBeforeSL);
+
+		JLabel lblDistSL = new JLabel("SL after last %");
+		lblDistSL.setBounds(400, 27, 90, 14);
+		pnlGrid.add(lblDistSL);
+
+		txtPIF = new JTextField();
+		txtPIF.setText("2.0");
+		txtPIF.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtPIF.setColumns(10);
+		txtPIF.setBounds(306, 46, 72, 20);
+		pnlGrid.add(txtPIF);
+
+		JLabel lblPif = new JLabel("P.I.F. %");
+		lblPif.setBounds(306, 27, 80, 14);
+		pnlGrid.add(lblPif);
+
+		txtInQtyBalance = new JTextField();
+		txtInQtyBalance.setBounds(494, 97, 72, 20);
+		pnlGrid.add(txtInQtyBalance);
+		txtInQtyBalance.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtInQtyBalance.setColumns(10);
+
+		txtInQtyUsd = new JTextField();
+		txtInQtyUsd.setText("10.0");
+		txtInQtyUsd.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtInQtyUsd.setColumns(10);
+		txtInQtyUsd.setBounds(494, 46, 72, 20);
+		pnlGrid.add(txtInQtyUsd);
+
+		rbArithmetic = new JRadioButton("Arithmetic");
+		rbArithmetic.setBounds(23, 75, 90, 23);
+		pnlGrid.add(rbArithmetic);
+
+		rbGeometric = new JRadioButton("Geometric");
+		rbGeometric.setBounds(23, 98, 90, 23);
+		pnlGrid.add(rbGeometric);
 		
-		JLabel lblCoinsIncr1 = new JLabel("Qty Incr %");
-		lblCoinsIncr1.setBounds(25, 69, 80, 14);
-		pnlGrid.add(lblCoinsIncr1);
-		
+		rbQtyUsd = new JRadioButton("Usd");
+		rbQtyUsd.setBounds(492, 23, 90, 23);
+		pnlGrid.add(rbQtyUsd);
+
+		rbQtyBalance = new JRadioButton("Balance %");
+		rbQtyBalance.setBounds(492, 75, 90, 23);
+		pnlGrid.add(rbQtyBalance);
+
+		ButtonGroup bg2 = new javax.swing.ButtonGroup();
+		bg2.add(rbQtyUsd);
+		bg2.add(rbQtyBalance);
+
+		ButtonGroup bg3 = new javax.swing.ButtonGroup();
+		bg3.add(rbArithmetic);
+		bg3.add(rbGeometric);
+
+		scroll = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.setBorder(UIManager.getBorder("TextField.border"));
+		scroll.setBounds(37, -89, 437, 28);
+		pnlGrid.add(scroll);
+
 		JPanel pnlOBook = new JPanel();
 		pnlOBook.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " O.Book ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlOBook.setBounds(15, 171, 400, 101);
+		pnlOBook.setBounds(675, 11, 150, 145);
 		pnlContent.add(pnlOBook);
 		pnlOBook.setLayout(null);
 
 		JLabel lblBlocksToAnalyzeBB = new JLabel("Blocks to analyze BB");
-		lblBlocksToAnalyzeBB.setBounds(20, 39, 110, 14);
+		lblBlocksToAnalyzeBB.setBounds(24, 27, 118, 14);
 		pnlOBook.add(lblBlocksToAnalyzeBB);
 
 		JLabel lblBlocksToAnalyzeWA = new JLabel("Blocks to analyze WA");
-		lblBlocksToAnalyzeWA.setBounds(140, 39, 110, 14);
+		lblBlocksToAnalyzeWA.setBounds(24, 78, 118, 14);
 		pnlOBook.add(lblBlocksToAnalyzeWA);
-
-		txtBlocksToAnalyzeBB = new JTextField();
-		txtBlocksToAnalyzeBB.setHorizontalAlignment(SwingConstants.TRAILING);
-		txtBlocksToAnalyzeBB.setColumns(10);
-		txtBlocksToAnalyzeBB.setBounds(20, 56, 86, 20);
-		pnlOBook.add(txtBlocksToAnalyzeBB);
 
 		txtBlocksToAnalyzeWA = new JTextField();
 		txtBlocksToAnalyzeWA.setHorizontalAlignment(SwingConstants.TRAILING);
 		txtBlocksToAnalyzeWA.setColumns(10);
-		txtBlocksToAnalyzeWA.setBounds(140, 56, 86, 20);
+		txtBlocksToAnalyzeWA.setBounds(24, 97, 86, 20);
 		pnlOBook.add(txtBlocksToAnalyzeWA);
+
+		txtBlocksToAnalyzeBB = new JTextField();
+		txtBlocksToAnalyzeBB.setBounds(24, 46, 86, 20);
+		pnlOBook.add(txtBlocksToAnalyzeBB);
+		txtBlocksToAnalyzeBB.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtBlocksToAnalyzeBB.setColumns(10);
+
+		JPanel panelPositions = new JPanel();
+		panelPositions.setBounds(615, 178, 210, 145);
+		panelPositions.setLayout(null);
+		panelPositions.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Balance / Positions ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		pnlContent.add(panelPositions);
+
+		txtLeverage = new JTextField();
+		txtLeverage.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtLeverage.setEditable(false);
+		txtLeverage.setColumns(10);
+		txtLeverage.setBounds(24, 46, 72, 20);
+		panelPositions.add(txtLeverage);
+
+		txtBalanceMinAvailable = new JTextField();
+		txtBalanceMinAvailable.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtBalanceMinAvailable.setColumns(10);
+		txtBalanceMinAvailable.setBounds(24, 97, 72, 20);
+		panelPositions.add(txtBalanceMinAvailable);
+
+		JLabel lblLeverage = new JLabel("Leverage");
+		lblLeverage.setBounds(24, 27, 80, 14);
+		panelPositions.add(lblLeverage);
+
+		JLabel lblAvailable = new JLabel("Min balance %");
+		lblAvailable.setBounds(24, 78, 80, 14);
+		panelPositions.add(lblAvailable);
+
+		txtPositionsMax = new JTextField();
+		txtPositionsMax.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtPositionsMax.setColumns(10);
+		txtPositionsMax.setBounds(113, 46, 72, 20);
+		panelPositions.add(txtPositionsMax);
+
+		JLabel lblPositionsMax = new JLabel("Max positions");
+		lblPositionsMax.setBounds(115, 27, 80, 14);
+		panelPositions.add(lblPositionsMax);
+
+		JPanel pnlBetterSymbols = new JPanel();
+		pnlBetterSymbols.setBounds(515, 11, 150, 145);
+		pnlBetterSymbols.setLayout(null);
+		pnlBetterSymbols.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Better symbols ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		pnlContent.add(pnlBetterSymbols);
+
+		JLabel lblVolume = new JLabel("Min Volume");
+		lblVolume.setBounds(24, 27, 100, 14);
+		pnlBetterSymbols.add(lblVolume);
+
+		JLabel lblChange = new JLabel("Max Change 24h");
+		lblChange.setBounds(24, 78, 100, 14);
+		pnlBetterSymbols.add(lblChange);
+
+		txtBSMaxChange24h = new JTextField();
+		txtBSMaxChange24h.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtBSMaxChange24h.setBounds(24, 97, 86, 20);
+		pnlBetterSymbols.add(txtBSMaxChange24h);
+		txtBSMaxChange24h.setColumns(10);
+
+		txtBSMinVolume = new JTextField();
+		txtBSMinVolume.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtBSMinVolume.setBounds(24, 46, 86, 20);
+		pnlBetterSymbols.add(txtBSMinVolume);
+		txtBSMinVolume.setColumns(10);
 
 		// --------------------------------------------------------------------
 		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);
@@ -421,18 +487,26 @@ public class FrmConfig extends JFrame
 		txtBlocksToAnalyzeBB.setText(String.valueOf(Config.getBlocksToAnalizeBB()));
 		txtBlocksToAnalyzeWA.setText(String.valueOf(Config.getBlocksToAnalizeWA()));
 
+		rbArithmetic.setSelected("A".equals(Config.getGridType()));
+		rbGeometric.setSelected("G".equals(Config.getGridType()));
+
 		txtIterations.setText(String.valueOf(Config.getIterations()));
-		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPriceIncrement()));
+		txtPriceIncr1.setText(Convert.dblToStrPercent(Config.getPriceIncrement1()));
 		txtCoinsIncr1.setText(Convert.dblToStrPercent(Config.getCoinsIncrement1()));
+		txtPIF.setText(Convert.dblToStrPercent(Config.getPif()));
+		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPriceIncrement()));
 		txtCoinsIncr.setText(Convert.dblToStrPercent(Config.getCoinsIncrement()));
 		txtDistBeforeSL.setText(Convert.dblToStrPercent(Config.getStoplossIncrement()));
 		txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
 
-		txtPositionsMax.setText(String.valueOf(Config.getPositionsMax()));
-		txtPositionQty.setText(Convert.dblToStrPercent(Config.getPositionStartQty()));
-		txtPositionQtyMax.setText(Convert.dblToStrPercent(Config.getPositionStartQtyMax()));
-		txtBalanceMinAvailable.setText(Convert.dblToStrPercent(Config.getBalanceMinAvailable()));
+		rbQtyUsd.setSelected("U".equals(Config.getInQtyType()));
+		rbQtyBalance.setSelected("B".equals(Config.getInQtyType()));
+		txtInQtyUsd.setText(rbQtyUsd.isSelected() ? Config.getInQty().toString() : "");
+		txtInQtyBalance.setText(rbQtyBalance.isSelected() ? Convert.dblToStrPercent(Config.getInQty()) : "");
+
 		txtLeverage.setText(String.valueOf(Config.getLeverage()));
+		txtPositionsMax.setText(String.valueOf(Config.getPositionsMax()));
+		txtBalanceMinAvailable.setText(Convert.dblToStrPercent(Config.getBalanceMinAvailable()));
 	}
 
 	public static void launch()
@@ -466,27 +540,41 @@ public class FrmConfig extends JFrame
 	{
 		try
 		{
+			Config.setFavoriteSymbols(txtFavCoins.getText());
 			Config.setBetterSymbolsMinVolume(txtBSMinVolume.getText());
 			Config.setBetterSymbolsMaxChange(txtBSMaxChange24h.getText());
 			Config.setBlocksToAnalizeBB(txtBlocksToAnalyzeBB.getText());
 			Config.setBlocksToAnalizeWA(txtBlocksToAnalyzeWA.getText());
-			Config.setFavoriteSymbols(txtFavCoins.getText());
+
 			Config.setIterations(txtIterations.getText());
-			Config.setPriceIncrement(Convert.strPercentToDbl(txtPriceIncr.getText()));
+			Config.setGridType(rbArithmetic.isSelected() ? "A" : "G");
+			Config.setPriceIncrement1(Convert.strPercentToDbl(txtPriceIncr1.getText()));
 			Config.setCoinsIncrement1(Convert.strPercentToDbl(txtCoinsIncr1.getText()));
+			Config.setPif(Convert.strPercentToDbl(txtPIF.getText()));
+			Config.setPriceIncrement(Convert.strPercentToDbl(txtPriceIncr.getText()));
 			Config.setCoinsIncrement(Convert.strPercentToDbl(txtCoinsIncr.getText()));
 			Config.setStoplossIncrement(Convert.strPercentToDbl(txtDistBeforeSL.getText()));
 			Config.setTakeprofit(Convert.strPercentToDbl(txtTProfit.getText()));
-			Config.setPositionsMax(txtPositionsMax.getText());
-			Config.setPositionStartQty(Convert.strPercentToDbl(txtPositionQty.getText()));
-			Config.setPositionStartQtyMax(Convert.strPercentToDbl(txtPositionQtyMax.getText()));
-			Config.setBalanceMinAvailable(Convert.strPercentToDbl(txtBalanceMinAvailable.getText()));
+
+			if (rbQtyUsd.isSelected())
+			{
+				Config.setInQtyType("U");
+				Config.setInQty(txtInQtyUsd.getText());
+			}
+			else
+			{
+				Config.setInQtyType("B");
+				Config.setInQty(Convert.strPercentToDbl(txtInQtyBalance.getText()));
+			}
+
 			Config.setLeverage(txtLeverage.getText());
+			Config.setPositionsMax(txtPositionsMax.getText());
+			Config.setBalanceMinAvailable(Convert.strPercentToDbl(txtBalanceMinAvailable.getText()));
 
 			Config.save();
 			INFO("CONFIG SAVED");
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			ERROR(e);
 		}

@@ -83,13 +83,18 @@ public class PositionTrader
 		{
 			number++;
 			type = Type.SELL;
-			distance = (1 + distance) * (1 + entry.getPriceDist()) - 1;
+
+			if (position.isArithmetic())
+				distance = distance + entry.getPriceDist();
+			else
+				distance = (1 + distance) * (1 + entry.getPriceDist()) - 1;
+
 			price = getSymbol().roundPrice(position.getInPrice() * (1 + distance));
 
 			//qtyIncr = (1 + qtyIncr) * ( 1 + entry.getQtyIncr()) - 1;
 			//qty = getSymbol().roundQty(position.getInQty() * (1 + qtyIncr));
 			qty = qty * (1 + entry.getQtyIncr());
-			
+
 			usd = price * qty;
 			sumCoins += qty;
 			sumUsd += usd;
@@ -105,7 +110,12 @@ public class PositionTrader
 		// STOP LOSS
 		number++;
 		type = Type.SL_BUY;
-		distance = (1 + distance) * (1 + position.getDistBeforeSL()) - 1;
+		
+		if (position.isArithmetic())
+			distance = distance + position.getDistBeforeSL();
+		else
+			distance = (1 + distance) * (1 + position.getDistBeforeSL()) - 1;
+
 		price = getSymbol().roundPrice(position.getInPrice() * (1 + distance));
 		qty = sumCoins;
 		usd = sumUsd;
@@ -167,13 +177,18 @@ public class PositionTrader
 		{
 			number++;
 			type = Type.BUY;
-			distance = (1 + distance) * (1 - entry.getPriceDist()) - 1;
+
+			if (position.isArithmetic())
+				distance = distance - entry.getPriceDist();
+			else
+				distance = (1 + distance) * (1 - entry.getPriceDist()) - 1;
+
 			price = getSymbol().roundPrice(position.getInPrice() * (1 + distance));
 
 			//qtyIncr = (1 + qtyIncr) * ( 1 + entry.getQtyIncr()) - 1;
 			//qty = getSymbol().roundQty(position.getInQty() * (1 + qtyIncr));
 			qty = qty * (1 + entry.getQtyIncr());
-			
+
 			usd = price * qty;
 			sumCoins += qty;
 			sumUsd += usd;
@@ -189,7 +204,12 @@ public class PositionTrader
 		// STOP LOSS
 		number++;
 		type = Type.SL_SELL;
-		distance = (1 + distance) * (1 - position.getDistBeforeSL()) - 1;
+
+		if (position.isArithmetic())
+			distance = distance - position.getDistBeforeSL();
+		else
+			distance = (1 + distance) * (1 - position.getDistBeforeSL()) - 1;
+
 		price = getSymbol().roundPrice(position.getInPrice() * (1 + distance));
 		qty = sumCoins;
 		usd = sumUsd;
