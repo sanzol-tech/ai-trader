@@ -39,6 +39,7 @@ import sanzol.app.config.Styles;
 import sanzol.app.task.LogService;
 import sanzol.app.util.Convert;
 import sanzol.lib.util.ExceptionUtils;
+import javax.swing.JCheckBox;
 
 public class FrmConfig extends JFrame
 {
@@ -82,6 +83,7 @@ public class FrmConfig extends JFrame
 	private JTextField txtLeverage;
 	private JTextField txtPositionsMax;
 	private JTextField txtBalanceMinAvailable;
+	private JCheckBox chkPIF;
 	
 	public FrmConfig()
 	{
@@ -192,7 +194,7 @@ public class FrmConfig extends JFrame
 
 		JPanel pnlGrid = new JPanel();
 		pnlGrid.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Grid ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlGrid.setBounds(15, 174, 590, 145);
+		pnlGrid.setBounds(15, 174, 490, 145);
 		pnlContent.add(pnlGrid);
 		pnlGrid.setLayout(null);
 
@@ -202,7 +204,7 @@ public class FrmConfig extends JFrame
 		lblItarations.setHorizontalAlignment(SwingConstants.LEFT);
 
 		JLabel lblPriceIncr = new JLabel("Price Incr %");
-		lblPriceIncr.setBounds(212, 27, 80, 14);
+		lblPriceIncr.setBounds(310, 27, 80, 14);
 		pnlGrid.add(lblPriceIncr);
 
 		JLabel lblTProfit = new JLabel("Take profit %");
@@ -217,7 +219,7 @@ public class FrmConfig extends JFrame
 		pnlGrid.add(txtTProfit);
 
 		txtPriceIncr = new JTextField();
-		txtPriceIncr.setBounds(212, 46, 72, 20);
+		txtPriceIncr.setBounds(310, 46, 72, 20);
 		txtPriceIncr.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtPriceIncr.setColumns(10);
 		pnlGrid.add(txtPriceIncr);
@@ -229,34 +231,34 @@ public class FrmConfig extends JFrame
 		pnlGrid.add(txtIterations);
 
 		JLabel lblCoinsIncr = new JLabel("Qty Incr %");
-		lblCoinsIncr.setBounds(212, 78, 80, 14);
+		lblCoinsIncr.setBounds(310, 78, 80, 14);
 		pnlGrid.add(lblCoinsIncr);
 
 		txtCoinsIncr1 = new JTextField();
-		txtCoinsIncr1.setBounds(118, 97, 72, 20);
+		txtCoinsIncr1.setBounds(216, 97, 72, 20);
 		txtCoinsIncr1.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtCoinsIncr1.setColumns(10);
 		pnlGrid.add(txtCoinsIncr1);
 
 		txtCoinsIncr = new JTextField();
-		txtCoinsIncr.setBounds(212, 97, 72, 20);
+		txtCoinsIncr.setBounds(310, 97, 72, 20);
 		txtCoinsIncr.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtCoinsIncr.setColumns(10);
 		pnlGrid.add(txtCoinsIncr);
 
 		JLabel lblCoinsIncr1 = new JLabel("1\u00B0 Qty Incr %");
-		lblCoinsIncr1.setBounds(118, 78, 80, 14);
+		lblCoinsIncr1.setBounds(216, 78, 80, 14);
 		pnlGrid.add(lblCoinsIncr1);
 
 		txtPriceIncr1 = new JTextField();
 		txtPriceIncr1.setText("2.0");
 		txtPriceIncr1.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtPriceIncr1.setColumns(10);
-		txtPriceIncr1.setBounds(118, 46, 72, 20);
+		txtPriceIncr1.setBounds(216, 46, 72, 20);
 		pnlGrid.add(txtPriceIncr1);
 
 		JLabel lblPriceIncr_1 = new JLabel("1\u00B0 Price Incr %");
-		lblPriceIncr_1.setBounds(118, 27, 80, 14);
+		lblPriceIncr_1.setBounds(216, 27, 80, 14);
 		pnlGrid.add(lblPriceIncr_1);
 
 		txtDistBeforeSL = new JTextField();
@@ -269,30 +271,6 @@ public class FrmConfig extends JFrame
 		lblDistSL.setBounds(400, 27, 90, 14);
 		pnlGrid.add(lblDistSL);
 
-		txtPIF = new JTextField();
-		txtPIF.setText("2.0");
-		txtPIF.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtPIF.setColumns(10);
-		txtPIF.setBounds(306, 46, 72, 20);
-		pnlGrid.add(txtPIF);
-
-		JLabel lblPif = new JLabel("P.I.F. %");
-		lblPif.setBounds(306, 27, 80, 14);
-		pnlGrid.add(lblPif);
-
-		txtInQtyBalance = new JTextField();
-		txtInQtyBalance.setBounds(494, 97, 72, 20);
-		pnlGrid.add(txtInQtyBalance);
-		txtInQtyBalance.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtInQtyBalance.setColumns(10);
-
-		txtInQtyUsd = new JTextField();
-		txtInQtyUsd.setText("10.0");
-		txtInQtyUsd.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtInQtyUsd.setColumns(10);
-		txtInQtyUsd.setBounds(494, 46, 72, 20);
-		pnlGrid.add(txtInQtyUsd);
-
 		rbArithmetic = new JRadioButton("Arithmetic");
 		rbArithmetic.setBounds(23, 75, 90, 23);
 		pnlGrid.add(rbArithmetic);
@@ -300,18 +278,8 @@ public class FrmConfig extends JFrame
 		rbGeometric = new JRadioButton("Geometric");
 		rbGeometric.setBounds(23, 98, 90, 23);
 		pnlGrid.add(rbGeometric);
-		
-		rbQtyUsd = new JRadioButton("Usd");
-		rbQtyUsd.setBounds(492, 23, 90, 23);
-		pnlGrid.add(rbQtyUsd);
-
-		rbQtyBalance = new JRadioButton("Balance %");
-		rbQtyBalance.setBounds(492, 75, 90, 23);
-		pnlGrid.add(rbQtyBalance);
 
 		ButtonGroup bg2 = new javax.swing.ButtonGroup();
-		bg2.add(rbQtyUsd);
-		bg2.add(rbQtyBalance);
 
 		ButtonGroup bg3 = new javax.swing.ButtonGroup();
 		bg3.add(rbArithmetic);
@@ -321,6 +289,17 @@ public class FrmConfig extends JFrame
 		scroll.setBorder(UIManager.getBorder("TextField.border"));
 		scroll.setBounds(37, -89, 437, 28);
 		pnlGrid.add(scroll);
+		
+		txtPIF = new JTextField();
+		txtPIF.setBounds(114, 46, 72, 20);
+		pnlGrid.add(txtPIF);
+		txtPIF.setText("2.0");
+		txtPIF.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtPIF.setColumns(10);
+		
+		chkPIF = new JCheckBox("P.I.F. %");
+		chkPIF.setBounds(112, 23, 72, 23);
+		pnlGrid.add(chkPIF);
 
 		JPanel pnlOBook = new JPanel();
 		pnlOBook.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " O.Book ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -349,7 +328,7 @@ public class FrmConfig extends JFrame
 		txtBlocksToAnalyzeBB.setColumns(10);
 
 		JPanel panelPositions = new JPanel();
-		panelPositions.setBounds(615, 174, 210, 145);
+		panelPositions.setBounds(515, 174, 310, 145);
 		panelPositions.setLayout(null);
 		panelPositions.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Balance / Positions ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		pnlContent.add(panelPositions);
@@ -384,6 +363,29 @@ public class FrmConfig extends JFrame
 		JLabel lblPositionsMax = new JLabel("Max positions");
 		lblPositionsMax.setBounds(115, 27, 80, 14);
 		panelPositions.add(lblPositionsMax);
+		
+		rbQtyUsd = new JRadioButton("Usd");
+		rbQtyUsd.setBounds(214, 27, 90, 23);
+		panelPositions.add(rbQtyUsd);
+		bg2.add(rbQtyUsd);
+		
+		txtInQtyUsd = new JTextField();
+		txtInQtyUsd.setBounds(216, 50, 72, 20);
+		panelPositions.add(txtInQtyUsd);
+		txtInQtyUsd.setText("10.0");
+		txtInQtyUsd.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtInQtyUsd.setColumns(10);
+	
+		rbQtyBalance = new JRadioButton("Balance %");
+		rbQtyBalance.setBounds(214, 78, 90, 23);
+		panelPositions.add(rbQtyBalance);
+		bg2.add(rbQtyBalance);
+
+		txtInQtyBalance = new JTextField();
+		txtInQtyBalance.setBounds(216, 101, 72, 20);
+		panelPositions.add(txtInQtyBalance);
+		txtInQtyBalance.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtInQtyBalance.setColumns(10);
 
 		JPanel pnlBetterSymbols = new JPanel();
 		pnlBetterSymbols.setBounds(515, 11, 150, 145);

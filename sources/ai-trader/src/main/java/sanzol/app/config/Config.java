@@ -34,15 +34,15 @@ public class Config
 	private static final int BLOCKS_TO_ANALYZE_WA = 10;
 
 	// Grid
-	private static final int ITERATIONS = 4;
-	private static final String GRID_TYPE = "A";
-	private static final double PRICE_INCREMENT_1 = 0.02;
+	private static final int ITERATIONS = 5;
+	private static final String GRID_TYPE = "G";
+	private static final double PRICE_INCREMENT_1 = 0.025;
 	private static final double COINS_INCREMENT_1 = 0;
 	private static final double PIF = 0;
-	private static final double PRICE_INCREMENT = 0.02;
-	private static final double COINS_INCREMENT = 1.0;
+	private static final double PRICE_INCREMENT = 0.05;
+	private static final double COINS_INCREMENT = 0.8;
 	private static final double STOPLOSS_INCREMENT = 0.01;
-	private static final double TAKEPROFIT = 0.015;
+	private static final double TAKEPROFIT = 0.02;
 
 	private static final String IN_QTY_TYPE = "U";
 	private static final double IN_QTY = 5.0;
