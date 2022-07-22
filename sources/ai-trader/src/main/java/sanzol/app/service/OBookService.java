@@ -152,7 +152,7 @@ public class OBookService
 			
 			prevEvent = event; 
 
-		}), null);
+		}), System.err::println);
 
 		return this;
 	}

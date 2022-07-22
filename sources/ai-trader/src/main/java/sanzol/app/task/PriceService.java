@@ -2,11 +2,11 @@ package sanzol.app.task;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.binance.client.SubscriptionClient;
 import com.binance.client.model.event.SymbolTickerEvent;
@@ -20,7 +20,7 @@ public final class PriceService
 	private static SubscriptionClient client = SubscriptionClient.create();
 
 	private static Set<String> setFavorites = new LinkedHashSet<String>();
-	private static Map<String, SymbolTickerEvent> mapTickers = new HashMap<String, SymbolTickerEvent>();
+	private static Map<String, SymbolTickerEvent> mapTickers = new ConcurrentHashMap<String, SymbolTickerEvent>();
 
 	public static BigDecimal getLastPrice(Symbol coin)
 	{
@@ -51,7 +51,7 @@ public final class PriceService
 	{
 		loadFavorites();
 
-		mapTickers = new HashMap<String, SymbolTickerEvent>();
+		mapTickers = new ConcurrentHashMap<String, SymbolTickerEvent>();
 
 		client.subscribeAllTickerEvent(((event) -> {
 			List<SymbolTickerEvent> lstSymbolTickerEvent = event;
@@ -65,7 +65,7 @@ public final class PriceService
 
 			notifyAllLogObservers();
 
-		}), null);
+		}), System.err::println);
 	}
 
 	public static void stop()

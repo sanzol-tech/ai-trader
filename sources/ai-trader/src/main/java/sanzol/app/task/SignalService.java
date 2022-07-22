@@ -9,13 +9,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +39,7 @@ public final class SignalService
 	private static boolean onlyFavorites = true;
 	private static boolean onlyBetters = true;
 
-	private static Map<String, ShockPoint> mapShockPoints = new HashMap<String, ShockPoint>();
+	private static Map<String, ShockPoint> mapShockPoints = new ConcurrentHashMap<String, ShockPoint>();
 	private static List<Signal> lstShortSignals;
 	private static List<Signal> lstLongSignals;
 
@@ -114,7 +114,7 @@ public final class SignalService
 
 	public static void restartShocks()
 	{
-		mapShockPoints = new HashMap<String, ShockPoint>();
+		mapShockPoints = new ConcurrentHashMap<String, ShockPoint>();
 		lstShortSignals = new ArrayList<Signal>();
 		lstLongSignals = new ArrayList<Signal>();
 	}
@@ -168,7 +168,7 @@ public final class SignalService
 
 			BigDecimal distShLg = PriceUtil.priceDistDown(obService.getShortPriceFixed(), obService.getLongPriceFixed(), true);
 
-			if ((distShLg.doubleValue() < 1.0 || distShLg.doubleValue() > 8.0))
+			if ((distShLg.doubleValue() < 1.2 || distShLg.doubleValue() > 6.0))
 			{
 				updateShockPoint(ShockPoint.NULL(symbol));
 				LogService.info("DISCARD NEW SIGNALS FROM " + symbol.getNameLeft() + " - DISTANCE BETWEEN POINTS " + distShLg + " %");
@@ -184,7 +184,7 @@ public final class SignalService
 			LogService.error("searchShocks : " + symbol.getName() + " : " +  ex.getMessage());
 		}
 	}
-	
+
 	private static void updateShockPoint(ShockPoint shockPoint)
 	{
 		if (mapShockPoints.containsKey(shockPoint.getSymbol().getName()))

@@ -26,23 +26,23 @@ public class Config
 		 "VET", "XLM", "XMR", "XRP", "ZEC"};
 
 	// Better symbols
-	private static final long BETTER_SYMBOLS_MIN_VOLUME = 100000000;
+	private static final long BETTER_SYMBOLS_MIN_VOLUME = 150000000;
 	private static final double BETTER_SYMBOLS_MAX_CHANGE = 10;
-	
+
 	// Order book
-	private static final int BLOCKS_TO_ANALYZE_BB = 5;
-	private static final int BLOCKS_TO_ANALYZE_WA = 10;
+	private static final int BLOCKS_TO_ANALYZE_BB = 6;
+	private static final int BLOCKS_TO_ANALYZE_WA = 8;
 
 	// Grid
-	private static final int ITERATIONS = 5;
+	private static final int ITERATIONS = 6;
 	private static final String GRID_TYPE = "G";
-	private static final double PRICE_INCREMENT_1 = 0.025;
-	private static final double COINS_INCREMENT_1 = 0;
+	private static final double PRICE_INCREMENT_1 = 0.02;
+	private static final double COINS_INCREMENT_1 = 0.02;
 	private static final double PIF = 0;
-	private static final double PRICE_INCREMENT = 0.05;
+	private static final double PRICE_INCREMENT = 0.02;
 	private static final double COINS_INCREMENT = 0.8;
-	private static final double STOPLOSS_INCREMENT = 0.01;
-	private static final double TAKEPROFIT = 0.02;
+	private static final double STOPLOSS_INCREMENT = 0.005;
+	private static final double TAKEPROFIT = 0.03;
 
 	private static final String IN_QTY_TYPE = "U";
 	private static final double IN_QTY = 5.0;
@@ -51,7 +51,7 @@ public class Config
 	private static final int LEVERAGE = 10;
 	private static final int POSITIONS_MAX = 5;
 	private static final double BALANCE_MIN_AVAILABLE = 0.30;
-	
+
 	private static Boolean isDarkMode;
 
 	private static String favoriteSymbols;

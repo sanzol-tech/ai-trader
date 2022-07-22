@@ -37,7 +37,7 @@ public final class CandlestickCache
 
 			notifyAllLogObservers();
 
-		}), null);
+		}), System.err::println);
 
 	}
 	

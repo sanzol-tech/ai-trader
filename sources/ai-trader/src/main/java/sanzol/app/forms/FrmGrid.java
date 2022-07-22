@@ -911,7 +911,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			else if (templaneNro == 2)
 			{
 				// Fast
-				generateGrid(false, "5", false, "", "2.0", "2.0", "2.0", "100", "1.0");
+				generateGrid(false, "6", false, "", "2.0", "2.0", "2.0", "80", "0.5");
 			}
 			else if (templaneNro == 3)
 			{
