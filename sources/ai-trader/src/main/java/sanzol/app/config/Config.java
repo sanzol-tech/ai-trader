@@ -37,7 +37,7 @@ public class Config
 	private static final int ITERATIONS = 6;
 	private static final String GRID_TYPE = "G";
 	private static final double PRICE_INCREMENT_1 = 0.02;
-	private static final double COINS_INCREMENT_1 = 0.02;
+	private static final double COINS_INCREMENT_1 = 0;
 	private static final double PIF = 0;
 	private static final double PRICE_INCREMENT = 0.02;
 	private static final double COINS_INCREMENT = 0.8;
@@ -45,7 +45,7 @@ public class Config
 	private static final double TAKEPROFIT = 0.03;
 
 	private static final String IN_QTY_TYPE = "U";
-	private static final double IN_QTY = 5.0;
+	private static final double IN_QTY = 5.1;
 
 	// Positions
 	private static final int LEVERAGE = 10;
