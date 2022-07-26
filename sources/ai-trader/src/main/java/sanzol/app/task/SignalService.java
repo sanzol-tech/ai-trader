@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.binance.client.SubscriptionClient;
 import com.binance.client.exception.BinanceApiException;
 import com.binance.client.model.event.SymbolTickerEvent;
 
@@ -412,7 +413,8 @@ public final class SignalService
 
 	public static void main(String[] args) throws Exception
 	{
-		PriceService.start();
+		SubscriptionClient client = SubscriptionClient.create();
+		PriceService.start(client);
 
 		Thread.sleep(5000);
 

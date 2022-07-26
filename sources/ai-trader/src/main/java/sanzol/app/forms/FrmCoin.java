@@ -97,6 +97,7 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JLabel lblTitlePoints2;
 	private JLabel lblVolume;
 
+	private JLabel lnkBinance;
 	private JLabel lnkTradingview;
 
 	private JTextArea txtOBookAsk;
@@ -132,10 +133,6 @@ public class FrmCoin extends JFrame implements PriceListener
 		
 		txtBlocksToAnalyzeBB.setText(String.valueOf(Config.getBlocksToAnalizeBB()));
 		txtBlocksToAnalyzeWA.setText(String.valueOf(Config.getBlocksToAnalizeWA()));
-		
-		JLabel lblWavg = new JLabel("W.Avg");
-		lblWavg.setBounds(536, 30, 46, 14);
-		contentPane.add(lblWavg);
 	}
 
 	private void initComponents()
@@ -486,12 +483,22 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtHigh.setBounds(314, 72, 86, 20);
 		contentPane.add(txtHigh);
 		
+		lnkBinance = new JLabel("Binance");
+		lnkBinance.setForeground(Styles.COLOR_LINK);
+		lnkBinance.setBounds(30, 96, 87, 14);
+		lnkBinance.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		contentPane.add(lnkBinance);
+
 		lnkTradingview = new JLabel("TradingView");
 		lnkTradingview.setHorizontalAlignment(SwingConstants.TRAILING);
 		lnkTradingview.setForeground(Styles.COLOR_LINK);
 		lnkTradingview.setBounds(121, 96, 87, 14);
 		lnkTradingview.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		contentPane.add(lnkTradingview);
+	
+		JLabel lblWavg = new JLabel("W.Avg");
+		lblWavg.setBounds(536, 30, 46, 14);
+		contentPane.add(lblWavg);
 		
 		JLabel lblBlocksToAnalyze = new JLabel("B.Block");
 		lblBlocksToAnalyze.setBounds(430, 30, 50, 14);
@@ -521,6 +528,17 @@ public class FrmCoin extends JFrame implements PriceListener
 			public void windowClosed(WindowEvent e)
 			{
 				PriceService.deattachRefreshObserver(thisFrm);
+			}
+		});
+
+		lnkBinance.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					Desktop.getDesktop().browse(new URI("https://www.binance.com/es/futures/" + symbol.getName()));
+				} catch (Exception ex) {
+					LogService.error(ex);
+				}
 			}
 		});
 

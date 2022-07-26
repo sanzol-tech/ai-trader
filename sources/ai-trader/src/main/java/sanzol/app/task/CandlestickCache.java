@@ -8,12 +8,11 @@ import org.decimal4j.util.DoubleRounder;
 import com.binance.client.SubscriptionClient;
 import com.binance.client.model.enums.CandlestickInterval;
 
+import sanzol.app.config.WsClient;
 import sanzol.app.listener.BtcChangeListener;
 
 public final class CandlestickCache
 {
-	private static SubscriptionClient client = SubscriptionClient.create();
-
 	private static double btcChange30m;
 
 	public static double getBtcChange30m()
@@ -21,7 +20,7 @@ public final class CandlestickCache
 		return btcChange30m;
 	}
 
-	public static void start()
+	public static void start(SubscriptionClient client)
 	{
 		client.subscribeCandlestickEvent("btcusdt", CandlestickInterval.HALF_HOURLY, ((event) -> {
 			double open = event.getOpen().doubleValue();
@@ -37,13 +36,8 @@ public final class CandlestickCache
 
 			notifyAllLogObservers();
 
-		}), System.err::println);
+		}), (ex) -> { WsClient.restarByError(ex); });
 
-	}
-	
-	public static void stop()
-	{
-		client.unsubscribeAll();
 	}
 
 	// ------------------------------------------------------------------------

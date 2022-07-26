@@ -906,17 +906,17 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			if (templaneNro == 1)
 			{
 				// Simple
-				generateGrid(false, "0", false, "", "2.0", "2.0", "2.0", "100", "1.0");
+				generateGrid(false, "0", false, "", "2.0", "0.0", "2.0", "100", "1.0");
 			}
 			else if (templaneNro == 2)
 			{
 				// Fast
-				generateGrid(false, "6", false, "", "2.0", "2.0", "2.0", "80", "0.5");
+				generateGrid(false, "6", false, "", "1.8", "0.0", "1.8", "125", "0.5");
 			}
 			else if (templaneNro == 3)
 			{
 				// BTC
-				generateGrid(false, "5", false, "", "2.0", "2.0", "2.0", "100", "1.0");
+				generateGrid(false, "5", false, "", "2.0", "0.0", "2.0", "100", "0.5");
 			}
 			else if (templaneNro == 4)
 			{
@@ -926,12 +926,12 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			else if (templaneNro == 5)
 			{
 				// Classic 6
-				generateGrid(false, "6", false, "", "2.0", "2.0", "2.0", "40", "1.5");
+				generateGrid(false, "6", false, "", "2.0", "0.0", "2.0", "40", "1.5");
 			}
 			else if (templaneNro == 6)
 			{
 				// Classic 8
-				generateGrid(false, "8", false, "", "2.0", "2.0", "2.0", "40", "1.0");
+				generateGrid(false, "8", false, "", "2.0", "0.0", "2.0", "40", "1.0");
 			}
 			else if (templaneNro == 7)
 			{

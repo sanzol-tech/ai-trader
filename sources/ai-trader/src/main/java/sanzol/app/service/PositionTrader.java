@@ -122,10 +122,10 @@ public class PositionTrader
 		sumCoins = 0;
 		sumUsd = 0;
 		lost = usd - qty * price;
-		newPrice = 0;
+		// newPrice = usd / qty;
 		takeProfit = 0;
 		profit = 0;
-		recoveryNeeded = 0;
+		recoveryNeeded = newPrice / price - 1;
 		lstOrders.add(new PositionOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
 
 		// TAKE PROFIT
@@ -216,10 +216,10 @@ public class PositionTrader
 		sumCoins = 0;
 		sumUsd = 0;
 		lost = -1 * (usd - qty * price);
-		newPrice = 0;
+		// newPrice = usd / qty;
 		takeProfit = 0;
 		profit = 0;
-		recoveryNeeded = 0;
+		recoveryNeeded = newPrice / price - 1;
 		lstOrders.add(new PositionOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
 
 		// TAKE PROFIT

@@ -13,7 +13,7 @@ import sanzol.app.listener.LogListener;
 
 public class LogService
 {
-	private static final long LOG_MAXSIZE = 10000;
+	private static final long LOG_MAXSIZE = 1000;
 
 	private static LinkedList<String> logLines = new LinkedList<String>();
 
@@ -27,16 +27,17 @@ public class LogService
 		logLines = new LinkedList<String>();
 	}
 
-	public static void log(String type, String msg)
+	public static synchronized void log(String type, String msg)
 	{
 		String datetime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 		String text = String.format("%-19s : %s : %s", datetime, type, msg);
 
-		logLines.add(text);
-		if (logLines.size() > LOG_MAXSIZE)
+		while (logLines.size() > LOG_MAXSIZE)
 		{
 			logLines.removeFirst();
 		}
+
+		logLines.add(text);
 
 		notifyAllLogObservers();
 	}

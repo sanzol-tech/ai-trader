@@ -12,13 +12,12 @@ import com.binance.client.SubscriptionClient;
 import com.binance.client.model.event.SymbolTickerEvent;
 
 import sanzol.app.config.Config;
+import sanzol.app.config.WsClient;
 import sanzol.app.listener.PriceListener;
 import sanzol.app.service.Symbol;
 
 public final class PriceService
 {
-	private static SubscriptionClient client = SubscriptionClient.create();
-
 	private static Set<String> setFavorites = new LinkedHashSet<String>();
 	private static Map<String, SymbolTickerEvent> mapTickers = new ConcurrentHashMap<String, SymbolTickerEvent>();
 
@@ -47,7 +46,7 @@ public final class PriceService
 		return mapTickers;
 	}
 
-	public static void start()
+	public static void start(SubscriptionClient client)
 	{
 		loadFavorites();
 
@@ -65,12 +64,7 @@ public final class PriceService
 
 			notifyAllLogObservers();
 
-		}), System.err::println);
-	}
-
-	public static void stop()
-	{
-		client.unsubscribeAll();
+		}), (ex) -> { WsClient.restarByError(ex); });
 	}
 
 	private static void loadFavorites()

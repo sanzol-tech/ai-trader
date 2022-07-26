@@ -8,12 +8,9 @@ import java.nio.file.StandardOpenOption;
 
 import sanzol.app.forms.FrmConfig;
 import sanzol.app.forms.FrmMain;
-import sanzol.app.service.OBookCache;
 import sanzol.app.task.BalanceService;
-import sanzol.app.task.CandlestickCache;
 import sanzol.app.task.LogService;
 import sanzol.app.task.PositionService;
-import sanzol.app.task.PriceService;
 import sanzol.app.task.SignalService;
 
 public final class Application
@@ -29,9 +26,11 @@ public final class Application
 		try
 		{
 			Config.load();
-			PriceService.start();
-			CandlestickCache.start();
-			OBookCache.start();
+
+			//PriceService.start();
+			//CandlestickCache.start();
+			//OBookCache.start();
+			WsClient.initialize();
 
 			SignalService.start();
 

@@ -25,6 +25,7 @@ import com.binance.client.model.market.OrderBookEntry;
 import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
+import sanzol.app.config.WsClient;
 import sanzol.app.model.OrderBookElement;
 import sanzol.app.task.LogService;
 import sanzol.app.task.PriceService;
@@ -116,13 +117,11 @@ public class OBookService
 	}
 
 	private Long subscriptionTime = null;
-	private SubscriptionClient client = null;
-	private OrderBookEvent prevEvent;
-	public OBookService subscribeDiffDepthEvent() 
+	private OrderBookEvent prevEvent = null;
+	public OBookService subscribeDiffDepthEvent(SubscriptionClient client) 
 	{
 		subscriptionTime = System.currentTimeMillis();
 
-		client = SubscriptionClient.create();
 		client.subscribeDiffDepthEvent(symbol.getName().toLowerCase(), ((event) -> {
 
 			if (prevEvent != null && !event.getLastUpdateIdInlastStream().equals(prevEvent.getLastUpdateId()))
@@ -149,10 +148,10 @@ public class OBookService
 				else
 					mapBids.put(entry.getPrice(), entry.getQty());
 			}
-			
-			prevEvent = event; 
 
-		}), System.err::println);
+			prevEvent = event;
+
+		}), (ex) -> { WsClient.restarByError(ex); });			
 
 		return this;
 	}

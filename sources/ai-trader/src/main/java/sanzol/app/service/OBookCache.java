@@ -1,5 +1,7 @@
 package sanzol.app.service;
 
+import com.binance.client.SubscriptionClient;
+
 import sanzol.app.config.Config;
 
 public class OBookCache
@@ -23,16 +25,16 @@ public class OBookCache
 		return obServiceBNB;
 	}
 
-	public static void start()
+	public static void start(SubscriptionClient client)
 	{
 		Symbol btc = Symbol.getInstance("BTC" + Config.DEFAULT_SYMBOL_RIGHT);
-		obServiceBTC = OBookService.getInstance(btc).subscribeDiffDepthEvent();
+		obServiceBTC = OBookService.getInstance(btc).subscribeDiffDepthEvent(client);
 
 		Symbol eth = Symbol.getInstance("ETH" + Config.DEFAULT_SYMBOL_RIGHT);
-		obServiceETH = OBookService.getInstance(eth).subscribeDiffDepthEvent();
+		obServiceETH = OBookService.getInstance(eth).subscribeDiffDepthEvent(client);
 		
 		Symbol bnb = Symbol.getInstance("BNB" + Config.DEFAULT_SYMBOL_RIGHT);
-		obServiceBNB = OBookService.getInstance(bnb).subscribeDiffDepthEvent();
+		obServiceBNB = OBookService.getInstance(bnb).subscribeDiffDepthEvent(client);
 	}
 
 }
