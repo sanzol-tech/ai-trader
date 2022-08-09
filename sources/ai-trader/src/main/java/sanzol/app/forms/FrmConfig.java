@@ -490,10 +490,12 @@ public class FrmConfig extends JFrame
 		rbArithmetic.setSelected("A".equals(Config.getGridType()));
 		rbGeometric.setSelected("G".equals(Config.getGridType()));
 
+		chkPIF.setSelected(false); // TODO
+		txtPIF.setText(Convert.dblToStrPercent(Config.getPif()));
+
 		txtIterations.setText(String.valueOf(Config.getIterations()));
 		txtPriceIncr1.setText(Convert.dblToStrPercent(Config.getPriceIncrement1()));
 		txtCoinsIncr1.setText(Convert.dblToStrPercent(Config.getCoinsIncrement1()));
-		txtPIF.setText(Convert.dblToStrPercent(Config.getPif()));
 		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPriceIncrement()));
 		txtCoinsIncr.setText(Convert.dblToStrPercent(Config.getCoinsIncrement()));
 		txtDistBeforeSL.setText(Convert.dblToStrPercent(Config.getStoplossIncrement()));

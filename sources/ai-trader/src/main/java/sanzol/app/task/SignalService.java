@@ -167,7 +167,7 @@ public final class SignalService
 				return;
 			}
 
-			BigDecimal distShLg = PriceUtil.priceDistDown(obService.getShortPriceFixed(), obService.getLongPriceFixed(), true);
+			BigDecimal distShLg = PriceUtil.priceDistDown(obService.getAskFixedPoint1(), obService.getBidFixedPoint1(), true);
 
 			if ((distShLg.doubleValue() < 1.2 || distShLg.doubleValue() > 6.0))
 			{
@@ -176,8 +176,8 @@ public final class SignalService
 			}
 			else
 			{
-				updateShockPoint(new ShockPoint(symbol, obService.getShortPriceFixed(), obService.getLongPriceFixed()));
-				LogService.info("CALC NEW SIGNALS FROM " + symbol.getNameLeft() + " AT " + obService.getShortPriceFixed() + " & " + obService.getLongPriceFixed());
+				updateShockPoint(new ShockPoint(symbol, obService.getAskFixedPoint1(), obService.getBidFixedPoint1(), obService.getAskFixedPoint2(), obService.getBidFixedPoint2()));
+				LogService.info("CALC NEW SIGNALS FROM " + symbol.getNameLeft() + " AT " + obService.getAskFixedPoint1() + " & " + obService.getBidFixedPoint1());
 			}
 		}
 		catch (BinanceApiException ex)
@@ -282,13 +282,13 @@ public final class SignalService
 				boolean isBestShort = (lastPrice.doubleValue() > avgHigh.doubleValue());
 				boolean isBestLong = (lastPrice.doubleValue() < avgLow.doubleValue());
 				
-				Signal shortSignal = new Signal("SHORT", entry.getSymbol(), lastPrice, entry.getShShock(), entry.getShortTProfit(), distShort);
+				Signal shortSignal = new Signal("SHORT", entry.getSymbol(), lastPrice, entry.getShShock(), entry.getShortTProfit(), entry.getShortSLoss(), distShort);
 				shortSignal.setChange24h(changePercent);
 				shortSignal.setVolume(usdVolume);
 				shortSignal.setBestSide(isBestShort ? "SHORT" : isBestLong ? "LONG" : "");
 				lstShorts.add(shortSignal);
 
-				Signal longSignal = new Signal("LONG", entry.getSymbol(), lastPrice, entry.getLgShock(), entry.getLongTProfit(), distLong);
+				Signal longSignal = new Signal("LONG", entry.getSymbol(), lastPrice, entry.getLgShock(), entry.getLongTProfit(), entry.getLongTSLoss(), distLong);
 				longSignal.setChange24h(changePercent);
 				longSignal.setVolume(usdVolume);
 				longSignal.setBestSide(isBestShort ? "SHORT" : isBestLong ? "LONG" : "");

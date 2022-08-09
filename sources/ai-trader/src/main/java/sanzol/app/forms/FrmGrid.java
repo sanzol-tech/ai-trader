@@ -54,6 +54,7 @@ import sanzol.app.listener.PositionListener;
 import sanzol.app.listener.PriceListener;
 import sanzol.app.model.Position;
 import sanzol.app.model.PriceQty;
+import sanzol.app.model.enums.GridTemplate;
 import sanzol.app.model.enums.QuantityType;
 import sanzol.app.service.PositionTrader;
 import sanzol.app.service.PositionTrader.PostStyle;
@@ -145,7 +146,6 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	public FrmGrid()
 	{
 		initComponents();
-		loadConfig();
 		PriceService.attachRefreshObserver(this);
 		PositionService.attachRefreshObserver(this);
 	}
@@ -598,52 +598,52 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		lnkBtnSimple.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				loadGridTemplate(1);
+				loadGridTemplate(GridTemplate.SIMPLE);
 			}
 		});
 		lnkBtnFast.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				loadGridTemplate(2);
+				loadGridTemplate(GridTemplate.FAST);
 			}
 		});		
 
 		lnkBtnBTC.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				loadGridTemplate(3);
+				loadGridTemplate(GridTemplate.BTC);
 			}
 		});
 		lnkBtnAltcoin.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				loadGridTemplate(4);
+				loadGridTemplate(GridTemplate.ALTCOIN);
 			}
 		});		
 
 		lnkBtnClassic1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				loadGridTemplate(5);
+				loadGridTemplate(GridTemplate.CLASSIC6);
 			}
 		});
-		lnkBtnIncremental1.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				loadGridTemplate(7);
-			}
-		});
-
 		lnkBtnClassic2.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				loadGridTemplate(6);
+				loadGridTemplate(GridTemplate.CLASSIC8);
+			}
+		});
+
+		lnkBtnIncremental1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				loadGridTemplate(GridTemplate.INCREMENTAL1);
 			}
 		});
 		lnkBtnIncremental2.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				loadGridTemplate(8);
+				loadGridTemplate(GridTemplate.INCREMENTAL2);
 			}
 		});	
 
@@ -693,24 +693,6 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 	}
 
-	private void loadConfig()
-	{
-		rbArithmetic.setSelected("A".equals(Config.getGridType()));
-		rbGeometric.setSelected("G".equals(Config.getGridType()));
-
-		txtIterations.setText(String.valueOf(Config.getIterations()));
-		txtPriceIncr1.setText(Convert.dblToStrPercent(Config.getPriceIncrement1()));
-		txtCoinsIncr1.setText(Convert.dblToStrPercent(Config.getCoinsIncrement1()));
-		txtPIF.setText(Convert.dblToStrPercent(Config.getPif()));
-		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPriceIncrement()));
-		txtCoinsIncr.setText(Convert.dblToStrPercent(Config.getCoinsIncrement()));
-		txtStopLoss.setText(Convert.dblToStrPercent(Config.getStoplossIncrement()));
-		txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
-		txtInQty.setText(String.valueOf(Config.getInQty()));
-		
-		generateGrid();
-	}
-
 	public static void launch()
 	{
 		launch(null, null, null, false);
@@ -737,11 +719,17 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 				try
 				{
+					if ("BTC".equals(symbolLeft))
+						frame.loadGridTemplate(GridTemplate.BTC);
+					else
+						frame.loadGridTemplate(GridTemplate.DEFAULT);
+					
 					if (symbolLeft != null && !symbolLeft.isEmpty())
 					{
 						frame.txtSymbolLeft.setText(symbolLeft);
 						frame.search();
 					}
+					
 					if (side != null && price != null)
 					{
 						frame.txtInPrice.setText(price);
@@ -898,47 +886,52 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	}
 
 	// ------------------------------------------------------------------------
-
-	private void loadGridTemplate(int templaneNro)
+	
+	private void loadGridTemplate(GridTemplate template)
 	{
 		try
 		{
-			if (templaneNro == 1)
+			if (template.equals(GridTemplate.DEFAULT))
+			{
+				// Default
+				generateGridDefault();
+			}
+			if (template.equals(GridTemplate.SIMPLE))
 			{
 				// Simple
 				generateGrid(false, "0", false, "", "2.0", "0.0", "2.0", "100", "1.0");
 			}
-			else if (templaneNro == 2)
+			else if (template.equals(GridTemplate.FAST))
 			{
 				// Fast
-				generateGrid(false, "6", false, "", "1.8", "0.0", "1.8", "125", "0.5");
+				generateGrid(false, "6", false, "", "1.8", "125.0", "1.8", "125.0", "0.5");
 			}
-			else if (templaneNro == 3)
+			else if (template.equals(GridTemplate.BTC))
 			{
 				// BTC
 				generateGrid(false, "5", false, "", "2.0", "0.0", "2.0", "100", "0.5");
 			}
-			else if (templaneNro == 4)
+			else if (template.equals(GridTemplate.ALTCOIN))
 			{
 				// Altcoin
 				generateGrid(true, "6", false, "", "2.5", "2.5", "2.5", "80", "1.5");
 			}
-			else if (templaneNro == 5)
+			else if (template.equals(GridTemplate.CLASSIC6))
 			{
 				// Classic 6
-				generateGrid(false, "6", false, "", "2.0", "0.0", "2.0", "40", "1.5");
+				generateGrid(false, "6", false, "", "2.0", "40.0", "2.0", "40.0", "1.0");
 			}
-			else if (templaneNro == 6)
+			else if (template.equals(GridTemplate.CLASSIC8))
 			{
 				// Classic 8
-				generateGrid(false, "8", false, "", "2.0", "0.0", "2.0", "40", "1.0");
+				generateGrid(false, "8", false, "", "2.0", "40.0", "2.0", "40.0", "1.0");
 			}
-			else if (templaneNro == 7)
+			else if (template.equals(GridTemplate.INCREMENTAL1))
 			{
 				// Incremental 1
 				generateGrid(true, "6", true, "110.0", "2.5", "2.5", "2.5", "40.0", "2.0");
 			}
-			else if (templaneNro == 8)
+			else if (template.equals(GridTemplate.INCREMENTAL2))
 			{
 				// Incremental 2
 				generateGrid(true, "7", true, "110.0", "2.5", "2.5", "2.5", "50.0", "2.0");
@@ -954,6 +947,38 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 	}
 
+	private void generateGridDefault()
+	{
+		txtInQty.setText(String.valueOf(Config.getInQty()));
+		
+		if ("U".equals(Config.getInQtyType()))
+		{
+			cmbQtyType.setSelectedItem(QuantityType.USD);	
+		} else if ("B".equals(Config.getInQtyType()))
+		{
+			cmbQtyType.setSelectedItem(QuantityType.BALANCE);	
+		} else if ("C".equals(Config.getInQtyType()))
+		{
+			cmbQtyType.setSelectedItem(QuantityType.COIN);	
+		}
+
+		rbArithmetic.setSelected("A".equals(Config.getGridType()));
+		rbGeometric.setSelected("G".equals(Config.getGridType()));
+		txtIterations.setText(String.valueOf(Config.getIterations()));
+		chkPIF.setSelected(false); // TODO
+		txtPIF.setText(Convert.dblToStrPercent(Config.getPif()));
+
+		txtPriceIncr1.setText(Convert.dblToStrPercent(Config.getPriceIncrement1()));
+		txtCoinsIncr1.setText(Convert.dblToStrPercent(Config.getCoinsIncrement1()));
+		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPriceIncrement()));
+		txtCoinsIncr.setText(Convert.dblToStrPercent(Config.getCoinsIncrement()));
+		
+		txtStopLoss.setText(Convert.dblToStrPercent(Config.getStoplossIncrement()));
+		txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
+		
+		generateGrid();
+	}
+	
 	private void generateGrid(boolean isAritmetic, String iterations, boolean isPif, String pif, String priceIncr1, String coinsIncr1, String priceIncr, String coinsIncr, String stopLoss)
 	{
 		if (!isOpenPosition)

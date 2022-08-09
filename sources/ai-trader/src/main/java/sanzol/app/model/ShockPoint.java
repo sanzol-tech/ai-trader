@@ -15,6 +15,8 @@ public class ShockPoint
 	private BigDecimal lgShock;
 	private BigDecimal shortTProfit;
 	private BigDecimal longTProfit;
+	private BigDecimal shortSLoss;
+	private BigDecimal longTSLoss;
 	private Long expirationTime;
 
 	public ShockPoint()
@@ -27,13 +29,15 @@ public class ShockPoint
 		return new ShockPoint(symbol, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, System.currentTimeMillis() + EXPIRATION_MILLIS);
 	}
 
-	public ShockPoint(Symbol symbol, BigDecimal shShock, BigDecimal lgShock)
+	public ShockPoint(Symbol symbol, BigDecimal shShock, BigDecimal lgShock, BigDecimal shShock2, BigDecimal lgShock2)
 	{
 		this.symbol = symbol;
 		this.shShock = shShock;
 		this.lgShock = lgShock;
 		this.shortTProfit =  PriceUtil.priceDistDown(shShock, lgShock, true);
 		this.longTProfit =  PriceUtil.priceDistUp(lgShock, shShock, true);
+		this.shortSLoss =  PriceUtil.priceDistDown(shShock, shShock2, true);
+		this.longTSLoss =  PriceUtil.priceDistUp(lgShock, lgShock2, true);
 		this.expirationTime = System.currentTimeMillis() + EXPIRATION_MILLIS;
 	}
 
@@ -44,6 +48,8 @@ public class ShockPoint
 		this.lgShock = lgShock;
 		this.shortTProfit = shTarget;
 		this.longTProfit = lgTarget;
+		this.shortSLoss =  BigDecimal.ZERO;
+		this.longTSLoss =  BigDecimal.ZERO;
 		this.expirationTime = expirationTime;
 	}
 
@@ -95,6 +101,26 @@ public class ShockPoint
 	public void setLongTProfit(BigDecimal longTProfit)
 	{
 		this.longTProfit = longTProfit;
+	}
+
+	public BigDecimal getShortSLoss()
+	{
+		return shortSLoss;
+	}
+
+	public void setShortSLoss(BigDecimal shortSLoss)
+	{
+		this.shortSLoss = shortSLoss;
+	}
+
+	public BigDecimal getLongTSLoss()
+	{
+		return longTSLoss;
+	}
+
+	public void setLongTSLoss(BigDecimal longTSLoss)
+	{
+		this.longTSLoss = longTSLoss;
 	}
 
 	public Long getExpirationTime()

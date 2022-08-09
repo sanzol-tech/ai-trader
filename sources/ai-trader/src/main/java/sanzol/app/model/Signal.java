@@ -12,6 +12,7 @@ public class Signal
 	private BigDecimal markPrice;
 	private BigDecimal targetPrice;
 	private BigDecimal takeProfit;
+	private BigDecimal stopLoss;
 	private BigDecimal distance;
 	private BigDecimal change24h;
 	private BigDecimal volume;
@@ -22,13 +23,14 @@ public class Signal
 		//
 	}
 
-	public Signal(String type, Symbol symbol, BigDecimal markPrice, BigDecimal targetPrice, BigDecimal takeProfit, BigDecimal distance)
+	public Signal(String type, Symbol symbol, BigDecimal markPrice, BigDecimal targetPrice, BigDecimal takeProfit, BigDecimal stopLoss, BigDecimal distance)
 	{
 		this.type = type;
 		this.symbol = symbol;
 		this.markPrice = markPrice;
 		this.targetPrice = targetPrice;
 		this.takeProfit = takeProfit;
+		this.stopLoss = stopLoss;
 		this.distance = distance;
 	}
 
@@ -80,6 +82,16 @@ public class Signal
 	public void setTakeProfit(BigDecimal takeProfit)
 	{
 		this.takeProfit = takeProfit;
+	}
+
+	public BigDecimal getStopLoss()
+	{
+		return stopLoss;
+	}
+
+	public void setStopLoss(BigDecimal stopLoss)
+	{
+		this.stopLoss = stopLoss;
 	}
 
 	public BigDecimal getDistance()

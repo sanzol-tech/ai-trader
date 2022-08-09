@@ -26,12 +26,7 @@ public final class Application
 		try
 		{
 			Config.load();
-
-			//PriceService.start();
-			//CandlestickCache.start();
-			//OBookCache.start();
 			WsClient.initialize();
-
 			SignalService.start();
 
 			if (keyLoadedOK)

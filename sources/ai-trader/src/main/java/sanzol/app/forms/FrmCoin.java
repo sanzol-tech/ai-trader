@@ -1,7 +1,6 @@
 package sanzol.app.forms;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Desktop;
@@ -63,68 +62,72 @@ public class FrmCoin extends JFrame implements PriceListener
 
 	private JScrollPane scrollOBookAsk;
 	private JScrollPane scrollOBookBid;
-	
+
 	private JPanel pnlBB;
-	private JPanel pnlFP;
 	private JPanel pnlWA;
 
-	private JButton btnSearch;
 	private JButton btnExport;
-	private JButton btnLongShockBB;
-	private JButton btnLongShockFP;
-	private JButton btnLongShockWA;
-	private JButton btnShortShockBB;
-	private JButton btnShortShockFP;
-	private JButton btnShortShockWA;
-
-	private JLabel lbl24Hs;
-	private JLabel lblHigh;
-	private JLabel lblLow;
-	private JLabel lblShortBB;
-	private JLabel lblShortWA;
-	private JLabel lblLongWA;
-	private JLabel lblPriceWA;
-	private JLabel lblDistWA;
-	private JLabel lblLongBB;
-	private JLabel lblPriceBB;
-	private JLabel lblDistBB;
-	private JLabel lblShortFP;
-	private JLabel lblLongFP;
-	private JLabel lblPriceFP;
-	private JLabel lblDistFP;
-	private JLabel lblTitlePoints0;
-	private JLabel lblTitlePoints1;
-	private JLabel lblTitlePoints2;
-	private JLabel lblVolume;
+	private JButton btnLongBidPointBB1;
+	private JButton btnLongBidPointBB2;
+	private JButton btnLongBidPointWA1;
+	private JButton btnLongBidPointWA2;
+	private JButton btnSearch;
+	private JButton btnShortBidPointBB1;
+	private JButton btnShortBidPointBB2;
+	private JButton btnShortBidPointWA1;
+	private JButton btnShortBidPointWA2;
 
 	private JLabel lnkBinance;
 	private JLabel lnkTradingview;
+	
+	private JLabel lbl24Hs;
+	private JLabel lblAsk;
+	private JLabel lblBid;
+	private JLabel lblBid_1;
+	private JLabel lblDistBB;
+	private JLabel lblDistWA;
+	private JLabel lblHigh;
+	private JLabel lblLongBB;
+	private JLabel lblLongWA;
+	private JLabel lblLow;
+	private JLabel lblPriceBB;
+	private JLabel lblPriceWA;
+	private JLabel lblShort;
+	private JLabel lblShortBB;
+	private JLabel lblShortWA;
+	private JLabel lblTitlePoints0;
+	private JLabel lblTitlePoints2;
+	private JLabel lblVolume;
 
 	private JTextArea txtOBookAsk;
 	private JTextArea txtOBookBid;
 
-	private JTextField txtSymbolLeft;
-	private JTextField txtSymbolRight;
-	private JTextField txtMarkPrice;
 	private JTextField txt24h;
-	private JTextField txtHigh;
-	private JTextField txtLongDist;
-	private JTextField txtLongDistFP;
-	private JTextField txtLongDistWA;
-	private JTextField txtLongPrice;
-	private JTextField txtLongPriceFP;
-	private JTextField txtLongPriceWA;
-	private JTextField txtLow;
-	private JTextField txtShortDist;
-	private JTextField txtShortDistFP;
-	private JTextField txtShortDistWA;
-	private JTextField txtShortPrice;
-	private JTextField txtShortPriceFP;
-	private JTextField txtShortPriceWA;
-	private JTextField txtVolume;
+	private JTextField txtAskPointBB1;
+	private JTextField txtAskPointBB1Dist;
+	private JTextField txtAskPointBB2;
+	private JTextField txtAskPointBB2Dist;
+	private JTextField txtBidPointBB1;
+	private JTextField txtBidPointBB1Dist;
+	private JTextField txtBidPointBB2;
+	private JTextField txtBidPointBB2Dist;
 	private JTextField txtBlocksToAnalyzeBB;
 	private JTextField txtBlocksToAnalyzeWA;
+	private JTextField txtHigh;
+	private JTextField txtLow;
+	private JTextField txtMarkPrice;
 	private JTextField txtSymbolInfo;
+	private JTextField txtSymbolLeft;
+	private JTextField txtSymbolRight;
+	private JTextField txtVolume;
+	private JTextField txtAskPointWA1;
+	private JTextField txtAskPointWA1Dist;
+	private JTextField txtAskPointWA2;
+	private JTextField txtAskPointWA2Dist;
+	private JTextField txtBidPointWA1;
+	private JTextField txtBidPointWA1Dist;
+	private JTextField txtBidPointWA2;
+	private JTextField txtBidPointWA2Dist;
 
 	public FrmCoin()
 	{
@@ -191,7 +194,6 @@ public class FrmCoin extends JFrame implements PriceListener
 		
 		txtSymbolInfo = new JTextField();
 		txtSymbolInfo.setHorizontalAlignment(SwingConstants.TRAILING);
-		txtSymbolInfo.setForeground((Color) null);
 		txtSymbolInfo.setFont(new Font("Courier New", Font.BOLD, 12));
 		txtSymbolInfo.setEditable(false);
 		txtSymbolInfo.setColumns(10);
@@ -225,57 +227,57 @@ public class FrmCoin extends JFrame implements PriceListener
 		pnlBB = new JPanel();
 		pnlBB.setLayout(null);
 		pnlBB.setBorder(UIManager.getBorder("TextField.border"));
-		pnlBB.setBounds(30, 144, 370, 95);
+		pnlBB.setBounds(30, 144, 370, 166);
 		contentPane.add(pnlBB);
 
-		txtShortPrice = new JTextField();
-		txtShortPrice.setForeground(Styles.COLOR_TEXT_SHORT);
-		txtShortPrice.setEditable(false);
-		txtShortPrice.setColumns(10);
-		txtShortPrice.setBounds(86, 32, 110, 20);
-		pnlBB.add(txtShortPrice);
+		txtAskPointBB1 = new JTextField();
+		txtAskPointBB1.setForeground(Styles.COLOR_TEXT_SHORT);
+		txtAskPointBB1.setEditable(false);
+		txtAskPointBB1.setColumns(10);
+		txtAskPointBB1.setBounds(86, 64, 110, 20);
+		pnlBB.add(txtAskPointBB1);
 
-		txtShortDist = new JTextField();
-		txtShortDist.setForeground(Styles.COLOR_TEXT_SHORT);
-		txtShortDist.setEditable(false);
-		txtShortDist.setColumns(10);
-		txtShortDist.setBounds(206, 32, 80, 20);
-		pnlBB.add(txtShortDist);
+		txtAskPointBB1Dist = new JTextField();
+		txtAskPointBB1Dist.setForeground(Styles.COLOR_TEXT_SHORT);
+		txtAskPointBB1Dist.setEditable(false);
+		txtAskPointBB1Dist.setColumns(10);
+		txtAskPointBB1Dist.setBounds(206, 64, 80, 20);
+		pnlBB.add(txtAskPointBB1Dist);
 
-		btnShortShockBB = new JButton("\u2193");
-		btnShortShockBB.setToolTipText("Create Short in this price");
-		btnShortShockBB.setOpaque(true);
-		btnShortShockBB.setBackground(Styles.COLOR_BTN_SHORT);
-		btnShortShockBB.setBounds(296, 31, 46, 22);
-		pnlBB.add(btnShortShockBB);
+		btnShortBidPointBB1 = new JButton("\u2193");
+		btnShortBidPointBB1.setToolTipText("Create Short in this price");
+		btnShortBidPointBB1.setOpaque(true);
+		btnShortBidPointBB1.setBackground(Styles.COLOR_BTN_SHORT);
+		btnShortBidPointBB1.setBounds(296, 63, 46, 22);
+		pnlBB.add(btnShortBidPointBB1);
 
-		btnLongShockBB = new JButton("\u2191");
-		btnLongShockBB.setToolTipText("Create Long in this price");
-		btnLongShockBB.setOpaque(true);
-		btnLongShockBB.setBackground(Styles.COLOR_BTN_LONG);
-		btnLongShockBB.setBounds(296, 62, 46, 22);
-		pnlBB.add(btnLongShockBB);
+		btnLongBidPointBB1 = new JButton("\u2191");
+		btnLongBidPointBB1.setToolTipText("Create Long in this price");
+		btnLongBidPointBB1.setOpaque(true);
+		btnLongBidPointBB1.setBackground(Styles.COLOR_BTN_LONG);
+		btnLongBidPointBB1.setBounds(296, 94, 46, 22);
+		pnlBB.add(btnLongBidPointBB1);
 
-		txtLongDist = new JTextField();
-		txtLongDist.setForeground(Styles.COLOR_TEXT_LONG);
-		txtLongDist.setEditable(false);
-		txtLongDist.setColumns(10);
-		txtLongDist.setBounds(206, 63, 80, 20);
-		pnlBB.add(txtLongDist);
+		txtBidPointBB1Dist = new JTextField();
+		txtBidPointBB1Dist.setForeground(Styles.COLOR_TEXT_LONG);
+		txtBidPointBB1Dist.setEditable(false);
+		txtBidPointBB1Dist.setColumns(10);
+		txtBidPointBB1Dist.setBounds(206, 95, 80, 20);
+		pnlBB.add(txtBidPointBB1Dist);
 
-		txtLongPrice = new JTextField();
-		txtLongPrice.setForeground(Styles.COLOR_TEXT_LONG);
-		txtLongPrice.setEditable(false);
-		txtLongPrice.setColumns(10);
-		txtLongPrice.setBounds(86, 63, 110, 20);
-		pnlBB.add(txtLongPrice);
+		txtBidPointBB1 = new JTextField();
+		txtBidPointBB1.setForeground(Styles.COLOR_TEXT_LONG);
+		txtBidPointBB1.setEditable(false);
+		txtBidPointBB1.setColumns(10);
+		txtBidPointBB1.setBounds(86, 95, 110, 20);
+		pnlBB.add(txtBidPointBB1);
 
-		lblShortBB = new JLabel("SHORT");
-		lblShortBB.setBounds(24, 35, 52, 14);
+		lblShortBB = new JLabel("ASK 1");
+		lblShortBB.setBounds(24, 67, 52, 14);
 		pnlBB.add(lblShortBB);
 
-		lblLongBB = new JLabel("LONG");
-		lblLongBB.setBounds(24, 66, 52, 14);
+		lblLongBB = new JLabel("BID 1");
+		lblLongBB.setBounds(24, 98, 52, 14);
 		pnlBB.add(lblLongBB);
 
 		lblPriceBB = new JLabel("Price");
@@ -285,146 +287,178 @@ public class FrmCoin extends JFrame implements PriceListener
 		lblDistBB = new JLabel("Dist %");
 		lblDistBB.setBounds(206, 11, 46, 14);
 		pnlBB.add(lblDistBB);
+		
+		txtAskPointBB2 = new JTextField();
+		txtAskPointBB2.setForeground(Styles.COLOR_TEXT_SHORT);
+		txtAskPointBB2.setEditable(false);
+		txtAskPointBB2.setColumns(10);
+		txtAskPointBB2.setBounds(86, 32, 110, 20);
+		pnlBB.add(txtAskPointBB2);
+		
+		txtAskPointBB2Dist = new JTextField();
+		txtAskPointBB2Dist.setForeground(Styles.COLOR_TEXT_SHORT);
+		txtAskPointBB2Dist.setEditable(false);
+		txtAskPointBB2Dist.setColumns(10);
+		txtAskPointBB2Dist.setBounds(206, 32, 80, 20);
+		pnlBB.add(txtAskPointBB2Dist);
+		
+		txtBidPointBB2 = new JTextField();
+		txtBidPointBB2.setForeground(Styles.COLOR_TEXT_LONG);
+		txtBidPointBB2.setEditable(false);
+		txtBidPointBB2.setColumns(10);
+		txtBidPointBB2.setBounds(86, 128, 110, 20);
+		pnlBB.add(txtBidPointBB2);
+		
+		txtBidPointBB2Dist = new JTextField();
+		txtBidPointBB2Dist.setForeground(Styles.COLOR_TEXT_LONG);
+		txtBidPointBB2Dist.setEditable(false);
+		txtBidPointBB2Dist.setColumns(10);
+		txtBidPointBB2Dist.setBounds(206, 128, 80, 20);
+		pnlBB.add(txtBidPointBB2Dist);
+		
+		lblAsk = new JLabel("ASK 2");
+		lblAsk.setBounds(24, 35, 52, 14);
+		pnlBB.add(lblAsk);
+		
+		lblBid_1 = new JLabel("BID 2");
+		lblBid_1.setBounds(24, 131, 52, 14);
+		pnlBB.add(lblBid_1);
 
 		lblTitlePoints0 = new JLabel("Biggest block");
 		lblTitlePoints0.setBounds(30, 122, 178, 14);
 		contentPane.add(lblTitlePoints0);
 
-		lblTitlePoints1 = new JLabel("Fixes points");
-		lblTitlePoints1.setBounds(30, 390, 178, 14);
-		contentPane.add(lblTitlePoints1);
-
-		pnlFP = new JPanel();
-		pnlFP.setLayout(null);
-		pnlFP.setBorder(UIManager.getBorder("TextField.border"));
-		pnlFP.setBounds(30, 411, 370, 95);
-		contentPane.add(pnlFP);
-
-		txtShortPriceFP = new JTextField();
-		txtShortPriceFP.setForeground(Styles.COLOR_TEXT_SHORT);
-		txtShortPriceFP.setEditable(false);
-		txtShortPriceFP.setColumns(10);
-		txtShortPriceFP.setBounds(86, 32, 110, 20);
-		pnlFP.add(txtShortPriceFP);
-
-		txtShortDistFP = new JTextField();
-		txtShortDistFP.setForeground(Styles.COLOR_TEXT_SHORT);
-		txtShortDistFP.setEditable(false);
-		txtShortDistFP.setColumns(10);
-		txtShortDistFP.setBounds(206, 32, 80, 20);
-		pnlFP.add(txtShortDistFP);
-
-		btnShortShockFP = new JButton("\u2193");
-		btnShortShockFP.setToolTipText("Create Short in this price");
-		btnShortShockFP.setOpaque(true);
-		btnShortShockFP.setBackground(Styles.COLOR_BTN_SHORT);
-		btnShortShockFP.setBounds(296, 31, 46, 22);
-		pnlFP.add(btnShortShockFP);
-
-		btnLongShockFP = new JButton("\u2191");
-		btnLongShockFP.setToolTipText("Create Long in this price");
-		btnLongShockFP.setOpaque(true);
-		btnLongShockFP.setBackground(Styles.COLOR_BTN_LONG);
-		btnLongShockFP.setBounds(296, 62, 46, 22);
-		pnlFP.add(btnLongShockFP);
-
-		txtLongDistFP = new JTextField();
-		txtLongDistFP.setForeground(Styles.COLOR_TEXT_LONG);
-		txtLongDistFP.setEditable(false);
-		txtLongDistFP.setColumns(10);
-		txtLongDistFP.setBounds(206, 63, 80, 20);
-		pnlFP.add(txtLongDistFP);
-
-		txtLongPriceFP = new JTextField();
-		txtLongPriceFP.setForeground(Styles.COLOR_TEXT_LONG);
-		txtLongPriceFP.setEditable(false);
-		txtLongPriceFP.setColumns(10);
-		txtLongPriceFP.setBounds(86, 63, 110, 20);
-		pnlFP.add(txtLongPriceFP);
-
-		lblShortFP = new JLabel("SHORT");
-		lblShortFP.setBounds(24, 35, 52, 14);
-		pnlFP.add(lblShortFP);
-
-		lblLongFP = new JLabel("LONG");
-		lblLongFP.setBounds(24, 66, 52, 14);
-		pnlFP.add(lblLongFP);
-
-		lblPriceFP = new JLabel("Price");
-		lblPriceFP.setBounds(86, 11, 46, 14);
-		pnlFP.add(lblPriceFP);
-
-		lblDistFP = new JLabel("Dist %");
-		lblDistFP.setBounds(206, 11, 46, 14);
-		pnlFP.add(lblDistFP);
-
 		lblTitlePoints2 = new JLabel("Weighted average");
-		lblTitlePoints2.setBounds(30, 258, 178, 14);
+		lblTitlePoints2.setBounds(30, 320, 178, 14);
 		contentPane.add(lblTitlePoints2);
 
 		pnlWA = new JPanel();
 		pnlWA.setLayout(null);
 		pnlWA.setBorder(UIManager.getBorder("TextField.border"));
-		pnlWA.setBounds(30, 280, 370, 95);
+		pnlWA.setBounds(30, 340, 370, 166);
 		contentPane.add(pnlWA);
 
-		txtShortPriceWA = new JTextField();
-		txtShortPriceWA.setForeground(Styles.COLOR_TEXT_SHORT);
-		txtShortPriceWA.setEditable(false);
-		txtShortPriceWA.setColumns(10);
-		txtShortPriceWA.setBounds(86, 32, 110, 20);
-		pnlWA.add(txtShortPriceWA);
+		txtAskPointWA1 = new JTextField();
+		txtAskPointWA1.setForeground(Styles.COLOR_TEXT_SHORT);
+		txtAskPointWA1.setEditable(false);
+		txtAskPointWA1.setColumns(10);
+		txtAskPointWA1.setBounds(84, 66, 110, 20);
+		pnlWA.add(txtAskPointWA1);
 
-		txtShortDistWA = new JTextField();
-		txtShortDistWA.setForeground(Styles.COLOR_TEXT_SHORT);
-		txtShortDistWA.setEditable(false);
-		txtShortDistWA.setColumns(10);
-		txtShortDistWA.setBounds(206, 32, 80, 20);
-		pnlWA.add(txtShortDistWA);
+		txtAskPointWA1Dist = new JTextField();
+		txtAskPointWA1Dist.setForeground(Styles.COLOR_TEXT_SHORT);
+		txtAskPointWA1Dist.setEditable(false);
+		txtAskPointWA1Dist.setColumns(10);
+		txtAskPointWA1Dist.setBounds(204, 66, 80, 20);
+		pnlWA.add(txtAskPointWA1Dist);
 
-		btnShortShockWA = new JButton("\u2193");
-		btnShortShockWA.setToolTipText("Create Short in this price");
-		btnShortShockWA.setOpaque(true);
-		btnShortShockWA.setBackground(Styles.COLOR_BTN_SHORT);
-		btnShortShockWA.setBounds(296, 31, 46, 22);
-		pnlWA.add(btnShortShockWA);
+		txtBidPointWA1Dist = new JTextField();
+		txtBidPointWA1Dist.setForeground(Styles.COLOR_TEXT_LONG);
+		txtBidPointWA1Dist.setEditable(false);
+		txtBidPointWA1Dist.setColumns(10);
+		txtBidPointWA1Dist.setBounds(204, 98, 80, 20);
+		pnlWA.add(txtBidPointWA1Dist);
 
-		btnLongShockWA = new JButton("\u2191");
-		btnLongShockWA.setToolTipText("Create Long in this price");
-		btnLongShockWA.setOpaque(true);
-		btnLongShockWA.setBackground(Styles.COLOR_BTN_LONG);
-		btnLongShockWA.setBounds(296, 62, 46, 22);
-		pnlWA.add(btnLongShockWA);
+		txtBidPointWA1 = new JTextField();
+		txtBidPointWA1.setForeground(Styles.COLOR_TEXT_LONG);
+		txtBidPointWA1.setEditable(false);
+		txtBidPointWA1.setColumns(10);
+		txtBidPointWA1.setBounds(84, 98, 110, 20);
+		pnlWA.add(txtBidPointWA1);
 
-		txtLongDistWA = new JTextField();
-		txtLongDistWA.setForeground(Styles.COLOR_TEXT_LONG);
-		txtLongDistWA.setEditable(false);
-		txtLongDistWA.setColumns(10);
-		txtLongDistWA.setBounds(206, 63, 80, 20);
-		pnlWA.add(txtLongDistWA);
-
-		txtLongPriceWA = new JTextField();
-		txtLongPriceWA.setForeground(Styles.COLOR_TEXT_LONG);
-		txtLongPriceWA.setEditable(false);
-		txtLongPriceWA.setColumns(10);
-		txtLongPriceWA.setBounds(86, 63, 110, 20);
-		pnlWA.add(txtLongPriceWA);
-
-		lblShortWA = new JLabel("SHORT");
-		lblShortWA.setBounds(24, 35, 52, 14);
+		lblShortWA = new JLabel("ASK 1");
+		lblShortWA.setBounds(22, 69, 52, 14);
 		pnlWA.add(lblShortWA);
 
-		lblLongWA = new JLabel("LONG");
-		lblLongWA.setBounds(24, 66, 52, 14);
+		lblLongWA = new JLabel("BID 1");
+		lblLongWA.setBounds(22, 101, 52, 14);
 		pnlWA.add(lblLongWA);
 
 		lblPriceWA = new JLabel("Price");
-		lblPriceWA.setBounds(86, 11, 46, 14);
+		lblPriceWA.setBounds(84, 12, 46, 14);
 		pnlWA.add(lblPriceWA);
 
 		lblDistWA = new JLabel("Dist %");
-		lblDistWA.setBounds(206, 11, 46, 14);
+		lblDistWA.setBounds(204, 12, 46, 14);
 		pnlWA.add(lblDistWA);
+		
+		txtBidPointWA2 = new JTextField();
+		txtBidPointWA2.setForeground(Styles.COLOR_TEXT_LONG);
+		txtBidPointWA2.setEditable(false);
+		txtBidPointWA2.setColumns(10);
+		txtBidPointWA2.setBounds(84, 130, 110, 20);
+		pnlWA.add(txtBidPointWA2);
+		
+		txtBidPointWA2Dist = new JTextField();
+		txtBidPointWA2Dist.setForeground(Styles.COLOR_TEXT_LONG);
+		txtBidPointWA2Dist.setEditable(false);
+		txtBidPointWA2Dist.setColumns(10);
+		txtBidPointWA2Dist.setBounds(204, 130, 80, 20);
+		pnlWA.add(txtBidPointWA2Dist);
+		
+		txtAskPointWA2 = new JTextField();
+		txtAskPointWA2.setForeground(Styles.COLOR_TEXT_SHORT);
+		txtAskPointWA2.setEditable(false);
+		txtAskPointWA2.setColumns(10);
+		txtAskPointWA2.setBounds(84, 36, 110, 20);
+		pnlWA.add(txtAskPointWA2);
+		
+		txtAskPointWA2Dist = new JTextField();
+		txtAskPointWA2Dist.setForeground(Styles.COLOR_TEXT_SHORT);
+		txtAskPointWA2Dist.setEditable(false);
+		txtAskPointWA2Dist.setColumns(10);
+		txtAskPointWA2Dist.setBounds(204, 36, 80, 20);
+		pnlWA.add(txtAskPointWA2Dist);
+		
+		btnShortBidPointBB2 = new JButton("\u2193");
+		btnShortBidPointBB2.setToolTipText("Create Short in this price");
+		btnShortBidPointBB2.setOpaque(true);
+		btnShortBidPointBB2.setBackground(Styles.COLOR_BTN_SHORT);
+		btnShortBidPointBB2.setBounds(296, 31, 46, 22);
+		pnlBB.add(btnShortBidPointBB2);
+
+		btnLongBidPointBB2 = new JButton("\u2191");
+		btnLongBidPointBB2.setToolTipText("Create Long in this price");
+		btnLongBidPointBB2.setOpaque(true);
+		btnLongBidPointBB2.setBackground(Styles.COLOR_BTN_LONG);
+		btnLongBidPointBB2.setBounds(296, 127, 46, 22);
+		pnlBB.add(btnLongBidPointBB2);
+
+		btnShortBidPointWA1 = new JButton("\u2193");
+		btnShortBidPointWA1.setToolTipText("Create Short in this price");
+		btnShortBidPointWA1.setOpaque(true);
+		btnShortBidPointWA1.setBackground(Styles.COLOR_BTN_SHORT);
+		btnShortBidPointWA1.setBounds(294, 65, 46, 22);
+		pnlWA.add(btnShortBidPointWA1);
+
+		btnLongBidPointWA1 = new JButton("\u2191");
+		btnLongBidPointWA1.setToolTipText("Create Long in this price");
+		btnLongBidPointWA1.setOpaque(true);
+		btnLongBidPointWA1.setBackground(Styles.COLOR_BTN_LONG);
+		btnLongBidPointWA1.setBounds(294, 97, 46, 22);
+		pnlWA.add(btnLongBidPointWA1);
+
+		btnLongBidPointWA2 = new JButton("\u2191");
+		btnLongBidPointWA2.setToolTipText("Create Long in this price");
+		btnLongBidPointWA2.setOpaque(true);
+		btnLongBidPointWA2.setBackground(Styles.COLOR_BTN_LONG);
+		btnLongBidPointWA2.setBounds(294, 129, 46, 22);
+		pnlWA.add(btnLongBidPointWA2);
+
+		btnShortBidPointWA2 = new JButton("\u2193");
+		btnShortBidPointWA2.setToolTipText("Create Short in this price");
+		btnShortBidPointWA2.setOpaque(true);
+		btnShortBidPointWA2.setBackground(Styles.COLOR_BTN_SHORT);
+		btnShortBidPointWA2.setBounds(294, 35, 46, 22);
+		pnlWA.add(btnShortBidPointWA2);
+		
+		lblShort = new JLabel("ASK 2");
+		lblShort.setBounds(22, 39, 52, 14);
+		pnlWA.add(lblShort);
+		
+		lblBid = new JLabel("BID 2");
+		lblBid.setBounds(22, 133, 52, 14);
+		pnlWA.add(lblBid);
 
 		btnExport = new JButton("Export");
 		btnExport.setOpaque(true);
@@ -559,34 +593,44 @@ public class FrmCoin extends JFrame implements PriceListener
 			}
 		});
 
-		btnShortShockBB.addActionListener(new ActionListener() {
+		btnShortBidPointBB2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtShortPrice.getText(), false);
+				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtAskPointBB2.getText(), false);
 			}
 		});
-		btnLongShockBB.addActionListener(new ActionListener() {
+		btnShortBidPointBB1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtLongPrice.getText(), false);
+				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtAskPointBB1.getText(), false);
 			}
 		});
-		btnShortShockFP.addActionListener(new ActionListener() {
+		btnLongBidPointBB1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtShortPriceFP.getText(), false);
+				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtBidPointBB1.getText(), false);
 			}
 		});
-		btnLongShockFP.addActionListener(new ActionListener() {
+		btnLongBidPointBB2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtLongPriceFP.getText(), false);
+				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtBidPointBB2.getText(), false);
 			}
 		});
-		btnShortShockWA.addActionListener(new ActionListener() {
+		btnShortBidPointWA2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtShortPriceWA.getText(), false);
+				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtAskPointWA2.getText(), false);
 			}
 		});
-		btnLongShockWA.addActionListener(new ActionListener() {
+		btnShortBidPointWA1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtLongPriceWA.getText(), false);
+				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtAskPointWA1.getText(), false);
+			}
+		});
+		btnLongBidPointWA1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtBidPointWA1.getText(), false);
+			}
+		});
+		btnLongBidPointWA2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtBidPointWA2.getText(), false);
 			}
 		});
 
@@ -681,14 +725,15 @@ public class FrmCoin extends JFrame implements PriceListener
 			txtOBookBid.setText(obService.printBidsGrp());
 			txtOBookBid.setCaretPosition(0);
 
-			txtShortPrice.setText(symbol.priceToStr(obService.getShortPriceBBlk()));
-			txtLongPrice.setText(symbol.priceToStr(obService.getLongPriceBBlk()));
+			txtAskPointBB2.setText(symbol.priceToStr(obService.getAskBBlkPoint2()));
+			txtAskPointBB1.setText(symbol.priceToStr(obService.getAskBBlkPoint1()));
+			txtBidPointBB1.setText(symbol.priceToStr(obService.getBidBBlkPoint1()));
+			txtBidPointBB2.setText(symbol.priceToStr(obService.getBidBBlkPoint2()));
 
-			txtShortPriceWA.setText(symbol.priceToStr(obService.getShortPriceWAvg()));
-			txtLongPriceWA.setText(symbol.priceToStr(obService.getLongPriceWAvg()));
-			
-			txtShortPriceFP.setText(symbol.priceToStr(obService.getShortPriceFixed()));
-			txtLongPriceFP.setText(symbol.priceToStr(obService.getLongPriceFixed()));
+			txtAskPointWA2.setText(symbol.priceToStr(obService.getAskWAvgPoint2()));
+			txtAskPointWA1.setText(symbol.priceToStr(obService.getAskWAvgPoint1()));
+			txtBidPointWA1.setText(symbol.priceToStr(obService.getBidWAvgPoint1()));
+			txtBidPointWA2.setText(symbol.priceToStr(obService.getBidWAvgPoint2()));
 
 		}
 		catch (Exception e)
@@ -708,33 +753,64 @@ public class FrmCoin extends JFrame implements PriceListener
 		{
 			BigDecimal mrkPrice = PriceService.getLastPrice(symbol);
 
-			BigDecimal distSh = PriceUtil.priceDistUp(mrkPrice, obService.getShortPriceBBlk(), false);
-			txtShortDist.setText(Convert.dblToStrPercent(distSh) + " %");
+			BigDecimal distSh2 = PriceUtil.priceDistUp(mrkPrice, obService.getAskBBlkPoint2(), false);
+			txtAskPointBB2Dist.setText(Convert.dblToStrPercent(distSh2) + " %");
 
-			BigDecimal distShWA = PriceUtil.priceDistUp(mrkPrice, obService.getShortPriceWAvg(), false);
-			txtShortDistWA.setText(Convert.dblToStrPercent(distShWA) + " %");
+			BigDecimal distSh1 = PriceUtil.priceDistUp(mrkPrice, obService.getAskBBlkPoint1(), false);
+			txtAskPointBB1Dist.setText(Convert.dblToStrPercent(distSh1) + " %");
+			
+			BigDecimal distLg1 = PriceUtil.priceDistDown(mrkPrice, obService.getBidBBlkPoint1(), false);
+			txtBidPointBB1Dist.setText(Convert.dblToStrPercent(distLg1) + " %");
+			
+			BigDecimal distLg2 = PriceUtil.priceDistDown(mrkPrice, obService.getBidBBlkPoint2(), false);
+			txtBidPointBB2Dist.setText(Convert.dblToStrPercent(distLg2) + " %");
 
-			BigDecimal distShFP = PriceUtil.priceDistUp(mrkPrice, obService.getShortPriceFixed(), false);
-			txtShortDistFP.setText(Convert.dblToStrPercent(distShFP) + " %");
+			BigDecimal distShWA2 = PriceUtil.priceDistUp(mrkPrice, obService.getAskWAvgPoint2(), false);
+			txtAskPointWA2Dist.setText(Convert.dblToStrPercent(distShWA2) + " %");
 
-			BigDecimal distLg = PriceUtil.priceDistDown(mrkPrice, obService.getLongPriceBBlk(), false);
-			txtLongDist.setText(Convert.dblToStrPercent(distLg) + " %");
+			BigDecimal distShWA1 = PriceUtil.priceDistUp(mrkPrice, obService.getAskWAvgPoint1(), false);
+			txtAskPointWA1Dist.setText(Convert.dblToStrPercent(distShWA1) + " %");
 
-			BigDecimal distLgWA = PriceUtil.priceDistDown(mrkPrice, obService.getLongPriceWAvg(), false);
-			txtLongDistWA.setText(Convert.dblToStrPercent(distLgWA) + " %");
+			BigDecimal distLgWA1 = PriceUtil.priceDistDown(mrkPrice, obService.getBidWAvgPoint1(), false);
+			txtBidPointWA1Dist.setText(Convert.dblToStrPercent(distLgWA1) + " %");
 
-			BigDecimal distLgFP = PriceUtil.priceDistDown(mrkPrice, obService.getLongPriceFixed(), false);
-			txtLongDistFP.setText(Convert.dblToStrPercent(distLgFP) + " %");
+			BigDecimal distLgWA2 = PriceUtil.priceDistDown(mrkPrice, obService.getBidWAvgPoint2(), false);
+			txtBidPointWA2Dist.setText(Convert.dblToStrPercent(distLgWA2) + " %");
 
-			if ((distShFP.doubleValue() <= 0.0025 && distLgFP.doubleValue() >= 0.0075) || 
-				(distLgFP.doubleValue() <= 0.0025 && distShFP.doubleValue() >= 0.0075))
+			// ----------------------------------------------------------------
+			// ----------------------------------------------------------------
+			BigDecimal distAsk1To2 = PriceUtil.priceDistUp(obService.getAskFixedPoint1(), obService.getAskFixedPoint2(), false);
+			BigDecimal distBid1To2 = PriceUtil.priceDistUp(obService.getBidFixedPoint1(), obService.getBidFixedPoint2(), false);
+
+			BigDecimal distShortLong = PriceUtil.priceDistDown(obService.getAskFixedPoint1(), obService.getBidFixedPoint1(), false);
+			BigDecimal distLongShort = PriceUtil.priceDistUp(obService.getBidFixedPoint1(), obService.getAskFixedPoint1(), false);
+
+			BigDecimal distShort = PriceUtil.priceDistUp(mrkPrice, obService.getAskFixedPoint1(), false);
+			BigDecimal distLong = PriceUtil.priceDistDown(mrkPrice, obService.getBidFixedPoint1(), false);
+
+			if (distShort.doubleValue() <= 0.0025 && distShortLong.doubleValue() >= 0.01 && distAsk1To2.doubleValue() < distShortLong.doubleValue())
 			{
 				if(!beepDone)
 				{
+					INFO(String.format("SHORT %f", obService.getAskFixedPoint1()));
+
 					BeepUtils.beep();
 					beepDone = true;
 				}
 			}
+			else if (distLong.doubleValue() <= 0.0025 && distLongShort.doubleValue() >= 0.01 && distBid1To2.doubleValue() < distLongShort.doubleValue())
+			{
+				if(!beepDone)
+				{
+					INFO(String.format("LONG %f", obService.getBidFixedPoint1()));
+
+					BeepUtils.beep();
+					beepDone = true;
+				}
+			}
+
+			// ----------------------------------------------------------------
+			// ----------------------------------------------------------------
 
 		}
 		catch (Exception e)
