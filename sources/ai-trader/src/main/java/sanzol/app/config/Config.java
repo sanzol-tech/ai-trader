@@ -20,18 +20,18 @@ public class Config
 
 	private static final String[] FAVORITE_SYMBOLS = new String[]
 		{"1000SHIB", "ADA", "ALGO", "ALICE", "ATOM", "AVAX", "BAT", "BCH", 
-		 "BNB", "BTC", "DASH", "DOGE", "DOT", "ETH", "FTM", "GALA", 
+		 "BNB", "BTC", "DASH", "DOGE", "DOT", "ETC", "ETH", "FTM", "GALA", 
 		 "KAVA", "LINK", "LTC", "MANA", "MATIC", "NEAR", "NEO", "OCEAN", 
 		 "QTUM", "ROSE", "RUNE", "SAND", "SOL", "SUSHI", "TRX", "UNI", 
 		 "VET", "XLM", "XMR", "XRP", "ZEC"};
 
 	// Better symbols
-	private static final long BETTER_SYMBOLS_MIN_VOLUME = 100000000;
-	private static final double BETTER_SYMBOLS_MAX_CHANGE = 10;
+	private static final long BETTER_SYMBOLS_MIN_VOLUME = 150000000;
+	private static final double BETTER_SYMBOLS_MAX_CHANGE = 8;
 
 	// Order book
-	private static final int BLOCKS_TO_ANALYZE_BB = 6;
-	private static final int BLOCKS_TO_ANALYZE_WA = 6;
+	private static final int BLOCKS_TO_ANALYZE_BB = 8;
+	private static final int BLOCKS_TO_ANALYZE_WA = 8;
 
 	// Grid
 	private static final int ITERATIONS = 0;

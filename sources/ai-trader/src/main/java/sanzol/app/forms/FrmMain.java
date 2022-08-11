@@ -225,7 +225,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		pnlContent.add(lblSignals);
 
 		chkOnlyFavorites = new JCheckBox("Only favorites");
-		chkOnlyFavorites.setSelected(true);
 		chkOnlyFavorites.setHorizontalAlignment(SwingConstants.LEADING);
 		chkOnlyFavorites.setBounds(15, 12, 99, 23);
 		pnlContent.add(chkOnlyFavorites);
