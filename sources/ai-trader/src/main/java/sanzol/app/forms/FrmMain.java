@@ -835,13 +835,13 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		if ("SHORT".equals(type))
 		{
 			Signal entry = lstShortSignals.get(index);
-			Double price = entry.getTargetPrice().doubleValue();
+			Double price = entry.getInPrice().doubleValue();
 			FrmGrid.launch(entry.getSymbol().getNameLeft(), "SHORT", entry.getSymbol().priceToStr(price), isBotMode);
 		}
 		else
 		{
 			Signal entry = lstLongSignals.get(index);
-			Double price = entry.getTargetPrice().doubleValue();
+			Double price = entry.getInPrice().doubleValue();
 			FrmGrid.launch(entry.getSymbol().getNameLeft(), "LONG", entry.getSymbol().priceToStr(price), isBotMode);
 		}
 	}

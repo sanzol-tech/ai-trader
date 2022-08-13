@@ -29,6 +29,7 @@ import sanzol.app.listener.SignalListener;
 import sanzol.app.model.ShockPoint;
 import sanzol.app.model.Signal;
 import sanzol.app.model.SymbolInfo;
+import sanzol.app.service.OBookCache;
 import sanzol.app.service.OBookService;
 import sanzol.app.service.Symbol;
 import sanzol.app.util.PriceUtil;
@@ -125,10 +126,19 @@ public final class SignalService
 		try
 		{
 			List<SymbolInfo> lstSymbolsInfo = Symbol.getLstSymbolsInfo(onlyFavorites, onlyBetters);
-
+			
 			int count = 0;
 			for (SymbolInfo symbolInfo : lstSymbolsInfo)
 			{
+
+				if (!OBookCache.IS_CACHE_ACTIVE) {
+					if ("BTC".equals(symbolInfo.getSymbol().getNameLeft()) || 
+						"ETH".equals(symbolInfo.getSymbol().getNameLeft()) || 
+						"BNB".equals(symbolInfo.getSymbol().getNameLeft()))	{
+						continue;
+					}
+				}
+
 				ShockPoint shockPoint = mapShockPoints.get(symbolInfo.getSymbol().getName());
 				if (shockPoint != null)
 				{
@@ -169,7 +179,7 @@ public final class SignalService
 
 			BigDecimal distShLg = PriceUtil.priceDistDown(obService.getAskFixedPoint1(), obService.getBidFixedPoint1(), true);
 
-			if ((distShLg.doubleValue() < 1.2 || distShLg.doubleValue() > 6.0))
+			if ((distShLg.doubleValue() < 0.9 || distShLg.doubleValue() > 8.0))
 			{
 				updateShockPoint(ShockPoint.NULL(symbol));
 				LogService.info("DISCARD NEW SIGNALS FROM " + symbol.getNameLeft() + " - DISTANCE BETWEEN POINTS " + distShLg + " %");
@@ -240,7 +250,7 @@ public final class SignalService
 			for (ShockPoint entry : mapShockPoints.values())
 			{
 				if (entry.getExpirationTime() < System.currentTimeMillis() || 
-				   (entry.getShShock().doubleValue() == 0 && entry.getLgShock().doubleValue() == 0))
+				   (entry.getShortPrice().doubleValue() == 0 && entry.getLongPrice().doubleValue() == 0))
 				{
 					continue;
 				}
@@ -251,19 +261,19 @@ public final class SignalService
 					continue;
 				}
 
-				BigDecimal lastPrice = symbolTickerEvent.getLastPrice();
-				BigDecimal usdVolume = symbolTickerEvent.getTotalTradedQuoteAssetVolume();
-				BigDecimal changePercent = symbolTickerEvent.getPriceChangePercent();
+				BigDecimal markPrice = symbolTickerEvent.getLastPrice();
+				BigDecimal volume = symbolTickerEvent.getTotalTradedQuoteAssetVolume();
+				BigDecimal change24h = symbolTickerEvent.getPriceChangePercent();
 
-				BigDecimal distShort = PriceUtil.priceDistUp(lastPrice, entry.getShShock(), true);
-				BigDecimal distLong = PriceUtil.priceDistDown(lastPrice, entry.getLgShock(), true);
+				BigDecimal distShort = PriceUtil.priceDistUp(markPrice, entry.getShortPrice(), true);
+				BigDecimal distLong = PriceUtil.priceDistDown(markPrice, entry.getLongPrice(), true);
 
-				if (distShort.doubleValue() <= -0.03)
+				if (distShort.doubleValue() <= -0.01)
 				{
 					expireShocks(entry.getSymbol(), "REACHED THE SHORT POINT");
 					continue;
 				}
-				if (distLong.doubleValue() <= -0.03)
+				if (distLong.doubleValue() <= -0.01)
 				{
 					expireShocks(entry.getSymbol(), "REACHED THE LONG POINT");
 					continue;
@@ -279,19 +289,14 @@ public final class SignalService
 				BigDecimal avgPrice = symbolTickerEvent.getWeightedAvgPrice();
 				BigDecimal avgHigh = (avgPrice.add(high)).divide(BigDecimal.valueOf(2), entry.getSymbol().getTickSize(), RoundingMode.HALF_UP);
 				BigDecimal avgLow = (avgPrice.add(low)).divide(BigDecimal.valueOf(2), entry.getSymbol().getTickSize(), RoundingMode.HALF_UP);
-				boolean isBestShort = (lastPrice.doubleValue() > avgHigh.doubleValue());
-				boolean isBestLong = (lastPrice.doubleValue() < avgLow.doubleValue());
-				
-				Signal shortSignal = new Signal("SHORT", entry.getSymbol(), lastPrice, entry.getShShock(), entry.getShortTProfit(), entry.getShortSLoss(), distShort);
-				shortSignal.setChange24h(changePercent);
-				shortSignal.setVolume(usdVolume);
-				shortSignal.setBestSide(isBestShort ? "SHORT" : isBestLong ? "LONG" : "");
+				boolean isBestShort = (markPrice.doubleValue() > avgHigh.doubleValue());
+				boolean isBestLong = (markPrice.doubleValue() < avgLow.doubleValue());
+				String bestSide = isBestShort ? "SHORT" : isBestLong ? "LONG" : "";
+
+				Signal shortSignal = new Signal("SHORT", entry.getSymbol(), markPrice, change24h, volume, bestSide, entry.getShortPrice(), distShort, entry.getShortTProfit(), entry.getShortSLoss(), entry.getShortRatio());
 				lstShorts.add(shortSignal);
 
-				Signal longSignal = new Signal("LONG", entry.getSymbol(), lastPrice, entry.getLgShock(), entry.getLongTProfit(), entry.getLongTSLoss(), distLong);
-				longSignal.setChange24h(changePercent);
-				longSignal.setVolume(usdVolume);
-				longSignal.setBestSide(isBestShort ? "SHORT" : isBestLong ? "LONG" : "");
+				Signal longSignal = new Signal("LONG", entry.getSymbol(), markPrice, change24h, volume, bestSide, entry.getLongPrice(), distLong, entry.getLongTProfit(), entry.getLongTSLoss(), entry.getLongRatio());
 				lstLongs.add(longSignal);
 			}
 		}

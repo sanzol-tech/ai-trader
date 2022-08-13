@@ -76,17 +76,20 @@ public class OBookService
 
 	public OBookService request()
 	{
-		if ("BTC".equals(symbol.getNameLeft()))
+		if (OBookCache.IS_CACHE_ACTIVE)
 		{
-			return OBookCache.getObServiceBTC();
-		}
-		else if ("ETH".equals(symbol.getNameLeft()))
-		{
-			return OBookCache.getObServiceETH();
-		}
-		else if ("BNB".equals(symbol.getNameLeft()))
-		{
-			return OBookCache.getObServiceBNB();
+			if ("BTC".equals(symbol.getNameLeft()))
+			{
+				return OBookCache.getObServiceBTC();
+			}
+			else if ("ETH".equals(symbol.getNameLeft()))
+			{
+				return OBookCache.getObServiceETH();
+			}
+			else if ("BNB".equals(symbol.getNameLeft()))
+			{
+				return OBookCache.getObServiceBNB();
+			}
 		}
 
 		SyncRequestClient syncRequestClient = SyncRequestClient.create();
@@ -178,9 +181,9 @@ public class OBookService
 		loadAsks();
 		loadBids();
 		asksGrp = loadAsksGrp(blockSize);
-		asksGrp10 = loadAsksGrp(blockSize.multiply(BigDecimal.valueOf(blocksToAnalizeBB)));
+		asksGrp10 = loadAsksGrp(blockSize.multiply(BigDecimal.TEN));
 		bidsGrp = loadBidsGrp(blockSize);
-		bidsGrp10 = loadBidsGrp(blockSize.multiply(BigDecimal.valueOf(blocksToAnalizeBB)));
+		bidsGrp10 = loadBidsGrp(blockSize.multiply(BigDecimal.TEN));
 
 		//BB
 		{
@@ -191,8 +194,8 @@ public class OBookService
 
 			double askPriceFrom = askBBlkPoint1.doubleValue();
 			double bidPriceFrom = bidBBlkPoint1.doubleValue();
-			askPriceTo = askPriceFrom + (blockSize.doubleValue() * blocksToAnalizeBB * 2);
-			bidPriceTo = bidPriceFrom - (blockSize.doubleValue() * blocksToAnalizeBB * 2);
+			askPriceTo = askPriceFrom + (blockSize.doubleValue() * 10 * blocksToAnalizeBB);
+			bidPriceTo = bidPriceFrom - (blockSize.doubleValue() * 10 * blocksToAnalizeBB);
 			this.askBBlkPoint2 = getBestBlockAsks(asksGrp10, askPriceFrom, askPriceTo);
 			this.bidBBlkPoint2 = getBestBlockBids(bidsGrp10, bidPriceFrom, bidPriceTo);
 		}
@@ -219,6 +222,7 @@ public class OBookService
 
 	public void fixShocks()
 	{
+		/*
 		if (askWAvgPoint1 != null && askWAvgPoint1.doubleValue() > askBBlkPoint1.doubleValue())
 			askFixedPoint1 = askWAvgPoint1;
 		else
@@ -239,7 +243,20 @@ public class OBookService
 			bidFixedPoint2 = bidWAvgPoint2;
 		else
 			bidFixedPoint2 = bidBBlkPoint2;
-	}	
+		*/
+
+		askFixedPoint1 = askBBlkPoint1;
+		bidFixedPoint1 = bidBBlkPoint1;
+		askFixedPoint2 = askBBlkPoint2;
+		bidFixedPoint2 = bidBBlkPoint2;
+
+		/*
+		askFixedPoint1 = askWAvgPoint1;
+		bidFixedPoint1 = bidWAvgPoint1;
+		askFixedPoint2 = askWAvgPoint2;
+		bidFixedPoint2 = bidWAvgPoint2;
+		*/
+	}
 
 	// ------------------------------------------------------------------------
 

@@ -1,37 +1,45 @@
 package sanzol.app.model;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 
 import sanzol.app.service.Symbol;
-import sanzol.app.util.PriceUtil;
 
 public class Signal
 {
 	private String type;
+
 	private Symbol symbol;
 	private BigDecimal markPrice;
-	private BigDecimal targetPrice;
-	private BigDecimal takeProfit;
-	private BigDecimal stopLoss;
-	private BigDecimal distance;
 	private BigDecimal change24h;
 	private BigDecimal volume;
 	private String bestSide;
+
+	private BigDecimal inPrice;
+	private BigDecimal distance;
+	private BigDecimal takeProfit;
+	private BigDecimal stopLoss;
+	private BigDecimal ratio;
 
 	public Signal()
 	{
 		//
 	}
 
-	public Signal(String type, Symbol symbol, BigDecimal markPrice, BigDecimal targetPrice, BigDecimal takeProfit, BigDecimal stopLoss, BigDecimal distance)
+	public Signal(String type, Symbol symbol, BigDecimal markPrice, BigDecimal change24h, BigDecimal volume, String bestSide, 
+				  BigDecimal inPrice, BigDecimal distance, BigDecimal takeProfit, BigDecimal stopLoss, BigDecimal ratio)
 	{
 		this.type = type;
 		this.symbol = symbol;
 		this.markPrice = markPrice;
-		this.targetPrice = targetPrice;
+		this.change24h = change24h;
+		this.volume = volume;
+		this.bestSide = bestSide;
+		this.inPrice = inPrice;
+		this.distance = distance;
 		this.takeProfit = takeProfit;
 		this.stopLoss = stopLoss;
-		this.distance = distance;
+		this.ratio = ratio;
 	}
 
 	public String getType()
@@ -64,46 +72,6 @@ public class Signal
 		this.markPrice = markPrice;
 	}
 
-	public BigDecimal getTargetPrice()
-	{
-		return targetPrice;
-	}
-
-	public void setTargetPrice(BigDecimal targetPrice)
-	{
-		this.targetPrice = targetPrice;
-	}
-
-	public BigDecimal getTakeProfit()
-	{
-		return takeProfit;
-	}
-
-	public void setTakeProfit(BigDecimal takeProfit)
-	{
-		this.takeProfit = takeProfit;
-	}
-
-	public BigDecimal getStopLoss()
-	{
-		return stopLoss;
-	}
-
-	public void setStopLoss(BigDecimal stopLoss)
-	{
-		this.stopLoss = stopLoss;
-	}
-
-	public BigDecimal getDistance()
-	{
-		return distance;
-	}
-
-	public void setDistance(BigDecimal distance)
-	{
-		this.distance = distance;
-	}
-
 	public BigDecimal getChange24h()
 	{
 		return change24h;
@@ -134,9 +102,59 @@ public class Signal
 		this.bestSide = bestSide;
 	}
 
-	// -------------------------------------------------------------------------
-	// -------------------------------------------------------------------------
+	public BigDecimal getInPrice()
+	{
+		return inPrice;
+	}
 
+	public void setInPrice(BigDecimal inPrice)
+	{
+		this.inPrice = inPrice;
+	}
+
+	public BigDecimal getDistance()
+	{
+		return distance;
+	}
+
+	public void setDistance(BigDecimal distance)
+	{
+		this.distance = distance;
+	}
+
+	public BigDecimal getTakeProfit()
+	{
+		return takeProfit;
+	}
+
+	public void setTakeProfit(BigDecimal takeProfit)
+	{
+		this.takeProfit = takeProfit;
+	}
+
+	public BigDecimal getStopLoss()
+	{
+		return stopLoss;
+	}
+
+	public void setStopLoss(BigDecimal stopLoss)
+	{
+		this.stopLoss = stopLoss;
+	}
+
+	public BigDecimal getRatio()
+	{
+		return ratio;
+	}
+
+	public void setRatio(BigDecimal ratio)
+	{
+		this.ratio = ratio;
+	}
+
+	// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
+	
 	public String getStrMarkPrice()
 	{
 		return symbol.priceToStr(markPrice);
@@ -144,7 +162,7 @@ public class Signal
 
 	public String getStrTargetPrice()
 	{
-		return symbol.priceToStr(targetPrice);
+		return symbol.priceToStr(inPrice);
 	}
 
 	// -------------------------------------------------------------------------
@@ -152,7 +170,7 @@ public class Signal
 
 	public String toString()
 	{
-		return String.format("%-8s %6.2f%% %12s   TP:%6.2f%%    chg:%6.2f%%    vol:%5s\n", symbol.getNameLeft(), distance, symbol.priceToStr(targetPrice), takeProfit, change24h, PriceUtil.cashFormat(volume));
+		return String.format(Locale.US, "%-8s %6.2f%% %12s     TP:%6.2f%%      SL:%6.2f%%     1:%.1f\n", symbol.getNameLeft(), distance, symbol.priceToStr(inPrice), takeProfit, stopLoss, ratio);
 	}
 
 }

@@ -1,6 +1,7 @@
 package sanzol.app.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.concurrent.TimeUnit;
 
 import sanzol.app.service.Symbol;
@@ -11,12 +12,19 @@ public class ShockPoint
 	public static final Long EXPIRATION_MILLIS = TimeUnit.MINUTES.toMillis(120);
 
 	private Symbol symbol;
-	private BigDecimal shShock;
-	private BigDecimal lgShock;
+
+	private BigDecimal shortPrice;
+	private BigDecimal longPrice;
+	
 	private BigDecimal shortTProfit;
 	private BigDecimal longTProfit;
+
 	private BigDecimal shortSLoss;
 	private BigDecimal longTSLoss;
+
+	private BigDecimal shortRatio;
+	private BigDecimal longRatio;
+
 	private Long expirationTime;
 
 	public ShockPoint()
@@ -26,31 +34,45 @@ public class ShockPoint
 
 	public static ShockPoint NULL(Symbol symbol)
 	{
-		return new ShockPoint(symbol, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, System.currentTimeMillis() + EXPIRATION_MILLIS);
+		return new ShockPoint(symbol, System.currentTimeMillis() + EXPIRATION_MILLIS);
 	}
 
-	public ShockPoint(Symbol symbol, BigDecimal shShock, BigDecimal lgShock, BigDecimal shShock2, BigDecimal lgShock2)
+	public ShockPoint(Symbol symbol, Long expirationTime)
 	{
 		this.symbol = symbol;
-		this.shShock = shShock;
-		this.lgShock = lgShock;
-		this.shortTProfit =  PriceUtil.priceDistDown(shShock, lgShock, true);
-		this.longTProfit =  PriceUtil.priceDistUp(lgShock, shShock, true);
-		this.shortSLoss =  PriceUtil.priceDistDown(shShock, shShock2, true);
-		this.longTSLoss =  PriceUtil.priceDistUp(lgShock, lgShock2, true);
-		this.expirationTime = System.currentTimeMillis() + EXPIRATION_MILLIS;
-	}
 
-	public ShockPoint(Symbol symbol, BigDecimal shShock, BigDecimal lgShock, BigDecimal shTarget, BigDecimal lgTarget, Long expirationTime)
-	{
-		this.symbol = symbol;
-		this.shShock = shShock;
-		this.lgShock = lgShock;
-		this.shortTProfit = shTarget;
-		this.longTProfit = lgTarget;
-		this.shortSLoss =  BigDecimal.ZERO;
-		this.longTSLoss =  BigDecimal.ZERO;
+		this.shortPrice = BigDecimal.ZERO;
+		this.longPrice = BigDecimal.ZERO;
+
+		this.shortTProfit = BigDecimal.ZERO;
+		this.longTProfit = BigDecimal.ZERO;
+
+		this.shortSLoss = BigDecimal.ZERO;
+		this.longTSLoss = BigDecimal.ZERO;
+
+		this.shortRatio = BigDecimal.ZERO;
+		this.longRatio = BigDecimal.ZERO;
+
 		this.expirationTime = expirationTime;
+	}
+
+	public ShockPoint(Symbol symbol, BigDecimal shortPrice, BigDecimal longPrice, BigDecimal shShock2, BigDecimal lgShock2)
+	{
+		this.symbol = symbol;
+
+		this.shortPrice = shortPrice;
+		this.longPrice = longPrice;
+		
+		this.shortTProfit =  PriceUtil.priceDistDown(shortPrice, longPrice, true);
+		this.longTProfit =  PriceUtil.priceDistUp(longPrice, shortPrice, true);
+		
+		this.shortSLoss =  PriceUtil.priceDistDown(shortPrice, shShock2, true);
+		this.longTSLoss =  PriceUtil.priceDistUp(longPrice, lgShock2, true);
+		
+		this.shortRatio = shortTProfit.divide(shortSLoss, 1, RoundingMode.HALF_UP).abs();
+		this.longRatio = longTProfit.divide(longTSLoss, 1, RoundingMode.HALF_UP).abs();
+
+		this.expirationTime = System.currentTimeMillis() + EXPIRATION_MILLIS;
 	}
 
 	public Symbol getSymbol()
@@ -63,24 +85,24 @@ public class ShockPoint
 		this.symbol = symbol;
 	}
 
-	public BigDecimal getShShock()
+	public BigDecimal getShortPrice()
 	{
-		return shShock;
+		return shortPrice;
 	}
 
-	public void setShShock(BigDecimal shShock)
+	public void setShortPrice(BigDecimal shortPrice)
 	{
-		this.shShock = shShock;
+		this.shortPrice = shortPrice;
 	}
 
-	public BigDecimal getLgShock()
+	public BigDecimal getLongPrice()
 	{
-		return lgShock;
+		return longPrice;
 	}
 
-	public void setLgShock(BigDecimal lgShock)
+	public void setLongPrice(BigDecimal longPrice)
 	{
-		this.lgShock = lgShock;
+		this.longPrice = longPrice;
 	}
 
 	public BigDecimal getShortTProfit()
@@ -123,6 +145,26 @@ public class ShockPoint
 		this.longTSLoss = longTSLoss;
 	}
 
+	public BigDecimal getShortRatio()
+	{
+		return shortRatio;
+	}
+
+	public void setShortRatio(BigDecimal shortRatio)
+	{
+		this.shortRatio = shortRatio;
+	}
+
+	public BigDecimal getLongRatio()
+	{
+		return longRatio;
+	}
+
+	public void setLongRatio(BigDecimal longRatio)
+	{
+		this.longRatio = longRatio;
+	}
+
 	public Long getExpirationTime()
 	{
 		return expirationTime;
@@ -138,12 +180,12 @@ public class ShockPoint
 
 	public String getStrShort()
 	{
-		return symbol.priceToStr(shShock);
+		return symbol.priceToStr(shortPrice);
 	}
 
 	public String getStrLong()
 	{
-		return symbol.priceToStr(lgShock);
+		return symbol.priceToStr(longPrice);
 	}
 
 	// -------------------------------------------------------------------------
@@ -152,7 +194,7 @@ public class ShockPoint
 	@Override
 	public String toString()
 	{
-		return String.format("%s;%s;%s;%s", symbol.getNameLeft(), symbol.priceToStr(shShock), symbol.priceToStr(lgShock), expirationTime == null ? "" : expirationTime.toString());
+		return String.format("%s;%s;%s;%s", symbol.getNameLeft(), symbol.priceToStr(shortPrice), symbol.priceToStr(longPrice), expirationTime == null ? "" : expirationTime.toString());
 	}
 
 }
