@@ -6,7 +6,7 @@ import sanzol.app.config.Config;
 
 public class OBookCache
 {
-	public static final boolean IS_CACHE_ACTIVE = false;
+	public static final boolean IS_CACHE_ACTIVE = true;
 	
 	private static OBookService obServiceBTC;
 	private static OBookService obServiceETH;

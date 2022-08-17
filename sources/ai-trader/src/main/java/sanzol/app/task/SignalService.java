@@ -179,7 +179,7 @@ public final class SignalService
 
 			BigDecimal distShLg = PriceUtil.priceDistDown(obService.getAskFixedPoint1(), obService.getBidFixedPoint1(), true);
 
-			if ((distShLg.doubleValue() < 0.9 || distShLg.doubleValue() > 8.0))
+			if ((distShLg.doubleValue() < 0.8 || distShLg.doubleValue() > 10.0))
 			{
 				updateShockPoint(ShockPoint.NULL(symbol));
 				LogService.info("DISCARD NEW SIGNALS FROM " + symbol.getNameLeft() + " - DISTANCE BETWEEN POINTS " + distShLg + " %");
@@ -293,11 +293,18 @@ public final class SignalService
 				boolean isBestLong = (markPrice.doubleValue() < avgLow.doubleValue());
 				String bestSide = isBestShort ? "SHORT" : isBestLong ? "LONG" : "";
 
-				Signal shortSignal = new Signal("SHORT", entry.getSymbol(), markPrice, change24h, volume, bestSide, entry.getShortPrice(), distShort, entry.getShortTProfit(), entry.getShortSLoss(), entry.getShortRatio());
-				lstShorts.add(shortSignal);
+				if (entry.getShortRatio().doubleValue() > 1.5)
+				{
+					Signal shortSignal = new Signal("SHORT", entry.getSymbol(), markPrice, change24h, volume, bestSide, entry.getShortPrice(), distShort, entry.getShortTProfit(), entry.getShortSLoss(), entry.getShortRatio());
+					lstShorts.add(shortSignal);
+				}
 
-				Signal longSignal = new Signal("LONG", entry.getSymbol(), markPrice, change24h, volume, bestSide, entry.getLongPrice(), distLong, entry.getLongTProfit(), entry.getLongTSLoss(), entry.getLongRatio());
-				lstLongs.add(longSignal);
+				if (entry.getLongRatio().doubleValue() > 1.5)
+				{
+					Signal longSignal = new Signal("LONG", entry.getSymbol(), markPrice, change24h, volume, bestSide, entry.getLongPrice(), distLong, entry.getLongTProfit(), entry.getLongTSLoss(), entry.getLongRatio());
+					lstLongs.add(longSignal);
+				}
+
 			}
 		}
 		catch (Exception e)

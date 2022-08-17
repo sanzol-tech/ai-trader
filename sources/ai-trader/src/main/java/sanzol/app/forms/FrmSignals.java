@@ -28,6 +28,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import sanzol.app.config.Application;
+import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.listener.SignalListener;
@@ -247,15 +248,25 @@ public class FrmSignals extends JFrame implements SignalListener
 			{
 				Symbol symbol = (Symbol) tableShort.getValueAt(index, 0);
 				Price shShort = new Price(symbol, (String) tableShort.getValueAt(index, 2));
+				String tp = ((String) tableShort.getValueAt(index, 3)).replace(" %","");
+				String sl = ((String) tableShort.getValueAt(index, 4)).replace(" %","").replace("-", "");
 
-				FrmGrid.launch(symbol.getNameLeft(), "SHORT", shShort.toString(), isBotMode);
+				if (!Config.getIterations().equals(0))
+					FrmGrid.launch(symbol.getNameLeft(), "SHORT", shShort.toString(), isBotMode);
+				else
+					FrmGrid.launch(symbol.getNameLeft(), "SHORT", shShort.toString(), sl, tp, isBotMode);
 			}
 			else
 			{
 				Symbol symbol = (Symbol) tableLong.getValueAt(index, 0);
 				Price lgShock = new Price(symbol, (String) tableLong.getValueAt(index, 2));
+				String tp = ((String) tableLong.getValueAt(index, 3)).replace(" %","");
+				String sl = ((String) tableLong.getValueAt(index, 4)).replace(" %","").replace("-", "");
 
-				FrmGrid.launch(symbol.getNameLeft(), "LONG", lgShock.toString(), isBotMode);
+				if (!Config.getIterations().equals(0))
+					FrmGrid.launch(symbol.getNameLeft(), "LONG", lgShock.toString(), isBotMode);
+				else
+					FrmGrid.launch(symbol.getNameLeft(), "LONG", lgShock.toString(), sl, tp, isBotMode);
 			}
 
 		}

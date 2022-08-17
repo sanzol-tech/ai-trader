@@ -109,7 +109,7 @@ public class SimpleTrader
 
 		syncRequestClient.cancelOrder(order.getSymbol(), order.getOrderId(), null);
 	}
-	
+
 	private static Order postOrder(Symbol symbol, OrderSide side, OrderType orderType, TimeInForce timeInForce, 
 								   String quantity, String price, String reduceOnly, String newClientOrderId,
 								   String stopPrice, WorkingType workingType, NewOrderRespType newOrderRespType, String closePosition)

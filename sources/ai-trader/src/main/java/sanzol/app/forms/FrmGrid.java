@@ -18,6 +18,7 @@ import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
@@ -397,21 +398,18 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		pnlGridConfig.add(lblTProfit);
 		
 		txtTProfit = new JTextField();
-		txtTProfit.setText("1.5");
 		txtTProfit.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtTProfit.setColumns(10);
 		txtTProfit.setBounds(390, 81, 72, 20);
 		pnlGridConfig.add(txtTProfit);
 		
 		txtPriceIncr = new JTextField();
-		txtPriceIncr.setText("2.0");
 		txtPriceIncr.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtPriceIncr.setColumns(10);
 		txtPriceIncr.setBounds(300, 30, 72, 20);
 		pnlGridConfig.add(txtPriceIncr);
 		
 		txtIterations = new JTextField();
-		txtIterations.setText("4");
 		txtIterations.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtIterations.setColumns(10);
 		txtIterations.setBounds(14, 30, 72, 20);
@@ -422,14 +420,12 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		pnlGridConfig.add(lblCoinsIncr);
 		
 		txtCoinsIncr1 = new JTextField();
-		txtCoinsIncr1.setText("0.0");
 		txtCoinsIncr1.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtCoinsIncr1.setColumns(10);
 		txtCoinsIncr1.setBounds(206, 81, 72, 20);
 		pnlGridConfig.add(txtCoinsIncr1);
 		
 		txtCoinsIncr = new JTextField();
-		txtCoinsIncr.setText("100.0");
 		txtCoinsIncr.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtCoinsIncr.setColumns(10);
 		txtCoinsIncr.setBounds(300, 81, 72, 20);
@@ -440,7 +436,6 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		pnlGridConfig.add(lblCoinsIncr1);
 		
 		txtPriceIncr1 = new JTextField();
-		txtPriceIncr1.setText("2.0");
 		txtPriceIncr1.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtPriceIncr1.setColumns(10);
 		txtPriceIncr1.setBounds(206, 30, 72, 20);
@@ -451,7 +446,6 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		pnlGridConfig.add(lblPriceIncr_1);
 
 		txtStopLoss = new JTextField();
-		txtStopLoss.setText("1.0");
 		txtStopLoss.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtStopLoss.setColumns(10);
 		txtStopLoss.setBounds(390, 30, 72, 20);
@@ -695,10 +689,15 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 	public static void launch()
 	{
-		launch(null, null, null, false);
+		launch(null, null, null, null, null, false);
 	}
 
 	public static void launch(String symbolLeft, String side, String price, boolean isBotMode)
+	{
+		launch(symbolLeft, side, price, null, null, isBotMode);
+	}
+
+	public static void launch(String symbolLeft, String side, String price, String stopLoss, String takeProfit, boolean isBotMode)
 	{
 		EventQueue.invokeLater(new Runnable()
 		{
@@ -719,11 +718,18 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 				try
 				{
-					if ("BTC".equals(symbolLeft))
-						frame.loadGridTemplate(GridTemplate.BTC);
+					if (stopLoss != null && takeProfit != null)
+					{
+						frame.generateGridSimple(stopLoss, takeProfit);
+					}
 					else
-						frame.loadGridTemplate(GridTemplate.DEFAULT);
-					
+					{
+						if ("BTC".equals(symbolLeft))
+							frame.loadGridTemplate(GridTemplate.BTC);
+						else
+							frame.loadGridTemplate(GridTemplate.DEFAULT);
+					}
+
 					if (symbolLeft != null && !symbolLeft.isEmpty())
 					{
 						frame.txtSymbolLeft.setText(symbolLeft);
@@ -748,7 +754,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			}
 		});
 	}
-
+	
 	// ------------------------------------------------------------------------
 
 	@Override
@@ -976,6 +982,44 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		txtStopLoss.setText(Convert.dblToStrPercent(Config.getStoplossIncrement()));
 		txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
 		
+		generateGrid();
+	}
+
+	private void generateGridSimple(String stopLoss, String takeProfit)
+	{
+		BigDecimal noFee = BigDecimal.ONE.subtract(BigDecimal.valueOf(0.006));
+		BigDecimal sl = new BigDecimal(stopLoss);
+		BigDecimal tp = new BigDecimal(takeProfit);
+
+		sl = sl.add(BigDecimal.valueOf(0.1)).max(BigDecimal.valueOf(0.5));
+		tp = tp.subtract(BigDecimal.valueOf(0.1));
+
+		BigDecimal usd = BigDecimal.valueOf(50).divide(sl, 2, RoundingMode.DOWN).multiply(noFee);
+		if ("U".equals(Config.getInQtyType()))
+		{
+			usd = BigDecimal.valueOf(Config.getInQty()).divide(sl, 2, RoundingMode.DOWN).multiply(noFee);		
+		}
+
+		if (!isOpenPosition)
+		{
+			txtInQty.setText(Convert.usdToStr(usd));
+			cmbQtyType.setSelectedItem(QuantityType.USD);
+		}
+
+		rbArithmetic.setSelected(false);
+		rbGeometric.setSelected(true);
+		txtIterations.setText("0");
+		chkPIF.setSelected(false);
+		txtPIF.setText("0.0");
+
+		txtPriceIncr1.setText("1.0");
+		txtCoinsIncr1.setText("0.0");
+		txtPriceIncr.setText("1.0");
+		txtCoinsIncr.setText("100.0");
+
+		txtStopLoss.setText(String.format(Locale.US, "%.2f", sl));
+		txtTProfit.setText(String.format(Locale.US, "%.2f", tp));
+
 		generateGrid();
 	}
 	

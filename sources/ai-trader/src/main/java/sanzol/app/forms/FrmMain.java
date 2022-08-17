@@ -836,13 +836,19 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		{
 			Signal entry = lstShortSignals.get(index);
 			Double price = entry.getInPrice().doubleValue();
-			FrmGrid.launch(entry.getSymbol().getNameLeft(), "SHORT", entry.getSymbol().priceToStr(price), isBotMode);
+			String sl = String.valueOf(entry.getStopLoss().abs());
+			String tp = String.valueOf(entry.getTakeProfit());
+			
+			FrmGrid.launch(entry.getSymbol().getNameLeft(), "SHORT", entry.getSymbol().priceToStr(price), sl, tp, isBotMode);
 		}
 		else
 		{
 			Signal entry = lstLongSignals.get(index);
 			Double price = entry.getInPrice().doubleValue();
-			FrmGrid.launch(entry.getSymbol().getNameLeft(), "LONG", entry.getSymbol().priceToStr(price), isBotMode);
+			String sl = String.valueOf(entry.getStopLoss().abs());
+			String tp = String.valueOf(entry.getTakeProfit());
+
+			FrmGrid.launch(entry.getSymbol().getNameLeft(), "LONG", entry.getSymbol().priceToStr(price), sl, tp, isBotMode);
 		}
 	}
 

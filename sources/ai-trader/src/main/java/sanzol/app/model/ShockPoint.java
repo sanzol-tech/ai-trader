@@ -62,15 +62,22 @@ public class ShockPoint
 
 		this.shortPrice = shortPrice;
 		this.longPrice = longPrice;
+
+		this.shortTProfit = PriceUtil.priceDistDown(shortPrice, longPrice, true);
+		this.longTProfit = PriceUtil.priceDistUp(longPrice, shortPrice, true);
+
+		this.shortSLoss = PriceUtil.priceDistDown(shortPrice, shShock2, true);
+		this.longTSLoss = PriceUtil.priceDistUp(longPrice, lgShock2, true);
 		
-		this.shortTProfit =  PriceUtil.priceDistDown(shortPrice, longPrice, true);
-		this.longTProfit =  PriceUtil.priceDistUp(longPrice, shortPrice, true);
-		
-		this.shortSLoss =  PriceUtil.priceDistDown(shortPrice, shShock2, true);
-		this.longTSLoss =  PriceUtil.priceDistUp(longPrice, lgShock2, true);
-		
-		this.shortRatio = shortTProfit.divide(shortSLoss, 1, RoundingMode.HALF_UP).abs();
-		this.longRatio = longTProfit.divide(longTSLoss, 1, RoundingMode.HALF_UP).abs();
+		if (shortSLoss.compareTo(BigDecimal.ZERO) == 0)
+			this.shortRatio = BigDecimal.ZERO;
+		else
+			this.shortRatio = shortTProfit.divide(shortSLoss, 1, RoundingMode.HALF_UP).abs();
+
+		if (longTSLoss.compareTo(BigDecimal.ZERO) == 0)
+			this.longRatio = BigDecimal.ZERO;
+		else
+			this.longRatio = longTProfit.divide(longTSLoss, 1, RoundingMode.HALF_UP).abs();
 
 		this.expirationTime = System.currentTimeMillis() + EXPIRATION_MILLIS;
 	}

@@ -34,7 +34,7 @@ public class OBookService
 {
 	private Symbol symbol;
 	private BigDecimal blockSize;
-	private double lastPrice;
+	private BigDecimal lastPrice;
 
 	private TreeMap<BigDecimal, BigDecimal> mapAsks = new TreeMap<BigDecimal, BigDecimal>();
 	private TreeMap<BigDecimal, BigDecimal> mapBids = new TreeMap<BigDecimal, BigDecimal>(Collections.reverseOrder());
@@ -95,28 +95,13 @@ public class OBookService
 		SyncRequestClient syncRequestClient = SyncRequestClient.create();
 		OrderBook obook = syncRequestClient.getOrderBook(symbol.getNameLeft() + Config.DEFAULT_SYMBOL_RIGHT, 1000);
 
-		//maxPrice = obook.getAsks().get(0).getPrice().doubleValue() * 10;
 		for (OrderBookEntry entry : obook.getAsks())
 		{
-			/*
-			if (entry.getPrice().doubleValue() >= maxPrice)
-			{
-				break;
-			}
-			*/
 			mapAsks.put(entry.getPrice(), entry.getQty());
 		}
 
-		//minPrice = Math.pow(10, -symbol.getTickSize()) * 10;
-		//minPrice = obook.getBids().get(0).getPrice().doubleValue() / 10;
 		for (OrderBookEntry entry : obook.getBids())
 		{
-			/*
-			if (entry.getPrice().doubleValue() <= minPrice)
-			{
-				break;
-			}
-			*/
 			mapBids.put(entry.getPrice(), entry.getQty());
 		}
 
@@ -175,44 +160,71 @@ public class OBookService
 
 	public OBookService calc(int blocksToAnalizeBB, int blocksToAnalizeWA)
 	{
-		lastPrice = PriceService.getLastPrice(symbol).doubleValue();
-		blockSize = getBlockSize(lastPrice);
+		lastPrice = PriceService.getLastPrice(symbol);
+		
+		blockSize = getBlockSize(lastPrice.doubleValue());
 
 		loadAsks();
 		loadBids();
-		asksGrp = loadAsksGrp(blockSize);
-		asksGrp10 = loadAsksGrp(blockSize.multiply(BigDecimal.TEN));
-		bidsGrp = loadBidsGrp(blockSize);
-		bidsGrp10 = loadBidsGrp(blockSize.multiply(BigDecimal.TEN));
 
 		//BB
 		{
-			double askPriceTo = lastPrice + (blockSize.doubleValue() * blocksToAnalizeBB);
-			double bidPriceTo = lastPrice - (blockSize.doubleValue() * blocksToAnalizeBB);
-			this.askBBlkPoint1 = getBestBlockAsks(asksGrp, lastPrice, askPriceTo);
-			this.bidBBlkPoint1 = getBestBlockBids(bidsGrp, lastPrice, bidPriceTo);
+			BigDecimal _blocksToAnalizeBB = BigDecimal.valueOf(blocksToAnalizeBB);
+			BigDecimal blockSize10 = blockSize.multiply(BigDecimal.TEN);
 
-			double askPriceFrom = askBBlkPoint1.doubleValue();
-			double bidPriceFrom = bidBBlkPoint1.doubleValue();
-			askPriceTo = askPriceFrom + (blockSize.doubleValue() * 10 * blocksToAnalizeBB);
-			bidPriceTo = bidPriceFrom - (blockSize.doubleValue() * 10 * blocksToAnalizeBB);
-			this.askBBlkPoint2 = getBestBlockAsks(asksGrp10, askPriceFrom, askPriceTo);
-			this.bidBBlkPoint2 = getBestBlockBids(bidsGrp10, bidPriceFrom, bidPriceTo);
+			BigDecimal askPriceFrom = roundNearest(lastPrice, blockSize);
+			BigDecimal bidPriceFrom = askPriceFrom.add(blockSize);
+			BigDecimal askPriceFrom10 = roundNearest(lastPrice, blockSize10);
+			BigDecimal bidPriceFrom10 = askPriceFrom10.add(blockSize10);
+
+			BigDecimal askPriceTo = askPriceFrom.add(blockSize.multiply(_blocksToAnalizeBB));
+			BigDecimal bidPriceTo = askPriceFrom.subtract(blockSize.multiply(_blocksToAnalizeBB));
+			BigDecimal askPriceTo10 = askPriceFrom.add(blockSize10.multiply(_blocksToAnalizeBB));
+			BigDecimal bidPriceTo10 = askPriceFrom.subtract(blockSize10.multiply(_blocksToAnalizeBB));
+
+			asksGrp = loadAsksGrp(blockSize, askPriceFrom);
+			bidsGrp = loadBidsGrp(blockSize, bidPriceFrom);
+			asksGrp10 = loadAsksGrp(blockSize10, askPriceFrom10);
+			bidsGrp10 = loadBidsGrp(blockSize10, bidPriceFrom10);
+
+			this.askBBlkPoint1 = getBestBlockAsks(asksGrp, askPriceFrom, askPriceTo);
+			this.bidBBlkPoint1 = getBestBlockBids(bidsGrp, bidPriceFrom, bidPriceTo);
+			this.askBBlkPoint2 = getBestBlockAsks(asksGrp10, askPriceFrom10, askPriceTo10);
+			this.bidBBlkPoint2 = getBestBlockBids(bidsGrp10, bidPriceFrom10, bidPriceTo10);
 		}
 
 		//WA
 		{
-			double askPriceTo = lastPrice + (blockSize.doubleValue() * blocksToAnalizeWA);
-			double bidPriceTo = lastPrice - (blockSize.doubleValue() * blocksToAnalizeWA);
+			/*
+			BigDecimal _blocksToAnalizeWA = BigDecimal.valueOf(blocksToAnalizeWA);
+			BigDecimal blockSize10 = blockSize.multiply(BigDecimal.TEN);
+
+			BigDecimal askPriceFrom = lastPrice;
+			BigDecimal bidPriceFrom = lastPrice;
+			BigDecimal askPriceTo = askPriceFrom.add(blockSize.multiply(_blocksToAnalizeWA));
+			BigDecimal bidPriceTo = askPriceFrom.subtract(blockSize.multiply(_blocksToAnalizeWA));
+
+			this.askWAvgPoint1 = weightedAverageAsks(askPriceFrom, askPriceTo);
+			this.bidWAvgPoint1 = weightedAverageBids(bidPriceFrom, bidPriceTo);
+
+			BigDecimal askPriceFrom10 = lastPrice;
+			BigDecimal bidPriceFrom10 = lastPrice;
+			BigDecimal askPriceTo10 = askPriceFrom.add(blockSize10.multiply(_blocksToAnalizeWA));
+			BigDecimal bidPriceTo10 = askPriceFrom.subtract(blockSize10.multiply(_blocksToAnalizeWA));
+
+			this.askWAvgPoint2 = weightedAverageAsks(askPriceFrom10, askPriceTo10);
+			this.bidWAvgPoint2 = weightedAverageBids(bidPriceFrom10, bidPriceTo10);
+			*/
+
+			BigDecimal askPriceTo = lastPrice.multiply(BigDecimal.valueOf(1.03));
+			BigDecimal bidPriceTo = lastPrice.multiply(BigDecimal.valueOf(0.97));
+			BigDecimal askPriceTo10 = lastPrice.multiply(BigDecimal.valueOf(1.3));
+			BigDecimal bidPriceTo10 = lastPrice.multiply(BigDecimal.valueOf(0.7));
+			
 			this.askWAvgPoint1 = weightedAverageAsks(lastPrice, askPriceTo);
 			this.bidWAvgPoint1 = weightedAverageBids(lastPrice, bidPriceTo);
-
-			double askPriceFrom = askWAvgPoint1.doubleValue();
-			double bidPriceFrom = bidWAvgPoint1.doubleValue();
-			askPriceTo = lastPrice + (blockSize.doubleValue() * blocksToAnalizeWA * 2);
-			bidPriceTo = lastPrice - (blockSize.doubleValue() * blocksToAnalizeWA * 2);
-			this.askWAvgPoint2 = weightedAverageAsks(askPriceFrom, askPriceTo);
-			this.bidWAvgPoint2 = weightedAverageBids(bidPriceFrom, bidPriceTo);
+			this.askWAvgPoint2 = weightedAverageAsks(lastPrice, askPriceTo10);
+			this.bidWAvgPoint2 = weightedAverageBids(lastPrice, bidPriceTo10);
 		}
 
 		fixShocks();
@@ -233,7 +245,6 @@ public class OBookService
 		else
 			bidFixedPoint1 = bidBBlkPoint1;
 		
-
 		if (askWAvgPoint2 != null && askWAvgPoint2.doubleValue() > askBBlkPoint2.doubleValue())
 			askFixedPoint2 = askWAvgPoint2;
 		else
@@ -319,7 +330,7 @@ public class OBookService
 	{
 		return bidFixedPoint2;
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	public BigDecimal getTotalAsksQty()
@@ -348,18 +359,18 @@ public class OBookService
 		return total;
 	}
 
-	public BigDecimal getBestBlockAsks(List<OrderBookElement> asksGrp, double priceA, double priceB)
+	public BigDecimal getBestBlockAsks(List<OrderBookElement> asksGrp, BigDecimal priceA, BigDecimal priceB)
 	{
 		if (asksGrp != null && !asksGrp.isEmpty())
 		{
 			OrderBookElement eMax = null;
 			for (OrderBookElement e : asksGrp)
 			{
-				if (e.getPrice().doubleValue() <= priceA)
+				if (e.getPrice().doubleValue() <= priceA.doubleValue())
 				{
 					continue;
 				}
-				if (e.getPrice().doubleValue() > priceB)
+				if (e.getPrice().doubleValue() > priceB.doubleValue())
 				{
 					break;
 				}
@@ -374,18 +385,18 @@ public class OBookService
 		return null;
 	}
 
-	public BigDecimal getBestBlockBids(List<OrderBookElement> bidsGrp, double priceA, double priceB)
+	public BigDecimal getBestBlockBids(List<OrderBookElement> bidsGrp, BigDecimal priceA, BigDecimal priceB)
 	{
 		if (bidsGrp != null && !bidsGrp.isEmpty())
 		{
 			OrderBookElement eMax = null;
 			for (OrderBookElement e : bidsGrp)
 			{
-				if (e.getPrice().doubleValue() >= priceA)
+				if (e.getPrice().doubleValue() >= priceA.doubleValue())
 				{
 					continue;
 				}
-				if (e.getPrice().doubleValue() < priceB)
+				if (e.getPrice().doubleValue() < priceB.doubleValue())
 				{
 					break;
 				}
@@ -402,18 +413,18 @@ public class OBookService
 
 	// ------------------------------------------------------------------------
 
-	public BigDecimal weightedAverageAsks(double priceA, double priceB)
+	public BigDecimal weightedAverageAsks(BigDecimal priceA, BigDecimal priceB)
 	{
 		BigDecimal sumProd = BigDecimal.ZERO;
 		BigDecimal sumQty = BigDecimal.ZERO;
 
 		for (OrderBookElement entry : asks)
 		{
-			if (entry.getPrice().doubleValue() <= priceA)
+			if (entry.getPrice().doubleValue() <= priceA.doubleValue())
 			{
 				continue;
 			}
-			if (entry.getPrice().doubleValue() > priceB)
+			if (entry.getPrice().doubleValue() > priceB.doubleValue())
 			{
 				break;
 			}
@@ -424,18 +435,18 @@ public class OBookService
 		return sumProd.divide(sumQty, RoundingMode.HALF_UP);
 	}
 
-	public BigDecimal weightedAverageBids(double priceA, double priceB)
+	public BigDecimal weightedAverageBids(BigDecimal priceA, BigDecimal priceB)
 	{
 		BigDecimal sumProd = BigDecimal.ZERO;
 		BigDecimal sumQty = BigDecimal.ZERO;
 
 		for (OrderBookElement entry : bids)
 		{
-			if (entry.getPrice().doubleValue() >= priceA)
+			if (entry.getPrice().doubleValue() >= priceA.doubleValue())
 			{
 				continue;
 			}
-			if (entry.getPrice().doubleValue() < priceB)
+			if (entry.getPrice().doubleValue() < priceB.doubleValue())
 			{
 				break;
 			}
@@ -493,8 +504,8 @@ public class OBookService
 			}
 		}
 	}
-
-	private ArrayList<OrderBookElement> loadAsksGrp(BigDecimal blockSize)
+	
+	private ArrayList<OrderBookElement> loadAsksGrp(BigDecimal blockSize, BigDecimal from)
 	{
 		ArrayList<OrderBookElement> asksGrp = new ArrayList<OrderBookElement>();
 
@@ -503,14 +514,12 @@ public class OBookService
 			return asksGrp;
 		}
 
-		//BigDecimal blockSize = getBlockSize();
-		BigDecimal price = asks.get(0).getPrice();
-		BigDecimal priceBlock = price.add(blockSize);
-		BigDecimal qty = asks.get(0).getQty();
+		BigDecimal priceBlock = from.add(blockSize);
+		BigDecimal qty = BigDecimal.ZERO; //asks.get(0).getQty();
 
 		for (int i = 1; i < asks.size(); i++)
 		{
-			if (asks.get(i).getPrice().doubleValue() < priceBlock.doubleValue())
+			if (asks.get(i).getPrice().doubleValue() <= priceBlock.doubleValue())
 			{
 				qty = qty.add(asks.get(i).getQty());
 			}
@@ -539,7 +548,7 @@ public class OBookService
 		return asksGrp; 
 	}
 
-	private ArrayList<OrderBookElement> loadBidsGrp(BigDecimal blockSize)
+	private ArrayList<OrderBookElement> loadBidsGrp(BigDecimal blockSize, BigDecimal from)
 	{
 		ArrayList<OrderBookElement> bidsGrp = new ArrayList<OrderBookElement>();
 
@@ -548,14 +557,12 @@ public class OBookService
 			return bidsGrp;
 		}
 
-		//BigDecimal blockSize = getBlockSize();
-		BigDecimal price = bids.get(0).getPrice();
-		BigDecimal priceBlock = price.subtract(blockSize);
-		BigDecimal qty = bids.get(0).getQty();
+		BigDecimal priceBlock = from.subtract(blockSize);
+		BigDecimal qty = BigDecimal.ZERO; //bids.get(0).getQty();
 
 		for (int i = 1; i < bids.size(); i++)
 		{
-			if (bids.get(i).getPrice().doubleValue() > priceBlock.doubleValue())
+			if (bids.get(i).getPrice().doubleValue() >= priceBlock.doubleValue())
 			{
 				qty = qty.add(bids.get(i).getQty());
 			}
@@ -584,7 +591,7 @@ public class OBookService
 		return bidsGrp;
 	}
 
-	private BigDecimal getBlockSize(double price)
+	private static BigDecimal getBlockSize(double price)
 	{
 		if (price < 0.01)
 			return BigDecimal.valueOf(0.00001);
@@ -604,6 +611,30 @@ public class OBookService
 			return BigDecimal.valueOf(100);
 	}
 
+	private static BigDecimal roundNearest(BigDecimal price, BigDecimal blockSize)
+	{
+		if (BigDecimal.valueOf(0.00001).compareTo(blockSize) == 0)
+			return price.setScale(5, RoundingMode.DOWN);
+		else if (BigDecimal.valueOf(0.0001).compareTo(blockSize) == 0)
+			return price.setScale(4, RoundingMode.DOWN);
+		else if (BigDecimal.valueOf(0.001).compareTo(blockSize) == 0)
+			return price.setScale(3, RoundingMode.DOWN);
+		else if (BigDecimal.valueOf(0.01).compareTo(blockSize) == 0)
+			return price.setScale(2, RoundingMode.DOWN);
+		else if (BigDecimal.valueOf(0.1).compareTo(blockSize) == 0)
+			return price.setScale(1, RoundingMode.DOWN);
+		else if (BigDecimal.valueOf(1).compareTo(blockSize) == 0)
+			return price.setScale(0, RoundingMode.DOWN);
+		else if (BigDecimal.valueOf(10).compareTo(blockSize) == 0)
+			return price.divide(BigDecimal.TEN, 0, RoundingMode.DOWN).multiply(BigDecimal.TEN);
+		else if (BigDecimal.valueOf(100).compareTo(blockSize) == 0)
+			return price.divide(BigDecimal.valueOf(100), 0, RoundingMode.DOWN).multiply(BigDecimal.valueOf(100));
+		else if (BigDecimal.valueOf(1000).compareTo(blockSize) == 0)
+			return price.divide(BigDecimal.valueOf(1000), 0, RoundingMode.DOWN).multiply(BigDecimal.valueOf(1000));
+		else
+			throw new IllegalArgumentException("Invalid blockSize");
+	}
+	
 	// ------------------------------------------------------------------------
 
 	public List<OrderBookElement> searchSuperAskBlocks()
@@ -613,7 +644,7 @@ public class OBookService
 
 	public List<OrderBookElement> searchSuperAskBlocks(int blocksToAnalize)
 	{
-		double maxPrice_ = lastPrice + (blockSize.doubleValue() * blocksToAnalize);
+		double maxPrice_ = lastPrice.doubleValue() + (blockSize.doubleValue() * blocksToAnalize);
 		
 		List<OrderBookElement> list = new ArrayList<OrderBookElement>();
 
@@ -659,7 +690,7 @@ public class OBookService
 
 	public List<OrderBookElement> searchSuperBidBlocks(int blocksToAnalize)
 	{
-		double minPrice_ = lastPrice - (blockSize.doubleValue() * blocksToAnalize);
+		double minPrice_ = lastPrice.doubleValue() - (blockSize.doubleValue() * blocksToAnalize);
 		
 		List<OrderBookElement> list = new ArrayList<OrderBookElement>();
 
