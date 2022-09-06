@@ -23,8 +23,8 @@ import javax.swing.table.DefaultTableModel;
 import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
-import sanzol.app.listener.LogListener;
-import sanzol.app.task.LogService;
+import sanzol.app.service.LogListener;
+import sanzol.app.service.LogService;
 import sanzol.lib.util.ExceptionUtils;
 
 public class FrmLogs extends JFrame implements LogListener

@@ -15,6 +15,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 public class Styles
 {
 	public static ImageIcon IMAGE_SEARCH = new FlatSVGIcon(Styles.class.getResource("/resources/search.svg"));
+	public static ImageIcon IMAGE_REFRESH = new FlatSVGIcon(Styles.class.getResource("/resources/refresh.svg"));
 	public static ImageIcon IMAGE_EXECUTE = new FlatSVGIcon(Styles.class.getResource("/resources/execute.svg"));
 	public static ImageIcon IMAGE_EXECUTE_LIGHT = new FlatSVGIcon(Styles.class.getResource("/resources/executeLight.svg"));
 	public static ImageIcon IMAGE_MOON  = new FlatSVGIcon(Styles.class.getResource("/resources/moon.svg"));

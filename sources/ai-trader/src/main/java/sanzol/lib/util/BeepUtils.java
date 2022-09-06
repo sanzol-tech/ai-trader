@@ -5,7 +5,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-import sanzol.app.task.LogService;
+import sanzol.app.service.LogService;
 
 public class BeepUtils
 {

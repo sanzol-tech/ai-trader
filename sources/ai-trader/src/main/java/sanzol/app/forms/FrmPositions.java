@@ -22,9 +22,9 @@ import javax.swing.border.EmptyBorder;
 import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
-import sanzol.app.listener.PositionListener;
-import sanzol.app.task.LogService;
-import sanzol.app.task.PositionService;
+import sanzol.app.service.LogService;
+import sanzol.app.service.PositionListener;
+import sanzol.app.service.PositionService;
 import sanzol.lib.util.ExceptionUtils;
 
 public class FrmPositions extends JFrame implements PositionListener

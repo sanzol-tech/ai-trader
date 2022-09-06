@@ -1,16 +1,18 @@
 package sanzol.app.model;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.binance.client.model.event.SymbolTickerEvent;
-
+import api.client.futures.async.PriceService;
+import api.client.futures.async.model.SymbolTickerEvent;
 import sanzol.app.config.Config;
 import sanzol.app.service.Symbol;
-import sanzol.app.task.PriceService;
 import sanzol.app.util.PriceUtil;
 
 public class SymbolInfo
@@ -40,15 +42,15 @@ public class SymbolInfo
 
 	private static final BigDecimal TWO = BigDecimal.valueOf(2);
 
-	public SymbolInfo(SymbolTickerEvent symbolTickerEvent)
+	public SymbolInfo(SymbolTickerEvent symbolTickerEvent) throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
 		symbol = Symbol.getInstance(symbolTickerEvent.getSymbol());
 		lastPrice = symbolTickerEvent.getLastPrice();
 
-		usdVolume = symbolTickerEvent.getTotalTradedQuoteAssetVolume();
+		usdVolume = symbolTickerEvent.getQuoteVolume();
 		priceChangePercent = symbolTickerEvent.getPriceChangePercent();
-		high = symbolTickerEvent.getHigh();
-		low = symbolTickerEvent.getLow();
+		high = symbolTickerEvent.getHighPrice();
+		low = symbolTickerEvent.getLowPrice();
 		avgPrice = symbolTickerEvent.getWeightedAvgPrice();
 
 		avgHigh = (avgPrice.add(high)).divide(TWO, symbol.getTickSize(), RoundingMode.HALF_UP);
@@ -79,7 +81,7 @@ public class SymbolInfo
 
 	// ------------------------------------------------------------------------
 
-	public static List<String> getBestSymbols()
+	public static List<String> getBestSymbols() throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
 		List<String> lstSymbols = new ArrayList<String>();
 

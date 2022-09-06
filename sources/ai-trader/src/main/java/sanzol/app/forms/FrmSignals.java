@@ -31,12 +31,12 @@ import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
-import sanzol.app.listener.SignalListener;
 import sanzol.app.model.Price;
 import sanzol.app.model.Signal;
+import sanzol.app.service.LogService;
+import sanzol.app.service.SignalListener;
+import sanzol.app.service.SignalService;
 import sanzol.app.service.Symbol;
-import sanzol.app.task.LogService;
-import sanzol.app.task.SignalService;
 import sanzol.app.util.PriceUtil;
 import sanzol.lib.util.ExceptionUtils;
 

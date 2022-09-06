@@ -25,15 +25,15 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import api.client.futures.async.PriceListener;
+import api.client.futures.async.PriceService;
 import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
-import sanzol.app.listener.PriceListener;
 import sanzol.app.model.SymbolInfo;
+import sanzol.app.service.LogService;
 import sanzol.app.service.Symbol;
-import sanzol.app.task.LogService;
-import sanzol.app.task.PriceService;
 import sanzol.app.util.PriceUtil;
 import sanzol.lib.util.ExceptionUtils;
 
@@ -277,7 +277,7 @@ public class FrmSymbols extends JFrame implements PriceListener
     				PriceUtil.cashFormat(entry.getUsdVolume()),
 					!entry.isLowVolume() ? "" : "< " + PriceUtil.cashFormat(Config.getBetterSymbolsMinVolume()),
     				entry.getLastPrice(),
-					entry.isBestShort() ? "SHORT" : entry.isBestLong() ? "LONG" : ""
+    				entry.isBestShort() ? "WAVG HIGH" : entry.isBestLong() ? "WAVG LOW" : ""
         		};
 
 			tableModel.addRow(row);

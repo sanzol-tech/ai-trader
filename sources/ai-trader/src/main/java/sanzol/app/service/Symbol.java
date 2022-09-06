@@ -1,6 +1,9 @@
 package sanzol.app.service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -13,14 +16,13 @@ import java.util.TreeSet;
 import org.apache.commons.lang3.StringUtils;
 import org.decimal4j.util.DoubleRounder;
 
-import com.binance.client.SyncRequestClient;
-import com.binance.client.model.event.SymbolTickerEvent;
-import com.binance.client.model.market.ExchangeInfoEntry;
-import com.binance.client.model.market.ExchangeInformation;
-
+import api.client.futures.async.PriceService;
+import api.client.futures.async.model.SymbolTickerEvent;
+import api.client.futures.sync.SyncFuturesClient;
+import api.client.futures.sync.model.ExchangeInfo;
+import api.client.futures.sync.model.ExchangeInfoEntry;
 import sanzol.app.config.Config;
 import sanzol.app.model.SymbolInfo;
-import sanzol.app.task.PriceService;
 import sanzol.app.util.PriceUtil;
 
 public class Symbol
@@ -28,6 +30,7 @@ public class Symbol
 	private String nameLeft;
 	private String pricePattern;
 	private String quantityPattern;
+	private BigDecimal tickSizeEI;
 	private int tickSize;
 	private int quantityPrecision;
 	private BigDecimal minQty;
@@ -62,18 +65,17 @@ public class Symbol
 	private static List<ExchangeInfoEntry> lstExInfEntries = null;
 	private static long exInfTime;
 
-	private static void getExInfEntries()
+	private static void getExInfEntries() throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
 		if (lstExInfEntries == null || exInfTime + 1000 * 60 * 30 < System.currentTimeMillis())
 		{
-			SyncRequestClient syncRequestClient = SyncRequestClient.create();
-			ExchangeInformation exInf = syncRequestClient.getExchangeInformation();
-			lstExInfEntries = exInf.getSymbols();
+			ExchangeInfo exchangeInfo = SyncFuturesClient.getExchangeInformation();
+			lstExInfEntries = exchangeInfo.getSymbols();
 			exInfTime = System.currentTimeMillis();
 		}
 	}
 
-	public static List<String> getAll()
+	public static List<String> getAll() throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
 		TreeSet<String> list = new TreeSet<String>();
 		getExInfEntries();
@@ -90,7 +92,7 @@ public class Symbol
 
 	// ------------------------------------------------------------------------
 
-	public static Symbol getInstance(String symbolName)
+	public static Symbol getInstance(String symbolName) throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
 		if (!symbolName.endsWith(Config.DEFAULT_SYMBOL_RIGHT))
 		{
@@ -106,7 +108,9 @@ public class Symbol
 			{
 				ExchangeInfoEntry eInfoEntry = entry;
 
-				String ts = eInfoEntry.getFilters().get(0).get(3).get("tickSize");
+				//String ts = eInfoEntry.getFilters().get(0).get(3).get("tickSize");
+				String ts = eInfoEntry.getFilters().get(0).get("tickSize");
+				symbol.tickSizeEI = new BigDecimal(ts);
 				symbol.tickSize = (int) Math.log10(Double.valueOf(ts)) * -1;
 				symbol.pricePattern = "#0";
 				if (symbol.tickSize > 0)
@@ -121,7 +125,8 @@ public class Symbol
 					symbol.quantityPattern += "." + StringUtils.repeat("0", symbol.quantityPrecision);
 				}
 
-				String mq = eInfoEntry.getFilters().get(1).get(3).get("minQty");
+				//String mq = eInfoEntry.getFilters().get(1).get(3).get("minQty");
+				String mq = eInfoEntry.getFilters().get(1).get("minQty");
 				symbol.minQty = new BigDecimal(mq);
 
 				return symbol;
@@ -162,12 +167,20 @@ public class Symbol
 		return DoubleRounder.round(coins, quantityPrecision);
 	}
 	
-	public double addFewTicks(double price, int ticks)
+	public BigDecimal addTicks(BigDecimal price, int ticks)
+	{
+		return price.add( tickSizeEI.multiply(BigDecimal.valueOf(ticks)) );
+	}
+	public double addTicks(double price, int ticks)
 	{
 		return price + Math.pow(10, -tickSize) * ticks;
 	}
 
-	public double subFewTicks(double price, int ticks)
+	public BigDecimal subTicks(BigDecimal price, int ticks)
+	{
+		return price.subtract( tickSizeEI.multiply(BigDecimal.valueOf(ticks)) );
+	}
+	public double subTicks(double price, int ticks)
 	{
 		return price - Math.pow(10, -tickSize) * ticks;
 	}
@@ -184,7 +197,7 @@ public class Symbol
 
 	// ------------------------------------------------------------------------
 
-	public static List<SymbolInfo> getLstSymbolsInfo(boolean onlyFavorites, boolean onlyBetters)
+	public static List<SymbolInfo> getLstSymbolsInfo(boolean onlyFavorites, boolean onlyBetters) throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
 		List<String> lstFavorites = Config.getLstFavSymbols();
 
@@ -216,7 +229,12 @@ public class Symbol
 		return lstSymbolsInfo;
 	}
 
-	public static List<String> getLstSymbolsMini(boolean onlyFavorites, boolean onlyBetters)
+	public static List<SymbolInfo> getLstSymbolsInfo(boolean onlyFavorites, boolean onlyBetters, int limit) throws KeyManagementException, NoSuchAlgorithmException, IOException
+	{
+		return getLstSymbolsInfo(onlyFavorites, onlyBetters).subList(0, limit - 1);
+	}
+
+	public static List<String> getLstSymbolsMini(boolean onlyFavorites, boolean onlyBetters) throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
 		List<String> list = new ArrayList<String>();
 		list.add(String.format("%-10s %11s %9s", "SYMBOL", "CHANGE", "VOLUME"));
@@ -231,7 +249,7 @@ public class Symbol
 		return list;
 	}
 
-	public static List<String> getLstSymbolNames(boolean onlyFavorites, boolean onlyBetters)
+	public static List<String> getLstSymbolNames(boolean onlyFavorites, boolean onlyBetters) throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
 		List<String> list = new ArrayList<String>();
 
@@ -254,7 +272,7 @@ public class Symbol
 
 	// ------------------------------------------------------------------------
 	
-	public static void main(String[] args)
+	public static void main(String[] args) throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
 		for(String symbol : getAll()) 
 		{

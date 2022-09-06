@@ -31,10 +31,10 @@ import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
-import sanzol.app.listener.BotListener;
-import sanzol.app.task.BalanceService;
-import sanzol.app.task.BotService;
-import sanzol.app.task.LogService;
+import sanzol.app.service.BalanceService;
+import sanzol.app.service.BotListener;
+import sanzol.app.service.BotService;
+import sanzol.app.service.LogService;
 import sanzol.app.util.Convert;
 import sanzol.lib.util.ExceptionUtils;
 

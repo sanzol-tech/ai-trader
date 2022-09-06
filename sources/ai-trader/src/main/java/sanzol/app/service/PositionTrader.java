@@ -1,28 +1,27 @@
 package sanzol.app.service;
 
+import java.security.InvalidKeyException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.binance.client.SyncRequestClient;
-import com.binance.client.model.enums.NewOrderRespType;
-import com.binance.client.model.enums.OrderSide;
-import com.binance.client.model.enums.OrderType;
-import com.binance.client.model.enums.PositionSide;
-import com.binance.client.model.enums.TimeInForce;
-import com.binance.client.model.enums.WorkingType;
-import com.binance.client.model.trade.AccountBalance;
-import com.binance.client.model.trade.Order;
-
+import api.client.enums.NewOrderRespType;
+import api.client.enums.OrderSide;
+import api.client.enums.OrderType;
+import api.client.enums.PositionSide;
+import api.client.enums.TimeInForce;
+import api.client.enums.WorkingType;
+import api.client.futures.async.PriceService;
+import api.client.futures.sync.SyncFuturesClient;
+import api.client.futures.sync.model.AccountBalance;
+import api.client.futures.sync.model.Order;
 import sanzol.app.config.Config;
-import sanzol.app.config.PrivateConfig;
 import sanzol.app.model.Position;
 import sanzol.app.model.PositionOrder;
 import sanzol.app.model.PositionOrder.State;
 import sanzol.app.model.PositionOrder.Type;
 import sanzol.app.model.PriceQty;
-import sanzol.app.task.BalanceService;
-import sanzol.app.task.BotService;
-import sanzol.app.task.PriceService;
 
 public class PositionTrader
 {
@@ -31,9 +30,6 @@ public class PositionTrader
 	public enum PostStyle { ALL, FIRST, OTHERS }
 
 	private Position position;
-
-	// API
-	private SyncRequestClient syncRequestClient = SyncRequestClient.create(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY);
 
 	public Position getPosition()
 	{
@@ -271,7 +267,7 @@ public class PositionTrader
 			{
 				if (position.isMarkPrice())
 				{
-					if (markPrice < getSymbol().subFewTicks(position.getInPrice(), 20))
+					if (markPrice < getSymbol().subTicks(position.getInPrice(), 20))
 					{
 						return "ERR: mark Price < in Price";
 					}
@@ -289,7 +285,7 @@ public class PositionTrader
 			{
 				if (position.isMarkPrice())
 				{
-					if (markPrice > getSymbol().addFewTicks(position.getInPrice(), 20))
+					if (markPrice > getSymbol().addTicks(position.getInPrice(), 20))
 					{
 						return "ERR: mark Price > in Price";
 					}
@@ -341,7 +337,7 @@ public class PositionTrader
 		return null;
 	}
 
-	private Order postOrder(PositionOrder pOrder)
+	private Order postOrder(PositionOrder pOrder) throws KeyManagementException, InvalidKeyException, NoSuchAlgorithmException
 	{
 		Order orderResult = null;
 
@@ -368,27 +364,27 @@ public class PositionTrader
 		{
 			orderResult = postOrder(OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC, 
 									getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),
-									"true", null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
+									true, null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
 		else if (pOrder.getType() == Type.TP_SELL)
 		{
 			orderResult = postOrder(OrderSide.SELL, OrderType.LIMIT, TimeInForce.GTC,
 									getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),
-									"true", null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
+									true, null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
 		else if (pOrder.getType() == Type.SL_BUY)
 		{
 			double stopPrice = pOrder.getPrice();
 			orderResult = postOrder(OrderSide.BUY, OrderType.STOP_MARKET, TimeInForce.GTE_GTC,
 									null, null,
-									null, null, getSymbol().priceToStr(stopPrice), WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, "true");
+									null, null, getSymbol().priceToStr(stopPrice), WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, true);
 		}
 		else if (pOrder.getType() == Type.SL_SELL)
 		{
 			double stopPrice = pOrder.getPrice();
 			orderResult = postOrder(OrderSide.SELL, OrderType.STOP_MARKET, TimeInForce.GTE_GTC,
 									null, null,
-									null, null, getSymbol().priceToStr(stopPrice), WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, "true");
+									null, null, getSymbol().priceToStr(stopPrice), WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, true);
 		}
 
 		if (orderResult != null)
@@ -401,10 +397,10 @@ public class PositionTrader
 	}
 
 	private Order postOrder(OrderSide side, OrderType orderType, TimeInForce timeInForce, 
-							String quantity, String price, String reduceOnly, String newClientOrderId,
-							String stopPrice, WorkingType workingType, NewOrderRespType newOrderRespType, String closePosition)
+							String quantity, String price, Boolean reduceOnly, String newClientOrderId,
+							String stopPrice, WorkingType workingType, NewOrderRespType newOrderRespType, Boolean closePosition) throws KeyManagementException, InvalidKeyException, NoSuchAlgorithmException
 	{
-		return syncRequestClient.postOrder(position.getSymbol(), side, PositionSide.BOTH, orderType, timeInForce, 
+		return SyncFuturesClient.postOrder(position.getSymbol(), side, PositionSide.BOTH, orderType, timeInForce, 
 										   quantity, price, reduceOnly, newClientOrderId, stopPrice, workingType, newOrderRespType, closePosition);
 	}
 

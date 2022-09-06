@@ -8,8 +8,7 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.binance.client.model.enums.PositionSide;
-
+import api.client.enums.PositionSide;
 import sanzol.app.config.CharConstants;
 import sanzol.app.model.PositionOrder.State;
 import sanzol.app.model.PositionOrder.Type;

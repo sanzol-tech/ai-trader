@@ -6,12 +6,15 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.file.StandardOpenOption;
 
+import api.client.futures.async.LastCandlestickService;
+import api.client.futures.async.PriceService;
 import sanzol.app.forms.FrmConfig;
 import sanzol.app.forms.FrmMain;
-import sanzol.app.task.BalanceService;
-import sanzol.app.task.LogService;
-import sanzol.app.task.PositionService;
-import sanzol.app.task.SignalService;
+import sanzol.app.service.BalanceService;
+import sanzol.app.service.DepthCache;
+import sanzol.app.service.LogService;
+import sanzol.app.service.PositionService;
+import sanzol.app.service.SignalService;
 
 public final class Application
 {
@@ -26,8 +29,6 @@ public final class Application
 		try
 		{
 			Config.load();
-			WsClient.initialize();
-			SignalService.start();
 
 			if (keyLoadedOK)
 			{
@@ -39,10 +40,31 @@ public final class Application
 		{
 			LogService.error(e);
 		}
+		
+		Thread thread = new Thread(new InitializeTask(), "initializeTask");
+		thread.start();
 
 		initializeUI();
 	}
 
+	public static class InitializeTask implements Runnable
+	{
+		@Override
+		public void run()
+		{
+			try
+			{
+				PriceService.start();
+				LastCandlestickService.start("btcusdt");
+				DepthCache.start();
+				SignalService.start();
+			}
+			catch (Exception e)
+			{
+				LogService.error(e);
+			}
+		}
+	}
 	private static void verifyFolders()
 	{
 		try

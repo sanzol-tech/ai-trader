@@ -12,7 +12,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
@@ -27,34 +30,35 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
+
+import api.client.futures.async.LastCandlestickListener;
+import api.client.futures.async.LastCandlestickService;
+import api.client.futures.async.PriceListener;
+import api.client.futures.async.PriceService;
+import api.client.futures.async.model.SymbolTickerEvent;
+import api.client.futures.sync.model.AccountBalance;
+import api.client.futures.sync.model.PositionRisk;
+
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
-
-import com.binance.client.model.event.SymbolTickerEvent;
-import com.binance.client.model.trade.AccountBalance;
-import com.binance.client.model.trade.PositionRisk;
 
 import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
-import sanzol.app.listener.BalanceListener;
-import sanzol.app.listener.BtcChangeListener;
-import sanzol.app.listener.PositionListener;
-import sanzol.app.listener.PriceListener;
-import sanzol.app.listener.SignalListener;
 import sanzol.app.model.Signal;
+import sanzol.app.service.BalanceListener;
+import sanzol.app.service.BalanceService;
+import sanzol.app.service.PositionListener;
+import sanzol.app.service.PositionService;
+import sanzol.app.service.SignalListener;
+import sanzol.app.service.SignalService;
 import sanzol.app.service.Symbol;
-import sanzol.app.task.BalanceService;
-import sanzol.app.task.CandlestickCache;
-import sanzol.app.task.PositionService;
-import sanzol.app.task.PriceService;
-import sanzol.app.task.SignalService;
 import sanzol.app.util.Convert;
 import sanzol.lib.util.ExceptionUtils;
 
-public class FrmMain extends JFrame implements PriceListener, SignalListener, BalanceListener, BtcChangeListener, PositionListener
+public class FrmMain extends JFrame implements PriceListener, SignalListener, BalanceListener, LastCandlestickListener, PositionListener
 {
 	private static final long serialVersionUID = 1L;
 
@@ -112,7 +116,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		PriceService.attachRefreshObserver(this);
 
 		onBtcChangeUpdate();
-		CandlestickCache.attachRefreshObserver(this);
+		LastCandlestickService.attachRefreshObserver(this);
 		
 		onSignalUpdate();
 		SignalService.attachRefreshObserver(this);
@@ -533,7 +537,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 				PriceService.deattachRefreshObserver(thisFrm);
 				SignalService.deattachRefreshObserver(thisFrm);
 				BalanceService.deattachRefreshObserver(thisFrm);
-				CandlestickCache.deattachRefreshObserver(thisFrm);
+				LastCandlestickService.deattachRefreshObserver(thisFrm);
 				PositionService.deattachRefreshObserver(thisFrm);
 			}
 		});
@@ -724,7 +728,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	{
 		try
 		{
-			double percent = CandlestickCache.getBtcChange30m();
+			double percent = LastCandlestickService.getCoinChangePercent();
 			txtChange30m.setText(percent + " %");
 			txtChange30m.setForeground(percent > 0 ? Styles.COLOR_TEXT_LONG : Styles.COLOR_TEXT_SHORT);
 			txtBtcPrice.setForeground(percent > 0 ? Styles.COLOR_TEXT_LONG : Styles.COLOR_TEXT_SHORT);
@@ -735,7 +739,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		}
 	}
 
-	public void btcInfo()
+	public void btcInfo() throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
 		final String BTC_PAIR_SYMBOL = "BTC" + Config.DEFAULT_SYMBOL_RIGHT;
 		Symbol coin = Symbol.getInstance(BTC_PAIR_SYMBOL);

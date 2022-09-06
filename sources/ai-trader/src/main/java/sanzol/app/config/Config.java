@@ -30,8 +30,8 @@ public class Config
 	private static final double BETTER_SYMBOLS_MAX_CHANGE = 8;
 
 	// Order book
-	private static final int BLOCKS_TO_ANALYZE_BB = 8;
-	private static final int BLOCKS_TO_ANALYZE_WA = 8;
+	private static final int BLOCKS_TO_ANALYZE_BB = 6;
+	private static final double BLOCKS_TO_ANALYZE_WA = 0.08;
 
 	// Grid
 	private static final int ITERATIONS = 0;
@@ -60,7 +60,7 @@ public class Config
 	private static Double betterSymbolsMaxChange;
 
 	private static Integer blocksToAnalizeBB;
-	private static Integer blocksToAnalizeWA;
+	private static Double distToAnalizeWA;
 
 	private static Integer iterations;
 	private static String gridType;
@@ -100,9 +100,9 @@ public class Config
 		return blocksToAnalizeBB != null ? blocksToAnalizeBB : BLOCKS_TO_ANALYZE_BB;
 	}
 
-	public static Integer getBlocksToAnalizeWA()
+	public static Double getDistToAnalizeWA()
 	{
-		return blocksToAnalizeWA != null ? blocksToAnalizeWA : BLOCKS_TO_ANALYZE_WA;
+		return distToAnalizeWA != null ? distToAnalizeWA : BLOCKS_TO_ANALYZE_WA;
 	}
 
 	public static Long getBetterSymbolsMinVolume()
@@ -232,14 +232,14 @@ public class Config
 		Config.blocksToAnalizeBB = Integer.valueOf(blocksToAnalizeBB);
 	}
 
-	public static void setBlocksToAnalizeWA(Integer blocksToAnalizeWA)
+	public static void setDistToAnalizeWA(Double blocksToAnalizeWA)
 	{
-		Config.blocksToAnalizeWA = blocksToAnalizeWA;
+		Config.distToAnalizeWA = blocksToAnalizeWA;
 	}
 
-	public static void setBlocksToAnalizeWA(String blocksToAnalizeWA)
+	public static void setDistToAnalizeWA(String blocksToAnalizeWA)
 	{
-		Config.blocksToAnalizeWA = Integer.valueOf(blocksToAnalizeWA);
+		Config.distToAnalizeWA = Double.valueOf(blocksToAnalizeWA);
 	}
 
 	public static void setIterations(Integer iterations)
@@ -376,7 +376,7 @@ public class Config
 			prop.setProperty("better_symbols_min_volume", String.valueOf(getBetterSymbolsMinVolume()));
 			prop.setProperty("better_symbols_max_change", String.valueOf(getBetterSymbolsMaxChange()));
 			prop.setProperty("blocks_to_analize_bb", String.valueOf(getBlocksToAnalizeBB()));
-			prop.setProperty("blocks_to_analize_wa", String.valueOf(getBlocksToAnalizeWA()));
+			prop.setProperty("dist_to_analize_wa", String.valueOf(getDistToAnalizeWA()));
 
 			prop.setProperty("iterations", String.valueOf(getIterations()));
 			prop.setProperty("grid_type", getGridType());
@@ -422,7 +422,7 @@ public class Config
 				if (prop.containsKey("blocks_to_analize_bb"))
 					blocksToAnalizeBB = Integer.valueOf(prop.getProperty("blocks_to_analize_bb"));
 				if (prop.containsKey("blocks_to_analize_wa"))
-					blocksToAnalizeWA = Integer.valueOf(prop.getProperty("blocks_to_analize_wa"));
+					distToAnalizeWA = Double.valueOf(prop.getProperty("dist_to_analize_wa"));
 
 				if (prop.containsKey("iterations"))
 					iterations = Integer.valueOf(prop.getProperty("iterations"));

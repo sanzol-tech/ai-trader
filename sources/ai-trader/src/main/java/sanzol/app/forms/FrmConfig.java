@@ -36,7 +36,7 @@ import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.PrivateConfig;
 import sanzol.app.config.Styles;
-import sanzol.app.task.LogService;
+import sanzol.app.service.LogService;
 import sanzol.app.util.Convert;
 import sanzol.lib.util.ExceptionUtils;
 import javax.swing.JCheckBox;
@@ -311,7 +311,7 @@ public class FrmConfig extends JFrame
 		lblBlocksToAnalyzeBB.setBounds(24, 27, 118, 14);
 		pnlOBook.add(lblBlocksToAnalyzeBB);
 
-		JLabel lblBlocksToAnalyzeWA = new JLabel("Blocks to analyze WA");
+		JLabel lblBlocksToAnalyzeWA = new JLabel("Dist to analyze WA");
 		lblBlocksToAnalyzeWA.setBounds(24, 78, 118, 14);
 		pnlOBook.add(lblBlocksToAnalyzeWA);
 
@@ -485,7 +485,7 @@ public class FrmConfig extends JFrame
 		txtBSMaxChange24h.setText(String.valueOf(Config.getBetterSymbolsMaxChange()));
 
 		txtBlocksToAnalyzeBB.setText(String.valueOf(Config.getBlocksToAnalizeBB()));
-		txtBlocksToAnalyzeWA.setText(String.valueOf(Config.getBlocksToAnalizeWA()));
+		txtBlocksToAnalyzeWA.setText(String.valueOf(Config.getDistToAnalizeWA()));
 
 		rbArithmetic.setSelected("A".equals(Config.getGridType()));
 		rbGeometric.setSelected("G".equals(Config.getGridType()));
@@ -546,7 +546,7 @@ public class FrmConfig extends JFrame
 			Config.setBetterSymbolsMinVolume(txtBSMinVolume.getText());
 			Config.setBetterSymbolsMaxChange(txtBSMaxChange24h.getText());
 			Config.setBlocksToAnalizeBB(txtBlocksToAnalyzeBB.getText());
-			Config.setBlocksToAnalizeWA(txtBlocksToAnalyzeWA.getText());
+			Config.setDistToAnalizeWA(txtBlocksToAnalyzeWA.getText());
 
 			Config.setIterations(txtIterations.getText());
 			Config.setGridType(rbArithmetic.isSelected() ? "A" : "G");
