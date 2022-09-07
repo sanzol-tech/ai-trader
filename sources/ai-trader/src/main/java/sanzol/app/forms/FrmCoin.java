@@ -16,10 +16,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URI;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Locale;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -33,9 +33,9 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+import api.client.futures.async.DepthClient.DepthMode;
 import api.client.futures.async.PriceListener;
 import api.client.futures.async.PriceService;
-import api.client.futures.async.DepthClient.DepthMode;
 import api.client.futures.async.model.SymbolTickerEvent;
 import sanzol.app.config.Application;
 import sanzol.app.config.Config;
@@ -71,14 +71,14 @@ public class FrmCoin extends JFrame implements PriceListener
 
 	private JButton btnExport;
 	private JButton btnLongBidPointBB1;
-	private JButton btnLongBidPointBB2;
 	private JButton btnLongBidPointWA1;
 	private JButton btnSearch;
 	private JButton btnShortBidPointBB1;
-	private JButton btnShortBidPointBB2;
 	private JButton btnShortBidPointWA1;
 	private JButton btnCalcBB;
-	private JButton btnCalcWA;	
+	private JButton btnCalcWA0;	
+	private JButton btnCalcWA1;	
+	private JButton btnCalcWA2;	
 
 	private JLabel lnkBinance;
 	private JLabel lnkTradingview;
@@ -102,6 +102,11 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JLabel lblTitlePoints2;
 	private JLabel lblVolume;
 
+	private JLabel lblRatioBBSh;
+	private JLabel lblRatioBBLg;
+	private JLabel lblRatioWASh;
+	private JLabel lblRatioWALg;
+	
 	private JTextArea txtOBookAsk;
 	private JTextArea txtOBookBid;
 
@@ -134,19 +139,15 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JTextField txtBidPointWA3;
 	private JTextField txtBidPointWA3Dist;
 	private JTextField txtBBBlocks;
-	private JTextField txtWADist1;
-	private JTextField txtWADist3;
-	private JTextField txtWADist2;
+	private JTextField txtWABlocks;
 
 	public FrmCoin()
 	{
 		initComponents();
 		PriceService.attachRefreshObserver(this);
-		
+
 		txtBBBlocks.setText(String.valueOf(Config.getBlocksToAnalizeBB()));
-		txtWADist1.setText(String.format(Locale.US, "%.4f", Config.getDistToAnalizeWA()));
-		txtWADist2.setText(String.format(Locale.US, "%.4f", Config.getDistToAnalizeWA() * 1.2));
-		txtWADist3.setText(String.format(Locale.US, "%.4f", Config.getDistToAnalizeWA() * 1.4));
+		txtWABlocks.setText(String.valueOf(Config.getBlocksToAnalizeWA()));
 	}
 
 	private void initComponents()
@@ -444,20 +445,6 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtAskPointWA2Dist.setColumns(10);
 		txtAskPointWA2Dist.setBounds(204, 58, 80, 20);
 		pnlWA.add(txtAskPointWA2Dist);
-		
-		btnShortBidPointBB2 = new JButton("\u2193");
-		btnShortBidPointBB2.setToolTipText("Create Short in this price");
-		btnShortBidPointBB2.setOpaque(true);
-		btnShortBidPointBB2.setBackground(Styles.COLOR_BTN_SHORT);
-		btnShortBidPointBB2.setBounds(296, 31, 46, 22);
-		pnlBB.add(btnShortBidPointBB2);
-
-		btnLongBidPointBB2 = new JButton("\u2191");
-		btnLongBidPointBB2.setToolTipText("Create Long in this price");
-		btnLongBidPointBB2.setOpaque(true);
-		btnLongBidPointBB2.setBackground(Styles.COLOR_BTN_LONG);
-		btnLongBidPointBB2.setBounds(296, 110, 46, 22);
-		pnlBB.add(btnLongBidPointBB2);
 
 		btnShortBidPointWA1 = new JButton("\u2193");
 		btnShortBidPointWA1.setToolTipText("Create Short in this price");
@@ -492,6 +479,30 @@ public class FrmCoin extends JFrame implements PriceListener
 		lblBid = new JLabel("BID 3");
 		lblBid.setBounds(22, 162, 52, 14);
 		pnlWA.add(lblBid);
+		
+		lblRatioBBSh = new JLabel("1:x");
+		lblRatioBBSh.setHorizontalAlignment(SwingConstants.CENTER);
+		lblRatioBBSh.setForeground(Styles.COLOR_TEXT_SHORT);
+		lblRatioBBSh.setBounds(296, 35, 46, 14);
+		pnlBB.add(lblRatioBBSh);
+
+		lblRatioBBLg = new JLabel("1:x");
+		lblRatioBBLg.setHorizontalAlignment(SwingConstants.CENTER);
+		lblRatioBBLg.setForeground(Styles.COLOR_TEXT_LONG);
+		lblRatioBBLg.setBounds(296, 113, 46, 14);
+		pnlBB.add(lblRatioBBLg);
+		
+		lblRatioWASh = new JLabel("1:x");
+		lblRatioWASh.setHorizontalAlignment(SwingConstants.CENTER);
+		lblRatioWASh.setForeground(Styles.COLOR_TEXT_SHORT);
+		lblRatioWASh.setBounds(294, 61, 46, 14);
+		pnlWA.add(lblRatioWASh);
+		
+		lblRatioWALg = new JLabel("1:x");
+		lblRatioWALg.setHorizontalAlignment(SwingConstants.CENTER);
+		lblRatioWALg.setForeground(Styles.COLOR_TEXT_LONG);
+		lblRatioWALg.setBounds(294, 139, 46, 14);
+		pnlWA.add(lblRatioWALg);
 
 		btnExport = new JButton("Export");
 		btnExport.setOpaque(true);
@@ -570,33 +581,35 @@ public class FrmCoin extends JFrame implements PriceListener
 		contentPane.add(txtBBBlocks);
 
 		btnCalcBB = new JButton(Styles.IMAGE_REFRESH);
+		btnCalcBB.setToolTipText("recalculate");
 		btnCalcBB.setOpaque(true);
-		btnCalcBB.setBounds(361, 130, 40, 22);
+		btnCalcBB.setBounds(360, 130, 40, 22);
 		contentPane.add(btnCalcBB);
 
-		txtWADist1 = new JTextField();
-		txtWADist1.setText("0");
-		txtWADist1.setHorizontalAlignment(SwingConstants.TRAILING);
-		txtWADist1.setBounds(180, 315, 50, 20);
-		contentPane.add(txtWADist1);
-
-		txtWADist2 = new JTextField();
-		txtWADist2.setText("0");
-		txtWADist2.setHorizontalAlignment(SwingConstants.TRAILING);
-		txtWADist2.setBounds(240, 315, 50, 20);
-		contentPane.add(txtWADist2);
+		txtWABlocks = new JTextField();
+		txtWABlocks.setText("0");
+		txtWABlocks.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtWABlocks.setBounds(202, 315, 50, 20);
+		contentPane.add(txtWABlocks);
 		
-		txtWADist3 = new JTextField();
-		txtWADist3.setText("0");
-		txtWADist3.setHorizontalAlignment(SwingConstants.TRAILING);
-		txtWADist3.setBounds(300, 315, 50, 20);
-		contentPane.add(txtWADist3);
-		
-		btnCalcWA = new JButton(Styles.IMAGE_REFRESH);
-		btnCalcWA.setOpaque(true);
-		btnCalcWA.setBounds(361, 314, 40, 22);
-		contentPane.add(btnCalcWA);
+		btnCalcWA0 = new JButton(Styles.IMAGE_REFRESH);
+		btnCalcWA0.setToolTipText("recalculate");
+		btnCalcWA0.setOpaque(true);
+		btnCalcWA0.setBounds(264, 314, 40, 22);
+		contentPane.add(btnCalcWA0);
 
+		btnCalcWA1 = new JButton(Styles.IMAGE_REFRESH);
+		btnCalcWA1.setToolTipText("recalculate");
+		btnCalcWA1.setOpaque(true);
+		btnCalcWA1.setBounds(312, 314, 40, 22);
+		contentPane.add(btnCalcWA1);
+
+		btnCalcWA2 = new JButton(Styles.IMAGE_REFRESH);
+		btnCalcWA2.setToolTipText("recalculate");
+		btnCalcWA2.setOpaque(true);
+		btnCalcWA2.setBounds(360, 314, 40, 22);
+		contentPane.add(btnCalcWA2);
+		
 		// ---------------------------------------------------------------------
 
 		FrmCoin thisFrm = this;
@@ -637,13 +650,6 @@ public class FrmCoin extends JFrame implements PriceListener
 				search();
 			}
 		});
-
-		
-		btnShortBidPointBB2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtAskPointBB2.getText(), false);
-			}
-		});
 		btnShortBidPointBB1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtAskPointBB1.getText(), false);
@@ -652,11 +658,6 @@ public class FrmCoin extends JFrame implements PriceListener
 		btnLongBidPointBB1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtBidPointBB1.getText(), false);
-			}
-		});
-		btnLongBidPointBB2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtBidPointBB2.getText(), false);
 			}
 		});
 		btnShortBidPointWA1.addActionListener(new ActionListener() {
@@ -677,24 +678,22 @@ public class FrmCoin extends JFrame implements PriceListener
 				loadPoints();
 			}
 		});
-
-		btnCalcWA.addActionListener(new ActionListener() {
+		btnCalcWA0.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try
-				{
-					BigDecimal dist1 = new BigDecimal(txtWADist1.getText());
-					BigDecimal dist2 = new BigDecimal(txtWADist2.getText());
-					BigDecimal dist3 = new BigDecimal(txtWADist3.getText());
-					depth.calcWAvg2(dist1, dist2, dist3);
-					loadPoints();
-				}
-				catch (Exception ex)
-				{
-					ERROR(ex);
-				}
+				calcWA(0);
 			}
 		});
-
+		btnCalcWA1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				calcWA(1);
+			}
+		});
+		btnCalcWA2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				calcWA(2);
+			}
+		});
+		
 		btnExport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				export();
@@ -742,6 +741,24 @@ public class FrmCoin extends JFrame implements PriceListener
 
 	// ----------------------------------------------------------------------------------
 
+	public void calcWA(int version) 
+	{
+		try
+		{
+			BigDecimal blocks = new BigDecimal(txtWABlocks.getText());
+
+			if (version == 0) depth.calcWAvg0(blocks);
+			else if (version == 1) depth.calcWAvg0(blocks);
+			else if (version == 2) depth.calcWAvg0(blocks);
+
+			loadPoints();
+		}
+		catch (Exception ex)
+		{
+			ERROR(ex);
+		}
+	}
+	
 	private void search()
 	{
 		INFO("");
@@ -794,6 +811,63 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtBidPointWA1.setText(symbol.priceToStr(depth.getBidWAvgPoint1()));
 		txtBidPointWA2.setText(symbol.priceToStr(depth.getBidWAvgPoint2()));
 		txtBidPointWA3.setText(symbol.priceToStr(depth.getBidWAvgPoint3()));
+
+		loadRatiosBB(depth.getAskBBlkPoint1(), depth.getBidBBlkPoint1(), depth.getAskBBlkPoint2(), depth.getBidBBlkPoint2());
+		loadRatiosWA(depth.getAskWAvgPoint1(), depth.getBidWAvgPoint1(), depth.getAskWAvgPoint2(), depth.getBidWAvgPoint2());
+	}
+	
+	public void loadRatiosBB(BigDecimal shortPrice, BigDecimal longPrice, BigDecimal shShock2, BigDecimal lgShock2)
+	{
+		BigDecimal shortTProfit = PriceUtil.priceDistDown(shortPrice, longPrice, true);
+		BigDecimal longTProfit = PriceUtil.priceDistUp(longPrice, shortPrice, true);
+
+		BigDecimal shortSLoss = PriceUtil.priceDistDown(shortPrice, shShock2, true);
+		BigDecimal longTSLoss = PriceUtil.priceDistUp(longPrice, lgShock2, true);
+		
+		if (shortSLoss.compareTo(BigDecimal.ZERO) == 0)
+		{
+			lblRatioBBSh.setText("1:0");
+		}
+		else
+		{
+			lblRatioBBSh.setText("1:" + shortTProfit.divide(shortSLoss, 1, RoundingMode.HALF_UP).abs());
+		}
+
+		if (longTSLoss.compareTo(BigDecimal.ZERO) == 0)
+		{
+			lblRatioBBLg.setText("1:0");
+		}
+		else
+		{
+			lblRatioBBLg.setText("1:" + longTProfit.divide(longTSLoss, 1, RoundingMode.HALF_UP).abs());
+		}
+	}
+
+	public void loadRatiosWA(BigDecimal shortPrice, BigDecimal longPrice, BigDecimal shShock2, BigDecimal lgShock2)
+	{
+		BigDecimal shortTProfit = PriceUtil.priceDistDown(shortPrice, longPrice, true);
+		BigDecimal longTProfit = PriceUtil.priceDistUp(longPrice, shortPrice, true);
+
+		BigDecimal shortSLoss = PriceUtil.priceDistDown(shortPrice, shShock2, true);
+		BigDecimal longTSLoss = PriceUtil.priceDistUp(longPrice, lgShock2, true);
+		
+		if (shortSLoss.compareTo(BigDecimal.ZERO) == 0)
+		{
+			lblRatioWASh.setText("1:0");
+		}
+		else
+		{
+			lblRatioWASh.setText("1:" + shortTProfit.divide(shortSLoss, 1, RoundingMode.HALF_UP).abs());
+		}
+
+		if (longTSLoss.compareTo(BigDecimal.ZERO) == 0)
+		{
+			lblRatioWALg.setText("1:0");
+		}
+		else
+		{
+			lblRatioWALg.setText("1:" + longTProfit.divide(longTSLoss, 1, RoundingMode.HALF_UP).abs());
+		}
 	}
 
 	private void getDistances()
