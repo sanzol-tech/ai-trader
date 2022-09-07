@@ -748,8 +748,8 @@ public class FrmCoin extends JFrame implements PriceListener
 			BigDecimal blocks = new BigDecimal(txtWABlocks.getText());
 
 			if (version == 0) depth.calcWAvg0(blocks);
-			else if (version == 1) depth.calcWAvg0(blocks);
-			else if (version == 2) depth.calcWAvg0(blocks);
+			else if (version == 1) depth.calcWAvg1(blocks);
+			else if (version == 2) depth.calcWAvg2(blocks);
 
 			loadPoints();
 		}
