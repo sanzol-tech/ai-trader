@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,7 +22,7 @@ import sanzol.app.util.Convert;
 
 public final class PositionService
 {
-	private static final long DEFAULT_PERIOD_MILLIS = 5000;
+	private static final long DEFAULT_PERIOD_MILLIS = TimeUnit.SECONDS.toMillis(10);
 
 	private static boolean isStarted = false;
 

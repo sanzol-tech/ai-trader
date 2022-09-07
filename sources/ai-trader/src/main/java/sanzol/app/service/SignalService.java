@@ -34,6 +34,8 @@ import sanzol.app.util.PriceUtil;
 
 public final class SignalService
 {
+	private static final double MIN_RATIO = 1.8;
+	
 	private static boolean isStarted = false;
 
 	private static boolean onlyFavorites = true;
@@ -290,7 +292,7 @@ public final class SignalService
 				boolean isBestLong = (markPrice.doubleValue() < avgLow.doubleValue());
 				String bestSide = isBestShort ? "WAVG HIGH" : isBestLong ? "WAVG LOW" : "";
 
-				if (entry.getShortRatio().doubleValue() > 1.8)
+				if (entry.getShortRatio().doubleValue() > MIN_RATIO)
 				{
 					Signal shortSignal = new Signal("SHORT", entry.getSymbol(), markPrice, change24h, volume, bestSide, entry.getShortPrice(), distShort, entry.getShortTProfit(), entry.getShortSLoss(), entry.getShortRatio());
 					lstShorts.add(shortSignal);
@@ -300,7 +302,7 @@ public final class SignalService
 				//	LogService.info("DISCARD SHORT - " + entry.getSymbol().getNameLeft() + " - LOW RATIO 1:" + entry.getShortRatio().doubleValue());
 				//}
 
-				if (entry.getLongRatio().doubleValue() > 1.8)
+				if (entry.getLongRatio().doubleValue() > MIN_RATIO)
 				{
 					Signal longSignal = new Signal("LONG", entry.getSymbol(), markPrice, change24h, volume, bestSide, entry.getLongPrice(), distLong, entry.getLongTProfit(), entry.getLongTSLoss(), entry.getLongRatio());
 					lstLongs.add(longSignal);

@@ -99,10 +99,10 @@ public class DepthService
 
 	public DepthService calc()
 	{
-		return calc(Config.getBlocksToAnalizeBB(), Config.getDistToAnalizeWA());
+		return calc(Config.getBlocksToAnalizeBB(), BigDecimal.valueOf(Config.getDistToAnalizeWA()));
 	}
 
-	public DepthService calc(int blocksToAnalizeBB, double distToAnalizeWA)
+	public DepthService calc(int blocksToAnalizeBB, BigDecimal distToAnalizeWA)
 	{
 		long t1 = System.currentTimeMillis();
 		
@@ -118,7 +118,7 @@ public class DepthService
 		calcClassic(BigDecimal.valueOf(blocksToAnalizeBB));
 		//calcBBlock(BigDecimal.valueOf(blocksToAnalizeBB));
 		//calcWAvg(BigDecimal.valueOf(0.05), BigDecimal.valueOf(0.15), BigDecimal.valueOf(0.65));
-		calcWAvg2(BigDecimal.valueOf(distToAnalizeWA));
+		calcWAvg2(distToAnalizeWA);
 
 		fixShocks();
 
@@ -195,22 +195,27 @@ public class DepthService
 
 	public void calcWAvg2(BigDecimal dist)
 	{
-		BigDecimal askPriceTo1 = lastPrice.multiply(BigDecimal.ONE.add(dist));
-		BigDecimal bidPriceTo1 = lastPrice.multiply(BigDecimal.ONE.subtract(dist));
+		calcWAvg2(dist, dist.multiply(BigDecimal.valueOf(1.2)), dist.multiply(BigDecimal.valueOf(1.4)));
+	}
+
+	public void calcWAvg2(BigDecimal dist1, BigDecimal dist2, BigDecimal dist3)
+	{
+		BigDecimal askPriceTo1 = lastPrice.multiply(BigDecimal.ONE.add(dist1));
+		BigDecimal bidPriceTo1 = lastPrice.multiply(BigDecimal.ONE.subtract(dist1));
 		this.askWAvgPoint1 = weightedAverageAsks(lstAsks, lastPrice, askPriceTo1);
 		this.bidWAvgPoint1 = weightedAverageBids(lstBids, lastPrice, bidPriceTo1);
 
 		BigDecimal askPriceFrom2 = symbol.addTicks(askWAvgPoint1, 1);
 		BigDecimal bidPriceFrom2 = symbol.subTicks(bidWAvgPoint1, 1);
-		BigDecimal askPriceTo2 = askPriceFrom2.multiply(BigDecimal.ONE.add(dist));
-		BigDecimal bidPriceTo2 = bidPriceFrom2.multiply(BigDecimal.ONE.subtract(dist));
+		BigDecimal askPriceTo2 = askPriceFrom2.multiply(BigDecimal.ONE.add(dist2));
+		BigDecimal bidPriceTo2 = bidPriceFrom2.multiply(BigDecimal.ONE.subtract(dist2));
 		this.askWAvgPoint2 = weightedAverageAsks(lstAsks, askPriceFrom2, askPriceTo2);
 		this.bidWAvgPoint2 = weightedAverageBids(lstBids, bidPriceFrom2, bidPriceTo2);
 
 		BigDecimal askPriceFrom3 = symbol.addTicks(askWAvgPoint2, 1);
 		BigDecimal bidPriceFrom3 = symbol.subTicks(bidWAvgPoint2, 1);
-		BigDecimal askPriceTo3 = askPriceFrom3.multiply(BigDecimal.ONE.add(dist));
-		BigDecimal bidPriceTo3 = bidPriceFrom3.multiply(BigDecimal.ONE.subtract(dist));
+		BigDecimal askPriceTo3 = askPriceFrom3.multiply(BigDecimal.ONE.add(dist3));
+		BigDecimal bidPriceTo3 = bidPriceFrom3.multiply(BigDecimal.ONE.subtract(dist3));
 		this.askWAvgPoint3 = weightedAverageAsks(lstAsks, askPriceFrom3, askPriceTo3);
 		this.bidWAvgPoint3 = weightedAverageBids(lstBids, bidPriceFrom3, bidPriceTo3);
 	}
@@ -857,7 +862,7 @@ public class DepthService
 		//OBookService obService = OBookService.getInstance(coin).request().subscribeDiffDepthEvent();
 		//OBookService obService = OBookService.getInstance(coin).subscribeDiffDepthEvent();
 		DepthService obService = DepthService.getInstance(coin).request(DepthMode.snapshot_only, 0);		
-		obService.calc(8, 0.08);
+		obService.calc(8, BigDecimal.valueOf(0.08));
 		obService.export();
 
 		System.out.println("");

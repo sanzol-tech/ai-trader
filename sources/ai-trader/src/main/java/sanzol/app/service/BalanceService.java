@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import api.client.futures.sync.SyncFuturesClient;
 import api.client.futures.sync.model.AccountBalance;
@@ -11,7 +12,7 @@ import sanzol.app.config.Config;
 
 public final class BalanceService
 {
-	private static final long DEFAULT_PERIOD_MILLIS = 1000 * 20;
+	private static final long DEFAULT_PERIOD_MILLIS = TimeUnit.SECONDS.toMillis(30);
 
 	private static boolean isStarted = false;
 	private static long timestamp = 0;
@@ -25,7 +26,7 @@ public final class BalanceService
 
 	public static AccountBalance getAccountBalanceNow()
 	{
-		if (timestamp < System.currentTimeMillis() - 1000)
+		if (timestamp < System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(1))
 		{
 			runGetBalances();
 		}

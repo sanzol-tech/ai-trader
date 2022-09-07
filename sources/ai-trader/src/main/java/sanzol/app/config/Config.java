@@ -31,7 +31,7 @@ public class Config
 
 	// Order book
 	private static final int BLOCKS_TO_ANALYZE_BB = 6;
-	private static final double BLOCKS_TO_ANALYZE_WA = 0.08;
+	private static final double DIST_TO_ANALYZE_WA = 0.06;
 
 	// Grid
 	private static final int ITERATIONS = 0;
@@ -102,7 +102,7 @@ public class Config
 
 	public static Double getDistToAnalizeWA()
 	{
-		return distToAnalizeWA != null ? distToAnalizeWA : BLOCKS_TO_ANALYZE_WA;
+		return distToAnalizeWA != null ? distToAnalizeWA : DIST_TO_ANALYZE_WA;
 	}
 
 	public static Long getBetterSymbolsMinVolume()
@@ -232,14 +232,14 @@ public class Config
 		Config.blocksToAnalizeBB = Integer.valueOf(blocksToAnalizeBB);
 	}
 
-	public static void setDistToAnalizeWA(Double blocksToAnalizeWA)
+	public static void setDistToAnalizeWA(Double distToAnalizeWA)
 	{
-		Config.distToAnalizeWA = blocksToAnalizeWA;
+		Config.distToAnalizeWA = distToAnalizeWA;
 	}
 
-	public static void setDistToAnalizeWA(String blocksToAnalizeWA)
+	public static void setDistToAnalizeWA(String distToAnalizeWA)
 	{
-		Config.distToAnalizeWA = Double.valueOf(blocksToAnalizeWA);
+		Config.distToAnalizeWA = Double.valueOf(distToAnalizeWA);
 	}
 
 	public static void setIterations(Integer iterations)
@@ -421,7 +421,7 @@ public class Config
 					betterSymbolsMaxChange = Double.valueOf(prop.getProperty("better_symbols_max_change"));
 				if (prop.containsKey("blocks_to_analize_bb"))
 					blocksToAnalizeBB = Integer.valueOf(prop.getProperty("blocks_to_analize_bb"));
-				if (prop.containsKey("blocks_to_analize_wa"))
+				if (prop.containsKey("dist_to_analize_wa"))
 					distToAnalizeWA = Double.valueOf(prop.getProperty("dist_to_analize_wa"));
 
 				if (prop.containsKey("iterations"))

@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -133,7 +134,9 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JTextField txtBidPointWA3;
 	private JTextField txtBidPointWA3Dist;
 	private JTextField txtBBBlocks;
-	private JTextField txtWADist;
+	private JTextField txtWADist1;
+	private JTextField txtWADist3;
+	private JTextField txtWADist2;
 
 	public FrmCoin()
 	{
@@ -141,7 +144,9 @@ public class FrmCoin extends JFrame implements PriceListener
 		PriceService.attachRefreshObserver(this);
 		
 		txtBBBlocks.setText(String.valueOf(Config.getBlocksToAnalizeBB()));
-		txtWADist.setText("0.05");
+		txtWADist1.setText(String.format(Locale.US, "%.4f", Config.getDistToAnalizeWA()));
+		txtWADist2.setText(String.format(Locale.US, "%.4f", Config.getDistToAnalizeWA() * 1.2));
+		txtWADist3.setText(String.format(Locale.US, "%.4f", Config.getDistToAnalizeWA() * 1.4));
 	}
 
 	private void initComponents()
@@ -335,7 +340,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		contentPane.add(lblTitlePoints0);
 
 		lblTitlePoints2 = new JLabel("Weighted average");
-		lblTitlePoints2.setBounds(30, 320, 178, 14);
+		lblTitlePoints2.setBounds(30, 320, 134, 14);
 		contentPane.add(lblTitlePoints2);
 
 		pnlWA = new JPanel();
@@ -569,11 +574,23 @@ public class FrmCoin extends JFrame implements PriceListener
 		btnCalcBB.setBounds(361, 130, 40, 22);
 		contentPane.add(btnCalcBB);
 
-		txtWADist = new JTextField();
-		txtWADist.setText("0");
-		txtWADist.setHorizontalAlignment(SwingConstants.TRAILING);
-		txtWADist.setBounds(300, 315, 50, 20);
-		contentPane.add(txtWADist);
+		txtWADist1 = new JTextField();
+		txtWADist1.setText("0");
+		txtWADist1.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtWADist1.setBounds(180, 315, 50, 20);
+		contentPane.add(txtWADist1);
+
+		txtWADist2 = new JTextField();
+		txtWADist2.setText("0");
+		txtWADist2.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtWADist2.setBounds(240, 315, 50, 20);
+		contentPane.add(txtWADist2);
+		
+		txtWADist3 = new JTextField();
+		txtWADist3.setText("0");
+		txtWADist3.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtWADist3.setBounds(300, 315, 50, 20);
+		contentPane.add(txtWADist3);
 		
 		btnCalcWA = new JButton(Styles.IMAGE_REFRESH);
 		btnCalcWA.setOpaque(true);
@@ -653,20 +670,28 @@ public class FrmCoin extends JFrame implements PriceListener
 			}
 		});
 		
-		
-		btnCalcWA.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				BigDecimal dist = new BigDecimal(txtWADist.getText());
-				depth.calcWAvg2(dist);
-				loadPoint();
-			}
-		});
-
 		btnCalcBB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				BigDecimal blocks = new BigDecimal(txtBBBlocks.getText());
 				depth.calcClassic(blocks);
-				loadPoint();
+				loadPoints();
+			}
+		});
+
+		btnCalcWA.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try
+				{
+					BigDecimal dist1 = new BigDecimal(txtWADist1.getText());
+					BigDecimal dist2 = new BigDecimal(txtWADist2.getText());
+					BigDecimal dist3 = new BigDecimal(txtWADist3.getText());
+					depth.calcWAvg2(dist1, dist2, dist3);
+					loadPoints();
+				}
+				catch (Exception ex)
+				{
+					ERROR(ex);
+				}
 			}
 		});
 
@@ -735,7 +760,7 @@ public class FrmCoin extends JFrame implements PriceListener
 				// ----------------------------------------------------------------
 
 				loadOBook();
-				loadPoint();
+				loadPoints();
 			}
 			else
 			{
@@ -755,7 +780,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtOBookBid.setCaretPosition(0);
 	}
 
-	private void loadPoint()
+	private void loadPoints()
 	{
 		txtAskPointBB2.setText(symbol.priceToStr(depth.getAskBBlkPoint2()));
 		txtAskPointBB1.setText(symbol.priceToStr(depth.getAskBBlkPoint1()));
