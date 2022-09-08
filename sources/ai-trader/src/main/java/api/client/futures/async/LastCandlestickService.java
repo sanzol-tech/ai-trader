@@ -16,8 +16,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import api.client.constant.ApiClientConstants;
-import api.client.enums.IntervalType;
 import api.client.futures.async.model.CandlestickEvent;
+import api.client.futures.enums.IntervalType;
 import sanzol.app.service.LogService;
 
 public class LastCandlestickService extends WebSocketClient

@@ -718,7 +718,7 @@ public class FrmCoin extends JFrame implements PriceListener
 					
 					BigDecimal mrkPrice = symbolInfo.getLastPrice();
 					txtMarkPrice.setText(symbol.priceToStr(mrkPrice));
-					txtSymbolInfo.setText(symbolInfo.isBestShort() ? "WAVG HIGH" : symbolInfo.isBestLong() ? "WAVG LOW" : "");
+					txtSymbolInfo.setText(symbolInfo.isBestShort() ? "24H HIGH" : symbolInfo.isBestLong() ? "24H LOW" : "");
 
 					String priceChangePercent = String.format("%.2f", symbolInfo.getPriceChangePercent());
 					txt24h.setText(priceChangePercent);

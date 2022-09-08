@@ -2,7 +2,7 @@ package api.client.exception;
 
 public class ApiException extends RuntimeException
 {
-	private static final long serialVersionUID = 4360108982268949009L;
+	private static final long serialVersionUID = 1L;
 
 	private final String errCode;
 

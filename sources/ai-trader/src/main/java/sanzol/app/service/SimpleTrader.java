@@ -8,12 +8,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
-import api.client.enums.NewOrderRespType;
-import api.client.enums.OrderSide;
-import api.client.enums.OrderType;
-import api.client.enums.PositionSide;
-import api.client.enums.TimeInForce;
-import api.client.enums.WorkingType;
+import api.client.futures.enums.NewOrderRespType;
+import api.client.futures.enums.OrderSide;
+import api.client.futures.enums.OrderType;
+import api.client.futures.enums.PositionSide;
+import api.client.futures.enums.TimeInForce;
+import api.client.futures.enums.WorkingType;
 import api.client.futures.sync.SyncFuturesClient;
 import api.client.futures.sync.model.Order;
 import api.client.futures.sync.model.PositionRisk;

@@ -324,7 +324,7 @@ public class FrmSignals extends JFrame implements SignalListener
 	    	tableModelShort.addColumn("RATIO");
 	    	tableModelShort.addColumn("CHANGE 24h");
 	    	tableModelShort.addColumn("VOLUME 24h");
-	    	tableModelShort.addColumn("BETTER");
+	    	tableModelShort.addColumn("MORE");
 			tableShort.setModel(tableModelShort);
 
 	    	tableModelLong = new TableModel();
@@ -336,7 +336,7 @@ public class FrmSignals extends JFrame implements SignalListener
 	    	tableModelLong.addColumn("RATIO");
 	    	tableModelLong.addColumn("CHANGE 24h");
 	    	tableModelLong.addColumn("VOLUME 24h");
-	    	tableModelLong.addColumn("BETTER");
+	    	tableModelLong.addColumn("MORE");
 			tableLong.setModel(tableModelLong);
 
 	        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();

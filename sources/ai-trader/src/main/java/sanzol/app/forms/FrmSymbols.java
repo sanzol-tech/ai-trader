@@ -239,7 +239,7 @@ public class FrmSymbols extends JFrame implements PriceListener
 	    	tableModel.addColumn("VOLUME 24h");
 	    	tableModel.addColumn("");
 	    	tableModel.addColumn("PRICE");
-	    	tableModel.addColumn("BETTER");
+	    	tableModel.addColumn("MORE");
 
 			table.setModel(tableModel);
 			
@@ -277,7 +277,7 @@ public class FrmSymbols extends JFrame implements PriceListener
     				PriceUtil.cashFormat(entry.getUsdVolume()),
 					!entry.isLowVolume() ? "" : "< " + PriceUtil.cashFormat(Config.getBetterSymbolsMinVolume()),
     				entry.getLastPrice(),
-    				entry.isBestShort() ? "WAVG HIGH" : entry.isBestLong() ? "WAVG LOW" : ""
+    				entry.isBestShort() ? "24H HIGH" : entry.isBestLong() ? "24H LOW" : ""
         		};
 
 			tableModel.addRow(row);

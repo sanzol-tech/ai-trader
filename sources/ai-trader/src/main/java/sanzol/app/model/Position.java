@@ -8,7 +8,7 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
-import api.client.enums.PositionSide;
+import api.client.futures.enums.PositionSide;
 import sanzol.app.config.CharConstants;
 import sanzol.app.model.PositionOrder.State;
 import sanzol.app.model.PositionOrder.Type;

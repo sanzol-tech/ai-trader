@@ -290,7 +290,7 @@ public final class SignalService
 				BigDecimal avgLow = (avgPrice.add(low)).divide(BigDecimal.valueOf(2), entry.getSymbol().getTickSize(), RoundingMode.HALF_UP);
 				boolean isBestShort = (markPrice.doubleValue() > avgHigh.doubleValue());
 				boolean isBestLong = (markPrice.doubleValue() < avgLow.doubleValue());
-				String bestSide = isBestShort ? "WAVG HIGH" : isBestLong ? "WAVG LOW" : "";
+				String bestSide = isBestShort ? "24H HIGH" : isBestLong ? "24H LOW" : "";
 
 				if (entry.getShortRatio().doubleValue() > MIN_RATIO)
 				{

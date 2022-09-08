@@ -1,4 +1,4 @@
-package api.client.enums;
+package api.client.futures.enums;
 
 public enum NewOrderRespType
 {

@@ -42,9 +42,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.decimal4j.util.DoubleRounder;
 
-import api.client.enums.PositionSide;
 import api.client.futures.async.PriceListener;
 import api.client.futures.async.PriceService;
+import api.client.futures.enums.PositionSide;
 import api.client.futures.sync.model.AccountBalance;
 import api.client.futures.sync.model.PositionRisk;
 import sanzol.app.config.Application;
