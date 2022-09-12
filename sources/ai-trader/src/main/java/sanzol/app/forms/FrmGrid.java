@@ -42,11 +42,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.decimal4j.util.DoubleRounder;
 
-import api.client.futures.async.PriceListener;
-import api.client.futures.async.PriceService;
 import api.client.futures.enums.PositionSide;
-import api.client.futures.sync.model.AccountBalance;
-import api.client.futures.sync.model.PositionRisk;
+import api.client.futures.model.sync.AccountBalance;
+import api.client.futures.model.sync.PositionRisk;
+import api.client.service.PriceListener;
+import api.client.service.PriceService;
 import sanzol.app.config.Application;
 import sanzol.app.config.CharConstants;
 import sanzol.app.config.Config;
@@ -831,7 +831,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 	private void searchPosition()
 	{
-		PositionRisk positionRisk = PositionService.getPositionRisk(symbol.getName());
+		PositionRisk positionRisk = PositionService.getPositionRisk(symbol.getPair());
 		if (isOpenPosition)
 		{
 			txtInPrice.setText(symbol.priceToStr(positionRisk.getEntryPrice()));
@@ -871,7 +871,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	{
 		if (isBotMode)
 		{
-			if (!PositionService.existsPosition(symbol.getName()))
+			if (!PositionService.existsPosition(symbol.getPair()))
 			{
 				post(PostStyle.FIRST);
 			}
@@ -1388,7 +1388,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 				double balancePercent = Convert.strPercentToDbl(txtInQty.getText());
 				AccountBalance accBalance = BalanceService.getAccountBalance();
 				double balance = accBalance.getBalance().doubleValue();
-				return DoubleRounder.round(Math.max(5, balance * balancePercent) / inPrice, symbol.getQuantityPrecision(), RoundingMode.CEILING);
+				return DoubleRounder.round(Math.max(5, balance * balancePercent) / inPrice, symbol.getQtyPrecision(), RoundingMode.CEILING);
 			}
 		}
 		else if (cmbQtyType.getSelectedItem().equals(QuantityType.USD))
@@ -1396,7 +1396,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			if (NumberUtils.isCreatable(txtInQty.getText()))
 			{
 				double usd = Double.valueOf(txtInQty.getText());
-				return DoubleRounder.round(usd / inPrice, symbol.getQuantityPrecision(), RoundingMode.CEILING);
+				return DoubleRounder.round(usd / inPrice, symbol.getQtyPrecision(), RoundingMode.CEILING);
 			}
 		}
 
@@ -1499,7 +1499,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 			txtResult.setForeground(pMaker.getPosition().getSide() == PositionSide.SHORT ? Styles.COLOR_TEXT_SHORT : Styles.COLOR_TEXT_LONG);
 			txtResult.setText(pMaker.getPosition().toString());
-			save(symbol.getName() + "_" + pMaker.getPosition().getSide().name());
+			save(symbol.getPair() + "_" + pMaker.getPosition().getSide().name());
 
 			// ------------------------------------------------------------
 			btnPostFirst.setEnabled(false);

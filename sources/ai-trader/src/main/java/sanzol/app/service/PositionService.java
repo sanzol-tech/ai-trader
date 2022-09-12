@@ -14,9 +14,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 
+import api.client.futures.model.sync.Order;
+import api.client.futures.model.sync.PositionRisk;
 import api.client.futures.sync.SyncFuturesClient;
-import api.client.futures.sync.model.Order;
-import api.client.futures.sync.model.PositionRisk;
 import sanzol.app.config.Application;
 import sanzol.app.util.Convert;
 

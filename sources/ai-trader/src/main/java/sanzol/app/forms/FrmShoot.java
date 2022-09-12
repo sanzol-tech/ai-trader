@@ -26,11 +26,11 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 
-import api.client.futures.async.PriceListener;
-import api.client.futures.async.PriceService;
-import api.client.futures.async.model.SymbolTickerEvent;
-import api.client.futures.sync.model.AccountBalance;
-import api.client.futures.sync.model.PositionRisk;
+import api.client.futures.model.sync.AccountBalance;
+import api.client.futures.model.sync.PositionRisk;
+import api.client.model.async.SymbolTickerEvent;
+import api.client.service.PriceListener;
+import api.client.service.PriceService;
 import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
@@ -509,7 +509,7 @@ public class FrmShoot extends JFrame implements PriceListener
 				String priceChangePercent = String.format("%.2f", symbolTicker.getPriceChangePercent());
 				txt24h.setText(priceChangePercent);
 	
-				PositionRisk positionRisk = PositionService.getPositionRisk(coin.getName());
+				PositionRisk positionRisk = PositionService.getPositionRisk(coin.getPair());
 				boolean isPosition = positionRisk != null && positionRisk.getPositionAmt().compareTo(BigDecimal.ZERO) != 0;
 				enableControls(isPosition);
 
@@ -575,7 +575,7 @@ public class FrmShoot extends JFrame implements PriceListener
 			if (x == null)
 				shootQty = new BigDecimal(txtShootQty.getText());
 			else
-				shootQty = posQty.multiply(x).setScale(coin.getQuantityPrecision(), RoundingMode.UP);
+				shootQty = posQty.multiply(x).setScale(coin.getQtyPrecision(), RoundingMode.UP);
 			
 			// --- CALC -------------------------------------------------------
 			Map<String, GOrder> mapPosition = SimpleTrader.calc(coin, side, posPrice, posQty, shootPrice, shootQty);
@@ -626,7 +626,7 @@ public class FrmShoot extends JFrame implements PriceListener
 			}
 
 			// ----------------------------------------------------------------
-			String msg = String.format("Post order %s  /  %s  /  %s  /  %s ? *The price can be better than the selected one", coin.getName(), side, coin.priceToStr(price), coin.qtyToStr(coins));			
+			String msg = String.format("Post order %s  /  %s  /  %s  /  %s ? *The price can be better than the selected one", coin.getPair(), side, coin.priceToStr(price), coin.qtyToStr(coins));			
 
 			int resultOption = JOptionPane.showConfirmDialog(null, msg, "Confirm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (resultOption == 0)

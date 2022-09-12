@@ -30,19 +30,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
-
-import api.client.futures.async.LastCandlestickListener;
-import api.client.futures.async.LastCandlestickService;
-import api.client.futures.async.PriceListener;
-import api.client.futures.async.PriceService;
-import api.client.futures.async.model.SymbolTickerEvent;
-import api.client.futures.sync.model.AccountBalance;
-import api.client.futures.sync.model.PositionRisk;
-
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
+import api.client.config.ApiConfig;
+import api.client.futures.model.sync.AccountBalance;
+import api.client.futures.model.sync.PositionRisk;
+import api.client.model.async.SymbolTickerEvent;
+import api.client.service.LastCandlestickListener;
+import api.client.service.LastCandlestickService;
+import api.client.service.PriceListener;
+import api.client.service.PriceService;
 import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
@@ -129,7 +128,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 	private void initComponents()
 	{
-		setTitle(Constants.APP_NAME);
+		setTitle(Constants.APP_NAME + " - " + ApiConfig.MARKET_TYPE.name());
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmMain.class.getResource("/resources/logo.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 860, 600);
@@ -714,7 +713,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	{
 		try
 		{
-			listFavorites.setModel(toListModel(Symbol.getLstSymbolsMini(chkOnlyFavorites.isSelected(), chkOnlyBetters.isSelected())));
+			listFavorites.setModel(toListModel(PriceService.getLstSymbolsMini(chkOnlyFavorites.isSelected(), chkOnlyBetters.isSelected())));
 			btcInfo();
 		}
 		catch (Exception e)
@@ -743,7 +742,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	{
 		final String BTC_PAIR_SYMBOL = "BTC" + Config.DEFAULT_SYMBOL_RIGHT;
 		Symbol coin = Symbol.getInstance(BTC_PAIR_SYMBOL);
-		if (!PriceService.getMapTickers().containsKey(coin.getName()))
+		if (!PriceService.getMapTickers().containsKey(coin.getPair()))
 		{
 			return;
 		}
@@ -882,6 +881,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 	public void ERROR(Exception e)
 	{
+		e.printStackTrace();
 		ERROR(ExceptionUtils.getMessage(e));
 	}
 

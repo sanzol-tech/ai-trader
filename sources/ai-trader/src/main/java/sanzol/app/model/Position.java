@@ -54,7 +54,7 @@ public class Position
 
 	public String getSymbol()
 	{
-		return symbol.getName();
+		return symbol.getPair();
 	}
 
 	public String getSymbolLeft()

@@ -23,9 +23,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 
-import api.client.futures.async.PriceService;
-import api.client.futures.async.DepthClient.DepthMode;
-import api.client.futures.async.model.SymbolTickerEvent;
+import api.client.enums.DepthMode;
+import api.client.model.async.SymbolTickerEvent;
+import api.client.service.DepthCache;
+import api.client.service.PriceService;
 import sanzol.app.config.Constants;
 import sanzol.app.model.ShockPoint;
 import sanzol.app.model.Signal;
@@ -130,12 +131,12 @@ public final class SignalService
 	{
 		try
 		{
-			List<SymbolInfo> lstSymbolsInfo = Symbol.getLstSymbolsInfo(onlyFavorites, onlyBetters);
+			List<SymbolInfo> lstSymbolsInfo = PriceService.getLstSymbolsInfo(onlyFavorites, onlyBetters);
 			
 			int count = 0;
 			for (SymbolInfo symbolInfo : lstSymbolsInfo)
 			{
-				ShockPoint shockPoint = mapShockPoints.get(symbolInfo.getSymbol().getName());
+				ShockPoint shockPoint = mapShockPoints.get(symbolInfo.getSymbol().getPair());
 				if (shockPoint != null)
 				{
 					Long expirationTime = shockPoint.getExpirationTime();
@@ -166,7 +167,7 @@ public final class SignalService
 	{
 		try
 		{
-			DepthService depth = DepthService.getInstance(symbol).request(DepthMode.both, TimeUnit.SECONDS.toMillis(60));
+			OrderBookService depth = OrderBookService.getInstance(symbol).request(DepthMode.both, TimeUnit.SECONDS.toMillis(60));
 
 			if (!depth.verifyConnectTime(TimeUnit.SECONDS.toMillis(180)))
 			{
@@ -197,13 +198,13 @@ public final class SignalService
 
 	private static void updateShockPoint(ShockPoint shockPoint)
 	{
-		if (mapShockPoints.containsKey(shockPoint.getSymbol().getName()))
+		if (mapShockPoints.containsKey(shockPoint.getSymbol().getPair()))
 		{
-			mapShockPoints.replace(shockPoint.getSymbol().getName(), shockPoint);
+			mapShockPoints.replace(shockPoint.getSymbol().getPair(), shockPoint);
 		}
 		else
 		{
-			mapShockPoints.put(shockPoint.getSymbol().getName(), shockPoint);
+			mapShockPoints.put(shockPoint.getSymbol().getPair(), shockPoint);
 		}
 	}
 
@@ -227,7 +228,7 @@ public final class SignalService
 
 	private static void expireShocks(Symbol symbol, String reason)
 	{
-		mapShockPoints.get(symbol.getName()).setExpirationTime(System.currentTimeMillis());
+		mapShockPoints.get(symbol.getPair()).setExpirationTime(System.currentTimeMillis());
 		
 		LogService.info("EXPIRE SIGNALS FROM " + symbol.getNameLeft() + " - " + reason);
 	}
@@ -243,7 +244,7 @@ public final class SignalService
 
 		try
 		{
-			List<String> lstSymbols = Symbol.getLstSymbolNames(onlyFavorites, onlyBetters);
+			List<String> lstSymbols = PriceService.getLstSymbolNames(onlyFavorites, onlyBetters);
 			Set<String> setSymbols = new HashSet<>(lstSymbols);
 
 			for (ShockPoint entry : mapShockPoints.values())
@@ -278,7 +279,7 @@ public final class SignalService
 					continue;
 				}
 
-				if (!setSymbols.contains(entry.getSymbol().getName()))
+				if (!setSymbols.contains(entry.getSymbol().getPair()))
 				{
 					continue;
 				}

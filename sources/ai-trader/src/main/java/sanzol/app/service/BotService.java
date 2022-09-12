@@ -14,9 +14,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import api.client.futures.async.PriceService;
-import api.client.futures.sync.model.Order;
-import api.client.futures.sync.model.PositionRisk;
+import api.client.futures.model.sync.Order;
+import api.client.futures.model.sync.PositionRisk;
+import api.client.service.PriceService;
 import sanzol.app.config.Config;
 import sanzol.lib.util.BeepUtils;
 
@@ -107,7 +107,7 @@ public final class BotService
 			BigDecimal tpCoef = "SHORT".equals(side) ? BigDecimal.ONE.subtract(tpPercent) : BigDecimal.ONE.add(tpPercent);
 			BigDecimal newPrice = price.multiply(tpCoef).setScale(symbol.getTickSize(), RoundingMode.HALF_UP);
 
-			Order tpOrder = PositionService.getTpOrder(symbol.getName(), side);
+			Order tpOrder = PositionService.getTpOrder(symbol.getPair(), side);
 			if (tpOrder != null)
 			{
 				BigDecimal tpQty = tpOrder.getOrigQty();
@@ -149,7 +149,7 @@ public final class BotService
 				slPriceNew = ((posPrice.multiply(posQty)).subtract(slUsd)).divide(posQty, symbol.getTickSize(), RoundingMode.HALF_UP);
 			}
 
-			Order slOrder = PositionService.getSlOrder(symbol.getName(), side);
+			Order slOrder = PositionService.getSlOrder(symbol.getPair(), side);
 			if (slOrder == null)
 			{
 				info(symbol.getNameLeft() + " SL-REARRANGEMENT");

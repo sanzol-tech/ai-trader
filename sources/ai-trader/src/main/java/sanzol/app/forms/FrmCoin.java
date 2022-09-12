@@ -33,16 +33,16 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import api.client.futures.async.DepthClient.DepthMode;
-import api.client.futures.async.PriceListener;
-import api.client.futures.async.PriceService;
-import api.client.futures.async.model.SymbolTickerEvent;
+import api.client.enums.DepthMode;
+import api.client.model.async.SymbolTickerEvent;
+import api.client.service.PriceListener;
+import api.client.service.PriceService;
 import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.model.SymbolInfo;
-import sanzol.app.service.DepthService;
+import sanzol.app.service.OrderBookService;
 import sanzol.app.service.LogService;
 import sanzol.app.service.Symbol;
 import sanzol.app.util.Convert;
@@ -57,7 +57,7 @@ public class FrmCoin extends JFrame implements PriceListener
 	private static final String TITLE = Constants.APP_NAME;
 
 	private Symbol symbol;
-	private DepthService depth = null;
+	private OrderBookService depth = null;
 	private boolean beepDone = false;	
 
 	private JPanel contentPane;
@@ -627,7 +627,7 @@ public class FrmCoin extends JFrame implements PriceListener
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
-					Desktop.getDesktop().browse(new URI("https://www.binance.com/es/futures/" + symbol.getName()));
+					Desktop.getDesktop().browse(new URI("https://www.binance.com/es/futures/" + symbol.getPair()));
 				} catch (Exception ex) {
 					LogService.error(ex);
 				}
@@ -638,7 +638,7 @@ public class FrmCoin extends JFrame implements PriceListener
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
-					Desktop.getDesktop().browse(new URI("https://es.tradingview.com/chart/?symbol=BINANCE%3A" + symbol.getName()));
+					Desktop.getDesktop().browse(new URI("https://es.tradingview.com/chart/?symbol=BINANCE%3A" + symbol.getPair()));
 				} catch (Exception ex) {
 					LogService.error(ex);
 				}
@@ -773,7 +773,7 @@ public class FrmCoin extends JFrame implements PriceListener
 				setTitle(TITLE + " - " + symbol.getNameLeft());
 
 				// ----------------------------------------------------------------
-				depth = DepthService.getInstance(symbol).request(DepthMode.snapshot_only, 0).calc();
+				depth = OrderBookService.getInstance(symbol).request(DepthMode.snapshot_only, 0).calc();
 				// ----------------------------------------------------------------
 
 				loadOBook();

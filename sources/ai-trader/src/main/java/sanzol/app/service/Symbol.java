@@ -6,38 +6,34 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Locale;
-import java.util.TreeSet;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.decimal4j.util.DoubleRounder;
 
-import api.client.futures.async.PriceService;
-import api.client.futures.async.model.SymbolTickerEvent;
-import api.client.futures.sync.SyncFuturesClient;
-import api.client.futures.sync.model.ExchangeInfo;
-import api.client.futures.sync.model.ExchangeInfoEntry;
+import api.client.config.ApiConfig;
+import api.client.model.sync.ExchangeInfoEntry;
+import api.client.service.ExchangeInfoService;
 import sanzol.app.config.Config;
-import sanzol.app.model.SymbolInfo;
-import sanzol.app.util.PriceUtil;
 
 public class Symbol
 {
+	private String pair;
 	private String nameLeft;
-	private String pricePattern;
-	private String quantityPattern;
+	private String nameRight;
+
 	private BigDecimal tickSizeEI;
 	private int tickSize;
-	private int quantityPrecision;
-	private BigDecimal minQty;
+	private String pricePattern;
 
-	public String getName()
+	private BigDecimal minQty;
+	private int qtyPrecision;
+	private String qtyPattern;
+
+	public String getPair()
 	{
-		return nameLeft + Config.DEFAULT_SYMBOL_RIGHT;
+		return pair;
 	}
 
 	public String getNameLeft()
@@ -45,14 +41,19 @@ public class Symbol
 		return nameLeft;
 	}
 
+	public String getNameRight()
+	{
+		return nameRight;
+	}
+
 	public int getTickSize()
 	{
 		return tickSize;
 	}
 
-	public int getQuantityPrecision()
+	public int getQtyPrecision()
 	{
-		return quantityPrecision;
+		return qtyPrecision;
 	}
 
 	public BigDecimal getMinQty()
@@ -62,77 +63,66 @@ public class Symbol
 
 	// ------------------------------------------------------------------------
 
-	private static List<ExchangeInfoEntry> lstExInfEntries = null;
-	private static long exInfTime;
-
-	private static void getExInfEntries() throws KeyManagementException, NoSuchAlgorithmException, IOException
+	private static Symbol toSymbol(ExchangeInfoEntry exchangeInfoEntry)
 	{
-		if (lstExInfEntries == null || exInfTime + 1000 * 60 * 30 < System.currentTimeMillis())
+		Symbol symbol = new Symbol();
+		
+		symbol.pair = exchangeInfoEntry.getSymbol();
+		symbol.nameLeft = exchangeInfoEntry.getBaseAsset();
+		symbol.nameRight = exchangeInfoEntry.getQuoteAsset();
+		
+		for (Map<String, String> entry : exchangeInfoEntry.getFilters())
 		{
-			ExchangeInfo exchangeInfo = SyncFuturesClient.getExchangeInformation();
-			lstExInfEntries = exchangeInfo.getSymbols();
-			exInfTime = System.currentTimeMillis();
-		}
-	}
-
-	public static List<String> getAll() throws KeyManagementException, NoSuchAlgorithmException, IOException
-	{
-		TreeSet<String> list = new TreeSet<String>();
-		getExInfEntries();
-		for (ExchangeInfoEntry entry : lstExInfEntries)
-		{
-			if (entry.getSymbol().endsWith(Config.DEFAULT_SYMBOL_RIGHT))
+			if (entry.get("filterType").equals("PRICE_FILTER"))
 			{
-				String symbolName = entry.getSymbol().substring(0, entry.getSymbol().length() - Config.DEFAULT_SYMBOL_RIGHT.length());
-				list.add(symbolName);
+				String _tickSize = entry.get("tickSize");
+				symbol.tickSizeEI = new BigDecimal(_tickSize);	
+
+				symbol.tickSize = (int) Math.log10(Double.valueOf(_tickSize)) * -1;
+
+				String _pricePattern = "#0";
+				if (symbol.tickSize > 0)
+				{
+					_pricePattern += "." + StringUtils.repeat("0", symbol.tickSize);
+				}
+				symbol.pricePattern = _pricePattern;
+			}
+
+			if (entry.get("filterType").equals("LOT_SIZE"))
+			{
+				String _minQty = entry.get("minQty");
+				symbol.minQty = new BigDecimal(_minQty);
+
+				symbol.qtyPrecision = (int) Math.log10(Double.valueOf(_minQty)) * -1;
+				
+				String _qtyPattern = "#0";
+				if (symbol.qtyPrecision > 0)
+				{
+					_qtyPattern += "." + StringUtils.repeat("0", symbol.qtyPrecision);
+				}
+				symbol.qtyPattern = _qtyPattern;
 			}
 		}
-		return new ArrayList<String>(list);
+		
+		return symbol;
 	}
 
-	// ------------------------------------------------------------------------
-
-	public static Symbol getInstance(String symbolName) throws KeyManagementException, NoSuchAlgorithmException, IOException
+	public static Symbol getInstance(String pair) throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
-		if (!symbolName.endsWith(Config.DEFAULT_SYMBOL_RIGHT))
+		if (!pair.endsWith(Config.DEFAULT_SYMBOL_RIGHT))
 		{
 			return null;
 		}
 
-		Symbol symbol = new Symbol();
-		symbol.nameLeft = symbolName.substring(0, symbolName.length() - Config.DEFAULT_SYMBOL_RIGHT.length());
-		getExInfEntries();
-		for (ExchangeInfoEntry entry : lstExInfEntries)
+		ExchangeInfoEntry eInfoEntry = ExchangeInfoService.getExchangeInfo(pair);		
+		if (eInfoEntry == null)
 		{
-			if (entry.getSymbol().equals(symbolName))
-			{
-				ExchangeInfoEntry eInfoEntry = entry;
-
-				//String ts = eInfoEntry.getFilters().get(0).get(3).get("tickSize");
-				String ts = eInfoEntry.getFilters().get(0).get("tickSize");
-				symbol.tickSizeEI = new BigDecimal(ts);
-				symbol.tickSize = (int) Math.log10(Double.valueOf(ts)) * -1;
-				symbol.pricePattern = "#0";
-				if (symbol.tickSize > 0)
-				{
-					symbol.pricePattern += "." + StringUtils.repeat("0", symbol.tickSize);
-				}
-				
-				symbol.quantityPrecision = eInfoEntry.getQuantityPrecision().intValue();
-				symbol.quantityPattern = "#0";
-				if (symbol.quantityPrecision > 0)
-				{
-					symbol.quantityPattern += "." + StringUtils.repeat("0", symbol.quantityPrecision);
-				}
-
-				//String mq = eInfoEntry.getFilters().get(1).get(3).get("minQty");
-				String mq = eInfoEntry.getFilters().get(1).get("minQty");
-				symbol.minQty = new BigDecimal(mq);
-
-				return symbol;
-			}
+			return null;
 		}
-		return null;
+
+		Symbol symbol = toSymbol(eInfoEntry);
+
+		return symbol;
 	}
 
 	// ------------------------------------------------------------------------
@@ -149,12 +139,12 @@ public class Symbol
 
 	public String qtyToStr(BigDecimal coins)
 	{
-		return new DecimalFormat(quantityPattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(coins.doubleValue());
+		return new DecimalFormat(qtyPattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(coins.doubleValue());
 	}
 
 	public String qtyToStr(double coins)
 	{
-		return new DecimalFormat(quantityPattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(coins);
+		return new DecimalFormat(qtyPattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(coins);
 	}
 
 	public double roundPrice(double price)
@@ -164,9 +154,9 @@ public class Symbol
 
 	public double roundQty(double coins)
 	{
-		return DoubleRounder.round(coins, quantityPrecision);
+		return DoubleRounder.round(coins, qtyPrecision);
 	}
-	
+
 	public BigDecimal addTicks(BigDecimal price, int ticks)
 	{
 		return price.add( tickSizeEI.multiply(BigDecimal.valueOf(ticks)) );
@@ -197,73 +187,6 @@ public class Symbol
 
 	// ------------------------------------------------------------------------
 
-	public static List<SymbolInfo> getLstSymbolsInfo(boolean onlyFavorites, boolean onlyBetters) throws KeyManagementException, NoSuchAlgorithmException, IOException
-	{
-		List<String> lstFavorites = Config.getLstFavSymbols();
-
-		List<SymbolInfo> lstSymbolsInfo = new ArrayList<SymbolInfo>();
-
-		List<SymbolTickerEvent> lstSymbolTickerEvent = new ArrayList<SymbolTickerEvent>();
-		lstSymbolTickerEvent.addAll(PriceService.getMapTickers().values());
-
-		for (SymbolTickerEvent entry : lstSymbolTickerEvent)
-		{
-			SymbolInfo symbolInfo = new SymbolInfo(entry);
-
-			if (onlyFavorites && !lstFavorites.contains(symbolInfo.getSymbol().getNameLeft()))
-			{
-				continue;
-			}
-
-			if (onlyBetters && (symbolInfo.isLowVolume() || symbolInfo.isHighMove()))
-			{
-				continue;
-			}
-
-			lstSymbolsInfo.add(symbolInfo);
-		}
-
-		Comparator<SymbolInfo> orderComparator = Comparator.comparing(SymbolInfo::getUsdVolume).reversed();
-		Collections.sort(lstSymbolsInfo, orderComparator);
-
-		return lstSymbolsInfo;
-	}
-
-	public static List<SymbolInfo> getLstSymbolsInfo(boolean onlyFavorites, boolean onlyBetters, int limit) throws KeyManagementException, NoSuchAlgorithmException, IOException
-	{
-		return getLstSymbolsInfo(onlyFavorites, onlyBetters).subList(0, limit - 1);
-	}
-
-	public static List<String> getLstSymbolsMini(boolean onlyFavorites, boolean onlyBetters) throws KeyManagementException, NoSuchAlgorithmException, IOException
-	{
-		List<String> list = new ArrayList<String>();
-		list.add(String.format("%-10s %11s %9s", "SYMBOL", "CHANGE", "VOLUME"));
-
-		List<SymbolInfo> lstSymbolsInfo = getLstSymbolsInfo(onlyFavorites, onlyBetters);
-		for (SymbolInfo entry : lstSymbolsInfo)
-		{
-			Symbol symbol = entry.getSymbol();
-			list.add(String.format("%-10s %10.2f%% %9s", symbol.getNameLeft(), entry.getPriceChangePercent(), PriceUtil.cashFormat(entry.getUsdVolume())));
-		}
-
-		return list;
-	}
-
-	public static List<String> getLstSymbolNames(boolean onlyFavorites, boolean onlyBetters) throws KeyManagementException, NoSuchAlgorithmException, IOException
-	{
-		List<String> list = new ArrayList<String>();
-
-		List<SymbolInfo> lstSymbolsInfo = getLstSymbolsInfo(onlyFavorites, onlyBetters);
-		for (SymbolInfo entry : lstSymbolsInfo)
-		{
-			list.add(entry.getSymbol().getName());
-		}
-		
-		return list;
-	}
-
-	// ------------------------------------------------------------------------
-
 	@Override
 	public String toString()
 	{
@@ -274,10 +197,20 @@ public class Symbol
 	
 	public static void main(String[] args) throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
-		for(String symbol : getAll()) 
-		{
-			System.out.println(symbol);
-		}
+		ApiConfig.setFutures();
+		ExchangeInfoService.start();
+		Symbol symbol = getInstance("BTCUSDT");
+		System.out.println(symbol.getPair());
+		System.out.println(symbol.getNameLeft());
+		System.out.println(symbol.getNameRight());
+
+		System.out.println(symbol.tickSizeEI);
+		System.out.println(symbol.tickSize);
+		System.out.println(symbol.pricePattern);
+
+		System.out.println(symbol.minQty);
+		System.out.println(symbol.qtyPrecision);
+		System.out.println(symbol.qtyPattern);
 	}
 
 }

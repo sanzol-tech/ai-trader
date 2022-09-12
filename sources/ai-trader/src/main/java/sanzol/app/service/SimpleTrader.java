@@ -14,9 +14,9 @@ import api.client.futures.enums.OrderType;
 import api.client.futures.enums.PositionSide;
 import api.client.futures.enums.TimeInForce;
 import api.client.futures.enums.WorkingType;
+import api.client.futures.model.sync.Order;
+import api.client.futures.model.sync.PositionRisk;
 import api.client.futures.sync.SyncFuturesClient;
-import api.client.futures.sync.model.Order;
-import api.client.futures.sync.model.PositionRisk;
 import sanzol.app.model.GOrder;
 
 public class SimpleTrader
@@ -27,7 +27,7 @@ public class SimpleTrader
 		Map<String, GOrder> mapPosition = new HashMap<String, GOrder>();
 
 		// --- POSITION -------------------------------------------------------
-		PositionRisk positionRisk = PositionService.getPositionRisk(coin.getName());
+		PositionRisk positionRisk = PositionService.getPositionRisk(coin.getPair());
 		boolean positionExists = (positionRisk != null && positionRisk.getPositionAmt().compareTo(BigDecimal.ZERO) != 0); 
 		if (positionExists)
 		{
@@ -110,7 +110,7 @@ public class SimpleTrader
 								   String quantity, String price, Boolean reduceOnly, String newClientOrderId,
 								   String stopPrice, WorkingType workingType, NewOrderRespType newOrderRespType, Boolean closePosition) throws KeyManagementException, InvalidKeyException, NoSuchAlgorithmException
 	{
-		return SyncFuturesClient.postOrder(symbol.getName(), side, PositionSide.BOTH, orderType, timeInForce, 
+		return SyncFuturesClient.postOrder(symbol.getPair(), side, PositionSide.BOTH, orderType, timeInForce, 
 								   		   quantity, price, reduceOnly, newClientOrderId, stopPrice, workingType, newOrderRespType, closePosition);
 	}
 

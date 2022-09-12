@@ -35,9 +35,15 @@ public class LogService
 			logLines.removeFirst();
 		}
 
+		System.out.println (text);
 		logLines.add(text);
 
 		notifyAllLogObservers();
+	}
+
+	public static void debug(String msg)
+	{
+		// log("DEBUG", msg);
 	}
 
 	public static void info(String msg)
@@ -57,6 +63,8 @@ public class LogService
 
 	public static void error(Exception ex)
 	{
+		ex.printStackTrace();
+
 		StackTraceElement ste = Thread.currentThread().getStackTrace()[2];
 		String simpleClassName = ste.getClassName().substring(ste.getClassName().lastIndexOf('.') + 1);
 		String path = simpleClassName + "." + ste.getMethodName();

@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import api.client.futures.async.PriceService;
-import api.client.futures.async.model.SymbolTickerEvent;
+import api.client.model.async.SymbolTickerEvent;
+import api.client.service.PriceService;
 import sanzol.app.config.Config;
 import sanzol.app.service.Symbol;
 import sanzol.app.util.PriceUtil;
@@ -106,7 +106,7 @@ public class SymbolInfo
 
 	public String getSymbolName()
 	{
-		return symbol.getName();
+		return symbol.getPair();
 	}
 
 	// ------------------------------------------------------------------------

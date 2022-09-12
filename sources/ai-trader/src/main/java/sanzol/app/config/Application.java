@@ -6,12 +6,14 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.file.StandardOpenOption;
 
-import api.client.futures.async.LastCandlestickService;
-import api.client.futures.async.PriceService;
+import api.client.config.ApiConfig;
+import api.client.service.DepthCache;
+import api.client.service.ExchangeInfoService;
+import api.client.service.LastCandlestickService;
+import api.client.service.PriceService;
 import sanzol.app.forms.FrmConfig;
 import sanzol.app.forms.FrmMain;
 import sanzol.app.service.BalanceService;
-import sanzol.app.service.DepthCache;
 import sanzol.app.service.LogService;
 import sanzol.app.service.PositionService;
 import sanzol.app.service.SignalService;
@@ -54,6 +56,8 @@ public final class Application
 		{
 			try
 			{
+				ApiConfig.setFutures();
+				ExchangeInfoService.start();
 				PriceService.start();
 				LastCandlestickService.start("btcusdt");
 				DepthCache.start();
@@ -65,6 +69,7 @@ public final class Application
 			}
 		}
 	}
+
 	private static void verifyFolders()
 	{
 		try

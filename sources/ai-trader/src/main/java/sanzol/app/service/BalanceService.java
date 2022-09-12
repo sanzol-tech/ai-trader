@@ -6,8 +6,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
+import api.client.futures.model.sync.AccountBalance;
 import api.client.futures.sync.SyncFuturesClient;
-import api.client.futures.sync.model.AccountBalance;
 import sanzol.app.config.Config;
 
 public final class BalanceService

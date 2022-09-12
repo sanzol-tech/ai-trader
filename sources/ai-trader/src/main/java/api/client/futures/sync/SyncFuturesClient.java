@@ -13,7 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status.Family;
 
-import api.client.constant.ApiClientConstants;
+import api.client.config.ApiConstants;
 import api.client.exception.ApiException;
 import api.client.futures.enums.NewOrderRespType;
 import api.client.futures.enums.OrderSide;
@@ -21,12 +21,13 @@ import api.client.futures.enums.OrderType;
 import api.client.futures.enums.PositionSide;
 import api.client.futures.enums.TimeInForce;
 import api.client.futures.enums.WorkingType;
-import api.client.futures.sync.model.AccountBalance;
-import api.client.futures.sync.model.Depth;
-import api.client.futures.sync.model.ExchangeInfo;
-import api.client.futures.sync.model.Order;
-import api.client.futures.sync.model.PositionRisk;
-import api.client.futures.sync.model.SymbolTicker;
+import api.client.futures.model.sync.AccountBalance;
+import api.client.futures.model.sync.Order;
+import api.client.futures.model.sync.PositionRisk;
+import api.client.model.sync.Depth;
+import api.client.model.sync.ExchangeInfo;
+import api.client.model.sync.SymbolTicker;
+import api.client.util.CustomClient;
 import sanzol.app.config.PrivateConfig;
 
 public class SyncFuturesClient
@@ -39,7 +40,7 @@ public class SyncFuturesClient
 
 		Client client = CustomClient.getClient();
 		Response response = client
-				.target(ApiClientConstants.FUTURES_BASE_URL)
+				.target(ApiConstants.FUTURES_BASE_URL)
 				.path(path)
 				.request()
 				.accept(MediaType.TEXT_XML)
@@ -63,7 +64,7 @@ public class SyncFuturesClient
 
 		Client client = CustomClient.getClient();
 		Response response = client
-				.target(ApiClientConstants.FUTURES_BASE_URL)
+				.target(ApiConstants.FUTURES_BASE_URL)
 				.path(path)
 				.request()
 				.accept(MediaType.TEXT_XML)
@@ -89,7 +90,7 @@ public class SyncFuturesClient
 		
 		Client client = CustomClient.getClient();
 		Response response = client
-				.target(ApiClientConstants.FUTURES_BASE_URL)
+				.target(ApiConstants.FUTURES_BASE_URL)
 				.path(path)
 				.queryParam("symbol", symbol)
 				.queryParam("limit", limit)
@@ -121,7 +122,7 @@ public class SyncFuturesClient
 		String timestamp = Long.toString(System.currentTimeMillis());
 
 		WebTarget target = client
-			.target(ApiClientConstants.FUTURES_BASE_URL)
+			.target(ApiConstants.FUTURES_BASE_URL)
 			.path(path)
 			.queryParam("recvWindow", recvWindow)
 			.queryParam("timestamp", timestamp);
@@ -157,7 +158,7 @@ public class SyncFuturesClient
 		String timestamp = Long.toString(System.currentTimeMillis());
 
 		WebTarget target = client
-			.target(ApiClientConstants.FUTURES_BASE_URL)
+			.target(ApiConstants.FUTURES_BASE_URL)
 			.path(path)
 			.queryParam("recvWindow", recvWindow)
 			.queryParam("timestamp", timestamp);
@@ -193,7 +194,7 @@ public class SyncFuturesClient
 		String timestamp = Long.toString(System.currentTimeMillis());
 
 		WebTarget target = client
-			.target(ApiClientConstants.FUTURES_BASE_URL)
+			.target(ApiConstants.FUTURES_BASE_URL)
 			.path(path)
 			.queryParam("recvWindow", recvWindow)
 			.queryParam("timestamp", timestamp);
@@ -231,7 +232,7 @@ public class SyncFuturesClient
 		String timestamp = Long.toString(System.currentTimeMillis());
 
 		WebTarget target = client
-			.target(ApiClientConstants.FUTURES_BASE_URL)
+			.target(ApiConstants.FUTURES_BASE_URL)
 			.path(path)
 			.queryParam("symbol", symbol)
 			.queryParam("side", side)
@@ -280,7 +281,7 @@ public class SyncFuturesClient
 		String timestamp = Long.toString(System.currentTimeMillis());
 
 		WebTarget target = client
-			.target(ApiClientConstants.FUTURES_BASE_URL)
+			.target(ApiConstants.FUTURES_BASE_URL)
 			.path(path)
 			.queryParam("symbol", symbol)
 			.queryParam("orderId", orderId)
@@ -313,8 +314,12 @@ public class SyncFuturesClient
 
 	public static void main(String[] args) throws KeyManagementException, NoSuchAlgorithmException, IOException, InvalidKeyException
 	{
-		PrivateConfig.loadKey();
-/*
+		ExchangeInfo ei = getExchangeInformation();
+		System.out.println(ei.getSymbols().size());
+
+		// PrivateConfig.loadKey();
+
+		/*
 		List<AccountBalance> lstAccountBalance = getBalance();
 		for (AccountBalance entry : lstAccountBalance)
 		{
@@ -343,7 +348,7 @@ public class SyncFuturesClient
 		catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
-*/
+		*/
 
 	}
 

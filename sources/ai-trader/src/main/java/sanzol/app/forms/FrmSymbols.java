@@ -25,15 +25,14 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-import api.client.futures.async.PriceListener;
-import api.client.futures.async.PriceService;
+import api.client.service.PriceListener;
+import api.client.service.PriceService;
 import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.model.SymbolInfo;
 import sanzol.app.service.LogService;
-import sanzol.app.service.Symbol;
 import sanzol.app.util.PriceUtil;
 import sanzol.lib.util.ExceptionUtils;
 
@@ -290,7 +289,7 @@ public class FrmSymbols extends JFrame implements PriceListener
 
 		try
 		{
-			List<SymbolInfo> lstSymbolsInfo = Symbol.getLstSymbolsInfo(chkOnlyFavorites.isSelected(), chkOnlyBetters.isSelected());
+			List<SymbolInfo> lstSymbolsInfo = PriceService.getLstSymbolsInfo(chkOnlyFavorites.isSelected(), chkOnlyBetters.isSelected());
 			loadTable(lstSymbolsInfo);
 			tableModel.fireTableDataChanged();
 		}
