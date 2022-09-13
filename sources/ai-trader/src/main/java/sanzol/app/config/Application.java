@@ -56,7 +56,7 @@ public final class Application
 		{
 			try
 			{
-				ApiConfig.setFutures();
+				// ApiConfig.setFutures();
 				ExchangeInfoService.start();
 				PriceService.start();
 				LastCandlestickService.start("btcusdt");
@@ -132,8 +132,13 @@ public final class Application
 
 	public static void main(String[] args)
 	{
+		if (args.length == 1 && args[0].equalsIgnoreCase("spot"))
+			ApiConfig.setSpot();
+		else
+			ApiConfig.setFutures();
+
 		initialize();
-		
+
 		FrmMain.launch();
 
 		if (!keyLoadedOK)

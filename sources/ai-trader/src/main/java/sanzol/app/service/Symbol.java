@@ -23,8 +23,8 @@ public class Symbol
 	private String nameLeft;
 	private String nameRight;
 
-	private BigDecimal tickSizeEI;
-	private int tickSize;
+	private BigDecimal tickSize;
+	private int pricePrecision;
 	private String pricePattern;
 
 	private BigDecimal minQty;
@@ -46,14 +46,19 @@ public class Symbol
 		return nameRight;
 	}
 
-	public int getTickSize()
+	public BigDecimal getTickSize()
 	{
 		return tickSize;
 	}
 
-	public int getQtyPrecision()
+	public int getPricePrecision()
 	{
-		return qtyPrecision;
+		return pricePrecision;
+	}
+
+	public String getPricePattern()
+	{
+		return pricePattern;
 	}
 
 	public BigDecimal getMinQty()
@@ -61,29 +66,39 @@ public class Symbol
 		return minQty;
 	}
 
+	public int getQtyPrecision()
+	{
+		return qtyPrecision;
+	}
+
+	public String getQtyPattern()
+	{
+		return qtyPattern;
+	}
+
 	// ------------------------------------------------------------------------
 
 	private static Symbol toSymbol(ExchangeInfoEntry exchangeInfoEntry)
 	{
 		Symbol symbol = new Symbol();
-		
+
 		symbol.pair = exchangeInfoEntry.getSymbol();
 		symbol.nameLeft = exchangeInfoEntry.getBaseAsset();
 		symbol.nameRight = exchangeInfoEntry.getQuoteAsset();
-		
+
 		for (Map<String, String> entry : exchangeInfoEntry.getFilters())
 		{
 			if (entry.get("filterType").equals("PRICE_FILTER"))
 			{
 				String _tickSize = entry.get("tickSize");
-				symbol.tickSizeEI = new BigDecimal(_tickSize);	
+				symbol.tickSize = new BigDecimal(_tickSize);
 
-				symbol.tickSize = (int) Math.log10(Double.valueOf(_tickSize)) * -1;
+				symbol.pricePrecision = (int) Math.log10(Double.valueOf(_tickSize)) * -1;
 
 				String _pricePattern = "#0";
-				if (symbol.tickSize > 0)
+				if (symbol.pricePrecision > 0)
 				{
-					_pricePattern += "." + StringUtils.repeat("0", symbol.tickSize);
+					_pricePattern += "." + StringUtils.repeat("0", symbol.pricePrecision);
 				}
 				symbol.pricePattern = _pricePattern;
 			}
@@ -94,7 +109,7 @@ public class Symbol
 				symbol.minQty = new BigDecimal(_minQty);
 
 				symbol.qtyPrecision = (int) Math.log10(Double.valueOf(_minQty)) * -1;
-				
+
 				String _qtyPattern = "#0";
 				if (symbol.qtyPrecision > 0)
 				{
@@ -103,7 +118,7 @@ public class Symbol
 				symbol.qtyPattern = _qtyPattern;
 			}
 		}
-		
+
 		return symbol;
 	}
 
@@ -114,7 +129,7 @@ public class Symbol
 			return null;
 		}
 
-		ExchangeInfoEntry eInfoEntry = ExchangeInfoService.getExchangeInfo(pair);		
+		ExchangeInfoEntry eInfoEntry = ExchangeInfoService.getExchangeInfo(pair);
 		if (eInfoEntry == null)
 		{
 			return null;
@@ -149,7 +164,7 @@ public class Symbol
 
 	public double roundPrice(double price)
 	{
-		return DoubleRounder.round(price, tickSize);
+		return DoubleRounder.round(price, pricePrecision);
 	}
 
 	public double roundQty(double coins)
@@ -159,31 +174,33 @@ public class Symbol
 
 	public BigDecimal addTicks(BigDecimal price, int ticks)
 	{
-		return price.add( tickSizeEI.multiply(BigDecimal.valueOf(ticks)) );
+		return price.add(tickSize.multiply(BigDecimal.valueOf(ticks)));
 	}
+
 	public double addTicks(double price, int ticks)
 	{
-		return price + Math.pow(10, -tickSize) * ticks;
+		return price + Math.pow(10, -pricePrecision) * ticks;
 	}
 
 	public BigDecimal subTicks(BigDecimal price, int ticks)
 	{
-		return price.subtract( tickSizeEI.multiply(BigDecimal.valueOf(ticks)) );
+		return price.subtract(tickSize.multiply(BigDecimal.valueOf(ticks)));
 	}
+
 	public double subTicks(double price, int ticks)
 	{
-		return price - Math.pow(10, -tickSize) * ticks;
+		return price - Math.pow(10, -pricePrecision) * ticks;
 	}
 
 	public static String getFullSymbol(String symbolLeft)
 	{
 		return symbolLeft + Config.DEFAULT_SYMBOL_RIGHT;
 	}
-	
+
 	public static String getRightSymbol(String symbolName)
 	{
 		return symbolName.substring(0, symbolName.length() - Config.DEFAULT_SYMBOL_RIGHT.length());
-	}	
+	}
 
 	// ------------------------------------------------------------------------
 
@@ -194,18 +211,19 @@ public class Symbol
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	public static void main(String[] args) throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
-		ApiConfig.setFutures();
+		ApiConfig.setSpot();
 		ExchangeInfoService.start();
-		Symbol symbol = getInstance("BTCUSDT");
+		Symbol symbol = getInstance("REEFUSDT");
+
 		System.out.println(symbol.getPair());
 		System.out.println(symbol.getNameLeft());
 		System.out.println(symbol.getNameRight());
 
-		System.out.println(symbol.tickSizeEI);
 		System.out.println(symbol.tickSize);
+		System.out.println(symbol.pricePrecision);
 		System.out.println(symbol.pricePattern);
 
 		System.out.println(symbol.minQty);

@@ -287,8 +287,8 @@ public final class SignalService
 				BigDecimal high = symbolTickerEvent.getHighPrice();
 				BigDecimal low = symbolTickerEvent.getLowPrice();
 				BigDecimal avgPrice = symbolTickerEvent.getWeightedAvgPrice();
-				BigDecimal avgHigh = (avgPrice.add(high)).divide(BigDecimal.valueOf(2), entry.getSymbol().getTickSize(), RoundingMode.HALF_UP);
-				BigDecimal avgLow = (avgPrice.add(low)).divide(BigDecimal.valueOf(2), entry.getSymbol().getTickSize(), RoundingMode.HALF_UP);
+				BigDecimal avgHigh = (avgPrice.add(high)).divide(BigDecimal.valueOf(2), entry.getSymbol().getPricePrecision(), RoundingMode.HALF_UP);
+				BigDecimal avgLow = (avgPrice.add(low)).divide(BigDecimal.valueOf(2), entry.getSymbol().getPricePrecision(), RoundingMode.HALF_UP);
 				boolean isBestShort = (markPrice.doubleValue() > avgHigh.doubleValue());
 				boolean isBestLong = (markPrice.doubleValue() < avgLow.doubleValue());
 				String bestSide = isBestShort ? "24H HIGH" : isBestLong ? "24H LOW" : "";

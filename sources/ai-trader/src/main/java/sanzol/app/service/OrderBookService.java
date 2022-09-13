@@ -397,7 +397,11 @@ public class OrderBookService
 	
 	private static BigDecimal getBlockSize(BigDecimal price, BigDecimal size)
 	{
-		if (price.doubleValue() < 0.01)
+		if (price.doubleValue() < 0.0001)
+			return BigDecimal.valueOf(0.0000001).multiply(size);
+		else if (price.doubleValue() < 0.001)
+			return BigDecimal.valueOf(0.000001).multiply(size);
+		else if (price.doubleValue() < 0.01)
 			return BigDecimal.valueOf(0.00001).multiply(size);
 		else if (price.doubleValue() < 0.1)
 			return BigDecimal.valueOf(0.0001).multiply(size);
@@ -417,6 +421,25 @@ public class OrderBookService
 
 	private static BigDecimal roundNearest(BigDecimal price, BigDecimal blockSize)
 	{
+		double _blockSize = blockSize.doubleValue();
+		if (_blockSize < 1)
+		{
+			if (_blockSize == 0)
+			{
+				return price.setScale(0, RoundingMode.DOWN);
+			}
+			else
+			{
+				int precision = (int) Math.log10(_blockSize) * -1;
+				return price.setScale(precision, RoundingMode.DOWN);
+			}
+		}
+		else
+		{
+			return price.divide(blockSize, 0, RoundingMode.DOWN).multiply(blockSize);
+		}
+
+		/*		
 		if (BigDecimal.valueOf(0.00001).compareTo(blockSize) == 0)
 			return price.setScale(5, RoundingMode.DOWN);
 		else if (BigDecimal.valueOf(0.0001).compareTo(blockSize) == 0)
@@ -437,6 +460,8 @@ public class OrderBookService
 			return price.divide(BigDecimal.valueOf(1000), 0, RoundingMode.DOWN).multiply(BigDecimal.valueOf(1000));
 		else
 			throw new IllegalArgumentException("Invalid blockSize " + blockSize);
+		 */
+
 	}
 
 	private ArrayList<DepthEntry> loadAsksGrp(List<DepthEntry> lstAsks, BigDecimal blockSize, BigDecimal priceFrom)
@@ -906,9 +931,6 @@ public class OrderBookService
 
 	public static void main(String[] args) throws Exception
 	{
-
-		PriceService.start();
-
 		String symbol = "EOS";
 		Symbol coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
 

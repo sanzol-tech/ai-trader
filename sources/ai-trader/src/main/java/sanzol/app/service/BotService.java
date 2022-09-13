@@ -105,7 +105,7 @@ public final class BotService
 		if (isTpRearrangement)
 		{
 			BigDecimal tpCoef = "SHORT".equals(side) ? BigDecimal.ONE.subtract(tpPercent) : BigDecimal.ONE.add(tpPercent);
-			BigDecimal newPrice = price.multiply(tpCoef).setScale(symbol.getTickSize(), RoundingMode.HALF_UP);
+			BigDecimal newPrice = price.multiply(tpCoef).setScale(symbol.getPricePrecision(), RoundingMode.HALF_UP);
 
 			Order tpOrder = PositionService.getTpOrder(symbol.getPair(), side);
 			if (tpOrder != null)
@@ -144,9 +144,9 @@ public final class BotService
 		{
 			BigDecimal slPriceNew;
 			if ("SHORT".equals(side)) {
-				slPriceNew = slUsd.add(posPrice.multiply(posQty)).divide(posQty, symbol.getTickSize(), RoundingMode.HALF_UP);
+				slPriceNew = slUsd.add(posPrice.multiply(posQty)).divide(posQty, symbol.getPricePrecision(), RoundingMode.HALF_UP);
 			} else {
-				slPriceNew = ((posPrice.multiply(posQty)).subtract(slUsd)).divide(posQty, symbol.getTickSize(), RoundingMode.HALF_UP);
+				slPriceNew = ((posPrice.multiply(posQty)).subtract(slUsd)).divide(posQty, symbol.getPricePrecision(), RoundingMode.HALF_UP);
 			}
 
 			Order slOrder = PositionService.getSlOrder(symbol.getPair(), side);

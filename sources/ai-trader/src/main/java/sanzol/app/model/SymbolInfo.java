@@ -53,8 +53,8 @@ public class SymbolInfo
 		low = symbolTickerEvent.getLowPrice();
 		avgPrice = symbolTickerEvent.getWeightedAvgPrice();
 
-		avgHigh = (avgPrice.add(high)).divide(TWO, symbol.getTickSize(), RoundingMode.HALF_UP);
-		avgLow = (avgPrice.add(low)).divide(TWO, symbol.getTickSize(), RoundingMode.HALF_UP);
+		avgHigh = (avgPrice.add(high)).divide(TWO, symbol.getPricePrecision(), RoundingMode.HALF_UP);
+		avgLow = (avgPrice.add(low)).divide(TWO, symbol.getPricePrecision(), RoundingMode.HALF_UP);
 		minUsdQty = symbol.getMinQty().multiply(high);
 
 		isMinUsdQtyHigh = (minUsdQty.doubleValue() > MIN_USDT);
