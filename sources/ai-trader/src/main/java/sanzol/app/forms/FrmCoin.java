@@ -21,6 +21,7 @@ import java.net.URI;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -49,6 +50,7 @@ import sanzol.app.util.Convert;
 import sanzol.app.util.PriceUtil;
 import sanzol.lib.util.BeepUtils;
 import sanzol.lib.util.ExceptionUtils;
+import javax.swing.JRadioButton;
 
 public class FrmCoin extends JFrame implements PriceListener
 {
@@ -76,9 +78,7 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JButton btnShortBidPointBB1;
 	private JButton btnShortBidPointWA1;
 	private JButton btnCalcBB;
-	private JButton btnCalcWA0;	
-	private JButton btnCalcWA1;	
-	private JButton btnCalcWA2;	
+	private JButton btnCalcWA;	
 
 	private JLabel lnkBinance;
 	private JLabel lnkTradingview;
@@ -110,6 +110,11 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JTextArea txtOBookAsk;
 	private JTextArea txtOBookBid;
 
+	private JRadioButton rbBBClassic;
+	private JRadioButton rbBBDisplaced;
+	private JRadioButton rbWAPrice;
+	private JRadioButton rbWAPrevious;
+	
 	private JTextField txt24h;
 	private JTextField txtAskPointBB1;
 	private JTextField txtAskPointBB1Dist;
@@ -337,11 +342,11 @@ public class FrmCoin extends JFrame implements PriceListener
 		pnlBB.add(lblBid_1);
 
 		lblTitlePoints0 = new JLabel("Biggest block");
-		lblTitlePoints0.setBounds(30, 136, 178, 14);
+		lblTitlePoints0.setBounds(30, 136, 86, 14);
 		contentPane.add(lblTitlePoints0);
 
 		lblTitlePoints2 = new JLabel("Weighted average");
-		lblTitlePoints2.setBounds(30, 320, 134, 14);
+		lblTitlePoints2.setBounds(30, 320, 100, 14);
 		contentPane.add(lblTitlePoints2);
 
 		pnlWA = new JPanel();
@@ -574,6 +579,23 @@ public class FrmCoin extends JFrame implements PriceListener
 		lnkTradingview.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		contentPane.add(lnkTradingview);
 
+		rbBBClassic = new JRadioButton("classic");
+		rbBBClassic.setToolTipText("round number blocks");
+		rbBBClassic.setHorizontalAlignment(SwingConstants.TRAILING);
+		rbBBClassic.setSelected(true);
+		rbBBClassic.setBounds(136, 130, 76, 23);
+		contentPane.add(rbBBClassic);
+		
+		rbBBDisplaced = new JRadioButton("displaced");
+		rbBBDisplaced.setToolTipText("blocks from last price");
+		rbBBDisplaced.setHorizontalAlignment(SwingConstants.TRAILING);
+		rbBBDisplaced.setBounds(216, 130, 76, 23);
+		contentPane.add(rbBBDisplaced);
+
+		ButtonGroup bg1 = new javax.swing.ButtonGroup();
+		bg1.add(rbBBClassic);
+		bg1.add(rbBBDisplaced);
+
 		txtBBBlocks = new JTextField();
 		txtBBBlocks.setText("0");
 		txtBBBlocks.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -586,29 +608,34 @@ public class FrmCoin extends JFrame implements PriceListener
 		btnCalcBB.setBounds(360, 130, 40, 22);
 		contentPane.add(btnCalcBB);
 
+		rbWAPrice = new JRadioButton("price");
+		rbWAPrice.setToolTipText("average since last price");
+		rbWAPrice.setHorizontalAlignment(SwingConstants.TRAILING);
+		rbWAPrice.setSelected(true);
+		rbWAPrice.setBounds(136, 314, 76, 23);
+		contentPane.add(rbWAPrice);
+		
+		rbWAPrevious = new JRadioButton("previous");
+		rbWAPrevious.setToolTipText("average from previous point");
+		rbWAPrevious.setHorizontalAlignment(SwingConstants.TRAILING);
+		rbWAPrevious.setBounds(216, 314, 76, 23);
+		contentPane.add(rbWAPrevious);
+
+		ButtonGroup bg2 = new javax.swing.ButtonGroup();
+		bg2.add(rbWAPrice);
+		bg2.add(rbWAPrevious);
+		
 		txtWABlocks = new JTextField();
 		txtWABlocks.setText("0");
 		txtWABlocks.setHorizontalAlignment(SwingConstants.TRAILING);
-		txtWABlocks.setBounds(202, 315, 50, 20);
+		txtWABlocks.setBounds(298, 315, 50, 20);
 		contentPane.add(txtWABlocks);
 		
-		btnCalcWA0 = new JButton(Styles.IMAGE_REFRESH);
-		btnCalcWA0.setToolTipText("recalculate");
-		btnCalcWA0.setOpaque(true);
-		btnCalcWA0.setBounds(264, 314, 40, 22);
-		contentPane.add(btnCalcWA0);
-
-		btnCalcWA1 = new JButton(Styles.IMAGE_REFRESH);
-		btnCalcWA1.setToolTipText("recalculate");
-		btnCalcWA1.setOpaque(true);
-		btnCalcWA1.setBounds(312, 314, 40, 22);
-		contentPane.add(btnCalcWA1);
-
-		btnCalcWA2 = new JButton(Styles.IMAGE_REFRESH);
-		btnCalcWA2.setToolTipText("recalculate");
-		btnCalcWA2.setOpaque(true);
-		btnCalcWA2.setBounds(360, 314, 40, 22);
-		contentPane.add(btnCalcWA2);
+		btnCalcWA = new JButton(Styles.IMAGE_REFRESH);
+		btnCalcWA.setToolTipText("recalculate");
+		btnCalcWA.setOpaque(true);
+		btnCalcWA.setBounds(360, 314, 40, 22);
+		contentPane.add(btnCalcWA);
 		
 		// ---------------------------------------------------------------------
 
@@ -673,24 +700,12 @@ public class FrmCoin extends JFrame implements PriceListener
 		
 		btnCalcBB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				BigDecimal blocks = new BigDecimal(txtBBBlocks.getText());
-				depth.calcClassic(blocks);
-				loadPoints();
+				calcBB();
 			}
 		});
-		btnCalcWA0.addActionListener(new ActionListener() {
+		btnCalcWA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				calcWA(0);
-			}
-		});
-		btnCalcWA1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				calcWA(1);
-			}
-		});
-		btnCalcWA2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				calcWA(2);
+				calcWA();
 			}
 		});
 		
@@ -741,15 +756,35 @@ public class FrmCoin extends JFrame implements PriceListener
 
 	// ----------------------------------------------------------------------------------
 
-	public void calcWA(int version) 
+	public void calcBB() 
+	{
+		try
+		{
+			BigDecimal blocks = new BigDecimal(txtBBBlocks.getText());
+	
+			if (rbBBClassic.isSelected())
+				depth.calccalcBBlockClassic(blocks);
+			else
+				depth.calcBBlock(blocks);
+	
+			loadPoints();
+		}
+		catch (Exception ex)
+		{
+			ERROR(ex);
+		}
+	}
+
+	public void calcWA() 
 	{
 		try
 		{
 			BigDecimal blocks = new BigDecimal(txtWABlocks.getText());
 
-			if (version == 0) depth.calcWAvg0(blocks);
-			else if (version == 1) depth.calcWAvg1(blocks);
-			else if (version == 2) depth.calcWAvg2(blocks);
+			if (rbWAPrice.isSelected())
+				depth.calcWAvg0(blocks);
+			else
+				depth.calcWAvg1(blocks);
 
 			loadPoints();
 		}
@@ -758,7 +793,7 @@ public class FrmCoin extends JFrame implements PriceListener
 			ERROR(ex);
 		}
 	}
-	
+
 	private void search()
 	{
 		INFO("");

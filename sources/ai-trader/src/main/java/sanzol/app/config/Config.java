@@ -30,8 +30,8 @@ public class Config
 	private static final double BETTER_SYMBOLS_MAX_CHANGE = 10;
 
 	// Order book
-	private static final int BLOCKS_TO_ANALYZE_BB = 6;
-	private static final int BLOCKS_TO_ANALYZE_WA = 6;
+	private static final int BLOCKS_TO_ANALYZE_BB = 10;
+	private static final int BLOCKS_TO_ANALYZE_WA = 10;
 
 	// Grid
 	private static final int ITERATIONS = 0;

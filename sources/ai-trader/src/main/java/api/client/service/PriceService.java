@@ -189,7 +189,7 @@ public class PriceService extends WebSocketClient
 
 			for (SymbolTickerEvent entry : event)
 			{
-				if (entry.getSymbol().equalsIgnoreCase(Config.DEFAULT_SYMBOL_RIGHT))
+				if (entry.getSymbol().endsWith(Config.DEFAULT_SYMBOL_RIGHT))
 				{
 					mapTickers.put(entry.getSymbol(), entry);
 				}

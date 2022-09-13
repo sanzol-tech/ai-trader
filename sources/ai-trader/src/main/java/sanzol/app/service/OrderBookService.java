@@ -115,12 +115,11 @@ public class OrderBookService
 		lstAsks = new ArrayList<DepthEntry>(mapAsks.values());
 		lstBids = new ArrayList<DepthEntry>(mapBids.values());
 
-		calcClassic(BigDecimal.valueOf(blocksToAnalizeBB));
+		calccalcBBlockClassic(BigDecimal.valueOf(blocksToAnalizeBB));
 		//calcBBlock(BigDecimal.valueOf(blocksToAnalizeBB));
 
 		calcWAvg0(BigDecimal.valueOf(blocksToAnalizeWA));
 		//calcWAvg1(BigDecimal.valueOf(blocksToAnalizeWA));
-		//calcWAvg2(BigDecimal.valueOf(blocksToAnalizeWA));
 
 		fixPoints(FixPointsMode.BB);
 
@@ -130,7 +129,7 @@ public class OrderBookService
 		return this;
 	}
 
-	public void calcClassic(BigDecimal blocks)
+	public void calccalcBBlockClassic(BigDecimal blocks)
 	{
 		BigDecimal askPriceFrom0 = roundNearest(lastPrice, blockSize0);
 		BigDecimal bidPriceFrom0 = askPriceFrom0.add(blockSize0);
@@ -179,84 +178,42 @@ public class OrderBookService
 
 	public void calcWAvg0(BigDecimal blocks)
 	{
-		BigDecimal blocks2 = blocks.multiply(BigDecimal.valueOf(5));
-		BigDecimal blocks3 = blocks.multiply(BigDecimal.valueOf(25));
-
-		calcWAvg0(blocks, blocks2, blocks3);
-	}
-
-	public void calcWAvg0(BigDecimal blocks1, BigDecimal blocks2, BigDecimal blocks3)
-	{
-		BigDecimal askPriceTo1 = lastPrice.add(blockSize1.multiply(blocks1));
-		BigDecimal bidPriceTo1 = lastPrice.subtract(blockSize1.multiply(blocks1));
+		BigDecimal askPriceTo1 = lastPrice.add(blockSize1.multiply(blocks));
+		BigDecimal bidPriceTo1 = lastPrice.subtract(blockSize1.multiply(blocks));
 		this.askWAvgPoint1 = weightedAverageAsks(lstAsks, lastPrice, askPriceTo1);
 		this.bidWAvgPoint1 = weightedAverageBids(lstBids, lastPrice, bidPriceTo1);
 
-		BigDecimal askPriceTo2 = lastPrice.add(blockSize1.multiply(blocks2));
-		BigDecimal bidPriceTo2 = lastPrice.subtract(blockSize1.multiply(blocks2));
+		BigDecimal askPriceTo2 = lastPrice.add(blockSize2.multiply(blocks));
+		BigDecimal bidPriceTo2 = lastPrice.subtract(blockSize2.multiply(blocks));
 		this.askWAvgPoint2 = weightedAverageAsks(lstAsks, lastPrice, askPriceTo2);
 		this.bidWAvgPoint2 = weightedAverageBids(lstBids, lastPrice, bidPriceTo2);
 
-		BigDecimal askPriceTo3 = lastPrice.add(blockSize1.multiply(blocks3));
-		BigDecimal bidPriceTo3 = lastPrice.subtract(blockSize1.multiply(blocks3));
+		BigDecimal blockSize3 = askPriceTo2.multiply(BigDecimal.TEN);
+		BigDecimal askPriceTo3 = lastPrice.add(blockSize3.multiply(blocks));
+		BigDecimal bidPriceTo3 = lastPrice.subtract(blockSize3.multiply(blocks));
 		this.askWAvgPoint3 = weightedAverageAsks(lstAsks, lastPrice, askPriceTo3);
 		this.bidWAvgPoint3 = weightedAverageBids(lstBids, lastPrice, bidPriceTo3);
 	}
 
 	public void calcWAvg1(BigDecimal blocks)
 	{
-		BigDecimal dist1 = getBlockDist(lastPrice).multiply(blocks);
-		BigDecimal dist2 = dist1.multiply(BigDecimal.valueOf(5)).min(BigDecimal.valueOf(1.5));
-		BigDecimal dist3 = dist1.multiply(BigDecimal.valueOf(25)).min(BigDecimal.valueOf(1.5));
-
-		calcWAvg1(dist1, dist2, dist3);
-	}
-
-	public void calcWAvg1(BigDecimal dist1, BigDecimal dist2, BigDecimal dist3)
-	{
-		BigDecimal askPriceTo1 = lastPrice.multiply(BigDecimal.ONE.add(dist1));
-		BigDecimal bidPriceTo1 = lastPrice.multiply(BigDecimal.ONE.subtract(dist1));
-		this.askWAvgPoint1 = weightedAverageAsks(lstAsks, lastPrice, askPriceTo1);
-		this.bidWAvgPoint1 = weightedAverageBids(lstBids, lastPrice, bidPriceTo1);
-
-		BigDecimal askPriceTo2 = lastPrice.multiply(BigDecimal.ONE.add(dist2));
-		BigDecimal bidPriceTo2 = lastPrice.multiply(BigDecimal.ONE.subtract(dist2));
-		this.askWAvgPoint2 = weightedAverageAsks(lstAsks, lastPrice, askPriceTo2);
-		this.bidWAvgPoint2 = weightedAverageBids(lstBids, lastPrice, bidPriceTo2);
-
-		BigDecimal askPriceTo3 = lastPrice.multiply(BigDecimal.ONE.add(dist3));
-		BigDecimal bidPriceTo3 = lastPrice.multiply(BigDecimal.ONE.subtract(dist3));
-		this.askWAvgPoint3 = weightedAverageAsks(lstAsks, lastPrice, askPriceTo3);
-		this.bidWAvgPoint3 = weightedAverageBids(lstBids, lastPrice, bidPriceTo3);
-	}
-
-	public void calcWAvg2(BigDecimal blocks)
-	{
-		BigDecimal dist1 = getBlockDist(lastPrice).multiply(blocks);
-		BigDecimal dist2 = dist1.multiply(BigDecimal.valueOf(5)).min(BigDecimal.valueOf(1.5));
-		BigDecimal dist3 = dist1.multiply(BigDecimal.valueOf(25)).min(BigDecimal.valueOf(1.5));
-
-		calcWAvg2(dist1, dist2, dist3);
-	}
-
-	public void calcWAvg2(BigDecimal dist1, BigDecimal dist2, BigDecimal dist3)
-	{
-		BigDecimal askPriceTo1 = lastPrice.multiply(BigDecimal.ONE.add(dist1));
-		BigDecimal bidPriceTo1 = lastPrice.multiply(BigDecimal.ONE.subtract(dist1));
+		BigDecimal askPriceTo1 = lastPrice.add(blockSize1.multiply(blocks));
+		BigDecimal bidPriceTo1 = lastPrice.subtract(blockSize1.multiply(blocks));
 		this.askWAvgPoint1 = weightedAverageAsks(lstAsks, lastPrice, askPriceTo1);
 		this.bidWAvgPoint1 = weightedAverageBids(lstBids, lastPrice, bidPriceTo1);
 
 		BigDecimal askPriceFrom2 = symbol.addTicks(askWAvgPoint1, 1);
 		BigDecimal bidPriceFrom2 = symbol.subTicks(bidWAvgPoint1, 1);
-		BigDecimal askPriceTo2 = lastPrice.multiply(BigDecimal.ONE.add(dist2));
-		BigDecimal bidPriceTo2 = lastPrice.multiply(BigDecimal.ONE.subtract(dist2));
+		BigDecimal askPriceTo2 = lastPrice.add(blockSize2.multiply(blocks));
+		BigDecimal bidPriceTo2 = lastPrice.subtract(blockSize2.multiply(blocks));
 		this.askWAvgPoint2 = weightedAverageAsks(lstAsks, askPriceFrom2, askPriceTo2);
 		this.bidWAvgPoint2 = weightedAverageBids(lstBids, bidPriceFrom2, bidPriceTo2);
 
 		BigDecimal askPriceFrom3 = symbol.addTicks(askWAvgPoint2, 1);
 		BigDecimal bidPriceFrom3 = symbol.subTicks(bidWAvgPoint2, 1);
-		BigDecimal askPriceTo3 = lastPrice.multiply(BigDecimal.ONE.add(dist3));
-		BigDecimal bidPriceTo3 = lastPrice.multiply(BigDecimal.ONE.subtract(dist3));
+		BigDecimal blockSize3 = askPriceTo2.multiply(BigDecimal.TEN);
+		BigDecimal askPriceTo3 = lastPrice.add(blockSize3.multiply(blocks));
+		BigDecimal bidPriceTo3 = lastPrice.subtract(blockSize3.multiply(blocks));
 		this.askWAvgPoint3 = weightedAverageAsks(lstAsks, askPriceFrom3, askPriceTo3);
 		this.bidWAvgPoint3 = weightedAverageBids(lstBids, bidPriceFrom3, bidPriceTo3);
 	}
@@ -387,13 +344,6 @@ public class OrderBookService
 	}
 
 	// ------------------------------------------------------------------------
-
-	private static BigDecimal getBlockDist(BigDecimal price)
-	{
-		int p = Integer.valueOf(price.toPlainString().replace("0", "").replace(".", "").replace(",", "").substring(0,1));
-		double a = ((p * 100.0) + 1.0) / (p * 100.0) - 1;
-		return BigDecimal.valueOf(a).setScale(4, RoundingMode.HALF_DOWN);
-	}
 	
 	private static BigDecimal getBlockSize(BigDecimal price, BigDecimal size)
 	{

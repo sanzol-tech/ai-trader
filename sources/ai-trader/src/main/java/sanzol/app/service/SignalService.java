@@ -179,7 +179,7 @@ public final class SignalService
 
 			BigDecimal distShLg = PriceUtil.priceDistDown(depth.getAskFixedPoint1(), depth.getBidFixedPoint1(), true);
 
-			if ((distShLg.doubleValue() < 0.8 || distShLg.doubleValue() > 10.0))
+			if ((distShLg.doubleValue() < 0.8 || distShLg.doubleValue() > 12.0))
 			{
 				updateShockPoint(ShockPoint.NULL(symbol));
 				LogService.info("DISCARD SHOCKPOINTS - " + symbol.getNameLeft() + " - DISTANCE BETWEEN POINTS " + distShLg + " %");
