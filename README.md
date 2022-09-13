@@ -8,18 +8,19 @@
 - Automatic stop loss rearrangement
 - Wallet Balances
 - Powerful order forms
+- "Spot" coming soon
 
-![image](https://user-images.githubusercontent.com/68629815/184469254-38c4b327-8641-4684-bb2b-5db5785522ea.png)
+![image](https://user-images.githubusercontent.com/68629815/190016368-4d976df0-219b-486c-b0c6-69f0717c9b64.png)
 
 ![image](https://user-images.githubusercontent.com/68629815/189557971-53a209a3-fcb0-49bf-a513-c77018024bd4.png)
 
 ![image](https://user-images.githubusercontent.com/68629815/180347592-74e8f6bb-1fd9-41e7-880f-002fe4f8866c.png)
 
-![image](https://user-images.githubusercontent.com/68629815/188962982-81955cf4-dff3-4adf-9ef8-039d799ca2bd.png)
+![image](https://user-images.githubusercontent.com/68629815/190014813-63ddf79d-d1b2-480a-8ffb-5b34855e4318.png)
 
 ![image](https://user-images.githubusercontent.com/68629815/168664840-2862cc15-18de-4dc5-8adf-87ffc5f9ddb6.png)
 
-![image](https://user-images.githubusercontent.com/68629815/170294257-14a4ef4e-aee3-4bc2-932e-99351d9bfd1e.png)
+![image](https://user-images.githubusercontent.com/68629815/190015296-88c061cf-49df-4b2c-b089-ceca9fb404ce.png)
 
 ![image](https://user-images.githubusercontent.com/68629815/169188305-06d72c1a-52fe-4782-88e3-9cbe660e149a.png)
 
