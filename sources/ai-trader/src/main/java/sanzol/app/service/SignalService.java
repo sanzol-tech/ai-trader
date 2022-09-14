@@ -35,8 +35,10 @@ import sanzol.app.util.PriceUtil;
 
 public final class SignalService
 {
+	private static final double MIN_SHLG_DIST = 0.8;
+	private static final double MAX_SHLG_DIST = 12.0;
 	private static final double MIN_RATIO = 1.8;
-	
+
 	private static boolean isStarted = false;
 
 	private static boolean onlyFavorites = true;
@@ -179,7 +181,7 @@ public final class SignalService
 
 			BigDecimal distShLg = PriceUtil.priceDistDown(depth.getAskFixedPoint1(), depth.getBidFixedPoint1(), true);
 
-			if ((distShLg.doubleValue() < 0.8 || distShLg.doubleValue() > 12.0))
+			if ((distShLg.doubleValue() < MIN_SHLG_DIST || distShLg.doubleValue() > MAX_SHLG_DIST))
 			{
 				updateShockPoint(ShockPoint.NULL(symbol));
 				LogService.info("DISCARD SHOCKPOINTS - " + symbol.getNameLeft() + " - DISTANCE BETWEEN POINTS " + distShLg + " %");

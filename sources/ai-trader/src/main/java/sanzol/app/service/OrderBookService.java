@@ -21,6 +21,7 @@ import org.apache.commons.io.FileUtils;
 import api.client.enums.DepthMode;
 import api.client.model.sync.DepthEntry;
 import api.client.service.DepthService;
+import api.client.service.ExchangeInfoService;
 import api.client.service.PriceService;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
@@ -97,14 +98,17 @@ public class OrderBookService
 		return (depthClient.getConnectTime() == null) || (depthClient.getConnectTime() + minAge < System.currentTimeMillis());
 	}
 
+	public enum BBType	{ classic, displaced }
+	public enum WAType { price, previous }
+	
 	public OrderBookService calc()
 	{
-		return calc(Config.getBlocksToAnalizeBB(), Config.getBlocksToAnalizeWA());
+		return calc(BBType.classic, Config.getBlocksToAnalizeBB(), WAType.price, Config.getBlocksToAnalizeWA());
 	}
 
-	public OrderBookService calc(int blocksToAnalizeBB, int blocksToAnalizeWA)
+	public OrderBookService calc(BBType bbType, int blocksToAnalizeBB, WAType waType , int blocksToAnalizeWA)
 	{
-		long t1 = System.currentTimeMillis();
+		//long t1 = System.currentTimeMillis();
 		
 		lastPrice = PriceService.getLastPrice(symbol);
 
@@ -115,21 +119,25 @@ public class OrderBookService
 		lstAsks = new ArrayList<DepthEntry>(mapAsks.values());
 		lstBids = new ArrayList<DepthEntry>(mapBids.values());
 
-		calccalcBBlockClassic(BigDecimal.valueOf(blocksToAnalizeBB));
-		//calcBBlock(BigDecimal.valueOf(blocksToAnalizeBB));
+		if (bbType == BBType.classic)
+			calcBBClassic(BigDecimal.valueOf(blocksToAnalizeBB));
+		else
+			calcBBlock(BigDecimal.valueOf(blocksToAnalizeBB));
 
-		calcWAvg0(BigDecimal.valueOf(blocksToAnalizeWA));
-		//calcWAvg1(BigDecimal.valueOf(blocksToAnalizeWA));
+		if (waType == WAType.price)
+			calcWAvg0(BigDecimal.valueOf(blocksToAnalizeWA));
+		else
+			calcWAvg1(BigDecimal.valueOf(blocksToAnalizeWA));
 
 		fixPoints(FixPointsMode.BB);
 
-		long t = System.currentTimeMillis() - t1;
-		System.out.println("calc " + symbol.getPair() + " -> " + t + " msecs " + t);
+		//long t = System.currentTimeMillis() - t1;
+		//System.out.println("calc " + symbol.getPair() + " -> " + t + " msecs " + t);
 
 		return this;
 	}
 
-	public void calccalcBBlockClassic(BigDecimal blocks)
+	private void calcBBClassic(BigDecimal blocks)
 	{
 		BigDecimal askPriceFrom0 = roundNearest(lastPrice, blockSize0);
 		BigDecimal bidPriceFrom0 = askPriceFrom0.add(blockSize0);
@@ -156,7 +164,7 @@ public class OrderBookService
 		this.bidBBlkPoint2 = getBestBlockBids(bidsGrp2, bidPriceFrom2, bidPriceTo2);
 	}
 
-	public void calcBBlock(BigDecimal blocks)
+	private void calcBBlock(BigDecimal blocks)
 	{
 		BigDecimal askPriceTo1 = lastPrice.add(blockSize1.multiply(blocks));
 		BigDecimal bidPriceTo1 = lastPrice.subtract(blockSize1.multiply(blocks));
@@ -176,8 +184,11 @@ public class OrderBookService
 		this.bidBBlkPoint2 = getBestBlockBids(bidsGrp2, lastPrice, bidPriceTo2);
 	}
 
-	public void calcWAvg0(BigDecimal blocks)
+	private void calcWAvg0(BigDecimal blocks)
 	{
+		BigDecimal minPrice = symbol.getTickSize().multiply(BigDecimal.valueOf(10));
+		BigDecimal maxPrice = lastPrice.multiply(BigDecimal.valueOf(3));
+		
 		BigDecimal askPriceTo1 = lastPrice.add(blockSize1.multiply(blocks));
 		BigDecimal bidPriceTo1 = lastPrice.subtract(blockSize1.multiply(blocks));
 		this.askWAvgPoint1 = weightedAverageAsks(lstAsks, lastPrice, askPriceTo1);
@@ -188,15 +199,18 @@ public class OrderBookService
 		this.askWAvgPoint2 = weightedAverageAsks(lstAsks, lastPrice, askPriceTo2);
 		this.bidWAvgPoint2 = weightedAverageBids(lstBids, lastPrice, bidPriceTo2);
 
-		BigDecimal blockSize3 = askPriceTo2.multiply(BigDecimal.TEN);
-		BigDecimal askPriceTo3 = lastPrice.add(blockSize3.multiply(blocks));
-		BigDecimal bidPriceTo3 = lastPrice.subtract(blockSize3.multiply(blocks));
+		BigDecimal blockSize3 = blockSize2.multiply(BigDecimal.TEN);
+		BigDecimal askPriceTo3 = lastPrice.add(blockSize3.multiply(blocks)).min(maxPrice);
+		BigDecimal bidPriceTo3 = lastPrice.subtract(blockSize3.multiply(blocks)).max(minPrice);
 		this.askWAvgPoint3 = weightedAverageAsks(lstAsks, lastPrice, askPriceTo3);
 		this.bidWAvgPoint3 = weightedAverageBids(lstBids, lastPrice, bidPriceTo3);
 	}
 
-	public void calcWAvg1(BigDecimal blocks)
+	private void calcWAvg1(BigDecimal blocks)
 	{
+		BigDecimal minPrice = symbol.getTickSize().multiply(BigDecimal.valueOf(10));
+		BigDecimal maxPrice = lastPrice.multiply(BigDecimal.valueOf(3));
+		
 		BigDecimal askPriceTo1 = lastPrice.add(blockSize1.multiply(blocks));
 		BigDecimal bidPriceTo1 = lastPrice.subtract(blockSize1.multiply(blocks));
 		this.askWAvgPoint1 = weightedAverageAsks(lstAsks, lastPrice, askPriceTo1);
@@ -211,9 +225,9 @@ public class OrderBookService
 
 		BigDecimal askPriceFrom3 = symbol.addTicks(askWAvgPoint2, 1);
 		BigDecimal bidPriceFrom3 = symbol.subTicks(bidWAvgPoint2, 1);
-		BigDecimal blockSize3 = askPriceTo2.multiply(BigDecimal.TEN);
-		BigDecimal askPriceTo3 = lastPrice.add(blockSize3.multiply(blocks));
-		BigDecimal bidPriceTo3 = lastPrice.subtract(blockSize3.multiply(blocks));
+		BigDecimal blockSize3 = blockSize2.multiply(BigDecimal.TEN);
+		BigDecimal askPriceTo3 = lastPrice.add(blockSize3.multiply(blocks)).min(maxPrice);
+		BigDecimal bidPriceTo3 = lastPrice.subtract(blockSize3.multiply(blocks)).max(minPrice);
 		this.askWAvgPoint3 = weightedAverageAsks(lstAsks, askPriceFrom3, askPriceTo3);
 		this.bidWAvgPoint3 = weightedAverageBids(lstBids, bidPriceFrom3, bidPriceTo3);
 	}
@@ -388,30 +402,6 @@ public class OrderBookService
 		{
 			return price.divide(blockSize, 0, RoundingMode.DOWN).multiply(blockSize);
 		}
-
-		/*		
-		if (BigDecimal.valueOf(0.00001).compareTo(blockSize) == 0)
-			return price.setScale(5, RoundingMode.DOWN);
-		else if (BigDecimal.valueOf(0.0001).compareTo(blockSize) == 0)
-			return price.setScale(4, RoundingMode.DOWN);
-		else if (BigDecimal.valueOf(0.001).compareTo(blockSize) == 0)
-			return price.setScale(3, RoundingMode.DOWN);
-		else if (BigDecimal.valueOf(0.01).compareTo(blockSize) == 0)
-			return price.setScale(2, RoundingMode.DOWN);
-		else if (BigDecimal.valueOf(0.1).compareTo(blockSize) == 0)
-			return price.setScale(1, RoundingMode.DOWN);
-		else if (BigDecimal.valueOf(1).compareTo(blockSize) == 0)
-			return price.setScale(0, RoundingMode.DOWN);
-		else if (BigDecimal.valueOf(10).compareTo(blockSize) == 0)
-			return price.divide(BigDecimal.TEN, 0, RoundingMode.DOWN).multiply(BigDecimal.TEN);
-		else if (BigDecimal.valueOf(100).compareTo(blockSize) == 0)
-			return price.divide(BigDecimal.valueOf(100), 0, RoundingMode.DOWN).multiply(BigDecimal.valueOf(100));
-		else if (BigDecimal.valueOf(1000).compareTo(blockSize) == 0)
-			return price.divide(BigDecimal.valueOf(1000), 0, RoundingMode.DOWN).multiply(BigDecimal.valueOf(1000));
-		else
-			throw new IllegalArgumentException("Invalid blockSize " + blockSize);
-		 */
-
 	}
 
 	private ArrayList<DepthEntry> loadAsksGrp(List<DepthEntry> lstAsks, BigDecimal blockSize, BigDecimal priceFrom)
@@ -881,17 +871,18 @@ public class OrderBookService
 
 	public static void main(String[] args) throws Exception
 	{
-		String symbol = "EOS";
-		Symbol coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
+		ExchangeInfoService.start();
+		PriceService.start();
+		
+		String pair = "EOSUSDT";
+		Symbol symbol = Symbol.getInstance(pair);
 
-		//OBookService obService = OBookService.getInstance(coin).request().subscribeDiffDepthEvent();
-		//OBookService obService = OBookService.getInstance(coin).subscribeDiffDepthEvent();
-		OrderBookService obService = OrderBookService.getInstance(coin).request(DepthMode.snapshot_only, 0);		
-		obService.calc(8, 8);
+		OrderBookService obService = OrderBookService.getInstance(symbol).request(DepthMode.snapshot_only, 0);		
+		obService.calc(BBType.classic, 8, WAType.price, 8);
 		obService.export();
 
 		System.out.println("");
-		System.out.println(coin.getNameLeft());
+		System.out.println(symbol.getNameLeft());
 
 /*
 		System.out.println("");
@@ -926,7 +917,7 @@ public class OrderBookService
 		System.out.println("SHORT W.AVG2: " + obService.getAskWAvgPoint2().toPlainString());
 
 		System.out.println("");
-		System.out.println("Price:        " + PriceService.getLastPrice(coin));
+		System.out.println("Price:        " + PriceService.getLastPrice(symbol));
 
 		System.out.println("");
 		System.out.println("LONG B.Blk:   " + obService.getBidBBlkPoint1().toPlainString());
@@ -934,7 +925,6 @@ public class OrderBookService
 		System.out.println("LONG W.AVG:   " + obService.getBidWAvgPoint1().toPlainString());
 		System.out.println("LONG W.AVG2:  " + obService.getBidWAvgPoint2().toPlainString());
 
-/*
 		System.out.println("");
 		List<DepthEntry> listSa = obService.searchSuperAskBlocks();
 		System.out.println(obService.printSuperBlks(listSa));
@@ -942,7 +932,7 @@ public class OrderBookService
 		System.out.println("");
 		List<DepthEntry> listSb = obService.searchSuperBidBlocks();
 		System.out.println(obService.printSuperBlks(listSb));
-*/
+
 	}
 
 }

@@ -46,6 +46,8 @@ import sanzol.app.model.SymbolInfo;
 import sanzol.app.service.OrderBookService;
 import sanzol.app.service.LogService;
 import sanzol.app.service.Symbol;
+import sanzol.app.service.OrderBookService.BBType;
+import sanzol.app.service.OrderBookService.WAType;
 import sanzol.app.util.Convert;
 import sanzol.app.util.PriceUtil;
 import sanzol.lib.util.BeepUtils;
@@ -616,7 +618,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		contentPane.add(rbWAPrice);
 		
 		rbWAPrevious = new JRadioButton("previous");
-		rbWAPrevious.setToolTipText("average from previous point");
+		rbWAPrevious.setToolTipText("average since previous point");
 		rbWAPrevious.setHorizontalAlignment(SwingConstants.TRAILING);
 		rbWAPrevious.setBounds(216, 314, 76, 23);
 		contentPane.add(rbWAPrevious);
@@ -624,19 +626,19 @@ public class FrmCoin extends JFrame implements PriceListener
 		ButtonGroup bg2 = new javax.swing.ButtonGroup();
 		bg2.add(rbWAPrice);
 		bg2.add(rbWAPrevious);
-		
+
 		txtWABlocks = new JTextField();
 		txtWABlocks.setText("0");
 		txtWABlocks.setHorizontalAlignment(SwingConstants.TRAILING);
 		txtWABlocks.setBounds(298, 315, 50, 20);
 		contentPane.add(txtWABlocks);
-		
+
 		btnCalcWA = new JButton(Styles.IMAGE_REFRESH);
 		btnCalcWA.setToolTipText("recalculate");
 		btnCalcWA.setOpaque(true);
 		btnCalcWA.setBounds(360, 314, 40, 22);
 		contentPane.add(btnCalcWA);
-		
+
 		// ---------------------------------------------------------------------
 
 		FrmCoin thisFrm = this;
@@ -700,12 +702,26 @@ public class FrmCoin extends JFrame implements PriceListener
 		
 		btnCalcBB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				calcBB();
+				try
+				{
+					calc();
+				}
+				catch (Exception ex)
+				{
+					ERROR(ex);
+				}
 			}
 		});
 		btnCalcWA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				calcWA();
+				try
+				{
+					calc();
+				}
+				catch (Exception ex)
+				{
+					ERROR(ex);
+				}
 			}
 		});
 		
@@ -756,42 +772,18 @@ public class FrmCoin extends JFrame implements PriceListener
 
 	// ----------------------------------------------------------------------------------
 
-	public void calcBB() 
+	public void calc() throws KeyManagementException, NoSuchAlgorithmException 
 	{
-		try
-		{
-			BigDecimal blocks = new BigDecimal(txtBBBlocks.getText());
-	
-			if (rbBBClassic.isSelected())
-				depth.calccalcBBlockClassic(blocks);
-			else
-				depth.calcBBlock(blocks);
-	
-			loadPoints();
-		}
-		catch (Exception ex)
-		{
-			ERROR(ex);
-		}
-	}
+		BBType bbType = rbBBClassic.isSelected() ? BBType.classic : BBType.displaced;
+		Integer bbBlocks = Integer.valueOf(txtBBBlocks.getText());
 
-	public void calcWA() 
-	{
-		try
-		{
-			BigDecimal blocks = new BigDecimal(txtWABlocks.getText());
+		WAType waType = rbWAPrice.isSelected() ? WAType.price : WAType.previous;
+		Integer waBlocks = Integer.valueOf(txtWABlocks.getText());
 
-			if (rbWAPrice.isSelected())
-				depth.calcWAvg0(blocks);
-			else
-				depth.calcWAvg1(blocks);
+		depth.calc(bbType, bbBlocks, waType, waBlocks);
 
-			loadPoints();
-		}
-		catch (Exception ex)
-		{
-			ERROR(ex);
-		}
+		loadOBook();
+		loadPoints();
 	}
 
 	private void search()
@@ -802,17 +794,16 @@ public class FrmCoin extends JFrame implements PriceListener
 			txtSymbolLeft.setText(txtSymbolLeft.getText().toUpperCase());
 			String symbolLeft = txtSymbolLeft.getText();
 			symbol = Symbol.getInstance(Symbol.getFullSymbol(symbolLeft));
-			
+
 			if (symbol != null)
 			{
 				setTitle(TITLE + " - " + symbol.getNameLeft());
 
 				// ----------------------------------------------------------------
-				depth = OrderBookService.getInstance(symbol).request(DepthMode.snapshot_only, 0).calc();
+				depth = OrderBookService.getInstance(symbol).request(DepthMode.snapshot_only, 0);
 				// ----------------------------------------------------------------
 
-				loadOBook();
-				loadPoints();
+				calc();
 			}
 			else
 			{
