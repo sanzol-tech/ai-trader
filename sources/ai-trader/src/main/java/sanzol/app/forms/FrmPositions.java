@@ -19,7 +19,6 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.service.LogService;
@@ -176,14 +175,6 @@ public class FrmPositions extends JFrame implements PositionListener
 	{
 		lblError.setForeground(Styles.COLOR_TEXT_INFO);
 		lblError.setText(" " + msg);
-	}
-
-	// ------------------------------------------------------------------------
-
-	public static void main(String[] args)
-	{
-		Application.initialize();
-		launch();
 	}
 
 }

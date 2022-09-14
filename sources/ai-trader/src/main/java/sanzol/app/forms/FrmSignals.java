@@ -27,7 +27,6 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
@@ -480,11 +479,4 @@ public class FrmSignals extends JFrame implements SignalListener
 		lblError.setText(" " + msg);
 	}
 
-	// ------------------------------------------------------------------------
-
-	public static void main(String[] args)
-	{
-		Application.initialize();
-		launch();
-	}
 }

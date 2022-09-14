@@ -8,6 +8,14 @@ public class ApiConfig
 	public static String BASE_URL = ApiConstants.FUTURES_BASE_URL;
 	public static String WS_BASE_URL = ApiConstants.FUTURES_WS_BASE_URL;
 
+	public static void setMarketType(MarketType marketType)
+	{
+		if (marketType == MarketType.futures)
+			setFutures();
+		else
+			setSpot();
+	}
+
 	public static void setSpot()
 	{
 		MARKET_TYPE = MarketType.spot;

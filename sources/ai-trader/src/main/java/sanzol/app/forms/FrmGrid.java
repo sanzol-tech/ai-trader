@@ -47,7 +47,6 @@ import api.client.futures.model.sync.AccountBalance;
 import api.client.futures.model.sync.PositionRisk;
 import api.client.service.PriceListener;
 import api.client.service.PriceService;
-import sanzol.app.config.Application;
 import sanzol.app.config.CharConstants;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
@@ -1561,11 +1560,4 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		txtError.setText(" " + msg);
 	}
 
-	// ------------------------------------------------------------------------
-
-	public static void main(String[] args)
-	{
-		Application.initialize();
-		launch();
-	}
 }

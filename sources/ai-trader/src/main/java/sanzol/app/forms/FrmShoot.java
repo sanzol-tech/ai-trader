@@ -31,7 +31,6 @@ import api.client.futures.model.sync.PositionRisk;
 import api.client.model.async.SymbolTickerEvent;
 import api.client.service.PriceListener;
 import api.client.service.PriceService;
-import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
@@ -720,11 +719,4 @@ public class FrmShoot extends JFrame implements PriceListener
 		lblError.setText(" " + msg);
 	}
 
-	// ------------------------------------------------------------------------
-
-	public static void main(String[] args)
-	{
-		Application.initialize();
-		launch();
-	}
 }

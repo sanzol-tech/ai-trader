@@ -16,6 +16,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -31,7 +32,6 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 
-import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.PrivateConfig;
@@ -39,7 +39,6 @@ import sanzol.app.config.Styles;
 import sanzol.app.service.LogService;
 import sanzol.app.util.Convert;
 import sanzol.lib.util.ExceptionUtils;
-import javax.swing.JCheckBox;
 
 public class FrmConfig extends JFrame
 {
@@ -619,11 +618,4 @@ public class FrmConfig extends JFrame
 		lblError.setText(" " + msg);
 	}
 
-	// ------------------------------------------------------------------------
-
-	public static void main(String[] args)
-	{
-		Application.initialize();
-		launch();
-	}
 }

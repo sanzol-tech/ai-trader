@@ -20,7 +20,6 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
-import sanzol.app.config.Application;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.service.LogListener;
@@ -204,13 +203,4 @@ public class FrmLogs extends JFrame implements LogListener
 		lblError.setText(" " + msg);
 	}
 
-	// ------------------------------------------------------------------------
-
-	public static void main(String[] args)
-	{
-		Application.initialize();
-		launch();
-	}
-
-	
 }

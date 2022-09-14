@@ -27,7 +27,6 @@ import javax.swing.table.DefaultTableModel;
 
 import api.client.service.PriceListener;
 import api.client.service.PriceService;
-import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
@@ -346,17 +345,6 @@ public class FrmSymbols extends JFrame implements PriceListener
 	{
 		lblError.setForeground(Styles.COLOR_TEXT_INFO);
 		lblError.setText(" " + msg);
-	}
-
-	// ------------------------------------------------------------------------
-
-	public static void main(String[] args) throws InterruptedException
-	{
-		Application.initialize();
-		
-		Thread.sleep(3000);
-		
-		launch();
 	}
 
 }

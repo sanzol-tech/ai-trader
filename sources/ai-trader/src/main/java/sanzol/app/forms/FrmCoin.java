@@ -26,6 +26,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -38,21 +39,19 @@ import api.client.enums.DepthMode;
 import api.client.model.async.SymbolTickerEvent;
 import api.client.service.PriceListener;
 import api.client.service.PriceService;
-import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
 import sanzol.app.model.SymbolInfo;
-import sanzol.app.service.OrderBookService;
 import sanzol.app.service.LogService;
-import sanzol.app.service.Symbol;
+import sanzol.app.service.OrderBookService;
 import sanzol.app.service.OrderBookService.BBType;
 import sanzol.app.service.OrderBookService.WAType;
+import sanzol.app.service.Symbol;
 import sanzol.app.util.Convert;
 import sanzol.app.util.PriceUtil;
 import sanzol.lib.util.BeepUtils;
 import sanzol.lib.util.ExceptionUtils;
-import javax.swing.JRadioButton;
 
 public class FrmCoin extends JFrame implements PriceListener
 {
@@ -344,11 +343,11 @@ public class FrmCoin extends JFrame implements PriceListener
 		pnlBB.add(lblBid_1);
 
 		lblTitlePoints0 = new JLabel("Biggest block");
-		lblTitlePoints0.setBounds(30, 136, 86, 14);
+		lblTitlePoints0.setBounds(30, 134, 86, 16);
 		contentPane.add(lblTitlePoints0);
 
 		lblTitlePoints2 = new JLabel("Weighted average");
-		lblTitlePoints2.setBounds(30, 320, 100, 14);
+		lblTitlePoints2.setBounds(30, 318, 100, 16);
 		contentPane.add(lblTitlePoints2);
 
 		pnlWA = new JPanel();
@@ -570,14 +569,14 @@ public class FrmCoin extends JFrame implements PriceListener
 		
 		lnkBinance = new JLabel("Binance");
 		lnkBinance.setForeground(Styles.COLOR_LINK);
-		lnkBinance.setBounds(30, 96, 87, 14);
+		lnkBinance.setBounds(30, 96, 87, 16);
 		lnkBinance.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		contentPane.add(lnkBinance);
 
 		lnkTradingview = new JLabel("TradingView");
 		lnkTradingview.setHorizontalAlignment(SwingConstants.TRAILING);
 		lnkTradingview.setForeground(Styles.COLOR_LINK);
-		lnkTradingview.setBounds(121, 96, 87, 14);
+		lnkTradingview.setBounds(121, 96, 87, 16);
 		lnkTradingview.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		contentPane.add(lnkTradingview);
 
@@ -1051,11 +1050,4 @@ public class FrmCoin extends JFrame implements PriceListener
 		lblError.setText(" " + msg);
 	}
 
-	// ------------------------------------------------------------------------
-
-	public static void main(String[] args)
-	{
-		Application.initialize();
-		launch();
-	}
 }

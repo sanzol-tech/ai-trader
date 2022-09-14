@@ -42,7 +42,6 @@ import api.client.service.LastCandlestickListener;
 import api.client.service.LastCandlestickService;
 import api.client.service.PriceListener;
 import api.client.service.PriceService;
-import sanzol.app.config.Application;
 import sanzol.app.config.Config;
 import sanzol.app.config.Constants;
 import sanzol.app.config.Styles;
@@ -664,6 +663,8 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 				{
 					frame = new FrmMain();
 					frame.setVisible(true);
+
+					FrmSplash.close();
 				}
 				catch (Exception e)
 				{
@@ -895,14 +896,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 	{
 		lblError.setForeground(Styles.COLOR_TEXT_INFO);
 		lblError.setText(" " + msg);
-	}
-
-	// ------------------------------------------------------------------------
-
-	public static void main(String[] args)
-	{
-		Application.initialize();
-		launch();
 	}
 
 }
