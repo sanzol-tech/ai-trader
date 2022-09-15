@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 
+import api.client.config.ApiConfig;
 import api.client.enums.DepthMode;
 import api.client.model.sync.DepthEntry;
 import api.client.service.DepthService;
@@ -816,6 +817,8 @@ public class OrderBookService
 
 	public void export() throws IOException
 	{
+		File basepath = new File(Constants.DEFAULT_USER_FOLDER, ApiConfig.MARKET_TYPE.toString());
+		File path = new File(basepath, Constants.DEFAULT_EXPORT_FOLDER);
 
 		if (mapAsks != null && !mapAsks.isEmpty())
 		{
@@ -825,7 +828,7 @@ public class OrderBookService
 				sbAsks.append(ele.toString());
 				sbAsks.append("\n");
 			}
-			File fileExportAsks = new File(Constants.DEFAULT_EXPORT_FOLDER, symbol.getNameLeft() + "_depth_asks.csv");
+			File fileExportAsks = new File(path, symbol.getNameLeft() + "_depth_asks.csv");
 			FileUtils.writeStringToFile(fileExportAsks, sbAsks.toString(), StandardCharsets.UTF_8);
 		}
 
@@ -837,7 +840,7 @@ public class OrderBookService
 				sbAsks.append(ele.toString());
 				sbAsks.append("\n");
 			}
-			File fileExportAsks = new File(Constants.DEFAULT_EXPORT_FOLDER, symbol.getNameLeft() + "_depth_asks0.csv");
+			File fileExportAsks = new File(path, symbol.getNameLeft() + "_depth_asks0.csv");
 			FileUtils.writeStringToFile(fileExportAsks, sbAsks.toString(), StandardCharsets.UTF_8);
 		}
 
@@ -849,7 +852,7 @@ public class OrderBookService
 				sbBids.append(ele.toString());
 				sbBids.append("\n");
 			}
-			File fileExportBids = new File(Constants.DEFAULT_EXPORT_FOLDER, symbol.getNameLeft() + "_depth_bids.csv");
+			File fileExportBids = new File(path, symbol.getNameLeft() + "_depth_bids.csv");
 			FileUtils.writeStringToFile(fileExportBids, sbBids.toString(), StandardCharsets.UTF_8);
 		}
 
@@ -861,7 +864,7 @@ public class OrderBookService
 				sbBids.append(ele.toString());
 				sbBids.append("\n");
 			}
-			File fileExportBids = new File(Constants.DEFAULT_EXPORT_FOLDER, symbol.getNameLeft() + "_depth_bids0.csv");
+			File fileExportBids = new File(path, symbol.getNameLeft() + "_depth_bids0.csv");
 			FileUtils.writeStringToFile(fileExportBids, sbBids.toString(), StandardCharsets.UTF_8);
 		}
 

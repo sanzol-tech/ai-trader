@@ -11,7 +11,7 @@ public class CandlestickEvent
 
 	@JsonProperty("E")
 	private Long eventTime;
-	
+
 	@JsonProperty("s")
 	private String symbol;
 
@@ -280,8 +280,7 @@ public class CandlestickEvent
 		{
 			this.ignore = ignore;
 		}
-		
-	}
-	
-}
 
+	}
+
+}

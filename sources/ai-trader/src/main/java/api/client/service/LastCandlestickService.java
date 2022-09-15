@@ -55,7 +55,7 @@ public class LastCandlestickService extends WebSocketClient
 	// ------------------------------------------------------------------------
 	// ------------------------------------------------------------------------
 	// ------------------------------------------------------------------------
-	
+
 	public LastCandlestickService(URI serverUri, Draft draft)
 	{
 		super(serverUri, draft);
@@ -81,17 +81,17 @@ public class LastCandlestickService extends WebSocketClient
 	public void onMessage(String message)
 	{
 		LogService.debug(message);
-		
+
 		ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		try
 		{
 			CandlestickEvent event = mapper.readerFor(CandlestickEvent.class).readValue(message);
-			
+
 			double open = event.getKline().getOpen().doubleValue();
 			double close = event.getKline().getClose().doubleValue();
 
 			double diff;
-			if(open < close)
+			if (open < close)
 				diff = (close - open) / open;
 			else
 				diff = -((open - close) / open);
@@ -110,20 +110,20 @@ public class LastCandlestickService extends WebSocketClient
 	@Override
 	public void onClose(int code, String reason, boolean remote)
 	{
-		LogService.info("Connection closed by " + (remote ? "remote peer" : "us") + " Code: " + code + " Reason: " + reason);		
+		LogService.info("Connection closed by " + (remote ? "remote peer" : "us") + " Code: " + code + " Reason: " + reason);
 	}
 
 	@Override
 	public void onError(Exception ex)
 	{
-		LogService.error(ex);		
+		LogService.error(ex);
 	}
 
 	// ------------------------------------------------------------------------
 
 	public static void start(String symbol)
 	{
-		start(symbol,  IntervalType._30m);
+		start(symbol, IntervalType._30m);
 	}
 
 	public static void start(String symbol, IntervalType intervalType)

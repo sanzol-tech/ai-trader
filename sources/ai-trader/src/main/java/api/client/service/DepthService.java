@@ -111,7 +111,7 @@ public class DepthService extends WebSocketClient
 			for (List<BigDecimal> entry : event.getAsks())
 			{
 				DepthEntry depthEntry = new DepthEntry(entry.get(0), entry.get(1));
-				
+
 				if (depthEntry.getQty().doubleValue() == 0)
 					mapAsks.remove(depthEntry.getPrice());
 				else
@@ -155,8 +155,8 @@ public class DepthService extends WebSocketClient
 		{
 			return false;
 		}
-		if (PriceUtil.priceDistUp(mapAsks.firstKey(), mapAsks.lastKey(), false).doubleValue() > MIN_DISTANCE && 
-			PriceUtil.priceDistDown(mapBids.firstKey(), mapBids.lastKey(), false).doubleValue() > MIN_DISTANCE)
+		if (PriceUtil.priceDistUp(mapAsks.firstKey(), mapAsks.lastKey(), false).doubleValue() > MIN_DISTANCE
+				&& PriceUtil.priceDistDown(mapBids.firstKey(), mapBids.lastKey(), false).doubleValue() > MIN_DISTANCE)
 		{
 			return false;
 		}
@@ -208,7 +208,7 @@ public class DepthService extends WebSocketClient
 				{
 					depthClient.connect();
 					depthClient.connectTime = System.currentTimeMillis();
-	
+
 					if (timeOut > 0)
 					{
 						Thread.sleep(timeOut);
@@ -220,7 +220,7 @@ public class DepthService extends WebSocketClient
 
 			return depthClient;
 		}
-		catch (Exception e) 
+		catch (Exception e)
 		{
 			LogService.error(e);
 			return null;
@@ -236,14 +236,14 @@ public class DepthService extends WebSocketClient
 		for (DepthEntry entry : depthClient.getMapAsks().values())
 		{
 			i++;
-			System.out.println(i + " - "+ entry.getPrice() + "  :  " + entry.getQty());
+			System.out.println(i + " - " + entry.getPrice() + "  :  " + entry.getQty());
 		}
 
 		int j = 0;
 		for (DepthEntry entry : depthClient.getMapBids().values())
 		{
 			j++;
-			System.out.println(j + " - "+ entry.getPrice() + "  :  " + entry.getQty());
+			System.out.println(j + " - " + entry.getPrice() + "  :  " + entry.getQty());
 		}
 
 		System.out.println(i + " - " + j);

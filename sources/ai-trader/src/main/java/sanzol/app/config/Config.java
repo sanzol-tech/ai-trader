@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import api.client.config.ApiConfig;
+
 public class Config
 {
 	private static final boolean IS_DARK_MODE = false;
@@ -366,7 +368,9 @@ public class Config
 
 	public static void save() throws FileNotFoundException, IOException
 	{
-		File file = new File(Constants.DEFAULT_USER_FOLDER, Constants.PROPERTIES_FILENAME);
+		File basepath = new File(Constants.DEFAULT_USER_FOLDER, ApiConfig.MARKET_TYPE.toString());
+		File file = new File(basepath, Constants.PROPERTIES_FILENAME);
+
 		try (OutputStream output = new FileOutputStream(file))
 		{
 			Properties prop = new Properties();
@@ -402,7 +406,9 @@ public class Config
 
 	public static void load() throws FileNotFoundException, IOException
 	{
-		File file = new File(Constants.DEFAULT_USER_FOLDER, Constants.PROPERTIES_FILENAME);
+		File basepath = new File(Constants.DEFAULT_USER_FOLDER, ApiConfig.MARKET_TYPE.toString());
+		File file = new File(basepath, Constants.PROPERTIES_FILENAME);
+
 		if (file.exists())
 		{
 			try (InputStream input = new FileInputStream(file))

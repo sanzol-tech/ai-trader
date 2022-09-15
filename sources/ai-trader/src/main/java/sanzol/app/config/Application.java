@@ -81,17 +81,18 @@ public final class Application
 	{
 		try
 		{
-			File path = new File(Constants.DEFAULT_USER_FOLDER);
-			if (!path.exists())
+			File basepath = new File(Constants.DEFAULT_USER_FOLDER, ApiConfig.MARKET_TYPE.toString());
+
+			if (!basepath.exists())
 			{
-				path.mkdirs();
+				basepath.mkdirs();
 			}
-			File pathLog = new File(Constants.DEFAULT_LOG_FOLDER);
+			File pathLog = new File(basepath, Constants.DEFAULT_LOG_FOLDER);
 			if (!pathLog.exists())
 			{
 				pathLog.mkdirs();
 			}
-			File pathExport = new File(Constants.DEFAULT_EXPORT_FOLDER);
+			File pathExport = new File(basepath, Constants.DEFAULT_EXPORT_FOLDER);
 			if (!pathExport.exists())
 			{
 				pathExport.mkdirs();
@@ -105,7 +106,7 @@ public final class Application
 	}
 
 	@SuppressWarnings("resource")
-	public static void assertNoOtherInstanceRunning(MarketType marketType)
+	private static void assertNoOtherInstanceRunning(MarketType marketType)
 	{
 		new Thread(() -> {
 			try
@@ -117,17 +118,15 @@ public final class Application
 			}
 			catch (IOException e)
 			{
-				System.out.println("another instance is running");
-				System.exit(0);
+				System.err.println("another instance is running");
+				System.exit(-1);
 			}
 		}).start();
 	}
 
-	public static void start(MarketType marketType)
+	private static void start(MarketType marketType)
 	{
-		FrmSplash.launch(marketType);
-
-		ApiConfig.setMarketType(marketType);
+		FrmSplash.launch();
 
 		initialize();
 
@@ -151,6 +150,8 @@ public final class Application
 			marketType = MarketType.spot;
 		else
 			marketType = MarketType.futures;
+
+		ApiConfig.setMarketType(marketType);
 
 		assertNoOtherInstanceRunning(marketType);
 

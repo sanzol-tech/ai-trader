@@ -76,7 +76,12 @@ public class PriceService extends WebSocketClient
 
 		for (SymbolTickerEvent entry : lstSymbolTickerEvent)
 		{
-			SymbolInfo symbolInfo = new SymbolInfo(entry);
+			SymbolInfo symbolInfo = SymbolInfo.getInstance(entry);
+			
+			if (symbolInfo == null)
+			{
+				continue;
+			}
 
 			if (onlyFavorites && !lstFavorites.contains(symbolInfo.getSymbol().getNameLeft()))
 			{

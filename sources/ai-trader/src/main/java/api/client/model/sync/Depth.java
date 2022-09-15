@@ -52,7 +52,7 @@ public class Depth
 		{
 			BigDecimal price = entry.get(0).stripTrailingZeros();
 			BigDecimal qty = entry.get(1).stripTrailingZeros();
-			
+
 			map.put(price, new DepthEntry(price, qty));
 		}
 		return map;
@@ -65,7 +65,7 @@ public class Depth
 		{
 			BigDecimal price = entry.get(0).stripTrailingZeros();
 			BigDecimal qty = entry.get(1).stripTrailingZeros();
-			
+
 			map.put(price, new DepthEntry(price, qty));
 		}
 		return map;

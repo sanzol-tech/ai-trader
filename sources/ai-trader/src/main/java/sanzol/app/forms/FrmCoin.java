@@ -35,8 +35,10 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+import api.client.config.ApiConfig;
 import api.client.enums.DepthMode;
 import api.client.model.async.SymbolTickerEvent;
+import api.client.service.DepthCache;
 import api.client.service.PriceListener;
 import api.client.service.PriceService;
 import sanzol.app.config.Config;
@@ -73,6 +75,7 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JPanel pnlWA;
 
 	private JButton btnExport;
+	private JButton btnAsyncCache;
 	private JButton btnLongBidPointBB1;
 	private JButton btnLongBidPointWA1;
 	private JButton btnSearch;
@@ -515,6 +518,11 @@ public class FrmCoin extends JFrame implements PriceListener
 		btnExport.setBounds(430, 24, 87, 22);
 		contentPane.add(btnExport);
 
+		btnAsyncCache = new JButton("Async cache");
+		btnExport.setOpaque(true);
+		btnAsyncCache.setBounds(583, 24, 147, 22);
+		contentPane.add(btnAsyncCache);
+		
 		lbl24Hs = new JLabel("24h %");
 		lbl24Hs.setHorizontalAlignment(SwingConstants.TRAILING);
 		lbl24Hs.setBounds(240, 25, 62, 14);
@@ -723,13 +731,39 @@ public class FrmCoin extends JFrame implements PriceListener
 				}
 			}
 		});
-		
+
 		btnExport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				export();
 			}
 		});
-		
+
+		btnAsyncCache.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+		        if (symbol != null)
+				{
+		        	if (btnAsyncCache.getText().endsWith("OFF"))
+					{
+		        		// Disable
+				        if (DepthCache.containsKey(symbol.getPair()))
+						{
+				        	DepthCache.remove(symbol.getPair());
+				        	btnAsyncCache.setText("Async cache ON");
+						}
+					}
+					else
+					{
+			        	// Enable
+				        if (!DepthCache.containsKey(symbol.getPair()))
+						{
+				        	DepthCache.add(symbol.getPair());
+				        	btnAsyncCache.setText("Async cache OFF");
+						}
+					}
+				}
+			}
+		});
+
 	}
 
 	// ----------------------------------------------------------------------------------
@@ -744,8 +778,8 @@ public class FrmCoin extends JFrame implements PriceListener
 				SymbolTickerEvent symbolTicker = PriceService.getSymbolTickerEvent(symbol);
 				if (symbolTicker != null)
 				{
-					SymbolInfo symbolInfo = new SymbolInfo(symbolTicker);
-					
+					SymbolInfo symbolInfo = SymbolInfo.getInstance(symbolTicker);
+
 					BigDecimal mrkPrice = symbolInfo.getLastPrice();
 					txtMarkPrice.setText(symbol.priceToStr(mrkPrice));
 					txtSymbolInfo.setText(symbolInfo.isBestShort() ? "24H HIGH" : symbolInfo.isBestLong() ? "24H LOW" : "");
@@ -803,6 +837,9 @@ public class FrmCoin extends JFrame implements PriceListener
 				// ----------------------------------------------------------------
 
 				calc();
+
+				boolean isInCache = DepthCache.containsKey(symbol.getPair());
+				btnAsyncCache.setText("Async cache " + (isInCache ? "OFF" : "ON"));
 			}
 			else
 			{
@@ -986,11 +1023,13 @@ public class FrmCoin extends JFrame implements PriceListener
 		{
 			depth.export();
 
-			File file = new File(Constants.DEFAULT_EXPORT_FOLDER);
-			Desktop desktop = Desktop.getDesktop();
-			desktop.open(file);
+			File basepath = new File(Constants.DEFAULT_USER_FOLDER, ApiConfig.MARKET_TYPE.toString());
+			File path = new File(basepath, Constants.DEFAULT_EXPORT_FOLDER);
 
-			INFO("Exported to " + Constants.DEFAULT_EXPORT_FOLDER.toString());
+			Desktop desktop = Desktop.getDesktop();
+			desktop.open(path);
+
+			INFO("Exported to " + path.getAbsolutePath());
 		}
 		catch (Exception e)
 		{
@@ -1049,5 +1088,4 @@ public class FrmCoin extends JFrame implements PriceListener
 		lblError.setForeground(Styles.COLOR_TEXT_INFO);
 		lblError.setText(" " + msg);
 	}
-
 }

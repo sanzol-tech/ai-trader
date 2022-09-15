@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import api.client.enums.MarketType;
+import api.client.config.ApiConfig;
 import sanzol.app.config.Constants;
 
 public class FrmSplash extends JFrame
@@ -53,7 +53,7 @@ public class FrmSplash extends JFrame
 		frame.dispose();
 	}
 
-	public static void launch(MarketType marketType)
+	public static void launch()
 	{
 		EventQueue.invokeLater(new Runnable()
 		{
@@ -62,12 +62,7 @@ public class FrmSplash extends JFrame
 				try
 				{
 					frame = new FrmSplash();
-					
-					if (marketType == MarketType.spot)
-						frame.lblTitle.setText(Constants.APP_NAME + "- spot");
-					else
-						frame.lblTitle.setText(Constants.APP_NAME + "- futures");
-					
+					frame.lblTitle.setText(Constants.APP_NAME + " - " + ApiConfig.MARKET_TYPE);
 					frame.setVisible(true);
 				}
 				catch (Exception e)

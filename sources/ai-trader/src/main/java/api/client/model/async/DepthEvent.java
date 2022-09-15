@@ -9,7 +9,7 @@ public class DepthEvent
 {
 	@JsonProperty("e")
 	private String eventType;
-	
+
 	@JsonProperty("E")
 	private Long eventTime;
 

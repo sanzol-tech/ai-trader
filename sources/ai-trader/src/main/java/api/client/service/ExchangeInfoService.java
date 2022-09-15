@@ -31,10 +31,10 @@ public class ExchangeInfoService
 
 		List<ExchangeInfoEntry> lstExchangeInfoEntries = exchangeInfo.getSymbols();
 		time = System.currentTimeMillis();
-		
+
 		for (ExchangeInfoEntry entry : lstExchangeInfoEntries)
 		{
-			if (entry.getQuoteAsset().equalsIgnoreCase(Config.DEFAULT_SYMBOL_RIGHT))
+			if (entry.getQuoteAsset().equalsIgnoreCase(Config.DEFAULT_SYMBOL_RIGHT) && "TRADING".equalsIgnoreCase(entry.getStatus()))
 			{
 				mapExchangeInfo.put(entry.getSymbol(), entry);
 			}
@@ -55,6 +55,6 @@ public class ExchangeInfoService
 		}
 
 		return mapExchangeInfo.get(pair);
-	}	
+	}
 
 }

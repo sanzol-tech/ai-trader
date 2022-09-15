@@ -42,28 +42,65 @@ public class SymbolInfo
 
 	private static final BigDecimal TWO = BigDecimal.valueOf(2);
 
+	/*
 	public SymbolInfo(SymbolTickerEvent symbolTickerEvent) throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
 		symbol = Symbol.getInstance(symbolTickerEvent.getSymbol());
-		lastPrice = symbolTickerEvent.getLastPrice();
-
-		usdVolume = symbolTickerEvent.getQuoteVolume();
-		priceChangePercent = symbolTickerEvent.getPriceChangePercent();
-		high = symbolTickerEvent.getHighPrice();
-		low = symbolTickerEvent.getLowPrice();
-		avgPrice = symbolTickerEvent.getWeightedAvgPrice();
-
-		avgHigh = (avgPrice.add(high)).divide(TWO, symbol.getPricePrecision(), RoundingMode.HALF_UP);
-		avgLow = (avgPrice.add(low)).divide(TWO, symbol.getPricePrecision(), RoundingMode.HALF_UP);
-		minUsdQty = symbol.getMinQty().multiply(high);
-
-		isMinUsdQtyHigh = (minUsdQty.doubleValue() > MIN_USDT);
-		isLowVolume = (usdVolume.doubleValue() < Config.getBetterSymbolsMinVolume());
-		isHighMove = (priceChangePercent.abs().doubleValue() > Config.getBetterSymbolsMaxChange());
-		isBestShort = (lastPrice.doubleValue() > avgHigh.doubleValue());
-		isBestLong = (lastPrice.doubleValue() < avgLow.doubleValue());
+		if (symbol != null)
+		{
+			lastPrice = symbolTickerEvent.getLastPrice();
+	
+			usdVolume = symbolTickerEvent.getQuoteVolume();
+			priceChangePercent = symbolTickerEvent.getPriceChangePercent();
+			high = symbolTickerEvent.getHighPrice();
+			low = symbolTickerEvent.getLowPrice();
+			avgPrice = symbolTickerEvent.getWeightedAvgPrice();
+	
+			avgHigh = (avgPrice.add(high)).divide(TWO, symbol.getPricePrecision(), RoundingMode.HALF_UP);
+			avgLow = (avgPrice.add(low)).divide(TWO, symbol.getPricePrecision(), RoundingMode.HALF_UP);
+			minUsdQty = symbol.getMinQty().multiply(high);
+	
+			isMinUsdQtyHigh = (minUsdQty.doubleValue() > MIN_USDT);
+			isLowVolume = (usdVolume.doubleValue() < Config.getBetterSymbolsMinVolume());
+			isHighMove = (priceChangePercent.abs().doubleValue() > Config.getBetterSymbolsMaxChange());
+			isBestShort = (lastPrice.doubleValue() > avgHigh.doubleValue());
+			isBestLong = (lastPrice.doubleValue() < avgLow.doubleValue());
+		}
 	}
+	*/
+	
+	public static SymbolInfo getInstance(SymbolTickerEvent symbolTickerEvent) throws KeyManagementException, NoSuchAlgorithmException, IOException
+	{
+		Symbol _symbol = Symbol.getInstance(symbolTickerEvent.getSymbol());
+		if (_symbol == null)
+		{
+			return null;
+		}
 
+		SymbolInfo si = new SymbolInfo();
+		
+		si.symbol = _symbol;
+
+		si.lastPrice = symbolTickerEvent.getLastPrice();
+
+		si.usdVolume = symbolTickerEvent.getQuoteVolume();
+		si.priceChangePercent = symbolTickerEvent.getPriceChangePercent();
+		si.high = symbolTickerEvent.getHighPrice();
+		si.low = symbolTickerEvent.getLowPrice();
+		si.avgPrice = symbolTickerEvent.getWeightedAvgPrice();
+
+		si.avgHigh = (si.avgPrice.add(si.high)).divide(TWO, si.symbol.getPricePrecision(), RoundingMode.HALF_UP);
+		si.avgLow = (si.avgPrice.add(si.low)).divide(TWO, si.symbol.getPricePrecision(), RoundingMode.HALF_UP);
+		si.minUsdQty = si.symbol.getMinQty().multiply(si.high);
+
+		si.isMinUsdQtyHigh = (si.minUsdQty.doubleValue() > MIN_USDT);
+		si.isLowVolume = (si.usdVolume.doubleValue() < Config.getBetterSymbolsMinVolume());
+		si.isHighMove = (si.priceChangePercent.abs().doubleValue() > Config.getBetterSymbolsMaxChange());
+		si.isBestShort = (si.lastPrice.doubleValue() > si.avgHigh.doubleValue());
+		si.isBestLong = (si.lastPrice.doubleValue() < si.avgLow.doubleValue());
+
+		return si;
+	}	
 	// ------------------------------------------------------------------------
 
 	public String toString()
@@ -90,8 +127,8 @@ public class SymbolInfo
 
 		for (SymbolTickerEvent entry : lstSymbolTickerEvent)
 		{
-			SymbolInfo symbolInfo = new SymbolInfo(entry);
-			if (!symbolInfo.isMinUsdQtyHigh() && !symbolInfo.isLowVolume() && !symbolInfo.isHighMove())
+			SymbolInfo symbolInfo = getInstance(entry);
+			if (symbolInfo != null && !symbolInfo.isMinUsdQtyHigh() && !symbolInfo.isLowVolume() && !symbolInfo.isHighMove())
 			{
 				lstSymbols.add(symbolInfo.getSymbol().getNameLeft());
 			}
@@ -104,7 +141,7 @@ public class SymbolInfo
 
 	// ------------------------------------------------------------------------
 
-	public String getSymbolName()
+	public String getPair()
 	{
 		return symbol.getPair();
 	}

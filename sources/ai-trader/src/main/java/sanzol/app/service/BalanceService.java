@@ -78,7 +78,7 @@ public final class BalanceService
 
 	}
 
-	// ------------------------------------------------------------------------	
+	// ------------------------------------------------------------------------
 
 	private static List<BalanceListener> observers = new ArrayList<BalanceListener>();
 
@@ -99,5 +99,5 @@ public final class BalanceService
 			observer.onBalanceUpdate();
 		}
 	}
-	
+
 }

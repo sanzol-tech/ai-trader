@@ -127,7 +127,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 	private void initComponents()
 	{
-		setTitle(Constants.APP_NAME + " - " + ApiConfig.MARKET_TYPE.name());
+		setTitle(Constants.APP_NAME + " - " + ApiConfig.MARKET_TYPE);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmMain.class.getResource("/resources/logo.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 860, 600);

@@ -42,6 +42,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.decimal4j.util.DoubleRounder;
 
+import api.client.config.ApiConfig;
 import api.client.futures.enums.PositionSide;
 import api.client.futures.model.sync.AccountBalance;
 import api.client.futures.model.sync.PositionRisk;
@@ -1516,7 +1517,9 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	{
 		try
 		{
-			File path = new File(Constants.DEFAULT_LOG_FOLDER);
+			File basepath = new File(Constants.DEFAULT_USER_FOLDER, ApiConfig.MARKET_TYPE.toString());
+			File path = new File(basepath, Constants.DEFAULT_LOG_FOLDER);
+
 			if (!path.exists()) 
 			{
 				path.mkdirs();

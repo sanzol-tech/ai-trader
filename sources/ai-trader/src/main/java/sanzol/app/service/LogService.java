@@ -11,6 +11,11 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 public class LogService
 {
+	private static final boolean DEBUG_ENABLED = false;
+	private static final boolean INFO_ENABLED = true;
+	private static final boolean WARN_ENABLED = true;
+	private static final boolean ERROR_ENABLED = true;
+
 	private static final long LOG_MAXSIZE = 1000;
 
 	private static LinkedList<String> logLines = new LinkedList<String>();
@@ -25,7 +30,7 @@ public class LogService
 		logLines = new LinkedList<String>();
 	}
 
-	public static synchronized void log(String type, String msg)
+	private static synchronized void log(String type, String msg)
 	{
 		String datetime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 		String text = String.format("%-19s : %s : %s", datetime, type, msg);
@@ -43,22 +48,26 @@ public class LogService
 
 	public static void debug(String msg)
 	{
-		// log("DEBUG", msg);
+		if (DEBUG_ENABLED)
+			log("DEBUG", msg);
 	}
 
 	public static void info(String msg)
 	{
-		log("INFO", msg);
+		if (INFO_ENABLED)
+			log("INFO", msg);
 	}
 
 	public static void warn(String msg)
 	{
-		log("WARN", msg);
+		if (WARN_ENABLED)
+			log("WARN", msg);
 	}
 
 	public static void error(String msg)
 	{
-		log("ERROR", msg);
+		if (ERROR_ENABLED)
+			log("ERROR", msg);
 	}
 
 	public static void error(Exception ex)

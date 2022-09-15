@@ -274,7 +274,7 @@ public class FrmSymbols extends JFrame implements PriceListener
 					!entry.isHighMove() ? "" : "RISKY",
     				PriceUtil.cashFormat(entry.getUsdVolume()),
 					!entry.isLowVolume() ? "" : "< " + PriceUtil.cashFormat(Config.getBetterSymbolsMinVolume()),
-    				entry.getLastPrice(),
+					entry.getSymbol().priceToStr(entry.getLastPrice()),
     				entry.isBestShort() ? "24H HIGH" : entry.isBestLong() ? "24H LOW" : ""
         		};
 

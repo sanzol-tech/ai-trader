@@ -13,7 +13,6 @@ import sanzol.app.model.SymbolInfo;
 public class DepthCache
 {
 	public static final int MAX_CACHE_SIZE = 20;
-	public static final String[] CACHEABLE_SYMBOLS = new String[] { "BNB", "BTC", "DOT", "ETH", "SOL" };
 
 	private static Map<String, DepthService> cache = new ConcurrentHashMap<String, DepthService>();
 
@@ -27,12 +26,30 @@ public class DepthCache
 		return cache.get(pair);
 	}
 
-	public static void put(String pair, DepthService depthClient)
+	public static boolean add(String pair)
 	{
-		cache.put(pair, depthClient);
+		if (!cache.containsKey(pair))
+		{
+			DepthService depthService = DepthService.getInstance(pair, DepthMode.both_force, 0);
+			cache.put(pair, depthService);
+			return true;
+		}
+		return false;
 	}
 
-	public static void clean()
+	public static boolean remove(String pair)
+	{
+		if (cache.containsKey(pair))
+		{
+			DepthService depthService = cache.get(pair);
+			depthService.close();
+			cache.remove(pair);
+			return true;
+		}
+		return false;
+	}
+
+	public static void removeAll()
 	{
 		for (Map.Entry<String, DepthService> entry : cache.entrySet())
 		{
@@ -49,13 +66,10 @@ public class DepthCache
 
 		for (SymbolInfo symbolInfo : topSymbols)
 		{
-			String pair = symbolInfo.getSymbolName();
+			String pair = symbolInfo.getPair();
 
-			if (!cache.containsKey(pair))
+			if (add(pair))
 			{
-				DepthService depthClient = DepthService.getInstance(pair, DepthMode.both_force, 0);
-				cache.put(pair, depthClient);
-
 				Thread.sleep(300);
 			}
 		}

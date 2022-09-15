@@ -1,6 +1,5 @@
 package sanzol.app.service;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
@@ -23,10 +22,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 
+import api.client.config.ApiConfig;
 import api.client.enums.DepthMode;
 import api.client.model.async.SymbolTickerEvent;
 import api.client.service.DepthCache;
 import api.client.service.PriceService;
+import sanzol.app.config.Application.InitializeTask;
 import sanzol.app.config.Constants;
 import sanzol.app.model.ShockPoint;
 import sanzol.app.model.Signal;
@@ -119,15 +120,34 @@ public final class SignalService
 
 	// -----------------------------------------------------------------------
 
-	public static void restartShocks() throws KeyManagementException, NoSuchAlgorithmException, InterruptedException, IOException
+	public static class RestartShocks implements Runnable
 	{
-		mapShockPoints = new ConcurrentHashMap<String, ShockPoint>();
-		lstShortSignals = new ArrayList<Signal>();
-		lstLongSignals = new ArrayList<Signal>();
+		@Override
+		public void run()
+		{
+			try
+			{
+				mapShockPoints = new ConcurrentHashMap<String, ShockPoint>();
+				lstShortSignals = new ArrayList<Signal>();
+				lstLongSignals = new ArrayList<Signal>();
 
-		DepthCache.clean();
-		DepthCache.start();
+				DepthCache.removeAll();
+				DepthCache.start();
+			}
+			catch (Exception e)
+			{
+				LogService.error(e);
+			}
+		}
 	}
+	
+	public static void restartShocks()
+	{
+		Thread thread = new Thread(new InitializeTask(), "restartShocks");
+		thread.start();
+	}
+
+	// -----------------------------------------------------------------------
 
 	public static void searchShocks()
 	{
@@ -359,7 +379,7 @@ public final class SignalService
 					text += entry.toString() + "\n";
 				}
 
-				Path path = Paths.get(Constants.DEFAULT_USER_FOLDER, Constants.SHOCKPOINTS_FILENAME);
+				Path path = Paths.get(Constants.DEFAULT_USER_FOLDER, ApiConfig.MARKET_TYPE.toString(), Constants.SHOCKPOINTS_FILENAME);
 				Files.write(path, text.getBytes(StandardCharsets.UTF_8));
 
 				return true;

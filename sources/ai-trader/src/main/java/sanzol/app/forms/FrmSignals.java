@@ -229,7 +229,7 @@ public class FrmSignals extends JFrame implements SignalListener
 		
 		btnRestart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				generate();
+				restart();
 			}
 		});
 
@@ -277,11 +277,12 @@ public class FrmSignals extends JFrame implements SignalListener
 
 	// ------------------------------------------------------------------------
 
-	private void generate()
+	private void restart()
 	{
 		try
 		{
 			SignalService.restartShocks();
+			INFO("Restarting signals...");
 		}
 		catch (Exception e)
 		{
