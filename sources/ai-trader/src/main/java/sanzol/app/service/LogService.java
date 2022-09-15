@@ -11,6 +11,10 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 public class LogService
 {
+	public enum LogType { DEBUG, INFO, WARN, ERROR }
+	
+	private static final boolean CONSOLE_ENABLED = false;
+
 	private static final boolean DEBUG_ENABLED = false;
 	private static final boolean INFO_ENABLED = true;
 	private static final boolean WARN_ENABLED = true;
@@ -30,17 +34,26 @@ public class LogService
 		logLines = new LinkedList<String>();
 	}
 
-	private static synchronized void log(String type, String msg)
+	private static synchronized void log(LogType type, String msg)
 	{
+		if ((type == LogType.DEBUG && !DEBUG_ENABLED) || (type == LogType.INFO && !INFO_ENABLED) || (type == LogType.WARN && !WARN_ENABLED) || (type == LogType.ERROR && !ERROR_ENABLED))
+		{
+			return;
+		}
+
 		String datetime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-		String text = String.format("%-19s : %s : %s", datetime, type, msg);
+		String text = String.format("%-19s : %s : %s", datetime, type.name(), msg);
 
 		while (logLines.size() > LOG_MAXSIZE)
 		{
 			logLines.removeFirst();
 		}
 
-		System.out.println (text);
+		if (CONSOLE_ENABLED)
+		{
+			System.out.println(text);
+		}
+
 		logLines.add(text);
 
 		notifyAllLogObservers();
@@ -48,37 +61,36 @@ public class LogService
 
 	public static void debug(String msg)
 	{
-		if (DEBUG_ENABLED)
-			log("DEBUG", msg);
+		log(LogType.DEBUG, msg);
 	}
 
 	public static void info(String msg)
 	{
-		if (INFO_ENABLED)
-			log("INFO", msg);
+		log(LogType.INFO, msg);
 	}
 
 	public static void warn(String msg)
 	{
-		if (WARN_ENABLED)
-			log("WARN", msg);
+		log(LogType.WARN, msg);
 	}
 
 	public static void error(String msg)
 	{
-		if (ERROR_ENABLED)
-			log("ERROR", msg);
+		log(LogType.ERROR, msg);
 	}
 
 	public static void error(Exception ex)
 	{
-		ex.printStackTrace();
+		if (CONSOLE_ENABLED)
+		{
+			ex.printStackTrace();
+		}
 
 		StackTraceElement ste = Thread.currentThread().getStackTrace()[2];
 		String simpleClassName = ste.getClassName().substring(ste.getClassName().lastIndexOf('.') + 1);
 		String path = simpleClassName + "." + ste.getMethodName();
 
-		log("ERROR", path + " : " + ExceptionUtils.getMessage(ex));
+		log(LogType.ERROR, path + " : " + ExceptionUtils.getMessage(ex));
 	}
 
 	// ------------------------------------------------------------------------	

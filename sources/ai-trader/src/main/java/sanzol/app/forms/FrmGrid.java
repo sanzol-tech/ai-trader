@@ -57,6 +57,7 @@ import sanzol.app.model.PriceQty;
 import sanzol.app.model.enums.GridTemplate;
 import sanzol.app.model.enums.QuantityType;
 import sanzol.app.service.BalanceService;
+import sanzol.app.service.LogService;
 import sanzol.app.service.PositionListener;
 import sanzol.app.service.PositionService;
 import sanzol.app.service.PositionTrader;
@@ -1513,7 +1514,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 
-	public void save(String filename)
+	private void save(String filename)
 	{
 		try
 		{
@@ -1530,7 +1531,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		catch (IOException e)
 		{
-			System.err.println(e.getMessage());
+			LogService.error(e);
 		}
 	}
 

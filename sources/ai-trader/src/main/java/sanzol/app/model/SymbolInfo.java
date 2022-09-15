@@ -13,12 +13,9 @@ import api.client.model.async.SymbolTickerEvent;
 import api.client.service.PriceService;
 import sanzol.app.config.Config;
 import sanzol.app.service.Symbol;
-import sanzol.app.util.PriceUtil;
 
 public class SymbolInfo
 {
-	public static final double MIN_USDT = 50;
-
 	private Symbol symbol;
 
 	private BigDecimal usdVolume;
@@ -28,46 +25,15 @@ public class SymbolInfo
 	private BigDecimal avgPrice;
 	private BigDecimal avgHigh;
 	private BigDecimal avgLow;
-	private BigDecimal minUsdQty;
 
 	private BigDecimal lastPrice;
-	private BigDecimal dist5m;
 
-	private boolean isMinUsdQtyHigh = false;
 	private boolean isLowVolume = false;
 	private boolean isHighMove = false;
 	private boolean isBestShort = false;
 	private boolean isBestLong = false;
-	private boolean isLowMove5m = false;
 
 	private static final BigDecimal TWO = BigDecimal.valueOf(2);
-
-	/*
-	public SymbolInfo(SymbolTickerEvent symbolTickerEvent) throws KeyManagementException, NoSuchAlgorithmException, IOException
-	{
-		symbol = Symbol.getInstance(symbolTickerEvent.getSymbol());
-		if (symbol != null)
-		{
-			lastPrice = symbolTickerEvent.getLastPrice();
-	
-			usdVolume = symbolTickerEvent.getQuoteVolume();
-			priceChangePercent = symbolTickerEvent.getPriceChangePercent();
-			high = symbolTickerEvent.getHighPrice();
-			low = symbolTickerEvent.getLowPrice();
-			avgPrice = symbolTickerEvent.getWeightedAvgPrice();
-	
-			avgHigh = (avgPrice.add(high)).divide(TWO, symbol.getPricePrecision(), RoundingMode.HALF_UP);
-			avgLow = (avgPrice.add(low)).divide(TWO, symbol.getPricePrecision(), RoundingMode.HALF_UP);
-			minUsdQty = symbol.getMinQty().multiply(high);
-	
-			isMinUsdQtyHigh = (minUsdQty.doubleValue() > MIN_USDT);
-			isLowVolume = (usdVolume.doubleValue() < Config.getBetterSymbolsMinVolume());
-			isHighMove = (priceChangePercent.abs().doubleValue() > Config.getBetterSymbolsMaxChange());
-			isBestShort = (lastPrice.doubleValue() > avgHigh.doubleValue());
-			isBestLong = (lastPrice.doubleValue() < avgLow.doubleValue());
-		}
-	}
-	*/
 	
 	public static SymbolInfo getInstance(SymbolTickerEvent symbolTickerEvent) throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
@@ -91,9 +57,7 @@ public class SymbolInfo
 
 		si.avgHigh = (si.avgPrice.add(si.high)).divide(TWO, si.symbol.getPricePrecision(), RoundingMode.HALF_UP);
 		si.avgLow = (si.avgPrice.add(si.low)).divide(TWO, si.symbol.getPricePrecision(), RoundingMode.HALF_UP);
-		si.minUsdQty = si.symbol.getMinQty().multiply(si.high);
 
-		si.isMinUsdQtyHigh = (si.minUsdQty.doubleValue() > MIN_USDT);
 		si.isLowVolume = (si.usdVolume.doubleValue() < Config.getBetterSymbolsMinVolume());
 		si.isHighMove = (si.priceChangePercent.abs().doubleValue() > Config.getBetterSymbolsMaxChange());
 		si.isBestShort = (si.lastPrice.doubleValue() > si.avgHigh.doubleValue());
@@ -101,20 +65,6 @@ public class SymbolInfo
 
 		return si;
 	}	
-	// ------------------------------------------------------------------------
-
-	public String toString()
-	{
-		String flags 
-			= (isBestShort() ? "BestShort " : "") 
-			+ (isBestLong() ? "BestLong " : "") 
-			+ (isMinUsdQtyHigh() ? "MinUsdQtyHigh " : "")
-			+ (isHighMove() ? "HighMove " : "") 
-			+ (isLowVolume() ? "LowVolume " : "") 
-			+ (isLowMove5m() ? "LowMove5m " : "");
-
-		return String.format("%-10s  vol %5s    24Hs %6.2f %%    5m %6.2f %%    %s", symbol.getNameLeft(), PriceUtil.cashFormat(usdVolume), priceChangePercent, dist5m, flags);
-	}
 
 	// ------------------------------------------------------------------------
 
@@ -128,7 +78,7 @@ public class SymbolInfo
 		for (SymbolTickerEvent entry : lstSymbolTickerEvent)
 		{
 			SymbolInfo symbolInfo = getInstance(entry);
-			if (symbolInfo != null && !symbolInfo.isMinUsdQtyHigh() && !symbolInfo.isLowVolume() && !symbolInfo.isHighMove())
+			if (symbolInfo != null && !symbolInfo.isLowVolume() && !symbolInfo.isHighMove())
 			{
 				lstSymbols.add(symbolInfo.getSymbol().getNameLeft());
 			}
@@ -228,16 +178,6 @@ public class SymbolInfo
 		this.avgLow = avgLow;
 	}
 
-	public BigDecimal getMinUsdQty()
-	{
-		return minUsdQty;
-	}
-
-	public void setMinUsdQty(BigDecimal minUsdQty)
-	{
-		this.minUsdQty = minUsdQty;
-	}
-
 	public BigDecimal getLastPrice()
 	{
 		return lastPrice;
@@ -246,26 +186,6 @@ public class SymbolInfo
 	public void setLastPrice(BigDecimal lastPrice)
 	{
 		this.lastPrice = lastPrice;
-	}
-
-	public BigDecimal getDist5m()
-	{
-		return dist5m;
-	}
-
-	public void setDist5m(BigDecimal dist5m)
-	{
-		this.dist5m = dist5m;
-	}
-
-	public boolean isMinUsdQtyHigh()
-	{
-		return isMinUsdQtyHigh;
-	}
-
-	public void setMinUsdQtyHigh(boolean isMinUsdQtyHigh)
-	{
-		this.isMinUsdQtyHigh = isMinUsdQtyHigh;
 	}
 
 	public boolean isLowVolume()
@@ -306,16 +226,6 @@ public class SymbolInfo
 	public void setBestLong(boolean isBestLong)
 	{
 		this.isBestLong = isBestLong;
-	}
-
-	public boolean isLowMove5m()
-	{
-		return isLowMove5m;
-	}
-
-	public void setLowMove5m(boolean isLowMove5m)
-	{
-		this.isLowMove5m = isLowMove5m;
 	}
 
 }

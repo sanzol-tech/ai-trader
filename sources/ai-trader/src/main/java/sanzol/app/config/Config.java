@@ -28,12 +28,12 @@ public class Config
 		 "VET", "XLM", "XMR", "XRP", "ZEC"};
 
 	// Better symbols
-	private static final long BETTER_SYMBOLS_MIN_VOLUME = 150000000;
+	private static final long BETTER_SYMBOLS_MIN_VOLUME = 180000000;
 	private static final double BETTER_SYMBOLS_MAX_CHANGE = 10;
 
 	// Order book
-	private static final int BLOCKS_TO_ANALYZE_BB = 10;
-	private static final int BLOCKS_TO_ANALYZE_WA = 10;
+	private static final int BLOCKS_TO_ANALYZE_BB = 8;
+	private static final int BLOCKS_TO_ANALYZE_WA = 8;
 
 	// Grid
 	private static final int ITERATIONS = 0;

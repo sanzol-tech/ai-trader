@@ -48,6 +48,7 @@ import sanzol.app.config.Styles;
 import sanzol.app.model.Signal;
 import sanzol.app.service.BalanceListener;
 import sanzol.app.service.BalanceService;
+import sanzol.app.service.LogService;
 import sanzol.app.service.PositionListener;
 import sanzol.app.service.PositionService;
 import sanzol.app.service.SignalListener;
@@ -453,12 +454,12 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		pack();
 
 		lnkGitHub.addMouseListener(new MouseAdapter() {
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			try {
-				Desktop.getDesktop().browse(new URI("https://github.com/sanzol-tech/ai-trader"));
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					Desktop.getDesktop().browse(new URI("https://github.com/sanzol-tech/ai-trader"));
 				} catch (Exception ex) {
-					System.err.println(ex.getMessage());
+					LogService.error(ex);
 				}
 			}
 		});

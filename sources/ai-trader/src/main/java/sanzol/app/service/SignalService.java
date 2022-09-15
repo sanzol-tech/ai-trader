@@ -27,7 +27,6 @@ import api.client.enums.DepthMode;
 import api.client.model.async.SymbolTickerEvent;
 import api.client.service.DepthCache;
 import api.client.service.PriceService;
-import sanzol.app.config.Application.InitializeTask;
 import sanzol.app.config.Constants;
 import sanzol.app.model.ShockPoint;
 import sanzol.app.model.Signal;
@@ -48,8 +47,6 @@ public final class SignalService
 	private static Map<String, ShockPoint> mapShockPoints = new ConcurrentHashMap<String, ShockPoint>();
 	private static List<Signal> lstShortSignals;
 	private static List<Signal> lstLongSignals;
-
-	private static String modified = "n/a";
 
 	public static boolean isOnlyFavorites()
 	{
@@ -74,11 +71,6 @@ public final class SignalService
 	public static List<ShockPoint> getLstShockPoints()
 	{
 		return new ArrayList<ShockPoint>(mapShockPoints.values());
-	}
-
-	public static String getModified()
-	{
-		return modified;
 	}
 
 	// -----------------------------------------------------------------------
@@ -120,7 +112,7 @@ public final class SignalService
 
 	// -----------------------------------------------------------------------
 
-	public static class RestartShocks implements Runnable
+	private static class RestartShocks implements Runnable
 	{
 		@Override
 		public void run()
@@ -140,10 +132,10 @@ public final class SignalService
 			}
 		}
 	}
-	
+
 	public static void restartShocks()
 	{
-		Thread thread = new Thread(new InitializeTask(), "restartShocks");
+		Thread thread = new Thread(new RestartShocks(), "restartShocks");
 		thread.start();
 	}
 
@@ -400,8 +392,8 @@ public final class SignalService
 			return "";
 		}
 
-		String text = String.format("\n%-8s %12s %9s %17s %10s\n", "SYMBOL", "TARGET", "DIST", "24h %", "VOLUME");
-		text += StringUtils.repeat("-", 60) + "\n";
+		String text = "SHORTS\n";
+		text += StringUtils.repeat("-", 70) + "\n";
 
 		for (Signal entry : lstShortSignals)
 		{
@@ -418,8 +410,8 @@ public final class SignalService
 			return "";
 		}
 
-		String text = String.format("\n%-8s %12s %9s %17s %10s\n", "SYMBOL", "TARGET", "DIST", "24h %", "VOLUME");
-		text += StringUtils.repeat("-", 60) + "\n";
+		String text = "LONGS\n";
+		text += StringUtils.repeat("-", 70) + "\n";
 
 		for (Signal entry : lstLongSignals)
 		{
@@ -453,7 +445,7 @@ public final class SignalService
 
 	// -----------------------------------------------------------------------
 
-	public static void main(String[] args) throws Exception
+	public static void main(String[] args) throws KeyManagementException, NoSuchAlgorithmException, InterruptedException
 	{
 		PriceService.start();
 

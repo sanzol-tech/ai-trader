@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Locale;
 
 import sanzol.app.service.Symbol;
+import sanzol.app.util.PriceUtil;
 
 public class Signal
 {
@@ -170,7 +171,7 @@ public class Signal
 
 	public String toString()
 	{
-		return String.format(Locale.US, "%-8s %6.2f%% %12s     TP:%6.2f%%      SL:%6.2f%%     1:%.1f\n", symbol.getNameLeft(), distance, symbol.priceToStr(inPrice), takeProfit, stopLoss, ratio);
+		return String.format(Locale.US, "%-8s %6.2f%% %12s    RATIO 1:%-4.1f   CHG %6.2f%%    VOL %4s\n", symbol.getNameLeft(), distance, symbol.priceToStr(inPrice), ratio, change24h, PriceUtil.cashFormat(volume));
 	}
 
 }

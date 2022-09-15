@@ -30,6 +30,14 @@ import sanzol.app.util.PriceUtil;
 
 public class OrderBookService
 {
+	public enum BBType	{ classic, displaced }
+	public enum WAType { price, previous }
+	public enum FixPointsMode { MIX, BB, WA }
+
+	private static final BBType DEFAULT_BB_TYPE = BBType.classic;
+	private static final WAType DEFAULT_WA_TYPE = WAType.price;
+	private static final FixPointsMode FIX_POINTS_MODE = FixPointsMode.BB;
+
 	private Symbol symbol;
 	private BigDecimal lastPrice;
 
@@ -99,18 +107,15 @@ public class OrderBookService
 		return (depthClient.getConnectTime() == null) || (depthClient.getConnectTime() + minAge < System.currentTimeMillis());
 	}
 
-	public enum BBType	{ classic, displaced }
-	public enum WAType { price, previous }
-	
 	public OrderBookService calc()
 	{
-		return calc(BBType.classic, Config.getBlocksToAnalizeBB(), WAType.price, Config.getBlocksToAnalizeWA());
+		return calc(DEFAULT_BB_TYPE, Config.getBlocksToAnalizeBB(), DEFAULT_WA_TYPE, Config.getBlocksToAnalizeWA());
 	}
 
 	public OrderBookService calc(BBType bbType, int blocksToAnalizeBB, WAType waType , int blocksToAnalizeWA)
 	{
-		//long t1 = System.currentTimeMillis();
-		
+		long t1 = System.currentTimeMillis();
+
 		lastPrice = PriceService.getLastPrice(symbol);
 
 		blockSize0 = getBlockSize(lastPrice, BigDecimal.valueOf(0.1));
@@ -130,10 +135,10 @@ public class OrderBookService
 		else
 			calcWAvg1(BigDecimal.valueOf(blocksToAnalizeWA));
 
-		fixPoints(FixPointsMode.BB);
+		fixPoints();
 
-		//long t = System.currentTimeMillis() - t1;
-		//System.out.println("calc " + symbol.getPair() + " -> " + t + " msecs " + t);
+		long t = System.currentTimeMillis() - t1;
+		LogService.debug("calc " + symbol.getPair() + " -> " + t + " msecs " + t);
 
 		return this;
 	}
@@ -233,10 +238,9 @@ public class OrderBookService
 		this.bidWAvgPoint3 = weightedAverageBids(lstBids, bidPriceFrom3, bidPriceTo3);
 	}
 
-	enum FixPointsMode { MIX, BB, WA }
-	public void fixPoints(FixPointsMode mode)
+	public void fixPoints()
 	{
-		if (mode == FixPointsMode.MIX)
+		if (FIX_POINTS_MODE == FixPointsMode.MIX)
 		{
 			if (askWAvgPoint1 != null && askWAvgPoint1.doubleValue() > askBBlkPoint1.doubleValue())
 				askFixedPoint1 = askWAvgPoint1;
@@ -258,7 +262,7 @@ public class OrderBookService
 			else
 				bidFixedPoint2 = bidBBlkPoint2;
 		}
-		else if (mode == FixPointsMode.BB)
+		else if (FIX_POINTS_MODE == FixPointsMode.BB)
 		{
 			askFixedPoint1 = askBBlkPoint1;
 			bidFixedPoint1 = bidBBlkPoint1;
