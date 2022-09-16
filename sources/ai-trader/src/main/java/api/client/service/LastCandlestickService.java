@@ -1,13 +1,13 @@
 package api.client.service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.decimal4j.util.DoubleRounder;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.handshake.ServerHandshake;
@@ -19,6 +19,7 @@ import api.client.config.ApiConfig;
 import api.client.futures.enums.IntervalType;
 import api.client.model.async.CandlestickEvent;
 import sanzol.app.service.LogService;
+import sanzol.app.util.PriceUtil;
 
 public class LastCandlestickService extends WebSocketClient
 {
@@ -87,16 +88,12 @@ public class LastCandlestickService extends WebSocketClient
 		{
 			CandlestickEvent event = mapper.readerFor(CandlestickEvent.class).readValue(message);
 
-			double open = event.getKline().getOpen().doubleValue();
-			double close = event.getKline().getClose().doubleValue();
+			BigDecimal openPrice = event.getKline().getOpen();
+			BigDecimal closePrice = event.getKline().getClose();
 
-			double diff;
-			if (open < close)
-				diff = (close - open) / open;
-			else
-				diff = -((open - close) / open);
+			BigDecimal change = PriceUtil.priceChange(openPrice, closePrice, true);
 
-			coinChangePercent = DoubleRounder.round(diff * 100, 2);
+			coinChangePercent = change.doubleValue();
 
 			notifyAllLogObservers();
 		}

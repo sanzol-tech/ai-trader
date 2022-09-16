@@ -522,7 +522,7 @@ public class FrmShoot extends JFrame implements PriceListener
 					if (positionRisk.getPositionAmt().doubleValue() < 0)
 					{
 						BigDecimal posDist = positionRisk.getEntryPrice().divide(mrkPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
-						txtPositionDist.setText(Convert.dblToStrPercent(posDist));
+						txtPositionDist.setText(Convert.toStrPercent(posDist));
 		
 						rbShort.setSelected(true);
 						btnPost.setBackground(Styles.COLOR_BTN_SHORT);
@@ -532,7 +532,7 @@ public class FrmShoot extends JFrame implements PriceListener
 					else
 					{
 						BigDecimal posDist = BigDecimal.ONE.subtract(positionRisk.getEntryPrice().divide(mrkPrice, RoundingMode.HALF_UP));
-						txtPositionDist.setText(Convert.dblToStrPercent(posDist));
+						txtPositionDist.setText(Convert.toStrPercent(posDist));
 		
 						rbLong.setSelected(true);
 						btnPost.setBackground(Styles.COLOR_BTN_LONG);
@@ -581,17 +581,17 @@ public class FrmShoot extends JFrame implements PriceListener
 
 			// ----------------------------------------------------------------
 			txtPositionUsd.setText(Convert.usdToStr(mapPosition.get("POS").getUsd()));
-			txtPositionDist.setText(Convert.dblToStrPercent(mapPosition.get("POS").getDist()));
+			txtPositionDist.setText(Convert.toStrPercent(mapPosition.get("POS").getDist()));
 
 			txtShootPrice.setText(coin.priceToStr(mapPosition.get("SHOOT").getPrice()));
 			txtShootQty.setText(coin.qtyToStr(mapPosition.get("SHOOT").getCoins()));
 			txtShootUsd.setText(Convert.usdToStr(mapPosition.get("SHOOT").getUsd()));
-			txtShootDist.setText(Convert.dblToStrPercent(mapPosition.get("SHOOT").getDist()));
+			txtShootDist.setText(Convert.toStrPercent(mapPosition.get("SHOOT").getDist()));
 
 			txtResultPrice.setText(coin.priceToStr(mapPosition.get("RESULT").getPrice()));
 			txtResultQty.setText(coin.qtyToStr(mapPosition.get("RESULT").getCoins()));
 			txtResultUsd.setText(Convert.usdToStr(mapPosition.get("RESULT").getUsd()));
-			txtResultDist.setText(Convert.dblToStrPercent(mapPosition.get("RESULT").getDist()));
+			txtResultDist.setText(Convert.toStrPercent(mapPosition.get("RESULT").getDist()));
 		}
 		catch (Exception e)
 		{

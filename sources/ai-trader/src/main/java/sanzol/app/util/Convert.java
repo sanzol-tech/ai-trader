@@ -30,7 +30,7 @@ public final class Convert
 		return new DecimalFormat(pattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(usd);
 	}
 
-	public static String dblToStrPercent(BigDecimal d)
+	public static String toStrPercent(BigDecimal d)
 	{
 		if (d == null)
 			return "";
@@ -38,7 +38,7 @@ public final class Convert
 		return d.multiply(BigDecimal.valueOf(100.0)).setScale(2, RoundingMode.HALF_UP).toString();
 	}
 
-	public static String dblToStrPercent(Double d)
+	public static String toStrPercent(Double d)
 	{
 		if (d == null)
 			return "";

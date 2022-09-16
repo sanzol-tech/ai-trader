@@ -269,9 +269,9 @@ public class FrmBot extends JFrame implements BotListener
 		{
 			chkTPRearrangement.setSelected(BotService.isTpRearrangement());
 			if (BotService.isTpRearrangement())
-				txtTProfit.setText(Convert.dblToStrPercent(BotService.getTpPercent()));
+				txtTProfit.setText(Convert.toStrPercent(BotService.getTpPercent()));
 			else
-				txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
+				txtTProfit.setText(Convert.toStrPercent(Config.getTakeprofit()));
 
 			chkSLRearrangement.setSelected(BotService.isSlRearrangement());
 			if (BotService.isSlRearrangement())

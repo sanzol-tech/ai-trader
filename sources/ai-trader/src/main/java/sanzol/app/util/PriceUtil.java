@@ -28,6 +28,16 @@ public final class PriceUtil
 			return r;
 	}
 
+	public static BigDecimal priceChange(BigDecimal a, BigDecimal b, boolean x100)
+	{
+		BigDecimal r = b.subtract(a).divide(a, 4, RoundingMode.HALF_UP);
+
+		if (x100)
+			return r.multiply(BigDecimal.valueOf(100));
+		else
+			return r;
+	}
+
 	public static String cashFormat(double n)
 	{
 		return cashFormat(n, 0);

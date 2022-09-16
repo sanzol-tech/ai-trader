@@ -972,15 +972,15 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		rbGeometric.setSelected("G".equals(Config.getGridType()));
 		txtIterations.setText(String.valueOf(Config.getIterations()));
 		chkPIF.setSelected(false); // TODO
-		txtPIF.setText(Convert.dblToStrPercent(Config.getPif()));
+		txtPIF.setText(Convert.toStrPercent(Config.getPif()));
 
-		txtPriceIncr1.setText(Convert.dblToStrPercent(Config.getPriceIncrement1()));
-		txtCoinsIncr1.setText(Convert.dblToStrPercent(Config.getCoinsIncrement1()));
-		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPriceIncrement()));
-		txtCoinsIncr.setText(Convert.dblToStrPercent(Config.getCoinsIncrement()));
+		txtPriceIncr1.setText(Convert.toStrPercent(Config.getPriceIncrement1()));
+		txtCoinsIncr1.setText(Convert.toStrPercent(Config.getCoinsIncrement1()));
+		txtPriceIncr.setText(Convert.toStrPercent(Config.getPriceIncrement()));
+		txtCoinsIncr.setText(Convert.toStrPercent(Config.getCoinsIncrement()));
 		
-		txtStopLoss.setText(Convert.dblToStrPercent(Config.getStoplossIncrement()));
-		txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
+		txtStopLoss.setText(Convert.toStrPercent(Config.getStoplossIncrement()));
+		txtTProfit.setText(Convert.toStrPercent(Config.getTakeprofit()));
 		
 		generateGrid();
 	}
@@ -1043,7 +1043,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		txtCoinsIncr.setText(coinsIncr);
 
 		txtStopLoss.setText(stopLoss);
-		txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
+		txtTProfit.setText(Convert.toStrPercent(Config.getTakeprofit()));
 
 		generateGrid();
 	}
@@ -1074,8 +1074,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 		if (iterations >= 1)
 		{
-			txtGPrice1.setText(Convert.dblToStrPercent(priceIncr1));
-			txtGQty1.setText(Convert.dblToStrPercent(qtyIncr1));
+			txtGPrice1.setText(Convert.toStrPercent(priceIncr1));
+			txtGQty1.setText(Convert.toStrPercent(qtyIncr1));
 		}
 		else
 		{
@@ -1084,8 +1084,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		if (iterations >= 2)
 		{
-			txtGPrice2.setText(Convert.dblToStrPercent(priceIncr));
-			txtGQty2.setText(Convert.dblToStrPercent(qtyIncr));
+			txtGPrice2.setText(Convert.toStrPercent(priceIncr));
+			txtGQty2.setText(Convert.toStrPercent(qtyIncr));
 		}
 		else
 		{
@@ -1094,8 +1094,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		if (iterations >= 3)
 		{
-			txtGPrice3.setText(Convert.dblToStrPercent(priceIncr));
-			txtGQty3.setText(Convert.dblToStrPercent(qtyIncr));
+			txtGPrice3.setText(Convert.toStrPercent(priceIncr));
+			txtGQty3.setText(Convert.toStrPercent(qtyIncr));
 		}
 		else
 		{
@@ -1104,8 +1104,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		if (iterations >= 4)
 		{
-			txtGPrice4.setText(Convert.dblToStrPercent(priceIncr));
-			txtGQty4.setText(Convert.dblToStrPercent(qtyIncr));
+			txtGPrice4.setText(Convert.toStrPercent(priceIncr));
+			txtGQty4.setText(Convert.toStrPercent(qtyIncr));
 		}
 		else
 		{
@@ -1114,8 +1114,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		if (iterations >= 5)
 		{
-			txtGPrice5.setText(Convert.dblToStrPercent(priceIncr));
-			txtGQty5.setText(Convert.dblToStrPercent(qtyIncr));
+			txtGPrice5.setText(Convert.toStrPercent(priceIncr));
+			txtGQty5.setText(Convert.toStrPercent(qtyIncr));
 		}
 		else
 		{
@@ -1124,8 +1124,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		if (iterations >= 6)
 		{
-			txtGPrice6.setText(Convert.dblToStrPercent(priceIncr));
-			txtGQty6.setText(Convert.dblToStrPercent(qtyIncr));
+			txtGPrice6.setText(Convert.toStrPercent(priceIncr));
+			txtGQty6.setText(Convert.toStrPercent(qtyIncr));
 		}
 		else
 		{
@@ -1134,8 +1134,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		if (iterations >= 7)
 		{
-			txtGPrice7.setText(Convert.dblToStrPercent(priceIncr));
-			txtGQty7.setText(Convert.dblToStrPercent(qtyIncr));
+			txtGPrice7.setText(Convert.toStrPercent(priceIncr));
+			txtGQty7.setText(Convert.toStrPercent(qtyIncr));
 		}
 		else
 		{
@@ -1144,8 +1144,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		if (iterations >= 8)
 		{
-			txtGPrice8.setText(Convert.dblToStrPercent(priceIncr));
-			txtGQty8.setText(Convert.dblToStrPercent(qtyIncr));
+			txtGPrice8.setText(Convert.toStrPercent(priceIncr));
+			txtGQty8.setText(Convert.toStrPercent(qtyIncr));
 		}
 		else
 		{
@@ -1174,8 +1174,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 		if (iterations >= 2)
 		{
-			txtGPrice2.setText(Convert.dblToStrPercent(priceIncr * Math.pow(pif, 1)));
-			txtGQty2.setText(Convert.dblToStrPercent(qtyIncr));
+			txtGPrice2.setText(Convert.toStrPercent(priceIncr * Math.pow(pif, 1)));
+			txtGQty2.setText(Convert.toStrPercent(qtyIncr));
 		}
 		else
 		{
@@ -1184,8 +1184,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		if (iterations >= 3)
 		{
-			txtGPrice3.setText(Convert.dblToStrPercent(priceIncr * Math.pow(pif, 2)));
-			txtGQty3.setText(Convert.dblToStrPercent(qtyIncr));
+			txtGPrice3.setText(Convert.toStrPercent(priceIncr * Math.pow(pif, 2)));
+			txtGQty3.setText(Convert.toStrPercent(qtyIncr));
 		}
 		else
 		{
@@ -1194,8 +1194,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		if (iterations >= 4)
 		{
-			txtGPrice4.setText(Convert.dblToStrPercent(priceIncr * Math.pow(pif, 3)));
-			txtGQty4.setText(Convert.dblToStrPercent(qtyIncr));
+			txtGPrice4.setText(Convert.toStrPercent(priceIncr * Math.pow(pif, 3)));
+			txtGQty4.setText(Convert.toStrPercent(qtyIncr));
 		}
 		else
 		{
@@ -1204,8 +1204,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		if (iterations >= 5)
 		{
-			txtGPrice5.setText(Convert.dblToStrPercent(priceIncr * Math.pow(pif, 4)));
-			txtGQty5.setText(Convert.dblToStrPercent(qtyIncr));
+			txtGPrice5.setText(Convert.toStrPercent(priceIncr * Math.pow(pif, 4)));
+			txtGQty5.setText(Convert.toStrPercent(qtyIncr));
 		}
 		else
 		{
@@ -1214,8 +1214,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		if (iterations >= 6)
 		{
-			txtGPrice6.setText(Convert.dblToStrPercent(priceIncr * Math.pow(pif, 5)));
-			txtGQty6.setText(Convert.dblToStrPercent(qtyIncr));
+			txtGPrice6.setText(Convert.toStrPercent(priceIncr * Math.pow(pif, 5)));
+			txtGQty6.setText(Convert.toStrPercent(qtyIncr));
 		}
 		else
 		{
@@ -1224,8 +1224,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		if (iterations >= 7)
 		{
-			txtGPrice7.setText(Convert.dblToStrPercent(priceIncr * Math.pow(pif, 6)));
-			txtGQty7.setText(Convert.dblToStrPercent(qtyIncr));
+			txtGPrice7.setText(Convert.toStrPercent(priceIncr * Math.pow(pif, 6)));
+			txtGQty7.setText(Convert.toStrPercent(qtyIncr));
 		}
 		else
 		{
@@ -1234,8 +1234,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		if (iterations >= 8)
 		{
-			txtGPrice8.setText(Convert.dblToStrPercent(priceIncr * Math.pow(pif, 7)));
-			txtGQty8.setText(Convert.dblToStrPercent(qtyIncr));
+			txtGPrice8.setText(Convert.toStrPercent(priceIncr * Math.pow(pif, 7)));
+			txtGQty8.setText(Convert.toStrPercent(qtyIncr));
 		}
 		else
 		{

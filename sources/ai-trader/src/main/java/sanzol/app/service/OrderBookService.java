@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -571,7 +572,7 @@ public class OrderBookService
 		BigDecimal totalAsks = sumQtyAsks(maxPrice, isUsd);
 		BigDecimal totalBids = sumQtyBids(minPrice, isUsd);
 		BigDecimal diff = (totalBids.subtract(totalAsks)).divide(totalBids.add(totalAsks), 4, RoundingMode.HALF_DOWN);
-		return String.format("totalAsks: %12.2f  totalBids: %12.2f  diff:  %6.4f %%", totalAsks, totalBids, diff);
+		return String.format(Locale.US, "totalAsks: %12.2f  totalBids: %12.2f  diff: %7.2f %%", totalAsks, totalBids, diff.multiply(BigDecimal.valueOf(100)));
 	}
 
 	// ------------------------------------------------------------------------
@@ -754,14 +755,19 @@ public class OrderBookService
 		return list;
 	}	
 
-	public String printSuperBlks(List<DepthEntry> list)
+	public String printSuperBlks(List<DepthEntry> lst)
 	{
-		if (list != null && !list.isEmpty())
+		DecimalFormat df = getQtyDecimalFormat();
+
+		if (lst != null && !lst.isEmpty())
 		{
+			BigDecimal firstPrice = lastPrice;
+
 			StringBuilder sb = new StringBuilder();
-			for (DepthEntry ele : list)
+			for (DepthEntry ele : lst)
 			{
-				sb.append(String.format("%-10s  %10s\n", symbol.priceToStr(ele.getPrice()), symbol.qtyToStr(ele.getQty())));
+				BigDecimal dist = PriceUtil.priceDistUp(firstPrice, ele.getPrice(), true);
+				sb.append(String.format("%-10s %17s  %6.2f %%\n", symbol.priceToStr(ele.getPrice()), df.format(ele.getQty()), dist));
 			}
 			return sb.toString();
 		}

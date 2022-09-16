@@ -490,24 +490,24 @@ public class FrmConfig extends JFrame
 		rbGeometric.setSelected("G".equals(Config.getGridType()));
 
 		chkPIF.setSelected(false); // TODO
-		txtPIF.setText(Convert.dblToStrPercent(Config.getPif()));
+		txtPIF.setText(Convert.toStrPercent(Config.getPif()));
 
 		txtIterations.setText(String.valueOf(Config.getIterations()));
-		txtPriceIncr1.setText(Convert.dblToStrPercent(Config.getPriceIncrement1()));
-		txtCoinsIncr1.setText(Convert.dblToStrPercent(Config.getCoinsIncrement1()));
-		txtPriceIncr.setText(Convert.dblToStrPercent(Config.getPriceIncrement()));
-		txtCoinsIncr.setText(Convert.dblToStrPercent(Config.getCoinsIncrement()));
-		txtDistBeforeSL.setText(Convert.dblToStrPercent(Config.getStoplossIncrement()));
-		txtTProfit.setText(Convert.dblToStrPercent(Config.getTakeprofit()));
+		txtPriceIncr1.setText(Convert.toStrPercent(Config.getPriceIncrement1()));
+		txtCoinsIncr1.setText(Convert.toStrPercent(Config.getCoinsIncrement1()));
+		txtPriceIncr.setText(Convert.toStrPercent(Config.getPriceIncrement()));
+		txtCoinsIncr.setText(Convert.toStrPercent(Config.getCoinsIncrement()));
+		txtDistBeforeSL.setText(Convert.toStrPercent(Config.getStoplossIncrement()));
+		txtTProfit.setText(Convert.toStrPercent(Config.getTakeprofit()));
 
 		rbQtyUsd.setSelected("U".equals(Config.getInQtyType()));
 		rbQtyBalance.setSelected("B".equals(Config.getInQtyType()));
 		txtInQtyUsd.setText(rbQtyUsd.isSelected() ? Config.getInQty().toString() : "");
-		txtInQtyBalance.setText(rbQtyBalance.isSelected() ? Convert.dblToStrPercent(Config.getInQty()) : "");
+		txtInQtyBalance.setText(rbQtyBalance.isSelected() ? Convert.toStrPercent(Config.getInQty()) : "");
 
 		txtLeverage.setText(String.valueOf(Config.getLeverage()));
 		txtPositionsMax.setText(String.valueOf(Config.getPositionsMax()));
-		txtBalanceMinAvailable.setText(Convert.dblToStrPercent(Config.getBalanceMinAvailable()));
+		txtBalanceMinAvailable.setText(Convert.toStrPercent(Config.getBalanceMinAvailable()));
 	}
 
 	public static void launch()

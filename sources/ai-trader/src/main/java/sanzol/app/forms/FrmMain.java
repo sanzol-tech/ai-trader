@@ -335,14 +335,14 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		lblPrice.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblPrice.setBounds(84, 11, 87, 14);
 		panel.add(lblPrice);
-		
+
 		txtChange30m = new JLabel("---");
 		txtChange30m.setForeground(Styles.COLOR_TEXT_ALT1);
 		txtChange30m.setHorizontalAlignment(SwingConstants.TRAILING);
 		txtChange30m.setFont(new Font("Dialog", Font.PLAIN, 14));
 		txtChange30m.setBounds(181, 36, 124, 14);
 		panel.add(txtChange30m);
-		
+
 		txtChange24h = new JLabel("---");
 		txtChange24h.setForeground(Styles.COLOR_TEXT_ALT1);
 		txtChange24h.setHorizontalAlignment(SwingConstants.TRAILING);
