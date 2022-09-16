@@ -47,6 +47,9 @@ public class OrderBookService
 	private List<DepthEntry> lstAsks;
 	private List<DepthEntry> lstBids;
 
+	private BigDecimal minPrice;
+	private BigDecimal maxPrice;
+	
 	private BigDecimal blockSize0;
 	private List<DepthEntry> asksGrp0;
 	private List<DepthEntry> bidsGrp0;
@@ -125,6 +128,9 @@ public class OrderBookService
 		lstAsks = new ArrayList<DepthEntry>(mapAsks.values());
 		lstBids = new ArrayList<DepthEntry>(mapBids.values());
 
+		minPrice = calcMinPrice();
+		maxPrice = calcMaxPrice();
+		
 		if (bbType == BBType.classic)
 			calcBBClassic(BigDecimal.valueOf(blocksToAnalizeBB));
 		else
@@ -192,9 +198,6 @@ public class OrderBookService
 
 	private void calcWAvg0(BigDecimal blocks)
 	{
-		BigDecimal minPrice = symbol.getTickSize().multiply(BigDecimal.valueOf(10));
-		BigDecimal maxPrice = lastPrice.multiply(BigDecimal.valueOf(3));
-		
 		BigDecimal askPriceTo1 = lastPrice.add(blockSize1.multiply(blocks));
 		BigDecimal bidPriceTo1 = lastPrice.subtract(blockSize1.multiply(blocks));
 		this.askWAvgPoint1 = weightedAverageAsks(lstAsks, lastPrice, askPriceTo1);
@@ -214,9 +217,6 @@ public class OrderBookService
 
 	private void calcWAvg1(BigDecimal blocks)
 	{
-		BigDecimal minPrice = symbol.getTickSize().multiply(BigDecimal.valueOf(10));
-		BigDecimal maxPrice = lastPrice.multiply(BigDecimal.valueOf(3));
-		
 		BigDecimal askPriceTo1 = lastPrice.add(blockSize1.multiply(blocks));
 		BigDecimal bidPriceTo1 = lastPrice.subtract(blockSize1.multiply(blocks));
 		this.askWAvgPoint1 = weightedAverageAsks(lstAsks, lastPrice, askPriceTo1);
@@ -280,6 +280,18 @@ public class OrderBookService
 		}
 	}
 
+	// ------------------------------------------------------------------------
+
+	public BigDecimal getMinPrice()
+	{
+		return minPrice;
+	}
+
+	public BigDecimal getMaxPrice()
+	{
+		return maxPrice;
+	}
+	
 	// ------------------------------------------------------------------------
 
 	public BigDecimal getAskBBlkPoint1()
@@ -360,6 +372,20 @@ public class OrderBookService
 	public BigDecimal getBidFixedPoint3()
 	{
 		return bidFixedPoint3;
+	}
+
+	// ------------------------------------------------------------------------
+
+	private BigDecimal calcMinPrice()
+	{
+		BigDecimal a = symbol.getTickSize().multiply(BigDecimal.valueOf(100));
+		BigDecimal b = lastPrice.multiply(BigDecimal.valueOf(0.005));
+		return a.max(b);
+	}
+
+	private BigDecimal calcMaxPrice()
+	{
+		return lastPrice.multiply(BigDecimal.valueOf(5));
 	}
 
 	// ------------------------------------------------------------------------
@@ -489,31 +515,66 @@ public class OrderBookService
 
 	// ------------------------------------------------------------------------
 
-	public BigDecimal sumQtyAsks()
+	public BigDecimal sumQtyAsks(BigDecimal _maxPrice, boolean isUsd)
 	{
 		BigDecimal total = BigDecimal.ZERO;
 		if (mapAsks != null && !mapAsks.isEmpty())
 		{
 			for (DepthEntry entry : mapAsks.values())
 			{
+				if (entry.getPrice().doubleValue() > _maxPrice.doubleValue())
+				{
+					break;
+				}
+
 				total = total.add(entry.getQty());
+				total = isUsd ? total.add(entry.getUsd()) : total.add(entry.getQty());
 			}
 		}
 		return total;
 	}
 
-	public BigDecimal sumQtyBids()
+	public BigDecimal sumQtyBids(BigDecimal _minPrice, boolean isUsd)
 	{
 		BigDecimal total = BigDecimal.ZERO;
 		if (mapBids != null && !mapBids.isEmpty())
 		{
 			for (DepthEntry entry : mapBids.values())
 			{
-				total = total.add(entry.getQty());
+				if (entry.getPrice().doubleValue() < _minPrice.doubleValue())
+				{
+					break;
+				}
+
+				total = isUsd ? total.add(entry.getUsd()) : total.add(entry.getQty());
 			}
 		}
 		return total;
 	}
+
+	public String calcDepthDiff(BigDecimal dist, boolean isUsd)
+	{
+		if (dist == null)
+		{
+			return "ALL  %  " + calcDepthDiff(minPrice, maxPrice, isUsd);
+		}
+		else
+		{
+			BigDecimal minPrice = lastPrice.multiply(BigDecimal.ONE.subtract(dist));
+			BigDecimal maxPrice = lastPrice.multiply(BigDecimal.ONE.add(dist));
+			return dist + " %  " + calcDepthDiff(minPrice, maxPrice, isUsd);
+		}
+	}
+
+	public String calcDepthDiff(BigDecimal minPrice, BigDecimal maxPrice, boolean isUsd)
+	{
+		BigDecimal totalAsks = sumQtyAsks(maxPrice, isUsd);
+		BigDecimal totalBids = sumQtyBids(minPrice, isUsd);
+		BigDecimal diff = (totalBids.subtract(totalAsks)).divide(totalBids.add(totalAsks), 4, RoundingMode.HALF_DOWN);
+		return String.format("totalAsks: %12.2f  totalBids: %12.2f  diff:  %6.4f %%", totalAsks, totalBids, diff);
+	}
+
+	// ------------------------------------------------------------------------
 
 	public BigDecimal getBestBlockAsks(List<DepthEntry> asksGrp, BigDecimal priceA, BigDecimal priceB)
 	{
@@ -617,20 +678,13 @@ public class OrderBookService
 
 	public List<DepthEntry> searchSuperAskBlocks()
 	{
-		return searchSuperAskBlocks(Config.getBlocksToAnalizeBB() * 2);
-	}
-
-	public List<DepthEntry> searchSuperAskBlocks(int blocksToAnalize)
-	{
-		double maxPrice_ = lastPrice.doubleValue() + (blockSize2.doubleValue() * blocksToAnalize);
-		
 		List<DepthEntry> list = new ArrayList<DepthEntry>();
 
 		double avgQty = 0;
 		int count = 0;
 		for (DepthEntry e : mapAsks.values())
 		{
-			if (e.getPrice().doubleValue() > maxPrice_)
+			if (e.getPrice().doubleValue() > maxPrice.doubleValue())
 			{
 				break;
 			}
@@ -642,7 +696,7 @@ public class OrderBookService
 
 		for (DepthEntry e : mapAsks.values())
 		{
-			if (e.getPrice().doubleValue() > maxPrice_)
+			if (e.getPrice().doubleValue() > maxPrice.doubleValue())
 			{
 				continue;
 			}
@@ -655,7 +709,7 @@ public class OrderBookService
 			list.add(new DepthEntry(e.getPrice(), e.getQty()));
 		}
 		Collections.sort(list, Comparator.comparing(DepthEntry::getQty).reversed());
-		list = list.stream().limit(20).collect(Collectors.toList());
+		list = list.stream().limit(10).collect(Collectors.toList());
 		Collections.sort(list, Comparator.comparing(DepthEntry::getPrice).reversed());
 		
 		return list;
@@ -663,20 +717,13 @@ public class OrderBookService
 
 	public List<DepthEntry> searchSuperBidBlocks()
 	{
-		return searchSuperBidBlocks(Config.getBlocksToAnalizeBB() * 2);
-	}
-
-	public List<DepthEntry> searchSuperBidBlocks(int blocksToAnalize)
-	{
-		double minPrice_ = lastPrice.doubleValue() - (blockSize2.doubleValue() * blocksToAnalize);
-
 		List<DepthEntry> list = new ArrayList<DepthEntry>();
 
 		double avgQty = 0;
 		int count = 0;
 		for (DepthEntry e : mapBids.values())
 		{
-			if (e.getPrice().doubleValue() < minPrice_)
+			if (e.getPrice().doubleValue() < minPrice.doubleValue())
 			{
 				break;
 			}
@@ -688,7 +735,7 @@ public class OrderBookService
 
 		for (DepthEntry e : mapBids.values())
 		{
-			if (e.getPrice().doubleValue() < minPrice_)
+			if (e.getPrice().doubleValue() < minPrice.doubleValue())
 			{
 				continue;
 			}
@@ -701,7 +748,7 @@ public class OrderBookService
 			list.add(new DepthEntry(e.getPrice(), e.getQty()));
 		}
 		Collections.sort(list, Comparator.comparing(DepthEntry::getQty).reversed());
-		list = list.stream().limit(20).collect(Collectors.toList());
+		list = list.stream().limit(10).collect(Collectors.toList());
 		Collections.sort(list, Comparator.comparing(DepthEntry::getPrice).reversed());
 
 		return list;
@@ -881,7 +928,7 @@ public class OrderBookService
 		ExchangeInfoService.start();
 		PriceService.start();
 		
-		String pair = "EOSUSDT";
+		String pair = "NEARUSDT";
 		Symbol symbol = Symbol.getInstance(pair);
 
 		OrderBookService obService = OrderBookService.getInstance(symbol).request(DepthMode.snapshot_only, 0);		
@@ -939,6 +986,23 @@ public class OrderBookService
 		System.out.println("");
 		List<DepthEntry> listSb = obService.searchSuperBidBlocks();
 		System.out.println(obService.printSuperBlks(listSb));
+
+		System.out.println("min price: " + obService.minPrice);
+		System.out.println("max price: " + obService.maxPrice);
+		
+		System.out.println("\ncoin");
+		System.out.println(obService.calcDepthDiff(BigDecimal.valueOf(0.03), false));
+		System.out.println(obService.calcDepthDiff(BigDecimal.valueOf(0.05), false));
+		System.out.println(obService.calcDepthDiff(BigDecimal.valueOf(0.15), false));
+		System.out.println(obService.calcDepthDiff(BigDecimal.valueOf(0.25), false));
+		System.out.println(obService.calcDepthDiff(null, true));
+
+		System.out.println("\nusd");
+		System.out.println(obService.calcDepthDiff(BigDecimal.valueOf(0.03), true));
+		System.out.println(obService.calcDepthDiff(BigDecimal.valueOf(0.05), true));
+		System.out.println(obService.calcDepthDiff(BigDecimal.valueOf(0.15), true));
+		System.out.println(obService.calcDepthDiff(BigDecimal.valueOf(0.25), true));
+		System.out.println(obService.calcDepthDiff(null, true));
 
 	}
 

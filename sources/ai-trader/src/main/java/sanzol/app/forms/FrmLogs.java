@@ -90,13 +90,13 @@ public class FrmLogs extends JFrame implements LogListener
         			.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE)
         			.addContainerGap())
         );
-        
+
         txtResult = new JTextArea();
 		txtResult.setFont(new Font("Courier New", Font.PLAIN, 12));
 		txtResult.setBackground(Styles.COLOR_TEXT_AREA_BG);
 		txtResult.setForeground(Styles.COLOR_TEXT_AREA_FG);
 		txtResult.setEditable(false);
-        
+
         scrollPane.setViewportView(txtResult);
         pnlContent.setLayout(pnlContentLayout);
 
@@ -115,7 +115,7 @@ public class FrmLogs extends JFrame implements LogListener
 					.addComponent(pnlStatusBar, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE))
 		);
 		getContentPane().setLayout(layout);
-		
+
 		// --------------------------------------------------------------------
 		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);
 		pnlStatusBarLayout.setHorizontalGroup(
@@ -145,7 +145,7 @@ public class FrmLogs extends JFrame implements LogListener
 				myJFrame = null;
 			}
 		});
-		
+
 	}
 
 	// ------------------------------------------------------------------------
@@ -155,7 +155,7 @@ public class FrmLogs extends JFrame implements LogListener
 	{
 		txtResult.setText(LogService.getLOG());
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	public static void launch()

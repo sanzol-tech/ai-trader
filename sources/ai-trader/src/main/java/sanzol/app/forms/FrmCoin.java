@@ -20,6 +20,7 @@ import java.math.RoundingMode;
 import java.net.URI;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -38,6 +39,7 @@ import javax.swing.border.EmptyBorder;
 import api.client.config.ApiConfig;
 import api.client.enums.DepthMode;
 import api.client.model.async.SymbolTickerEvent;
+import api.client.model.sync.DepthEntry;
 import api.client.service.DepthCache;
 import api.client.service.PriceListener;
 import api.client.service.PriceService;
@@ -62,7 +64,7 @@ public class FrmCoin extends JFrame implements PriceListener
 	private static final String TITLE = Constants.APP_NAME;
 
 	private Symbol symbol;
-	private OrderBookService depth = null;
+	private OrderBookService obService = null;
 	private boolean beepDone = false;	
 
 	private JPanel contentPane;
@@ -75,6 +77,7 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JPanel pnlWA;
 
 	private JButton btnExport;
+	private JButton btnMore;
 	private JButton btnAsyncCache;
 	private JButton btnLongBidPointBB1;
 	private JButton btnLongBidPointWA1;
@@ -518,11 +521,16 @@ public class FrmCoin extends JFrame implements PriceListener
 		btnExport.setBounds(430, 24, 87, 22);
 		contentPane.add(btnExport);
 
+		btnMore = new JButton("+");
+		btnMore.setOpaque(true);
+		btnMore.setBounds(525, 24, 50, 22);
+		contentPane.add(btnMore);
+
 		btnAsyncCache = new JButton("Async cache");
-		btnExport.setOpaque(true);
+		btnAsyncCache.setOpaque(true);
 		btnAsyncCache.setBounds(583, 24, 147, 22);
 		contentPane.add(btnAsyncCache);
-		
+
 		lbl24Hs = new JLabel("24h %");
 		lbl24Hs.setHorizontalAlignment(SwingConstants.TRAILING);
 		lbl24Hs.setBounds(240, 25, 62, 14);
@@ -738,6 +746,12 @@ public class FrmCoin extends JFrame implements PriceListener
 			}
 		});
 
+		btnMore.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				more();
+			}
+		});
+
 		btnAsyncCache.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 		        if (symbol != null)
@@ -813,7 +827,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		WAType waType = rbWAPrice.isSelected() ? WAType.price : WAType.previous;
 		Integer waBlocks = Integer.valueOf(txtWABlocks.getText());
 
-		depth.calc(bbType, bbBlocks, waType, waBlocks);
+		obService.calc(bbType, bbBlocks, waType, waBlocks);
 
 		loadOBook();
 		loadPoints();
@@ -833,7 +847,7 @@ public class FrmCoin extends JFrame implements PriceListener
 				setTitle(TITLE + " - " + symbol.getNameLeft());
 
 				// ----------------------------------------------------------------
-				depth = OrderBookService.getInstance(symbol).request(DepthMode.snapshot_only, 0);
+				obService = OrderBookService.getInstance(symbol).request(DepthMode.snapshot_only, 0);
 				// ----------------------------------------------------------------
 
 				calc();
@@ -854,28 +868,28 @@ public class FrmCoin extends JFrame implements PriceListener
 
 	private void loadOBook() throws KeyManagementException, NoSuchAlgorithmException
 	{
-		txtOBookAsk.setText(depth.printAsksGrp());
-		txtOBookBid.setText(depth.printBidsGrp());
+		txtOBookAsk.setText(obService.printAsksGrp());
+		txtOBookBid.setText(obService.printBidsGrp());
 		txtOBookBid.setCaretPosition(0);
 	}
 
 	private void loadPoints()
 	{
-		txtAskPointBB2.setText(symbol.priceToStr(depth.getAskBBlkPoint2()));
-		txtAskPointBB1.setText(symbol.priceToStr(depth.getAskBBlkPoint1()));
-		txtBidPointBB1.setText(symbol.priceToStr(depth.getBidBBlkPoint1()));
-		txtBidPointBB2.setText(symbol.priceToStr(depth.getBidBBlkPoint2()));
+		txtAskPointBB2.setText(symbol.priceToStr(obService.getAskBBlkPoint2()));
+		txtAskPointBB1.setText(symbol.priceToStr(obService.getAskBBlkPoint1()));
+		txtBidPointBB1.setText(symbol.priceToStr(obService.getBidBBlkPoint1()));
+		txtBidPointBB2.setText(symbol.priceToStr(obService.getBidBBlkPoint2()));
 
-		txtAskPointWA3.setText(symbol.priceToStr(depth.getAskWAvgPoint3()));
-		txtAskPointWA2.setText(symbol.priceToStr(depth.getAskWAvgPoint2()));
-		txtAskPointWA1.setText(symbol.priceToStr(depth.getAskWAvgPoint1()));
+		txtAskPointWA3.setText(symbol.priceToStr(obService.getAskWAvgPoint3()));
+		txtAskPointWA2.setText(symbol.priceToStr(obService.getAskWAvgPoint2()));
+		txtAskPointWA1.setText(symbol.priceToStr(obService.getAskWAvgPoint1()));
 		
-		txtBidPointWA1.setText(symbol.priceToStr(depth.getBidWAvgPoint1()));
-		txtBidPointWA2.setText(symbol.priceToStr(depth.getBidWAvgPoint2()));
-		txtBidPointWA3.setText(symbol.priceToStr(depth.getBidWAvgPoint3()));
+		txtBidPointWA1.setText(symbol.priceToStr(obService.getBidWAvgPoint1()));
+		txtBidPointWA2.setText(symbol.priceToStr(obService.getBidWAvgPoint2()));
+		txtBidPointWA3.setText(symbol.priceToStr(obService.getBidWAvgPoint3()));
 
-		loadRatiosBB(depth.getAskBBlkPoint1(), depth.getBidBBlkPoint1(), depth.getAskBBlkPoint2(), depth.getBidBBlkPoint2());
-		loadRatiosWA(depth.getAskWAvgPoint1(), depth.getBidWAvgPoint1(), depth.getAskWAvgPoint2(), depth.getBidWAvgPoint2());
+		loadRatiosBB(obService.getAskBBlkPoint1(), obService.getBidBBlkPoint1(), obService.getAskBBlkPoint2(), obService.getBidBBlkPoint2());
+		loadRatiosWA(obService.getAskWAvgPoint1(), obService.getBidWAvgPoint1(), obService.getAskWAvgPoint2(), obService.getBidWAvgPoint2());
 	}
 	
 	public void loadRatiosBB(BigDecimal shortPrice, BigDecimal longPrice, BigDecimal shShock2, BigDecimal lgShock2)
@@ -934,7 +948,7 @@ public class FrmCoin extends JFrame implements PriceListener
 
 	private void getDistances()
 	{
-		if (depth == null)
+		if (obService == null)
 		{
 			return;	
 		}
@@ -943,52 +957,52 @@ public class FrmCoin extends JFrame implements PriceListener
 		{
 			BigDecimal mrkPrice = PriceService.getLastPrice(symbol);
 
-			BigDecimal distSh2 = PriceUtil.priceDistUp(mrkPrice, depth.getAskBBlkPoint2(), false);
+			BigDecimal distSh2 = PriceUtil.priceDistUp(mrkPrice, obService.getAskBBlkPoint2(), false);
 			txtAskPointBB2Dist.setText(Convert.dblToStrPercent(distSh2) + " %");
 
-			BigDecimal distSh1 = PriceUtil.priceDistUp(mrkPrice, depth.getAskBBlkPoint1(), false);
+			BigDecimal distSh1 = PriceUtil.priceDistUp(mrkPrice, obService.getAskBBlkPoint1(), false);
 			txtAskPointBB1Dist.setText(Convert.dblToStrPercent(distSh1) + " %");
 			
-			BigDecimal distLg1 = PriceUtil.priceDistDown(mrkPrice, depth.getBidBBlkPoint1(), false);
+			BigDecimal distLg1 = PriceUtil.priceDistDown(mrkPrice, obService.getBidBBlkPoint1(), false);
 			txtBidPointBB1Dist.setText(Convert.dblToStrPercent(distLg1) + " %");
 			
-			BigDecimal distLg2 = PriceUtil.priceDistDown(mrkPrice, depth.getBidBBlkPoint2(), false);
+			BigDecimal distLg2 = PriceUtil.priceDistDown(mrkPrice, obService.getBidBBlkPoint2(), false);
 			txtBidPointBB2Dist.setText(Convert.dblToStrPercent(distLg2) + " %");
 
-			BigDecimal distShWA3 = PriceUtil.priceDistUp(mrkPrice, depth.getAskWAvgPoint3(), false);
+			BigDecimal distShWA3 = PriceUtil.priceDistUp(mrkPrice, obService.getAskWAvgPoint3(), false);
 			txtAskPointWA3Dist.setText(Convert.dblToStrPercent(distShWA3) + " %");
 
-			BigDecimal distShWA2 = PriceUtil.priceDistUp(mrkPrice, depth.getAskWAvgPoint2(), false);
+			BigDecimal distShWA2 = PriceUtil.priceDistUp(mrkPrice, obService.getAskWAvgPoint2(), false);
 			txtAskPointWA2Dist.setText(Convert.dblToStrPercent(distShWA2) + " %");
 
-			BigDecimal distShWA1 = PriceUtil.priceDistUp(mrkPrice, depth.getAskWAvgPoint1(), false);
+			BigDecimal distShWA1 = PriceUtil.priceDistUp(mrkPrice, obService.getAskWAvgPoint1(), false);
 			txtAskPointWA1Dist.setText(Convert.dblToStrPercent(distShWA1) + " %");
 
-			BigDecimal distLgWA1 = PriceUtil.priceDistDown(mrkPrice, depth.getBidWAvgPoint1(), false);
+			BigDecimal distLgWA1 = PriceUtil.priceDistDown(mrkPrice, obService.getBidWAvgPoint1(), false);
 			txtBidPointWA1Dist.setText(Convert.dblToStrPercent(distLgWA1) + " %");
 
-			BigDecimal distLgWA2 = PriceUtil.priceDistDown(mrkPrice, depth.getBidWAvgPoint2(), false);
+			BigDecimal distLgWA2 = PriceUtil.priceDistDown(mrkPrice, obService.getBidWAvgPoint2(), false);
 			txtBidPointWA2Dist.setText(Convert.dblToStrPercent(distLgWA2) + " %");
 
-			BigDecimal distLgWA3 = PriceUtil.priceDistDown(mrkPrice, depth.getBidWAvgPoint3(), false);
+			BigDecimal distLgWA3 = PriceUtil.priceDistDown(mrkPrice, obService.getBidWAvgPoint3(), false);
 			txtBidPointWA3Dist.setText(Convert.dblToStrPercent(distLgWA3) + " %");
 
 			// ----------------------------------------------------------------
 			// ----------------------------------------------------------------
-			BigDecimal distAsk1To2 = PriceUtil.priceDistUp(depth.getAskFixedPoint1(), depth.getAskFixedPoint2(), false);
-			BigDecimal distBid1To2 = PriceUtil.priceDistUp(depth.getBidFixedPoint1(), depth.getBidFixedPoint2(), false);
+			BigDecimal distAsk1To2 = PriceUtil.priceDistUp(obService.getAskFixedPoint1(), obService.getAskFixedPoint2(), false);
+			BigDecimal distBid1To2 = PriceUtil.priceDistUp(obService.getBidFixedPoint1(), obService.getBidFixedPoint2(), false);
 
-			BigDecimal distShortLong = PriceUtil.priceDistDown(depth.getAskFixedPoint1(), depth.getBidFixedPoint1(), false);
-			BigDecimal distLongShort = PriceUtil.priceDistUp(depth.getBidFixedPoint1(), depth.getAskFixedPoint1(), false);
+			BigDecimal distShortLong = PriceUtil.priceDistDown(obService.getAskFixedPoint1(), obService.getBidFixedPoint1(), false);
+			BigDecimal distLongShort = PriceUtil.priceDistUp(obService.getBidFixedPoint1(), obService.getAskFixedPoint1(), false);
 
-			BigDecimal distShort = PriceUtil.priceDistUp(mrkPrice, depth.getAskFixedPoint1(), false);
-			BigDecimal distLong = PriceUtil.priceDistDown(mrkPrice, depth.getBidFixedPoint1(), false);
+			BigDecimal distShort = PriceUtil.priceDistUp(mrkPrice, obService.getAskFixedPoint1(), false);
+			BigDecimal distLong = PriceUtil.priceDistDown(mrkPrice, obService.getBidFixedPoint1(), false);
 
 			if (distShort.doubleValue() <= 0.0025 && distShortLong.doubleValue() >= 0.01 && distAsk1To2.doubleValue() < distShortLong.doubleValue())
 			{
 				if(!beepDone)
 				{
-					INFO(String.format("SHORT %f", depth.getAskFixedPoint1()));
+					INFO(String.format("SHORT %f", obService.getAskFixedPoint1()));
 
 					BeepUtils.beep();
 					beepDone = true;
@@ -998,7 +1012,7 @@ public class FrmCoin extends JFrame implements PriceListener
 			{
 				if(!beepDone)
 				{
-					INFO(String.format("LONG %f", depth.getBidFixedPoint1()));
+					INFO(String.format("LONG %f", obService.getBidFixedPoint1()));
 
 					BeepUtils.beep();
 					beepDone = true;
@@ -1015,13 +1029,46 @@ public class FrmCoin extends JFrame implements PriceListener
 		}
 	}
 
+	private void more()
+	{
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("\n").append("- Between ---").append("\n");
+		sb.append("max price: " + obService.getMaxPrice()).append("\n");
+		sb.append("min price: " + obService.getMinPrice()).append("\n");
+
+		sb.append("\n").append("- Super Asks ---").append("\n");
+		List<DepthEntry> listSa = obService.searchSuperAskBlocks();
+		sb.append(obService.printSuperBlks(listSa)).append("\n");
+
+		sb.append("\n").append("- Super Bids ---").append("\n");
+		List<DepthEntry> listSb = obService.searchSuperBidBlocks();
+		sb.append(obService.printSuperBlks(listSb)).append("\n");
+
+		sb.append("\n").append("- Coin ---").append("\n");
+		sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.03), false)).append("\n");
+		sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.05), false)).append("\n");
+		sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.15), false)).append("\n");
+		sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.25), false)).append("\n");
+		sb.append(obService.calcDepthDiff(null, false)).append("\n");
+
+		sb.append("\n").append("- Usd ---").append("\n");
+		sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.03), true)).append("\n");
+		sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.05), true)).append("\n");
+		sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.15), true)).append("\n");
+		sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.25), true)).append("\n");
+		sb.append(obService.calcDepthDiff(null, true)).append("\n");
+
+		FrmMonitor.launch(symbol.getNameLeft(), sb.toString());
+	}
+
 	// ----------------------------------------------------------------------------------
 
 	public void export()
 	{
 		try
 		{
-			depth.export();
+			obService.export();
 
 			File basepath = new File(Constants.DEFAULT_USER_FOLDER, ApiConfig.MARKET_TYPE.toString());
 			File path = new File(basepath, Constants.DEFAULT_EXPORT_FOLDER);

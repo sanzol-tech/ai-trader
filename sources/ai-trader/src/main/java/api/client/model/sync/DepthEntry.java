@@ -6,6 +6,7 @@ public class DepthEntry
 {
 	private BigDecimal price;
 	private BigDecimal qty;
+	private BigDecimal usd;
 
 	public DepthEntry()
 	{
@@ -16,6 +17,7 @@ public class DepthEntry
 	{
 		this.price = price;
 		this.qty = qty;
+		this.usd = price.multiply(qty);
 	}
 
 	public BigDecimal getPrice()
@@ -38,10 +40,20 @@ public class DepthEntry
 		this.qty = qty;
 	}
 
+	public BigDecimal getUsd()
+	{
+		return usd;
+	}
+
+	public void setUsd(BigDecimal usd)
+	{
+		this.usd = usd;
+	}
+
 	@Override
 	public String toString()
 	{
-		return String.format("%f;%f", price, qty);
+		return String.format("%f;%f;%f", price, qty, usd);
 	}
 
 }
