@@ -120,13 +120,13 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 
 		onBtcChangeUpdate();
 		LastCandlestickService.attachRefreshObserver(this);
-		
+
 		onSignalUpdate();
 		SignalService.attachRefreshObserver(this);
-		
+
 		onBalanceUpdate();
 		BalanceService.attachRefreshObserver(this);
-		
+
 		PositionService.attachRefreshObserver(this);
 	}
 
@@ -204,7 +204,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		listFavorites.setBackground(Styles.COLOR_TEXT_AREA_BG);
 		listFavorites.setForeground(Styles.COLOR_TEXT_AREA_FG);
 		scrollFavorites.setViewportView(listFavorites);
-		
+
 		JScrollPane scrollShortSignals = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollShortSignals.setBorder(UIManager.getBorder("TextField.border"));
 		scrollShortSignals.setBounds(376, 42, 547, 145);
@@ -226,7 +226,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		listLongSignals.setBackground(Styles.COLOR_TEXT_AREA_BG);
 		listLongSignals.setForeground(Styles.COLOR_TEXT_LONG);
 		scrollLongSignals.setViewportView(listLongSignals);
-		
+
 		JLabel lblSignals = new JLabel("SHORTS / LONGS");
 		lblSignals.setHorizontalAlignment(SwingConstants.LEFT);
 		lblSignals.setFont(new Font("Tahoma", Font.PLAIN, 13));
@@ -242,7 +242,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		chkOnlyBetters.setSelected(true);
 		chkOnlyBetters.setBounds(116, 12, 99, 23);
 		pnlContent.add(chkOnlyBetters);
-		
+
 		// --------------------------------------------------------------------
 		GroupLayout pnlTopBarLayout = new GroupLayout(pnlTopBar);
 		pnlTopBarLayout.setHorizontalGroup(
@@ -317,7 +317,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		);
 		getContentPane().setLayout(layout);
 		pnlContent.setLayout(null);
-		
+
 		panel = new JPanel();
 		panel.setBorder(UIManager.getBorder("TextField.border"));
 		panel.setBounds(15, 370, 559, 70);
@@ -328,7 +328,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		lblNewLabel.setFont(new Font("Dialog", Font.PLAIN, 18));
 		lblNewLabel.setBounds(10, 24, 66, 14);
 		panel.add(lblNewLabel);
-		
+
 		lblChangeX = new JLabel("CHANGE 30m");
 		lblChangeX.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblChangeX.setFont(new Font("Dialog", Font.PLAIN, 14));
@@ -346,7 +346,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		lblChange24h.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblChange24h.setBounds(425, 11, 110, 14);
 		panel.add(lblChange24h);
-		
+
 		lblBtcPrice = new JLabel("PRICE");
 		lblBtcPrice.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblBtcPrice.setFont(new Font("Dialog", Font.PLAIN, 14));
@@ -366,21 +366,21 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		txtMoveX.setFont(new Font("Dialog", Font.PLAIN, 14));
 		txtMoveX.setBounds(312, 36, 110, 14);
 		panel.add(txtMoveX);
-		
+
 		txtChange24h = new JLabel("---");
 		txtChange24h.setForeground(Styles.COLOR_TEXT_ALT1);
 		txtChange24h.setHorizontalAlignment(SwingConstants.TRAILING);
 		txtChange24h.setFont(new Font("Dialog", Font.PLAIN, 14));
 		txtChange24h.setBounds(425, 36, 110, 14);
 		panel.add(txtChange24h);
-		
+
 		txtBtcPrice = new JLabel("---");
 		txtBtcPrice.setForeground(Styles.COLOR_TEXT_ALT1);
 		txtBtcPrice.setHorizontalAlignment(SwingConstants.TRAILING);
 		txtBtcPrice.setFont(new Font("Dialog", Font.PLAIN, 14));
 		txtBtcPrice.setBounds(84, 36, 87, 14);
 		panel.add(txtBtcPrice);
-		
+
 		pnlPositions = new JPanel();
 		pnlPositions.setBorder(UIManager.getBorder("TextField.border"));
 		pnlPositions.setBounds(597, 370, 326, 70);
@@ -391,7 +391,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		lblShorts.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblShorts.setBounds(24, 16, 86, 14);
 		pnlPositions.add(lblShorts);
-		
+
 		lblLongs = new JLabel("LONGS");
 		lblLongs.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblLongs.setBounds(120, 16, 86, 14);
@@ -402,7 +402,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		txtShorts.setFont(new Font("Dialog", Font.PLAIN, 14));
 		txtShorts.setBounds(24, 41, 86, 14);
 		pnlPositions.add(txtShorts);
-		
+
 		txtLongs = new JLabel("--");
 		txtLongs.setForeground(Styles.COLOR_TEXT_ALT1);
 		txtLongs.setFont(new Font("Dialog", Font.PLAIN, 14));
@@ -413,18 +413,18 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		btnPositions.setBounds(216, 36, 100, 23);
 		btnPositions.setText("POSITIONS");
 		pnlPositions.add(btnPositions);
-		
+
 		btnSymbols = new JButton();
 		btnSymbols.setToolTipText("Symbols");
 		btnSymbols.setBounds(307, 12, 45, 23);
 		btnSymbols.setText("+");
 		pnlContent.add(btnSymbols);
-		
+
 		btnSignals = new JButton();
 		btnSignals.setBounds(824, 12, 99, 23);
 		btnSignals.setText("SIGNALS");
 		pnlContent.add(btnSignals);
-		
+
 		// --------------------------------------------------------------------
 		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);
 		pnlStatusBarLayout.setHorizontalGroup(
@@ -493,7 +493,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 				FrmAlerts.launch();
 			}
 		});
-		
+
 		btnConfig.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				FrmConfig.launch();
@@ -511,13 +511,13 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 				FrmLogs.launch();
 			}
 		});
-		
+
 		btnBot.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				showBot();
 			}
 		});
-		
+
 		btnShoot.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				showCalcOrder();
@@ -547,7 +547,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 				showSignals();
 			}
 		});
-		
+
 		btnSymbols.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				FrmSymbols.launch();
@@ -717,8 +717,8 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 			AccountBalance balance = BalanceService.getAccountBalance();
 			if (balance != null)
 			{
-				txtBalance.setText(Convert.usdToStr(balance.getBalance().doubleValue() + 9600));
-				txtWithdrawal.setText(Convert.usdToStr(balance.getWithdrawAvailable().doubleValue() + 9600));
+				txtBalance.setText(Convert.usdToStr(balance.getBalance().doubleValue()));
+				txtWithdrawal.setText(Convert.usdToStr(balance.getWithdrawAvailable().doubleValue()));
 			}
 		}
 		catch (Exception e)
@@ -877,7 +877,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 			Double price = entry.getInPrice().doubleValue();
 			String sl = String.valueOf(entry.getStopLoss().abs());
 			String tp = String.valueOf(entry.getTakeProfit());
-			
+
 			FrmGrid.launch(entry.getSymbol().getNameLeft(), "SHORT", entry.getSymbol().priceToStr(price), sl, tp, isBotMode);
 		}
 		else
