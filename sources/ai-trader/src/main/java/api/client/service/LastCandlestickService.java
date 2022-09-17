@@ -24,15 +24,21 @@ import sanzol.app.util.PriceUtil;
 public class LastCandlestickService extends WebSocketClient
 {
 	private static LastCandlestickService lastCandlestickService;
-	private static double coinChangePercent;
+	private static BigDecimal priceChangePercent = BigDecimal.ZERO;
+	private static BigDecimal priceMove = BigDecimal.ZERO;
 
-	public static double getCoinChangePercent()
+	public static BigDecimal getPriceChangePercent()
 	{
-		return coinChangePercent;
+		return priceChangePercent;
+	}
+
+	public static BigDecimal getPriceMove()
+	{
+		return priceMove;
 	}
 
 	// ------------------------------------------------------------------------
-
+	
 	private static List<LastCandlestickListener> observers = new ArrayList<LastCandlestickListener>();
 
 	public static void attachRefreshObserver(LastCandlestickListener observer)
@@ -89,11 +95,12 @@ public class LastCandlestickService extends WebSocketClient
 			CandlestickEvent event = mapper.readerFor(CandlestickEvent.class).readValue(message);
 
 			BigDecimal openPrice = event.getKline().getOpen();
+			BigDecimal highPrice = event.getKline().getHigh();
+			BigDecimal lowPrice = event.getKline().getLow();
 			BigDecimal closePrice = event.getKline().getClose();
 
-			BigDecimal change = PriceUtil.priceChange(openPrice, closePrice, true);
-
-			coinChangePercent = change.doubleValue();
+			priceChangePercent = PriceUtil.priceChange(openPrice, closePrice, true);
+			priceMove = PriceUtil.priceChange(lowPrice, highPrice, true);
 
 			notifyAllLogObservers();
 		}

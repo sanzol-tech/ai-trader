@@ -1071,32 +1071,45 @@ public class FrmCoin extends JFrame implements PriceListener
 			sb.append(obService.calcDepthDiff(null, true)).append("\n");
 
 			// --- Kline ------------------------------------------------------
-			List<Kline> lst;
+			List<Kline> lst1m;
+			List<Kline> lst1d;
 			if (ApiConfig.MARKET_TYPE == MarketType.futures)
-				lst = SyncFuturesClient.getKlines(symbol.getPair(), IntervalType._1m, 720);
+			{
+				lst1m = SyncFuturesClient.getKlines(symbol.getPair(), IntervalType._1m, 720);
+				lst1d = SyncFuturesClient.getKlines(symbol.getPair(), IntervalType._1d, 10);
+			}
 			else
-				lst = SyncSpotClient.getKlines(symbol.getPair(), IntervalType._1m, 720);
+			{
+				lst1m = SyncSpotClient.getKlines(symbol.getPair(), IntervalType._1m, 720);
+				lst1d = SyncSpotClient.getKlines(symbol.getPair(), IntervalType._1d, 10);
+			}
 
-			List<Kline> lst2 = lst.subList(Math.max(lst.size() - 240, 0), lst.size());
-			List<Kline> lst3 = lst.subList(Math.max(lst.size() - 30, 0), lst.size());
+			List<Kline> lst2 = lst1m.subList(Math.max(lst1m.size() - 240, 0), lst1m.size());
+			List<Kline> lst3 = lst1m.subList(Math.max(lst1m.size() - 30, 0), lst1m.size());
 
-			KlineMerge klinePlus = KlineMerge.getInstance(lst);
+			KlineMerge klinePlus = KlineMerge.getInstance(lst1d);
 			sb.append("\n");
-			sb.append("chg 12h: " + Convert.toStrPercent(klinePlus.getPriceChangePercent()) + " %").append("\n");
-			sb.append("var 12h: " + Convert.toStrPercent(klinePlus.getMaxPriceVariance()) + " %").append("\n");
-			sb.append("vol 12h: " + PriceUtil.cashFormat(klinePlus.getQuoteVolume())).append("\n");
+			sb.append("chg  10d: " + Convert.toStrPercent(klinePlus.getPriceChangePercent()) + " %").append("\n");
+			sb.append("move 10d: " + Convert.toStrPercent(klinePlus.getPriceMove()) + " %").append("\n");
+			sb.append("vol  10d: " + PriceUtil.cashFormat(klinePlus.getQuoteVolume())).append("\n");
+			
+			klinePlus = KlineMerge.getInstance(lst1m);
+			sb.append("\n");
+			sb.append("chg  12h: " + Convert.toStrPercent(klinePlus.getPriceChangePercent()) + " %").append("\n");
+			sb.append("move 12h: " + Convert.toStrPercent(klinePlus.getPriceMove()) + " %").append("\n");
+			sb.append("vol  12h: " + PriceUtil.cashFormat(klinePlus.getQuoteVolume())).append("\n");
 
 			klinePlus = KlineMerge.getInstance(lst2);
 			sb.append("\n");
-			sb.append("chg 4h:  " + Convert.toStrPercent(klinePlus.getPriceChangePercent()) + " %").append("\n");
-			sb.append("var 4h:  " + Convert.toStrPercent(klinePlus.getMaxPriceVariance()) + " %").append("\n");
-			sb.append("vol 4h:  " + PriceUtil.cashFormat(klinePlus.getQuoteVolume())).append("\n");
+			sb.append("chg  4h:  " + Convert.toStrPercent(klinePlus.getPriceChangePercent()) + " %").append("\n");
+			sb.append("move 4h:  " + Convert.toStrPercent(klinePlus.getPriceMove()) + " %").append("\n");
+			sb.append("vol  4h:  " + PriceUtil.cashFormat(klinePlus.getQuoteVolume())).append("\n");
 
 			klinePlus = KlineMerge.getInstance(lst3);
 			sb.append("\n");
-			sb.append("chg 30m: " + Convert.toStrPercent(klinePlus.getPriceChangePercent()) + " %").append("\n");
-			sb.append("var 30m: " + Convert.toStrPercent(klinePlus.getMaxPriceVariance()) + " %").append("\n");
-			sb.append("vol 30m: " + PriceUtil.cashFormat(klinePlus.getQuoteVolume())).append("\n");
+			sb.append("chg  30m: " + Convert.toStrPercent(klinePlus.getPriceChangePercent()) + " %").append("\n");
+			sb.append("move 30m: " + Convert.toStrPercent(klinePlus.getPriceMove()) + " %").append("\n");
+			sb.append("vol  30m: " + PriceUtil.cashFormat(klinePlus.getQuoteVolume())).append("\n");
 
 			FrmMonitor.launch(symbol.getNameLeft(), sb.toString());
 		}

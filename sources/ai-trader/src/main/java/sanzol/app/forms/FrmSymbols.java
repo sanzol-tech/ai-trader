@@ -232,11 +232,11 @@ public class FrmSymbols extends JFrame implements PriceListener
 	    	tableModel = new TableModel();
 
 	    	tableModel.addColumn("SYMBOL");
-	    	tableModel.addColumn("CHANGE 24h");
-	    	tableModel.addColumn("");
+	    	tableModel.addColumn("PRICE");
 	    	tableModel.addColumn("VOLUME 24h");
 	    	tableModel.addColumn("");
-	    	tableModel.addColumn("PRICE");
+	    	tableModel.addColumn("CHANGE 24h");
+	    	tableModel.addColumn("");
 	    	tableModel.addColumn("MORE");
 
 			table.setModel(tableModel);
@@ -247,20 +247,36 @@ public class FrmSymbols extends JFrame implements PriceListener
 	        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 	        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 
-	        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(5).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
+	        int tableWidth = table.getWidth();
+	        		
+	        table.getColumnModel().getColumn(0).setPreferredWidth((int)(tableWidth * 0.17));
 
-	        table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+	        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+	        table.getColumnModel().getColumn(1).setPreferredWidth((int)(tableWidth * 0.17));
+
+	        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+	        table.getColumnModel().getColumn(2).setPreferredWidth((int)(tableWidth * 0.125));
+	        
+	        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+	        table.getColumnModel().getColumn(3).setPreferredWidth((int)(tableWidth * 0.08));
+	        
+	        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
+	        table.getColumnModel().getColumn(4).setPreferredWidth((int)(tableWidth * 0.125));
+	        
+	        table.getColumnModel().getColumn(5).setCellRenderer(centerRenderer);
+	        table.getColumnModel().getColumn(5).setPreferredWidth((int)(tableWidth * 0.08));
+
+	        table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
+	        table.getColumnModel().getColumn(6).setPreferredWidth((int)(tableWidth * 0.125));
+
+	        //table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		}
 		catch (Exception e)
 		{
 			ERROR(e);
 		}
     }
+   
 
     private void loadTable(List<SymbolInfo> lstSymbolsInfo)
 	{
@@ -270,12 +286,12 @@ public class FrmSymbols extends JFrame implements PriceListener
 		{
         	Object row[] = { 
     				entry.getSymbol().getNameLeft(),
-    				String.format("%.2f %%", entry.getPriceChangePercent()),
-					!entry.isHighMove() ? "" : "RISKY",
+					entry.getSymbol().priceToStr(entry.getLastPrice()),
     				PriceUtil.cashFormat(entry.getUsdVolume()),
 					!entry.isLowVolume() ? "" : "< " + PriceUtil.cashFormat(Config.getBetterSymbolsMinVolume()),
-					entry.getSymbol().priceToStr(entry.getLastPrice()),
-    				entry.isBestShort() ? "24H HIGH" : entry.isBestLong() ? "24H LOW" : ""
+    				String.format("%.2f %%", entry.getPriceChangePercent()),
+					!entry.isHighMove() ? "" : "RISKY",
+					entry.isBestShort() ? "24H HIGH" : entry.isBestLong() ? "24H LOW" : ""
         		};
 
 			tableModel.addRow(row);

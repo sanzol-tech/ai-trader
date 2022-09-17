@@ -171,7 +171,7 @@ public class Signal
 
 	public String toString()
 	{
-		return String.format(Locale.US, "%-8s %6.2f%% %12s    RATIO 1:%-4.1f   CHG %6.2f%%    VOL %4s\n", symbol.getNameLeft(), distance, symbol.priceToStr(inPrice), ratio, change24h, PriceUtil.cashFormat(volume));
+		return String.format(Locale.US, "%-8s %6.2f%% %12s     RATIO 1:%-4.1f    VOL %4s    CHG %6.2f%%\n", symbol.getNameLeft(), distance, symbol.priceToStr(inPrice), ratio, PriceUtil.cashFormat(volume), change24h);
 	}
 
 }

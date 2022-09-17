@@ -110,13 +110,13 @@ public class PriceService extends WebSocketClient
 	public static List<String> getLstSymbolsMini(boolean onlyFavorites, boolean onlyBetters) throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
 		List<String> list = new ArrayList<String>();
-		list.add(String.format("%-10s %11s %9s", "SYMBOL", "CHANGE", "VOLUME"));
+		list.add(String.format("%-10s %12s %10s %10s", "SYMBOL", "PRICE", "VOLUME", "CHANGE"));
 
 		List<SymbolInfo> lstSymbolsInfo = getLstSymbolsInfo(onlyFavorites, onlyBetters);
 		for (SymbolInfo entry : lstSymbolsInfo)
 		{
 			Symbol symbol = entry.getSymbol();
-			list.add(String.format("%-10s %10.2f%% %9s", symbol.getNameLeft(), entry.getPriceChangePercent(), PriceUtil.cashFormat(entry.getUsdVolume())));
+			list.add(String.format("%-10s %12s %10s %8.2f %%", symbol.getNameLeft(), symbol.priceToStr(entry.getLastPrice()), PriceUtil.cashFormat(entry.getUsdVolume()), entry.getPriceChangePercent()));
 		}
 
 		return list;

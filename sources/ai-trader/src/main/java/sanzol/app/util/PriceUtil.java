@@ -14,7 +14,7 @@ public final class PriceUtil
 	{
 		BigDecimal r = b.subtract(a).divide(a, 4, RoundingMode.HALF_UP);
 		if (x100)
-			return r.multiply(BigDecimal.valueOf(100));
+			return r.multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_DOWN);
 		else
 			return r;
 	}
@@ -23,7 +23,7 @@ public final class PriceUtil
 	{
 		BigDecimal r = a.subtract(b).divide(a, 4, RoundingMode.HALF_UP);
 		if (x100)
-			return r.multiply(BigDecimal.valueOf(100));
+			return r.multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_DOWN);
 		else
 			return r;
 	}
@@ -33,7 +33,7 @@ public final class PriceUtil
 		BigDecimal r = b.subtract(a).divide(a, 4, RoundingMode.HALF_UP);
 
 		if (x100)
-			return r.multiply(BigDecimal.valueOf(100));
+			return r.multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_DOWN);
 		else
 			return r;
 	}

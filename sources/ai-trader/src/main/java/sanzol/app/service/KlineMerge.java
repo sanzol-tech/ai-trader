@@ -10,7 +10,7 @@ public class KlineMerge extends Kline
 {
 	BigDecimal priceChange;
 	BigDecimal priceChangePercent;
-	BigDecimal maxPriceVariance;
+	BigDecimal priceMove;
 
 	public KlineMerge()
 	{
@@ -18,13 +18,13 @@ public class KlineMerge extends Kline
 	}
 
 	public KlineMerge(BigDecimal openPrice, BigDecimal highPrice, BigDecimal lowPrice, BigDecimal closePrice, BigDecimal volume, BigDecimal quoteVolume, Long count, 
-					  BigDecimal priceChange, BigDecimal priceChangePercent, BigDecimal maxPriceVariance, BigDecimal weightedAvgPrice)
+					  BigDecimal priceChange, BigDecimal priceChangePercent, BigDecimal priceMove, BigDecimal weightedAvgPrice)
 	{
 		super(openPrice, highPrice, lowPrice, closePrice, volume, quoteVolume, count);
 
 		this.priceChange = priceChange;
 		this.priceChangePercent = priceChangePercent;
-		this.maxPriceVariance = maxPriceVariance;
+		this.priceMove = priceMove;
 	}
 
 	public static KlineMerge getInstance(List<Kline> lst)
@@ -57,10 +57,10 @@ public class KlineMerge extends Kline
 
 		BigDecimal priceChange = closePrice.subtract(openPrice);
 		BigDecimal priceChangePercent = PriceUtil.priceChange(openPrice, closePrice, false);
-		BigDecimal maxPriceVariance = PriceUtil.priceChange(lowPrice, highPrice, false);
+		BigDecimal priceMove = PriceUtil.priceChange(lowPrice, highPrice, false);
 		BigDecimal weightedAvgPrice = BigDecimal.ZERO;
 		
-		KlineMerge klineMerge = new KlineMerge(openPrice, highPrice, lowPrice, closePrice, volume, quoteVolume, count, priceChange, priceChangePercent, maxPriceVariance, weightedAvgPrice);
+		KlineMerge klineMerge = new KlineMerge(openPrice, highPrice, lowPrice, closePrice, volume, quoteVolume, count, priceChange, priceChangePercent, priceMove, weightedAvgPrice);
 		return klineMerge;
 	}
 	
@@ -84,20 +84,20 @@ public class KlineMerge extends Kline
 		this.priceChangePercent = priceChangePercent;
 	}
 
-	public BigDecimal getMaxPriceVariance()
+	public BigDecimal getPriceMove()
 	{
-		return maxPriceVariance;
+		return priceMove;
 	}
 
-	public void setMaxPriceVariance(BigDecimal maxPriceVariance)
+	public void setPriceMove(BigDecimal priceMove)
 	{
-		this.maxPriceVariance = maxPriceVariance;
+		this.priceMove = priceMove;
 	}
 
 	@Override
 	public String toString()
 	{
-		return super.toString() + "\n" + "KlineMerge [priceChange=" + priceChange + ", priceChangePercent=" + priceChangePercent + ", maxPriceVariance=" + maxPriceVariance + "]";
+		return super.toString() + "\n" + "KlineMerge [priceChange=" + priceChange + ", priceChangePercent=" + priceChangePercent + ", priceMove=" + priceMove + "]";
 	}
 
 }

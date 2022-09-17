@@ -322,8 +322,8 @@ public class FrmSignals extends JFrame implements SignalListener
 	    	tableModelShort.addColumn("TP %");
 	    	tableModelShort.addColumn("SL %");
 	    	tableModelShort.addColumn("RATIO");
-	    	tableModelShort.addColumn("CHANGE 24h");
 	    	tableModelShort.addColumn("VOLUME 24h");
+	    	tableModelShort.addColumn("CHANGE 24h");
 	    	tableModelShort.addColumn("MORE");
 			tableShort.setModel(tableModelShort);
 
@@ -334,8 +334,8 @@ public class FrmSignals extends JFrame implements SignalListener
 	    	tableModelLong.addColumn("TP %");
 	    	tableModelLong.addColumn("SL %");
 	    	tableModelLong.addColumn("RATIO");
-	    	tableModelLong.addColumn("CHANGE 24h");
 	    	tableModelLong.addColumn("VOLUME 24h");
+	    	tableModelLong.addColumn("CHANGE 24h");
 	    	tableModelLong.addColumn("MORE");
 			tableLong.setModel(tableModelLong);
 
@@ -387,8 +387,8 @@ public class FrmSignals extends JFrame implements SignalListener
         			String.format(Locale.US, "%.2f %%", entry.getTakeProfit()),
         			String.format(Locale.US, "%.2f %%", entry.getStopLoss()),
     				String.format(Locale.US, "1 : %.1f", entry.getRatio()),
-    				String.format(Locale.US, "%.2f %%", entry.getChange24h()),
     				PriceUtil.cashFormat(entry.getVolume()),
+    				String.format(Locale.US, "%.2f %%", entry.getChange24h()),
     				entry.getBestSide()
         		};
 
@@ -406,8 +406,8 @@ public class FrmSignals extends JFrame implements SignalListener
         			String.format(Locale.US, "%.2f %%", entry.getTakeProfit()),
         			String.format(Locale.US, "%.2f %%", entry.getStopLoss()),
     				String.format(Locale.US, "1 : %.1f", entry.getRatio()),
-    				String.format(Locale.US, "%.2f %%", entry.getChange24h()),
     				PriceUtil.cashFormat(entry.getVolume()),
+    				String.format(Locale.US, "%.2f %%", entry.getChange24h()),
     				entry.getBestSide()
         		};
 
