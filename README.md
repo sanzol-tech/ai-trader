@@ -3,6 +3,7 @@
 #
 
 - Trading signals
+- Price alerts
 - Automatic analysis of the order book
 - Automatic take profit rearrangement
 - Automatic stop loss rearrangement
@@ -14,7 +15,7 @@
 
 ![image](https://user-images.githubusercontent.com/68629815/190016368-4d976df0-219b-486c-b0c6-69f0717c9b64.png)
 
-![image](https://user-images.githubusercontent.com/68629815/189557971-53a209a3-fcb0-49bf-a513-c77018024bd4.png)
+![image](https://user-images.githubusercontent.com/68629815/190864263-28896582-0188-4f68-8d34-b8ce6615102c.png)
 
 ![image](https://user-images.githubusercontent.com/68629815/180347592-74e8f6bb-1fd9-41e7-880f-002fe4f8866c.png)
 
