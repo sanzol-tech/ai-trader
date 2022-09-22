@@ -846,7 +846,8 @@ public class FrmCoin extends JFrame implements PriceListener
 		{
 			txtSymbolLeft.setText(txtSymbolLeft.getText().toUpperCase());
 			String symbolLeft = txtSymbolLeft.getText();
-			symbol = Symbol.getInstance(Symbol.getFullSymbol(symbolLeft));
+			String symbolRight = txtSymbolRight.getText();
+			symbol = Symbol.getInstance(symbolLeft + symbolRight);
 
 			if (symbol != null)
 			{

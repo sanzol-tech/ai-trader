@@ -16,14 +16,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 
-import api.client.impl.model.enums.MarketType;
 import api.client.spot.impl.SyncSpotClient;
 import api.client.spot.model.Account;
 import api.client.spot.model.AssetBalance;
 import api.client.spot.model.Order;
 import api.client.spot.model.enums.OrderStatus;
 import sanzol.aitrader.be.config.PrivateConfig;
-import sanzol.aitrader.be.config.ServerApp;
 import sanzol.util.log.LogService;
 import sanzol.util.price.Convert;
 

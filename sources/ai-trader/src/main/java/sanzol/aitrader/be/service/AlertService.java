@@ -35,7 +35,7 @@ public final class AlertService
 			LogService.info("AlertService - Start");
 
 			Timer timer1 = new Timer("verifyAlerts");
-			timer1.schedule(new MyTask1(), TimeUnit.SECONDS.toMillis(240), TimeUnit.SECONDS.toMillis(5));
+			timer1.schedule(new MyTask1(), TimeUnit.SECONDS.toMillis(15), TimeUnit.SECONDS.toMillis(5));
 
 			isStarted = true;
 		}
@@ -47,15 +47,18 @@ public final class AlertService
 		public void run()
 		{
 			verifyAlerts();
+			notifyAllLogObservers(null);
 		}
 	}
 
 	public static void add(Alert alert)
 	{
+		/*
 		if (mapAlerts.containsKey(alert.getSymbol().getPair()))
 		{
 			throw new IllegalArgumentException("An alert already exists for the symbol");
 		}
+		*/
 
 		mapAlerts.put(alert.getSymbol().getPair(), alert);
 	}
@@ -76,6 +79,7 @@ public final class AlertService
 		{
 			for (Alert alert : mapAlerts.values())
 			{
+
 				BigDecimal lastPrice = PriceService.getLastPrice(alert.getSymbol());
 				if (lastPrice.doubleValue() < 0)
 				{
@@ -92,7 +96,7 @@ public final class AlertService
 				// Reached short limit price
 				if (lastPrice.doubleValue() >= alert.getShortLimit().doubleValue() && alert.getAlertState() != AlertState.SHORT_LIMIT)
 				{
-					long timeOut = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(10);
+					long timeOut = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(15);
 					changeAlertSatate(alert, AlertState.SHORT_LIMIT, timeOut);
 					continue;
 				}
@@ -100,7 +104,7 @@ public final class AlertService
 				// Reached long limit price
 				if (lastPrice.doubleValue() <= alert.getLongLimit().doubleValue() && alert.getAlertState() != AlertState.LONG_LIMIT)
 				{
-					long timeOut = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(10);
+					long timeOut = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(15);
 					changeAlertSatate(alert, AlertState.LONG_LIMIT, timeOut);
 					continue;
 				}
@@ -154,7 +158,10 @@ public final class AlertService
 	{
 		for (AlertListener observer : observers)
 		{
-			observer.onAlert(alert);
+			if (alert == null)
+				observer.onAlertsUptade();
+			else
+				observer.onAlert(alert);
 		}
 	}
 

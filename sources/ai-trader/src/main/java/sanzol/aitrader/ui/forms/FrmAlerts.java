@@ -3,6 +3,7 @@ package sanzol.aitrader.ui.forms;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,6 +28,7 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import sanzol.aitrader.be.config.Config;
 import sanzol.aitrader.be.config.Constants;
 import sanzol.aitrader.be.model.Alert;
 import sanzol.aitrader.be.model.Symbol;
@@ -34,6 +36,7 @@ import sanzol.aitrader.be.service.AlertListener;
 import sanzol.aitrader.be.service.AlertService;
 import sanzol.aitrader.be.service.PriceService;
 import sanzol.aitrader.ui.config.Styles;
+import sanzol.util.DateTimeUtils;
 import sanzol.util.ExceptionUtils;
 
 public class FrmAlerts extends JFrame implements AlertListener
@@ -42,6 +45,8 @@ public class FrmAlerts extends JFrame implements AlertListener
 
 	private static final String TITLE = Constants.APP_NAME + " - Alerts";
 
+	private static FrmAlerts myJFrame = null;
+	
 	private Symbol symbol;
 	
     private DefaultTableModel tableModel;
@@ -59,8 +64,10 @@ public class FrmAlerts extends JFrame implements AlertListener
 	private JTextField txtShortLimit;
 	private JTextField txtShortAlert;
 
+	private JLabel lblLastPrice;	
+
 	private JButton btnSearch;
-	private JButton btnAdd;
+	private JButton btnUpdate;
 
 	private JTable table;
 
@@ -140,6 +147,8 @@ public class FrmAlerts extends JFrame implements AlertListener
         panel.add(txtSymbolLeft);
         
         txtSymbolRight = new JTextField();
+		txtSymbolRight.setEditable(false);
+		txtSymbolRight.setText(Config.DEFAULT_SYMBOL_RIGHT);
         txtSymbolRight.setBounds(102, 31, 86, 20);
         panel.add(txtSymbolRight);
         
@@ -185,10 +194,10 @@ public class FrmAlerts extends JFrame implements AlertListener
         lblLimit.setBounds(348, 11, 80, 14);
         panel.add(lblLimit);
         
-        btnAdd = new JButton();
-        btnAdd.setText("Add");
-        btnAdd.setBounds(449, 31, 70, 49);
-        panel.add(btnAdd);
+        btnUpdate = new JButton();
+        btnUpdate.setText("Update");
+        btnUpdate.setBounds(449, 31, 70, 49);
+        panel.add(btnUpdate);
 
         JLabel lblSymbol = new JLabel();
         lblSymbol.setText("SYMBOL");
@@ -199,6 +208,12 @@ public class FrmAlerts extends JFrame implements AlertListener
         btnSearch.setOpaque(true);
         btnSearch.setBounds(10, 57, 178, 22);
         panel.add(btnSearch);
+        
+        lblLastPrice = new JLabel();
+        lblLastPrice.setHorizontalAlignment(SwingConstants.TRAILING);
+        lblLastPrice.setForeground(Styles.COLOR_TEXT_ALT1);
+        lblLastPrice.setBounds(102, 11, 86, 14);
+        panel.add(lblLastPrice);
 
         pnlTopBar.setLayout(pnlTopBarLayout);
 
@@ -243,14 +258,13 @@ public class FrmAlerts extends JFrame implements AlertListener
 
 		// --------------------------------------------------------------------
 
-		FrmAlerts thisFrm = this;
-
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
 			public void windowClosed(WindowEvent e)
 			{
-				AlertService.deattachRefreshObserver(thisFrm);
+				AlertService.deattachRefreshObserver(myJFrame);
+				myJFrame = null;
 			}
 		});
 
@@ -272,7 +286,7 @@ public class FrmAlerts extends JFrame implements AlertListener
 			}
 		});
         
-        btnAdd.addActionListener(new ActionListener() {
+        btnUpdate.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		addAlert();
         	}
@@ -287,11 +301,13 @@ public class FrmAlerts extends JFrame implements AlertListener
 		{
 			txtSymbolLeft.setText(txtSymbolLeft.getText().toUpperCase());
 			String symbolLeft = txtSymbolLeft.getText();
-			symbol = Symbol.getInstance(Symbol.getFullSymbol(symbolLeft));
+			String symbolRight = txtSymbolRight.getText();
+			symbol = Symbol.getInstance(symbolLeft + symbolRight);
 
 			if (symbol != null)
 			{
 				BigDecimal lastPrice = PriceService.getLastPrice(symbol);
+				lblLastPrice.setText(symbol.priceToStr(lastPrice));
 
 				txtShortAlert.setText(symbol.priceToStr(lastPrice.multiply(BigDecimal.valueOf(1.015))));
 				txtShortLimit.setText(symbol.priceToStr(lastPrice.multiply(BigDecimal.valueOf(1.02))));
@@ -320,7 +336,7 @@ public class FrmAlerts extends JFrame implements AlertListener
 
 			Alert alert = new Alert(symbol, shortAlert, shortLimit, longAlert, longLimit);
 			AlertService.add(alert);
-			
+
 			loadTable();
 		}
 		catch (Exception e)
@@ -332,9 +348,24 @@ public class FrmAlerts extends JFrame implements AlertListener
 	// ------------------------------------------------------------------------
 
 	@Override
+	public void onAlertsUptade()
+	{
+		if (symbol != null)
+		{
+			BigDecimal lastPrice = PriceService.getLastPrice(symbol);
+			lblLastPrice.setText(symbol.priceToStr(lastPrice));
+		}
+
+		loadTable();
+	}
+
+	@Override
 	public void onAlert(Alert alert)
 	{
-		loadTable();
+		if (alert != null)
+		{
+			INFO (alert.getSymbol().getPair() + " " + alert.getAlertState());
+		}
 	}
 
 	// ------------------------------------------------------------------------
@@ -357,10 +388,12 @@ public class FrmAlerts extends JFrame implements AlertListener
 	    	tableModel = new TableModel();
 
 	    	tableModel.addColumn("SYMBOL");
+	    	tableModel.addColumn("ALERT");
 	    	tableModel.addColumn("SH ALERT");
 	    	tableModel.addColumn("SH LIMIT");
 	    	tableModel.addColumn("LG ALERT");
 	    	tableModel.addColumn("LG LIMIT");
+	    	tableModel.addColumn("TIME OUT");
 
 			table.setModel(tableModel);
 
@@ -371,6 +404,8 @@ public class FrmAlerts extends JFrame implements AlertListener
 	        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
 	        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
 	        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
+	        table.getColumnModel().getColumn(5).setCellRenderer(centerRenderer);
+	        table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
 
 	        table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		}
@@ -395,10 +430,12 @@ public class FrmAlerts extends JFrame implements AlertListener
 				Symbol eSymbol = entry.getSymbol();
 	        	Object row[] = { 
 	    				entry.getSymbol().getNameLeft(), 
+	    				entry.getAlertState(),
 	    				eSymbol.priceToStr(entry.getShortAlert()), 
 	    				eSymbol.priceToStr(entry.getShortLimit()), 
 	    				eSymbol.priceToStr(entry.getLongAlert()), 
-	    				eSymbol.priceToStr(entry.getLongLimit()) 
+	    				eSymbol.priceToStr(entry.getLongLimit()),
+	    				DateTimeUtils.millisToReadable(entry.getTimeOut() - System.currentTimeMillis())
 	        		};
 
 				tableModel.addRow(row);
@@ -417,15 +454,22 @@ public class FrmAlerts extends JFrame implements AlertListener
 
 	public static void launch()
 	{
+		if (myJFrame != null)
+		{
+			myJFrame.toFront();
+			myJFrame.setState(Frame.NORMAL);
+			return;
+		}
+		
 		EventQueue.invokeLater(new Runnable()
 		{
 			public void run()
 			{
 				try
 				{
-					FrmAlerts frame = new FrmAlerts();
-					frame.setVisible(true);
-					frame.loadTable();
+					myJFrame = new FrmAlerts();
+					myJFrame.setVisible(true);
+					myJFrame.loadTable();
 				}
 				catch (Exception e)
 				{
@@ -453,4 +497,5 @@ public class FrmAlerts extends JFrame implements AlertListener
 		lblError.setForeground(Styles.COLOR_TEXT_INFO);
 		lblError.setText(" " + msg);
 	}
+
 }

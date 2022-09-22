@@ -42,24 +42,28 @@ import api.client.impl.config.ApiConfig;
 import api.client.model.event.SymbolTickerEvent;
 import sanzol.aitrader.be.config.Config;
 import sanzol.aitrader.be.config.Constants;
+import sanzol.aitrader.be.model.Alert;
 import sanzol.aitrader.be.model.Signal;
 import sanzol.aitrader.be.model.Symbol;
+import sanzol.aitrader.be.service.AlertListener;
+import sanzol.aitrader.be.service.AlertService;
 import sanzol.aitrader.be.service.BalanceListener;
 import sanzol.aitrader.be.service.BalanceService;
 import sanzol.aitrader.be.service.LastCandlestickListener;
 import sanzol.aitrader.be.service.LastCandlestickService;
-import sanzol.aitrader.be.service.PositionListener;
 import sanzol.aitrader.be.service.PositionFuturesService;
+import sanzol.aitrader.be.service.PositionListener;
 import sanzol.aitrader.be.service.PriceListener;
 import sanzol.aitrader.be.service.PriceService;
 import sanzol.aitrader.be.service.SignalListener;
 import sanzol.aitrader.be.service.SignalService;
 import sanzol.aitrader.ui.config.Styles;
+import sanzol.util.BeepUtils;
 import sanzol.util.ExceptionUtils;
 import sanzol.util.log.LogService;
 import sanzol.util.price.Convert;
 
-public class FrmMain extends JFrame implements PriceListener, SignalListener, BalanceListener, LastCandlestickListener, PositionListener
+public class FrmMain extends JFrame implements PriceListener, SignalListener, AlertListener, BalanceListener, LastCandlestickListener, PositionListener
 {
 	private static final long serialVersionUID = 1L;
 
@@ -127,6 +131,8 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		onSignalUpdate();
 		SignalService.attachRefreshObserver(this);
 
+		AlertService.attachRefreshObserver(this);
+		
 		onBalanceUpdate();
 		BalanceService.attachRefreshObserver(this);
 
@@ -762,6 +768,29 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		try
 		{
 			loadListSignals();
+		}
+		catch (Exception e)
+		{
+			ERROR(e);
+		}
+	}
+
+	@Override
+	public void onAlertsUptade()
+	{
+		//
+	}
+
+	@Override
+	public void onAlert(Alert alert)
+	{
+		try
+		{
+			if (alert != null)
+			{
+				INFO (alert.getSymbol().getPair() + " " + alert.getAlertState());
+				BeepUtils.beep4();
+			}
 		}
 		catch (Exception e)
 		{
