@@ -18,6 +18,8 @@ public final class Convert
 		// Hide
 	}
 
+	// --- USD ---------------------------------------------------------------
+	
 	public static String usdToStr(BigDecimal usd)
 	{
 		String pattern = "#0.00";
@@ -29,6 +31,8 @@ public final class Convert
 		String pattern = "#0.00";
 		return new DecimalFormat(pattern, new DecimalFormatSymbols(Locale.ENGLISH)).format(usd);
 	}
+
+	// --- PERCENT -----------------------------------------------------------
 
 	public static String toStrPercent(BigDecimal d)
 	{
@@ -61,6 +65,8 @@ public final class Convert
 
 		return DoubleRounder.round(Double.valueOf(str) / 100, 4);
 	}
+	
+	// --- TIME --------------------------------------------------------------
 	
 	public static String convertTime(long time)
 	{

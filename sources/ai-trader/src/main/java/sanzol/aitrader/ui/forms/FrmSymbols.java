@@ -276,7 +276,6 @@ public class FrmSymbols extends JFrame implements PriceListener
 			ERROR(e);
 		}
     }
-   
 
     private void loadTable(List<SymbolInfo> lstSymbolsInfo)
 	{

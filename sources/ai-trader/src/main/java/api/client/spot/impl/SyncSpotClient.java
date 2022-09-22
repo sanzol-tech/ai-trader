@@ -29,6 +29,7 @@ import api.client.spot.model.Order;
 import api.client.spot.model.enums.IntervalType;
 import api.client.spot.model.enums.NewOrderRespType;
 import api.client.spot.model.enums.OrderSide;
+import api.client.spot.model.enums.OrderStatus;
 import api.client.spot.model.enums.OrderType;
 import api.client.spot.model.enums.TimeInForce;
 import sanzol.aitrader.be.config.PrivateConfig;
@@ -208,6 +209,41 @@ public class SyncSpotClient
 		return response.readEntity(new GenericType<List<Order>>() {});		
 	}
 	
+	public static List<Order> getFilledOrders(String symbol) throws KeyManagementException, NoSuchAlgorithmException, InvalidKeyException
+	{
+		final String path = "/api/v3/allOrders";
+
+		Client client = CustomClient.getClient();
+		
+		String recvWindow = Long.toString(60_000L);
+		String timestamp = Long.toString(System.currentTimeMillis());
+
+		WebTarget target = client
+			.target(ApiConstants.SPOT_BASE_URL)
+			.path(path)
+			.queryParam("symbol", symbol)
+			.queryParam("recvWindow", recvWindow)
+			.queryParam("timestamp", timestamp);
+
+		String signature = ApiSignature.createSignature(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, target.getUri().getQuery());
+
+		Response response = target
+			.queryParam("signature", signature)
+			.request()
+			.header("X-MBX-APIKEY", PrivateConfig.API_KEY)
+			.accept(MediaType.TEXT_XML)
+			.get();
+
+		verifyResponseStatus(response);
+
+		List<Order> lstOrders = response.readEntity(new GenericType<List<Order>>() {});
+		
+		// Remove all no NEW
+		lstOrders.removeIf((Order entry) -> entry.getStatus() != OrderStatus.FILLED);
+		
+		return lstOrders;		
+	}
+
 	public static Order postOrder(String symbol, OrderSide side, OrderType orderType, TimeInForce timeInForce, 
 								  String quantity, String price, String newClientOrderId, String stopPrice, 
 								  String icebergQty, NewOrderRespType newOrderRespType) throws KeyManagementException, NoSuchAlgorithmException, InvalidKeyException

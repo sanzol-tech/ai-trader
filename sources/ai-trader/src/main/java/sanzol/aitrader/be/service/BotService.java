@@ -18,6 +18,7 @@ import api.client.futures.model.Order;
 import api.client.futures.model.PositionRisk;
 import sanzol.aitrader.be.config.Config;
 import sanzol.aitrader.be.model.Symbol;
+import sanzol.aitrader.be.trade.SimpleTrade;
 import sanzol.util.BeepUtils;
 
 public final class BotService
@@ -76,7 +77,7 @@ public final class BotService
 
 	public synchronized static void onPositionUpdate() throws KeyManagementException, NoSuchAlgorithmException, IOException, InvalidKeyException
 	{
-		List<PositionRisk> lstPositionRisk = PositionService.getLstPositionRisk();
+		List<PositionRisk> lstPositionRisk = PositionFuturesService.getLstPositionRisk();
 
 		if (lstPositionRisk != null && !lstPositionRisk.isEmpty())
 		{
@@ -107,7 +108,7 @@ public final class BotService
 			BigDecimal tpCoef = "SHORT".equals(side) ? BigDecimal.ONE.subtract(tpPercent) : BigDecimal.ONE.add(tpPercent);
 			BigDecimal newPrice = price.multiply(tpCoef).setScale(symbol.getPricePrecision(), RoundingMode.HALF_UP);
 
-			Order tpOrder = PositionService.getTpOrder(symbol.getPair(), side);
+			Order tpOrder = PositionFuturesService.getTpOrder(symbol.getPair(), side);
 			if (tpOrder != null)
 			{
 				BigDecimal tpQty = tpOrder.getOrigQty();
@@ -120,10 +121,10 @@ public final class BotService
 					BeepUtils.beep2();
 		
 					// CANCEL ORDER
-					SimpleTrader.cancelOrder(tpOrder);
+					SimpleTrade.cancelOrder(tpOrder);
 		
 					// ADD NEW ORDER
-					SimpleTrader.postTprofit(symbol, side, newPrice, posQty);
+					SimpleTrade.postTprofit(symbol, side, newPrice, posQty);
 				}
 			}
 			else
@@ -133,7 +134,7 @@ public final class BotService
 				BeepUtils.beep2();
 
 				// ADD NEW ORDER
-				SimpleTrader.postTprofit(symbol, side, newPrice, posQty);
+				SimpleTrade.postTprofit(symbol, side, newPrice, posQty);
 			}
 		}
 	}
@@ -149,7 +150,7 @@ public final class BotService
 				slPriceNew = ((posPrice.multiply(posQty)).subtract(slUsd)).divide(posQty, symbol.getPricePrecision(), RoundingMode.HALF_UP);
 			}
 
-			Order slOrder = PositionService.getSlOrder(symbol.getPair(), side);
+			Order slOrder = PositionFuturesService.getSlOrder(symbol.getPair(), side);
 			if (slOrder == null)
 			{
 				info(symbol.getNameLeft() + " SL-REARRANGEMENT");
@@ -157,7 +158,7 @@ public final class BotService
 				BeepUtils.beep2();
 
 				// ADD NEW SL-ORDER
-				SimpleTrader.postSMarket(symbol, side, slPriceNew);
+				SimpleTrade.postSMarket(symbol, side, slPriceNew);
 			}
 			else
 			{
@@ -170,10 +171,10 @@ public final class BotService
 					BeepUtils.beep2();
 	
 					// CANCEL SL-ORDER
-					SimpleTrader.cancelOrder(slOrder);
+					SimpleTrade.cancelOrder(slOrder);
 	
 					// ADD NEW SL-ORDER
-					SimpleTrader.postSMarket(symbol, side, slPriceNew);
+					SimpleTrade.postSMarket(symbol, side, slPriceNew);
 				}
 			}
 		}

@@ -3,53 +3,78 @@ package sanzol.aitrader.be.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
-import api.client.futures.model.enums.OrderSide;
 import sanzol.aitrader.be.model.Alert;
-import sanzol.util.price.PriceUtil;
+import sanzol.util.log.LogService;
 
-public class AlertService implements PriceListener
+public final class AlertService
 {
-	private List<Alert> lstAlerts = new ArrayList<Alert>();
+	private static boolean isStarted = false;
 
-	private static AlertService alertService;
-
-	public static AlertService getInstance()
-	{
-		if (alertService == null)
-		{
-			alertService = new AlertService();
-		}
-		return alertService;
-	}
+	private static Map<String, Alert> mapAlerts = new ConcurrentHashMap<String, Alert>();
 
 	private AlertService()
 	{
-		//
+		// Hide
+	}
+
+	public static Map<String, Alert> getMapAlerts()
+	{
+		return mapAlerts;
 	}
 
 	public static void start()
 	{
-		AlertService alertService = AlertService.getInstance();
-		PriceService.attachRefreshObserver(alertService);
-	}
-
-	public void add(Alert alert)
-	{
-		lstAlerts.add(alert);
-	}
-
-	public void remove(Alert alert)
-	{
-		lstAlerts.remove(alert);
-	}
-	
-	@Override
-	public void onPriceUpdate()
-	{
-		if (!lstAlerts.isEmpty())
+		if (!isStarted)
 		{
-			for (Alert alert : lstAlerts)
+			LogService.info("AlertService - Start");
+
+			Timer timer1 = new Timer("verifyAlerts");
+			timer1.schedule(new MyTask1(), TimeUnit.SECONDS.toMillis(240), TimeUnit.SECONDS.toMillis(5));
+
+			isStarted = true;
+		}
+	}
+
+	public static class MyTask1 extends TimerTask
+	{
+		@Override
+		public void run()
+		{
+			verifyAlerts();
+		}
+	}
+
+	public static void add(Alert alert)
+	{
+		if (mapAlerts.containsKey(alert.getSymbol().getPair()))
+		{
+			throw new IllegalArgumentException("An alert already exists for the symbol");
+		}
+
+		mapAlerts.put(alert.getSymbol().getPair(), alert);
+	}
+
+	public static void remove(Alert alert)
+	{
+		mapAlerts.remove(alert.getSymbol().getPair());
+	}
+
+	private static void verifyAlerts()
+	{
+		if (observers.isEmpty())
+		{
+			return;
+		}
+
+		if (!mapAlerts.isEmpty())
+		{
+			for (Alert alert : mapAlerts.values())
 			{
 				BigDecimal lastPrice = PriceService.getLastPrice(alert.getSymbol());
 				if (lastPrice.doubleValue() < 0)
@@ -57,43 +82,79 @@ public class AlertService implements PriceListener
 					continue;
 				}
 
-				BigDecimal distLimit, distAlert;
-
-				if (alert.isAlerted())
+				// TimeOut
+				if (alert.getTimeOut() < System.currentTimeMillis())
 				{
-					if (alert.getSide() == OrderSide.SELL)
-					{
-						distLimit = PriceUtil.priceDistUp(lastPrice, alert.getPriceLimit(), false);
-					}
-					else
-					{
-						distLimit = PriceUtil.priceDistDown(lastPrice, alert.getPriceLimit(), false);
-					}
-
-					if (distLimit.doubleValue() <= 0)
-					{
-						System.out.println("remove alert: " + alert.toString());
-
-						lstAlerts.remove(alert);
-					}
+					remove(alert);
+					continue;
 				}
-				else
+
+				// Reached short limit price
+				if (lastPrice.doubleValue() >= alert.getShortLimit().doubleValue() && alert.getAlertState() != AlertState.SHORT_LIMIT)
 				{
-					if (alert.getSide() == OrderSide.SELL)
-					{
-						distAlert = PriceUtil.priceDistUp(lastPrice, alert.getPriceAlert(), false);
-					}
-					else
-					{
-						distAlert = PriceUtil.priceDistDown(lastPrice, alert.getPriceAlert(), false);
-					}
-
-					if (distAlert.doubleValue() <= 0)
-					{
-						System.out.println("actived alert: " + alert.toString());
-					}
+					long timeOut = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(10);
+					changeAlertSatate(alert, AlertState.SHORT_LIMIT, timeOut);
+					continue;
 				}
+
+				// Reached long limit price
+				if (lastPrice.doubleValue() <= alert.getLongLimit().doubleValue() && alert.getAlertState() != AlertState.LONG_LIMIT)
+				{
+					long timeOut = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(10);
+					changeAlertSatate(alert, AlertState.LONG_LIMIT, timeOut);
+					continue;
+				}
+
+				// Short alert price
+				if (lastPrice.doubleValue() >= alert.getShortAlert().doubleValue() && alert.getAlertState() != AlertState.SHORT_ALERT && alert.getAlertState() != AlertState.SHORT_LIMIT)
+				{
+					changeAlertSatate(alert, AlertState.SHORT_ALERT, null);
+					continue;
+				}
+
+				// Long alert price
+				if (lastPrice.doubleValue() <= alert.getLongAlert().doubleValue() && alert.getAlertState() != AlertState.LONG_ALERT && alert.getAlertState() != AlertState.LONG_LIMIT)
+				{
+					changeAlertSatate(alert, AlertState.LONG_ALERT, null);
+					continue;
+				}
+
 			}
+		}
+	}
+
+	private static void changeAlertSatate(Alert alert, AlertState alertState, Long timeOut)
+	{
+		if (timeOut != null)
+		{
+			alert.setTimeOut(timeOut);
+		}
+		alert.setAlertState(alertState);
+
+		LogService.debug(alertState.toString() + " / " + alert.toString());
+
+		notifyAllLogObservers(alert);
+	}
+
+	// ------------------------------------------------------------------------
+
+	private static List<AlertListener> observers = new ArrayList<AlertListener>();
+
+	public static void attachRefreshObserver(AlertListener observer)
+	{
+		observers.add(observer);
+	}
+
+	public static void deattachRefreshObserver(AlertListener observer)
+	{
+		observers.remove(observer);
+	}
+
+	public static void notifyAllLogObservers(Alert alert)
+	{
+		for (AlertListener observer : observers)
+		{
+			observer.onAlert(alert);
 		}
 	}
 

@@ -54,11 +54,11 @@ import sanzol.aitrader.be.model.PriceQty;
 import sanzol.aitrader.be.model.Symbol;
 import sanzol.aitrader.be.service.BalanceService;
 import sanzol.aitrader.be.service.PositionListener;
-import sanzol.aitrader.be.service.PositionService;
-import sanzol.aitrader.be.service.PositionTrader;
+import sanzol.aitrader.be.service.PositionFuturesService;
 import sanzol.aitrader.be.service.PriceListener;
 import sanzol.aitrader.be.service.PriceService;
-import sanzol.aitrader.be.service.PositionTrader.PostStyle;
+import sanzol.aitrader.be.trade.GridTrade;
+import sanzol.aitrader.be.trade.GridTrade.PostStyle;
 import sanzol.aitrader.ui.config.CharConstants;
 import sanzol.aitrader.ui.config.Styles;
 import sanzol.aitrader.ui.enums.GridTemplate;
@@ -74,7 +74,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	private static final String TITLE = Constants.APP_NAME;
 
 	private Symbol symbol;
-	private PositionTrader pMaker;
+	private GridTrade pMaker;
 	private PositionSide positionSide = null;
 	private boolean isBotMode = false;
 	private boolean isOpenPosition = false;
@@ -148,7 +148,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	{
 		initComponents();
 		PriceService.attachRefreshObserver(this);
-		PositionService.attachRefreshObserver(this);
+		PositionFuturesService.attachRefreshObserver(this);
 	}
 
 	private void initComponents() 
@@ -585,7 +585,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			public void windowClosed(WindowEvent e)
 			{
 				PriceService.deattachRefreshObserver(thisFrm);
-				PositionService.deattachRefreshObserver(thisFrm);
+				PositionFuturesService.deattachRefreshObserver(thisFrm);
 			}
 		});
 
@@ -832,7 +832,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 	private void searchPosition()
 	{
-		PositionRisk positionRisk = PositionService.getPositionRisk(symbol.getPair());
+		PositionRisk positionRisk = PositionFuturesService.getPositionRisk(symbol.getPair());
 		if (isOpenPosition)
 		{
 			txtInPrice.setText(symbol.priceToStr(positionRisk.getEntryPrice()));
@@ -872,7 +872,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	{
 		if (isBotMode)
 		{
-			if (!PositionService.existsPosition(symbol.getPair()))
+			if (!PositionFuturesService.existsPosition(symbol.getPair()))
 			{
 				post(PostStyle.FIRST);
 			}
@@ -1425,7 +1425,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		{
 			positionSide = PositionSide.SHORT;
 			Position position = acquireArguments(PositionSide.SHORT);
-			pMaker = new PositionTrader(position);
+			pMaker = new GridTrade(position);
 			pMaker.createShort();
 
 			//-----------------------------------------------------------------
@@ -1454,7 +1454,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		{
 			positionSide = PositionSide.LONG;
 			Position position = acquireArguments(PositionSide.LONG);
-			pMaker = new PositionTrader(position);
+			pMaker = new GridTrade(position);
 			pMaker.createLong();
 
 			//-----------------------------------------------------------------

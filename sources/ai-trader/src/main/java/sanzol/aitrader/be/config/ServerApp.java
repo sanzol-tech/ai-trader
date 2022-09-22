@@ -6,11 +6,13 @@ import java.net.ServerSocket;
 
 import api.client.impl.config.ApiConfig;
 import api.client.impl.model.enums.MarketType;
+import sanzol.aitrader.be.service.AlertService;
 import sanzol.aitrader.be.service.BalanceService;
 import sanzol.aitrader.be.service.DepthCache;
 import sanzol.aitrader.be.service.ExchangeInfoService;
 import sanzol.aitrader.be.service.LastCandlestickService;
-import sanzol.aitrader.be.service.PositionService;
+import sanzol.aitrader.be.service.PositionFuturesService;
+import sanzol.aitrader.be.service.PositionSpotService;
 import sanzol.aitrader.be.service.PriceService;
 import sanzol.aitrader.be.service.SignalService;
 import sanzol.util.log.LogService;
@@ -24,7 +26,7 @@ public final class ServerApp
 		return keyLoadedOK;
 	}
 
-	public static void initialize()
+	public static void initialize(MarketType marketType)
 	{
 		verifyFolders();
 
@@ -36,8 +38,16 @@ public final class ServerApp
 
 			if (keyLoadedOK)
 			{
-				BalanceService.start();
-				PositionService.start();
+				if (marketType == MarketType.spot)
+				{
+					// BalanceService.start();
+					PositionSpotService.start();
+				}
+				else
+				{
+					BalanceService.start();
+					PositionFuturesService.start();
+				}
 			}
 		}
 		catch (Exception e)
@@ -58,6 +68,7 @@ public final class ServerApp
 				LastCandlestickService.start("btcusdt");
 				DepthCache.start();
 				SignalService.start();
+				AlertService.start();
 			}
 			catch (Exception e)
 			{
@@ -118,7 +129,7 @@ public final class ServerApp
 		ApiConfig.setMarketType(marketType);
 		assertNoOtherInstanceRunning(marketType);
 		
-		initialize();
+		initialize(marketType);
 
 		Thread thread = new Thread(new InitializeTask(), "initializeTask");
 		thread.start();

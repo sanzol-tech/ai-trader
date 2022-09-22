@@ -527,7 +527,6 @@ public class OrderBookService
 					break;
 				}
 
-				total = total.add(entry.getQty());
 				total = isUsd ? total.add(entry.getUsd()) : total.add(entry.getQty());
 			}
 		}

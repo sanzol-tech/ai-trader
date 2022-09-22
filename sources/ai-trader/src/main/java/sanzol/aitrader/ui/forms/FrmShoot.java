@@ -34,10 +34,10 @@ import sanzol.aitrader.be.config.Constants;
 import sanzol.aitrader.be.model.GOrder;
 import sanzol.aitrader.be.model.Symbol;
 import sanzol.aitrader.be.service.BalanceService;
-import sanzol.aitrader.be.service.PositionService;
+import sanzol.aitrader.be.service.PositionFuturesService;
 import sanzol.aitrader.be.service.PriceListener;
 import sanzol.aitrader.be.service.PriceService;
-import sanzol.aitrader.be.service.SimpleTrader;
+import sanzol.aitrader.be.trade.SimpleTrade;
 import sanzol.aitrader.ui.config.Styles;
 import sanzol.util.ExceptionUtils;
 import sanzol.util.price.Convert;
@@ -508,7 +508,7 @@ public class FrmShoot extends JFrame implements PriceListener
 				String priceChangePercent = String.format("%.2f", symbolTicker.getPriceChangePercent());
 				txt24h.setText(priceChangePercent);
 	
-				PositionRisk positionRisk = PositionService.getPositionRisk(coin.getPair());
+				PositionRisk positionRisk = PositionFuturesService.getPositionRisk(coin.getPair());
 				boolean isPosition = positionRisk != null && positionRisk.getPositionAmt().compareTo(BigDecimal.ZERO) != 0;
 				enableControls(isPosition);
 
@@ -577,7 +577,7 @@ public class FrmShoot extends JFrame implements PriceListener
 				shootQty = posQty.multiply(x).setScale(coin.getQtyPrecision(), RoundingMode.UP);
 			
 			// --- CALC -------------------------------------------------------
-			Map<String, GOrder> mapPosition = SimpleTrader.calc(coin, side, posPrice, posQty, shootPrice, shootQty);
+			Map<String, GOrder> mapPosition = SimpleTrade.calc(coin, side, posPrice, posQty, shootPrice, shootQty);
 
 			// ----------------------------------------------------------------
 			txtPositionUsd.setText(Convert.usdToStr(mapPosition.get("POS").getUsd()));
@@ -638,7 +638,7 @@ public class FrmShoot extends JFrame implements PriceListener
 				}
 
 				// String result = String.format("Post order %s  /  %s  /  %s  /  %s", coin.getName(), side.name(), coin.priceToStr(price), coin.coinsToStr(coins));
-				String result = SimpleTrader.postOrder(coin, side, price, coins);
+				String result = SimpleTrade.postOrder(coin, side, price, coins);
 
 				INFO(result);
 			}

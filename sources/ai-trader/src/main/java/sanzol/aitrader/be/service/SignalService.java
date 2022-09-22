@@ -48,6 +48,11 @@ public final class SignalService
 	private static List<Signal> lstShortSignals;
 	private static List<Signal> lstLongSignals;
 
+	private SignalService()
+	{
+		// Hide
+	}
+
 	public static boolean isOnlyFavorites()
 	{
 		return onlyFavorites;

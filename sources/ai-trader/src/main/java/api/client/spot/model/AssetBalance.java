@@ -41,6 +41,11 @@ public class AssetBalance
 		this.locked = locked;
 	}
 
+	public BigDecimal getQuantity()
+	{
+		return free.add(locked);
+	}
+
 	@Override
 	public String toString()
 	{

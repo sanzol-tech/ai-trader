@@ -1,29 +1,45 @@
 package sanzol.aitrader.be.model;
 
 import java.math.BigDecimal;
+import java.util.concurrent.TimeUnit;
 
-import api.client.futures.model.enums.OrderSide;
+import sanzol.aitrader.be.service.AlertState;
 
 public class Alert
 {
 	private Symbol symbol;
-	private OrderSide side;
-	private Price priceAlert;
-	private Price priceLimit;
-	private boolean isAlerted;
+	private BigDecimal shortAlert;
+	private BigDecimal shortLimit;
+	private BigDecimal longAlert;
+	private BigDecimal longLimit;
+	private AlertState alertState;
+	private Long timeOut;
 
 	public Alert()
 	{
 		//
 	}
 
-	public Alert(Symbol symbol, OrderSide side, BigDecimal priceAlert, BigDecimal priceLimit)
+	public Alert(Symbol symbol, BigDecimal shortAlert, BigDecimal shortLimit, BigDecimal longAlert, BigDecimal longLimit)
 	{
 		this.symbol = symbol;
-		this.side = side;
-		this.priceAlert = new Price(symbol, priceAlert);
-		this.priceLimit = new Price(symbol, priceLimit);
-		this.isAlerted = false;
+		this.shortAlert = shortAlert;
+		this.shortLimit = shortLimit;
+		this.longAlert = longAlert;
+		this.longLimit = longLimit;
+		this.alertState = AlertState.NONE;
+		this.timeOut = System.currentTimeMillis() + TimeUnit.HOURS.toMillis(8);
+	}
+
+	public Alert(Symbol symbol, BigDecimal shortAlert, BigDecimal shortLimit, BigDecimal longAlert, BigDecimal longLimit, AlertState alertState, Long timeOut)
+	{
+		this.symbol = symbol;
+		this.shortAlert = shortAlert;
+		this.shortLimit = shortLimit;
+		this.longAlert = longAlert;
+		this.longLimit = longLimit;
+		this.alertState = alertState;
+		this.timeOut = timeOut;
 	}
 
 	public Symbol getSymbol()
@@ -36,50 +52,70 @@ public class Alert
 		this.symbol = symbol;
 	}
 
-	public OrderSide getSide()
+	public BigDecimal getShortAlert()
 	{
-		return side;
+		return shortAlert;
 	}
 
-	public void setSide(OrderSide side)
+	public void setShortAlert(BigDecimal shortAlert)
 	{
-		this.side = side;
+		this.shortAlert = shortAlert;
 	}
 
-	public BigDecimal getPriceAlert()
+	public BigDecimal getShortLimit()
 	{
-		return priceAlert.getValue();
+		return shortLimit;
 	}
 
-	public void setPriceAlert(BigDecimal priceAlert)
+	public void setShortLimit(BigDecimal shortLimit)
 	{
-		this.priceAlert = new Price(symbol, priceAlert);
+		this.shortLimit = shortLimit;
 	}
 
-	public BigDecimal getPriceLimit()
+	public BigDecimal getLongAlert()
 	{
-		return priceLimit.getValue();
+		return longAlert;
 	}
 
-	public void setPriceLimit(BigDecimal priceLimit)
+	public void setLongAlert(BigDecimal longAlert)
 	{
-		this.priceLimit = new Price(symbol, priceLimit);
+		this.longAlert = longAlert;
 	}
 
-	public boolean isAlerted()
+	public BigDecimal getLongLimit()
 	{
-		return isAlerted;
+		return longLimit;
 	}
 
-	public void setAlerted(boolean isAlerted)
+	public void setLongLimit(BigDecimal longLimit)
 	{
-		this.isAlerted = isAlerted;
+		this.longLimit = longLimit;
+	}
+
+	public AlertState getAlertState()
+	{
+		return alertState;
+	}
+
+	public void setAlertState(AlertState alertState)
+	{
+		this.alertState = alertState;
+	}
+
+	public Long getTimeOut()
+	{
+		return timeOut;
+	}
+
+	public void setTimeOut(Long timeOut)
+	{
+		this.timeOut = timeOut;
 	}
 
 	@Override
 	public String toString()
 	{
-		return "Alert [symbol=" + symbol + ", side=" + side + ", priceAlert=" + priceAlert + ", priceLimit=" + priceLimit + "]";
+		return "Alert [symbol=" + symbol + ", shortAlert=" + shortAlert + ", shortLimit=" + shortLimit + ", longAlert=" + longAlert + ", longLimit=" + longLimit + ", alertState=" + alertState + ", timeOut=" + timeOut + "]";
 	}
 
 }

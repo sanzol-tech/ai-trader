@@ -21,7 +21,7 @@ import javax.swing.border.EmptyBorder;
 
 import sanzol.aitrader.be.config.Constants;
 import sanzol.aitrader.be.service.PositionListener;
-import sanzol.aitrader.be.service.PositionService;
+import sanzol.aitrader.be.service.PositionFuturesService;
 import sanzol.aitrader.ui.config.Styles;
 import sanzol.util.ExceptionUtils;
 import sanzol.util.log.LogService;
@@ -46,7 +46,7 @@ public class FrmPositions extends JFrame implements PositionListener
 		initComponents();
 
 		onPositionUpdate();
-		PositionService.attachRefreshObserver(this);
+		PositionFuturesService.attachRefreshObserver(this);
 	}
 
 	private void initComponents() 
@@ -107,7 +107,7 @@ public class FrmPositions extends JFrame implements PositionListener
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
-				PositionService.deattachRefreshObserver(myJFrame);
+				PositionFuturesService.deattachRefreshObserver(myJFrame);
 				myJFrame = null;
 			}
 		});
@@ -121,7 +121,7 @@ public class FrmPositions extends JFrame implements PositionListener
 	{
 		try
 		{
-			String text = PositionService.toStringPositions(chkIncludeOrders.isSelected());
+			String text = PositionFuturesService.toStringPositions(chkIncludeOrders.isSelected());
 			textArea.setText(text);
 		}
 		catch (Exception e)

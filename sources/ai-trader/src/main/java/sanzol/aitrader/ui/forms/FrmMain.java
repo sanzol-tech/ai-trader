@@ -49,7 +49,7 @@ import sanzol.aitrader.be.service.BalanceService;
 import sanzol.aitrader.be.service.LastCandlestickListener;
 import sanzol.aitrader.be.service.LastCandlestickService;
 import sanzol.aitrader.be.service.PositionListener;
-import sanzol.aitrader.be.service.PositionService;
+import sanzol.aitrader.be.service.PositionFuturesService;
 import sanzol.aitrader.be.service.PriceListener;
 import sanzol.aitrader.be.service.PriceService;
 import sanzol.aitrader.be.service.SignalListener;
@@ -130,7 +130,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		onBalanceUpdate();
 		BalanceService.attachRefreshObserver(this);
 
-		PositionService.attachRefreshObserver(this);
+		PositionFuturesService.attachRefreshObserver(this);
 	}
 
 	private void initComponents()
@@ -596,7 +596,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 				SignalService.deattachRefreshObserver(thisFrm);
 				BalanceService.deattachRefreshObserver(thisFrm);
 				LastCandlestickService.deattachRefreshObserver(thisFrm);
-				PositionService.deattachRefreshObserver(thisFrm);
+				PositionFuturesService.deattachRefreshObserver(thisFrm);
 			}
 		});
 
@@ -825,7 +825,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Ba
 		{
 			int shortCount = 0;
 			int longCount = 0;
-			List<PositionRisk> lstPositionRisk = PositionService.getLstPositionRisk();
+			List<PositionRisk> lstPositionRisk = PositionFuturesService.getLstPositionRisk();
 
 			if (lstPositionRisk != null && !lstPositionRisk.isEmpty())
 			{
