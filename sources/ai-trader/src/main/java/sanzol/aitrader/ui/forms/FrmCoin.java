@@ -47,6 +47,7 @@ import api.client.spot.impl.SyncSpotClient;
 import sanzol.aitrader.be.config.Config;
 import sanzol.aitrader.be.config.Constants;
 import sanzol.aitrader.be.enums.DepthMode;
+import sanzol.aitrader.be.enums.GridStrategy;
 import sanzol.aitrader.be.model.KlineMerge;
 import sanzol.aitrader.be.model.Symbol;
 import sanzol.aitrader.be.model.SymbolInfo;
@@ -58,9 +59,9 @@ import sanzol.aitrader.be.service.OrderBookService.BBType;
 import sanzol.aitrader.be.service.OrderBookService.WAType;
 import sanzol.aitrader.ui.config.Styles;
 import sanzol.util.BeepUtils;
+import sanzol.util.Convert;
 import sanzol.util.ExceptionUtils;
 import sanzol.util.log.LogService;
-import sanzol.util.price.Convert;
 import sanzol.util.price.PriceUtil;
 
 public class FrmCoin extends JFrame implements PriceListener
@@ -702,25 +703,25 @@ public class FrmCoin extends JFrame implements PriceListener
 		});
 		btnShortBidPointBB1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtAskPointBB1.getText(), false);
+				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtAskPointBB1.getText(), GridStrategy.DEFAULT, false);
 			}
 		});
 		btnLongBidPointBB1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtBidPointBB1.getText(), false);
+				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtBidPointBB1.getText(), GridStrategy.DEFAULT, false);
 			}
 		});
 		btnShortBidPointWA1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtAskPointWA1.getText(), false);
+				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtAskPointWA1.getText(), GridStrategy.DEFAULT, false);
 			}
 		});
 		btnLongBidPointWA1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtBidPointWA1.getText(), false);
+				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtBidPointWA1.getText(), GridStrategy.DEFAULT, false);
 			}
 		});
-		
+
 		btnCalcBB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try
@@ -898,7 +899,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		loadRatiosBB(obService.getAskBBlkPoint1(), obService.getBidBBlkPoint1(), obService.getAskBBlkPoint2(), obService.getBidBBlkPoint2());
 		loadRatiosWA(obService.getAskWAvgPoint1(), obService.getBidWAvgPoint1(), obService.getAskWAvgPoint2(), obService.getBidWAvgPoint2());
 	}
-	
+
 	public void loadRatiosBB(BigDecimal shortPrice, BigDecimal longPrice, BigDecimal shShock2, BigDecimal lgShock2)
 	{
 		BigDecimal shortTProfit = PriceUtil.priceDistDown(shortPrice, longPrice, true);

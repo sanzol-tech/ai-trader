@@ -16,6 +16,8 @@ import api.client.futures.model.enums.PositionSide;
 import api.client.futures.model.enums.TimeInForce;
 import api.client.futures.model.enums.WorkingType;
 import sanzol.aitrader.be.config.Config;
+import sanzol.aitrader.be.enums.PriceIncrType;
+import sanzol.aitrader.be.enums.QtyIncrType;
 import sanzol.aitrader.be.model.Position;
 import sanzol.aitrader.be.model.PositionOrder;
 import sanzol.aitrader.be.model.PriceQty;
@@ -81,16 +83,22 @@ public class GridTrade
 			number++;
 			type = Type.SELL;
 
-			if (position.isArithmetic())
+			if (position.getPriceIncrType() == PriceIncrType.ARITHMETIC)
 				distance = distance + entry.getPriceDist();
 			else
 				distance = (1 + distance) * (1 + entry.getPriceDist()) - 1;
 
 			price = getSymbol().roundPrice(position.getInPrice() * (1 + distance));
 
-			qtyIncr = (1 + qtyIncr) * ( 1 + entry.getQtyIncr()) - 1;
-			qty = getSymbol().roundQty(position.getInQty() * (1 + qtyIncr));
-			//qty = qty * (1 + entry.getQtyIncr());
+			if (position.getQtyIncrType() == QtyIncrType.ORDER)
+			{
+				// qty = getSymbol().roundQty(qty * (1 + entry.getQtyIncr()));
+
+				qtyIncr = (1 + qtyIncr) * (1 + entry.getQtyIncr()) - 1;
+				qty = getSymbol().roundQty(position.getInQty() * (1 + qtyIncr));
+			}
+			else
+				qty = getSymbol().roundQty(sumCoins * entry.getQtyIncr());
 
 			usd = price * qty;
 			sumCoins += qty;
@@ -108,7 +116,7 @@ public class GridTrade
 		number++;
 		type = Type.SL_BUY;
 		
-		if (position.isArithmetic())
+		if (position.getPriceIncrType() == PriceIncrType.ARITHMETIC)
 			distance = distance + position.getDistBeforeSL();
 		else
 			distance = (1 + distance) * (1 + position.getDistBeforeSL()) - 1;
@@ -175,16 +183,22 @@ public class GridTrade
 			number++;
 			type = Type.BUY;
 
-			if (position.isArithmetic())
+			if (position.getPriceIncrType() == PriceIncrType.ARITHMETIC)
 				distance = distance - entry.getPriceDist();
 			else
 				distance = (1 + distance) * (1 - entry.getPriceDist()) - 1;
 
 			price = getSymbol().roundPrice(position.getInPrice() * (1 + distance));
 
-			qtyIncr = (1 + qtyIncr) * ( 1 + entry.getQtyIncr()) - 1;
-			qty = getSymbol().roundQty(position.getInQty() * (1 + qtyIncr));
-			//qty = qty * (1 + entry.getQtyIncr());
+			if (position.getQtyIncrType() == QtyIncrType.ORDER)
+			{
+				// qty = getSymbol().roundQty(qty * (1 + entry.getQtyIncr()));
+
+				qtyIncr = (1 + qtyIncr) * (1 + entry.getQtyIncr()) - 1;
+				qty = getSymbol().roundQty(position.getInQty() * (1 + qtyIncr));
+			}
+			else
+				qty = getSymbol().roundQty(sumCoins * entry.getQtyIncr());
 
 			usd = price * qty;
 			sumCoins += qty;
@@ -202,7 +216,7 @@ public class GridTrade
 		number++;
 		type = Type.SL_SELL;
 
-		if (position.isArithmetic())
+		if (position.getPriceIncrType() == PriceIncrType.ARITHMETIC)
 			distance = distance - position.getDistBeforeSL();
 		else
 			distance = (1 + distance) * (1 - position.getDistBeforeSL()) - 1;

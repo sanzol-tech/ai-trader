@@ -35,10 +35,13 @@ import javax.swing.border.TitledBorder;
 import sanzol.aitrader.be.config.Config;
 import sanzol.aitrader.be.config.Constants;
 import sanzol.aitrader.be.config.PrivateConfig;
+import sanzol.aitrader.be.enums.PriceIncrType;
+import sanzol.aitrader.be.enums.QtyIncrType;
+import sanzol.aitrader.be.enums.QuantityType;
 import sanzol.aitrader.ui.config.Styles;
+import sanzol.util.Convert;
 import sanzol.util.ExceptionUtils;
 import sanzol.util.log.LogService;
-import sanzol.util.price.Convert;
 
 public class FrmConfig extends JFrame
 {
@@ -58,6 +61,8 @@ public class FrmConfig extends JFrame
 
 	private JRadioButton rbArithmetic;
 	private JRadioButton rbGeometric;
+	private JRadioButton rbOverLastOrder; 
+	private JRadioButton rbOverPosition;
 	private JRadioButton rbQtyUsd;
 	private JRadioButton rbQtyBalance;
 	
@@ -70,19 +75,18 @@ public class FrmConfig extends JFrame
 	private JTextField txtBlocksToAnalyzeBB;
 	private JTextField txtBlocksToAnalyzeWA;
 	private JTextField txtIterations;
-	private JTextField txtPriceIncr1;
-	private JTextField txtCoinsIncr1;
-	private JTextField txtPIF;
 	private JTextField txtPriceIncr;
 	private JTextField txtCoinsIncr;
-	private JTextField txtDistBeforeSL;
+	private JTextField txtStopLoss;
 	private JTextField txtTProfit;
 	private JTextField txtInQtyUsd;
 	private JTextField txtInQtyBalance;
 	private JTextField txtLeverage;
 	private JTextField txtPositionsMax;
 	private JTextField txtBalanceMinAvailable;
-	private JCheckBox chkPIF;
+	private JCheckBox chkPIP;
+	private JTextField txtPIPBase;
+	private JTextField txtPIPCoef;
 	
 	public FrmConfig()
 	{
@@ -233,38 +237,17 @@ public class FrmConfig extends JFrame
 		lblCoinsIncr.setBounds(310, 78, 80, 14);
 		pnlGrid.add(lblCoinsIncr);
 
-		txtCoinsIncr1 = new JTextField();
-		txtCoinsIncr1.setBounds(216, 97, 72, 20);
-		txtCoinsIncr1.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtCoinsIncr1.setColumns(10);
-		pnlGrid.add(txtCoinsIncr1);
-
 		txtCoinsIncr = new JTextField();
 		txtCoinsIncr.setBounds(310, 97, 72, 20);
 		txtCoinsIncr.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtCoinsIncr.setColumns(10);
 		pnlGrid.add(txtCoinsIncr);
 
-		JLabel lblCoinsIncr1 = new JLabel("1\u00B0 Qty Incr %");
-		lblCoinsIncr1.setBounds(216, 78, 80, 14);
-		pnlGrid.add(lblCoinsIncr1);
-
-		txtPriceIncr1 = new JTextField();
-		txtPriceIncr1.setText("2.0");
-		txtPriceIncr1.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtPriceIncr1.setColumns(10);
-		txtPriceIncr1.setBounds(216, 46, 72, 20);
-		pnlGrid.add(txtPriceIncr1);
-
-		JLabel lblPriceIncr_1 = new JLabel("1\u00B0 Price Incr %");
-		lblPriceIncr_1.setBounds(216, 27, 80, 14);
-		pnlGrid.add(lblPriceIncr_1);
-
-		txtDistBeforeSL = new JTextField();
-		txtDistBeforeSL.setBounds(400, 46, 72, 20);
-		txtDistBeforeSL.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtDistBeforeSL.setColumns(10);
-		pnlGrid.add(txtDistBeforeSL);
+		txtStopLoss = new JTextField();
+		txtStopLoss.setBounds(400, 46, 72, 20);
+		txtStopLoss.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtStopLoss.setColumns(10);
+		pnlGrid.add(txtStopLoss);
 
 		JLabel lblDistSL = new JLabel("SL after last %");
 		lblDistSL.setBounds(400, 27, 90, 14);
@@ -278,27 +261,42 @@ public class FrmConfig extends JFrame
 		rbGeometric.setBounds(23, 98, 90, 23);
 		pnlGrid.add(rbGeometric);
 
+		ButtonGroup bg1 = new javax.swing.ButtonGroup();
+		bg1.add(rbArithmetic);
+		bg1.add(rbGeometric);
+		
+		rbOverLastOrder = new JRadioButton("Over last order qty");
+		rbOverLastOrder.setBounds(124, 78, 140, 23);
+		pnlGrid.add(rbOverLastOrder);
+		
+		rbOverPosition = new JRadioButton("Over position qty");
+		rbOverPosition.setBounds(124, 99, 140, 23);
+		pnlGrid.add(rbOverPosition);
+		
 		ButtonGroup bg2 = new javax.swing.ButtonGroup();
-
-		ButtonGroup bg3 = new javax.swing.ButtonGroup();
-		bg3.add(rbArithmetic);
-		bg3.add(rbGeometric);
+		bg2.add(rbOverLastOrder);
+		bg2.add(rbOverPosition);
 
 		scroll = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.setBorder(UIManager.getBorder("TextField.border"));
 		scroll.setBounds(37, -89, 437, 28);
 		pnlGrid.add(scroll);
 		
-		txtPIF = new JTextField();
-		txtPIF.setBounds(114, 46, 72, 20);
-		pnlGrid.add(txtPIF);
-		txtPIF.setText("2.0");
-		txtPIF.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtPIF.setColumns(10);
+		chkPIP = new JCheckBox("Progr. price increase");
+		chkPIP.setBounds(122, 23, 142, 23);
+		pnlGrid.add(chkPIP);
 		
-		chkPIF = new JCheckBox("P.I.F. %");
-		chkPIF.setBounds(112, 23, 72, 23);
-		pnlGrid.add(chkPIF);
+		txtPIPBase = new JTextField();
+		txtPIPBase.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtPIPBase.setColumns(10);
+		txtPIPBase.setBounds(122, 46, 72, 20);
+		pnlGrid.add(txtPIPBase);
+		
+		txtPIPCoef = new JTextField();
+		txtPIPCoef.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtPIPCoef.setColumns(10);
+		txtPIPCoef.setBounds(200, 46, 72, 20);
+		pnlGrid.add(txtPIPCoef);
 
 		JPanel pnlOBook = new JPanel();
 		pnlOBook.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " O.Book ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -363,23 +361,25 @@ public class FrmConfig extends JFrame
 		lblPositionsMax.setBounds(115, 27, 80, 14);
 		panelPositions.add(lblPositionsMax);
 		
-		rbQtyUsd = new JRadioButton("Usd");
-		rbQtyUsd.setBounds(214, 27, 90, 23);
-		panelPositions.add(rbQtyUsd);
-		bg2.add(rbQtyUsd);
-		
 		txtInQtyUsd = new JTextField();
 		txtInQtyUsd.setBounds(216, 50, 72, 20);
-		panelPositions.add(txtInQtyUsd);
 		txtInQtyUsd.setText("10.0");
 		txtInQtyUsd.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtInQtyUsd.setColumns(10);
+		panelPositions.add(txtInQtyUsd);
 	
+		rbQtyUsd = new JRadioButton("Usd");
+		rbQtyUsd.setBounds(214, 27, 90, 23);
+		panelPositions.add(rbQtyUsd);
+
 		rbQtyBalance = new JRadioButton("Balance %");
 		rbQtyBalance.setBounds(214, 78, 90, 23);
 		panelPositions.add(rbQtyBalance);
-		bg2.add(rbQtyBalance);
 
+		ButtonGroup bg3 = new javax.swing.ButtonGroup();
+		bg3.add(rbQtyUsd);
+		bg3.add(rbQtyBalance);
+		
 		txtInQtyBalance = new JTextField();
 		txtInQtyBalance.setBounds(216, 101, 72, 20);
 		panelPositions.add(txtInQtyBalance);
@@ -486,22 +486,22 @@ public class FrmConfig extends JFrame
 		txtBlocksToAnalyzeBB.setText(String.valueOf(Config.getBlocksToAnalizeBB()));
 		txtBlocksToAnalyzeWA.setText(String.valueOf(Config.getBlocksToAnalizeWA()));
 
-		rbArithmetic.setSelected("A".equals(Config.getGridType()));
-		rbGeometric.setSelected("G".equals(Config.getGridType()));
-
-		chkPIF.setSelected(false); // TODO
-		txtPIF.setText(Convert.toStrPercent(Config.getPif()));
-
 		txtIterations.setText(String.valueOf(Config.getIterations()));
-		txtPriceIncr1.setText(Convert.toStrPercent(Config.getPriceIncrement1()));
-		txtCoinsIncr1.setText(Convert.toStrPercent(Config.getCoinsIncrement1()));
-		txtPriceIncr.setText(Convert.toStrPercent(Config.getPriceIncrement()));
-		txtCoinsIncr.setText(Convert.toStrPercent(Config.getCoinsIncrement()));
-		txtDistBeforeSL.setText(Convert.toStrPercent(Config.getStoplossIncrement()));
-		txtTProfit.setText(Convert.toStrPercent(Config.getTakeprofit()));
+		rbArithmetic.setSelected(Config.getPriceIncrType() == PriceIncrType.ARITHMETIC);
+		rbGeometric.setSelected(Config.getPriceIncrType() == PriceIncrType.GEOMETRIC);
+		rbOverLastOrder.setSelected(Config.getQtyIncrType() == QtyIncrType.ORDER);
+		rbOverPosition.setSelected(Config.getQtyIncrType() == QtyIncrType.POSITION);
+		chkPIP.setSelected(false);
+		txtPIPBase.setText(String.valueOf(Config.getPipBase()));
+		txtPIPCoef.setText(String.valueOf(Config.getPipCoef()));
+		txtPriceIncr.setText(Convert.toStrPercent(Config.getPriceIncr()));
+		txtCoinsIncr.setText(Convert.toStrPercent(Config.getQtyIncr()));
+		txtStopLoss.setText(Convert.toStrPercent(Config.getStopLoss()));
+		txtTProfit.setText(Convert.toStrPercent(Config.getTakeProfit()));
 
-		rbQtyUsd.setSelected("U".equals(Config.getInQtyType()));
-		rbQtyBalance.setSelected("B".equals(Config.getInQtyType()));
+		rbQtyUsd.setSelected(Config.getQuantityType() == QuantityType.USD);
+		rbQtyBalance.setSelected(Config.getQuantityType() == QuantityType.BALANCE);
+
 		txtInQtyUsd.setText(rbQtyUsd.isSelected() ? Config.getInQty().toString() : "");
 		txtInQtyBalance.setText(rbQtyBalance.isSelected() ? Convert.toStrPercent(Config.getInQty()) : "");
 
@@ -548,23 +548,23 @@ public class FrmConfig extends JFrame
 			Config.setBlocksToAnalizeWA(txtBlocksToAnalyzeWA.getText());
 
 			Config.setIterations(txtIterations.getText());
-			Config.setGridType(rbArithmetic.isSelected() ? "A" : "G");
-			Config.setPriceIncrement1(Convert.strPercentToDbl(txtPriceIncr1.getText()));
-			Config.setCoinsIncrement1(Convert.strPercentToDbl(txtCoinsIncr1.getText()));
-			Config.setPif(Convert.strPercentToDbl(txtPIF.getText()));
-			Config.setPriceIncrement(Convert.strPercentToDbl(txtPriceIncr.getText()));
-			Config.setCoinsIncrement(Convert.strPercentToDbl(txtCoinsIncr.getText()));
-			Config.setStoplossIncrement(Convert.strPercentToDbl(txtDistBeforeSL.getText()));
-			Config.setTakeprofit(Convert.strPercentToDbl(txtTProfit.getText()));
+			Config.setPipBase(Convert.strPercentToDbl(txtPIPBase.getText()));
+			Config.setPipCoef(Convert.strPercentToDbl(txtPIPCoef.getText()));
+			Config.setPriceIncrType(rbArithmetic.isSelected() ? PriceIncrType.ARITHMETIC : PriceIncrType.GEOMETRIC);
+			Config.setQtyIncrType(rbOverLastOrder.isSelected() ? QtyIncrType.ORDER : QtyIncrType.POSITION);
+			Config.setPriceIncr(Convert.strPercentToDbl(txtPriceIncr.getText()));
+			Config.setQtyIncr(Convert.strPercentToDbl(txtCoinsIncr.getText()));
+			Config.setStopLoss(Convert.strPercentToDbl(txtStopLoss.getText()));
+			Config.setTakeProfit(Convert.strPercentToDbl(txtTProfit.getText()));
 
 			if (rbQtyUsd.isSelected())
 			{
-				Config.setInQtyType("U");
+				Config.setQuantityType(QuantityType.USD);
 				Config.setInQty(txtInQtyUsd.getText());
 			}
 			else
 			{
-				Config.setInQtyType("B");
+				Config.setQuantityType(QuantityType.BALANCE);
 				Config.setInQty(Convert.strPercentToDbl(txtInQtyBalance.getText()));
 			}
 

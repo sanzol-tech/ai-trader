@@ -11,21 +11,21 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Locale;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-import sanzol.aitrader.be.config.Config;
 import sanzol.aitrader.be.config.Constants;
+import sanzol.aitrader.be.enums.GridStrategy;
 import sanzol.aitrader.be.model.Price;
 import sanzol.aitrader.be.model.Signal;
 import sanzol.aitrader.be.model.Symbol;
@@ -35,6 +35,7 @@ import sanzol.aitrader.ui.config.Styles;
 import sanzol.util.ExceptionUtils;
 import sanzol.util.log.LogService;
 import sanzol.util.price.PriceUtil;
+import javax.swing.SwingConstants;
 
 public class FrmSignals extends JFrame implements SignalListener
 {
@@ -43,16 +44,19 @@ public class FrmSignals extends JFrame implements SignalListener
 	private static final String TITLE = Constants.APP_NAME + " - Signals";
 
 	private static FrmSignals myJFrame = null;
-	
-    private DefaultTableModel tableModelShort;
-    private DefaultTableModel tableModelLong;
 
-    private JLabel lblError;
+	private DefaultTableModel tableModelShort;
+	private DefaultTableModel tableModelLong;
+
+	private JLabel lblError;
 
 	private JPanel pnlContent;
 	private JPanel pnlStatusBar;
 	private JPanel pnlTopBar;
-	private JTextField txtWithdrawal;
+
+	private JComboBox<GridStrategy> cmbStrategy;
+
+	private JScrollPane scrollShort;
 	private JTable tableShort;
 	private JScrollPane scrollLong;
 	private JTable tableLong;
@@ -81,18 +85,9 @@ public class FrmSignals extends JFrame implements SignalListener
 		pnlStatusBar = new JPanel();
 		pnlStatusBar.setBorder(Styles.BORDER_UP);
 
-		JLabel lblWithdrawal = new JLabel();
-		lblWithdrawal.setText("Withdrawal");
-
-		txtWithdrawal = new JTextField();
-		txtWithdrawal.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtWithdrawal.setForeground(Styles.COLOR_TEXT_ALT1);
-		txtWithdrawal.setEditable(false);
-
 		lblError = new JLabel();
         
-        JScrollPane scrollShort = new JScrollPane();
-        
+        scrollShort = new JScrollPane();
         scrollLong = new JScrollPane();
 
         GroupLayout pnlContentLayout = new GroupLayout(pnlContent);
@@ -130,18 +125,34 @@ public class FrmSignals extends JFrame implements SignalListener
         scrollShort.setViewportView(tableShort);
 
         pnlContent.setLayout(pnlContentLayout);
+		
+		JLabel lblStrategy = new JLabel("Strategy");
+		lblStrategy.setHorizontalAlignment(SwingConstants.TRAILING);
+		cmbStrategy = new JComboBox<GridStrategy>();
+		cmbStrategy.setModel(new DefaultComboBoxModel<GridStrategy>(GridStrategy.values()));
 
 		// --------------------------------------------------------------------
 		GroupLayout pnlTopBarLayout = new GroupLayout(pnlTopBar);
 		pnlTopBarLayout.setHorizontalGroup(
-			pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
+			pnlTopBarLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(pnlTopBarLayout.createSequentialGroup()
-					.addContainerGap(620, Short.MAX_VALUE))
+					.addContainerGap(603, Short.MAX_VALUE)
+					.addComponent(lblStrategy, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)
+					.addGap(10)
+					.addComponent(cmbStrategy, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap())
 		);
 		pnlTopBarLayout.setVerticalGroup(
 			pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(pnlTopBarLayout.createSequentialGroup()
-					.addContainerGap(11, Short.MAX_VALUE))
+					.addGroup(pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(pnlTopBarLayout.createSequentialGroup()
+							.addGap(13)
+							.addComponent(cmbStrategy, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addGroup(pnlTopBarLayout.createSequentialGroup()
+							.addGap(16)
+							.addComponent(lblStrategy)))
+					.addContainerGap(13, Short.MAX_VALUE))
 		);
 		pnlTopBar.setLayout(pnlTopBarLayout);
 
@@ -225,30 +236,47 @@ public class FrmSignals extends JFrame implements SignalListener
 		try
 		{
 			boolean isBotMode = false;
+			GridStrategy gridStrategy = (GridStrategy) cmbStrategy.getSelectedItem();
 
 			if ("SHORT".equals(type))
 			{
 				Symbol symbol = (Symbol) tableShort.getValueAt(index, 0);
 				Price shShort = new Price(symbol, (String) tableShort.getValueAt(index, 2));
-				String tp = ((String) tableShort.getValueAt(index, 3)).replace(" %","");
-				String sl = ((String) tableShort.getValueAt(index, 4)).replace(" %","").replace("-", "");
 
-				if (!Config.getIterations().equals(0))
-					FrmGrid.launch(symbol.getNameLeft(), "SHORT", shShort.toString(), isBotMode);
+				if (gridStrategy == GridStrategy.SIGNAL)
+				{
+					String _takeProfit = ((String) tableShort.getValueAt(index, 3)).replace(" %", "");
+					double takeProfit = Double.valueOf(_takeProfit) / 100;
+
+					String _stopLoss = ((String) tableShort.getValueAt(index, 4)).replace(" %", "");
+					double stopLoss = Math.abs(Double.valueOf(_stopLoss)) / 100;
+					
+					FrmGrid.launch(symbol.getNameLeft(), "SHORT", shShort.toString(), stopLoss, takeProfit, gridStrategy, isBotMode);
+				}
 				else
-					FrmGrid.launch(symbol.getNameLeft(), "SHORT", shShort.toString(), sl, tp, isBotMode);
+				{
+					FrmGrid.launch(symbol.getNameLeft(), "SHORT", shShort.toString(), gridStrategy, isBotMode);
+				}
 			}
 			else
 			{
 				Symbol symbol = (Symbol) tableLong.getValueAt(index, 0);
 				Price lgShock = new Price(symbol, (String) tableLong.getValueAt(index, 2));
-				String tp = ((String) tableLong.getValueAt(index, 3)).replace(" %","");
-				String sl = ((String) tableLong.getValueAt(index, 4)).replace(" %","").replace("-", "");
 
-				if (!Config.getIterations().equals(0))
-					FrmGrid.launch(symbol.getNameLeft(), "LONG", lgShock.toString(), isBotMode);
+				if (gridStrategy == GridStrategy.SIGNAL)
+				{
+					String _takeProfit = ((String) tableLong.getValueAt(index, 3)).replace(" %", "");
+					double takeProfit = Double.valueOf(_takeProfit) / 100;
+
+					String _stopLoss = ((String) tableLong.getValueAt(index, 4)).replace(" %", "");
+					double stopLoss = Math.abs(Double.valueOf(_stopLoss)) / 100;
+
+					FrmGrid.launch(symbol.getNameLeft(), "LONG", lgShock.toString(), stopLoss, takeProfit, gridStrategy, isBotMode);
+				}
 				else
-					FrmGrid.launch(symbol.getNameLeft(), "LONG", lgShock.toString(), sl, tp, isBotMode);
+				{
+					FrmGrid.launch(symbol.getNameLeft(), "LONG", lgShock.toString(), gridStrategy, isBotMode);
+				}
 			}
 
 		}
@@ -447,5 +475,4 @@ public class FrmSignals extends JFrame implements SignalListener
 		lblError.setForeground(Styles.COLOR_TEXT_INFO);
 		lblError.setText(" " + msg);
 	}
-
 }

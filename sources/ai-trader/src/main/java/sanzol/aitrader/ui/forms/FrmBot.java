@@ -33,9 +33,9 @@ import sanzol.aitrader.be.service.BalanceService;
 import sanzol.aitrader.be.service.BotListener;
 import sanzol.aitrader.be.service.BotService;
 import sanzol.aitrader.ui.config.Styles;
+import sanzol.util.Convert;
 import sanzol.util.ExceptionUtils;
 import sanzol.util.log.LogService;
-import sanzol.util.price.Convert;
 
 public class FrmBot extends JFrame implements BotListener
 {
@@ -271,7 +271,7 @@ public class FrmBot extends JFrame implements BotListener
 			if (BotService.isTpRearrangement())
 				txtTProfit.setText(Convert.toStrPercent(BotService.getTpPercent()));
 			else
-				txtTProfit.setText(Convert.toStrPercent(Config.getTakeprofit()));
+				txtTProfit.setText(Convert.toStrPercent(Config.getTakeProfit()));
 
 			chkSLRearrangement.setSelected(BotService.isSlRearrangement());
 			if (BotService.isSlRearrangement())

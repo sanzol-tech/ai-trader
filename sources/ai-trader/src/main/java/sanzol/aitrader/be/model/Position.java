@@ -9,6 +9,8 @@ import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 
 import api.client.futures.model.enums.PositionSide;
+import sanzol.aitrader.be.enums.PriceIncrType;
+import sanzol.aitrader.be.enums.QtyIncrType;
 import sanzol.aitrader.be.model.PositionOrder.State;
 import sanzol.aitrader.be.model.PositionOrder.Type;
 import sanzol.aitrader.ui.config.CharConstants;
@@ -18,7 +20,8 @@ public class Position
 	private Symbol symbol;
 
 	private PositionSide side;
-	private boolean isArithmetic = true;
+	private PriceIncrType priceIncrType = PriceIncrType.GEOMETRIC;
+	private QtyIncrType qtyIncrType = QtyIncrType.POSITION; 
 	private boolean markPrice;
 	private Double inPrice = null;
 	private Double inQty = null;
@@ -153,14 +156,24 @@ public class Position
 		this.sumUsd = sumUsd;
 	}
 
-	public boolean isArithmetic()
+	public PriceIncrType getPriceIncrType()
 	{
-		return isArithmetic;
+		return priceIncrType;
 	}
 
-	public void setArithmetic(boolean isArithmetic)
+	public void setPriceIncrType(PriceIncrType priceIncrType)
 	{
-		this.isArithmetic = isArithmetic;
+		this.priceIncrType = priceIncrType;
+	}
+
+	public QtyIncrType getQtyIncrType()
+	{
+		return qtyIncrType;
+	}
+
+	public void setQtyIncrType(QtyIncrType qtyIncrType)
+	{
+		this.qtyIncrType = qtyIncrType;
 	}
 
 	public boolean isMarkPrice()

@@ -27,6 +27,7 @@ public final class Styles
 	public static ImageIcon IMAGE_BUG  = new FlatSVGIcon(Styles.class.getResource("/resources/bug.svg"));
 	public static ImageIcon IMAGE_BELL  = new FlatSVGIcon(Styles.class.getResource("/resources/bell-s.svg"));
 	public static ImageIcon IMAGE_REDO  = new FlatSVGIcon(Styles.class.getResource("/resources/redo.svg"));
+	public static ImageIcon IMAGE_EXPAND  = new FlatSVGIcon(Styles.class.getResource("/resources/expand-alt.svg"));
 
 	public static Color COLOR_BORDER_LINE;
 	public static Color COLOR_LINK;

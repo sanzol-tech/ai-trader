@@ -20,8 +20,8 @@ import api.client.futures.model.PositionRisk;
 import api.client.impl.model.enums.MarketType;
 import sanzol.aitrader.be.config.ServerApp;
 import sanzol.aitrader.be.model.Symbol;
+import sanzol.util.Convert;
 import sanzol.util.log.LogService;
-import sanzol.util.price.Convert;
 
 public final class PositionFuturesService
 {

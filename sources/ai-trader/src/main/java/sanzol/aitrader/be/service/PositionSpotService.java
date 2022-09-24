@@ -22,8 +22,8 @@ import api.client.spot.model.AssetBalance;
 import api.client.spot.model.Order;
 import api.client.spot.model.enums.OrderStatus;
 import sanzol.aitrader.be.config.PrivateConfig;
+import sanzol.util.Convert;
 import sanzol.util.log.LogService;
-import sanzol.util.price.Convert;
 
 public final class PositionSpotService
 {

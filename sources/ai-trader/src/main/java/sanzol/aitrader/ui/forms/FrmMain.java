@@ -20,6 +20,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -42,6 +43,7 @@ import api.client.impl.config.ApiConfig;
 import api.client.model.event.SymbolTickerEvent;
 import sanzol.aitrader.be.config.Config;
 import sanzol.aitrader.be.config.Constants;
+import sanzol.aitrader.be.enums.GridStrategy;
 import sanzol.aitrader.be.model.Alert;
 import sanzol.aitrader.be.model.Signal;
 import sanzol.aitrader.be.model.Symbol;
@@ -59,9 +61,10 @@ import sanzol.aitrader.be.service.SignalListener;
 import sanzol.aitrader.be.service.SignalService;
 import sanzol.aitrader.ui.config.Styles;
 import sanzol.util.BeepUtils;
+import sanzol.util.Convert;
 import sanzol.util.ExceptionUtils;
 import sanzol.util.log.LogService;
-import sanzol.util.price.Convert;
+import javax.swing.JComboBox;
 
 public class FrmMain extends JFrame implements PriceListener, SignalListener, AlertListener, BalanceListener, LastCandlestickListener, PositionListener
 {
@@ -98,9 +101,13 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 	private JPanel pnlStatusBar;
 	private JPanel pnlTopBar;
 
+	private JLabel lblStrategy;
+	private JComboBox<GridStrategy> cmbStrategy;
+	
 	private JTextField txtBalance;
 	private JTextField txtPair;
 	private JTextField txtWithdrawal;
+
 	private JPanel panel;
 	private JLabel lblNewLabel;
 	private JLabel lblChangeX;
@@ -431,16 +438,25 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 		btnPositions.setText("POSITIONS");
 		pnlPositions.add(btnPositions);
 
-		btnSymbols = new JButton();
+		btnSymbols = new JButton(Styles.IMAGE_EXPAND);
 		btnSymbols.setToolTipText("Symbols");
-		btnSymbols.setBounds(307, 12, 45, 23);
-		btnSymbols.setText("+");
+		btnSymbols.setBounds(310, 10, 42, 26);
 		pnlContent.add(btnSymbols);
 
-		btnSignals = new JButton();
-		btnSignals.setBounds(824, 12, 99, 23);
-		btnSignals.setText("SIGNALS");
+		btnSignals = new JButton(Styles.IMAGE_EXPAND);
+		btnSymbols.setToolTipText("Signals");
+		btnSignals.setBounds(881, 10, 42, 26);
 		pnlContent.add(btnSignals);
+		
+		lblStrategy = new JLabel("Strategy");
+		lblStrategy.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblStrategy.setBounds(670, 16, 70, 14);
+		pnlContent.add(lblStrategy);
+		
+		cmbStrategy = new JComboBox<GridStrategy>();
+		cmbStrategy.setBounds(750, 14, 116, 20);
+		cmbStrategy.setModel(new DefaultComboBoxModel<GridStrategy>(GridStrategy.values()));
+		pnlContent.add(cmbStrategy);
 
 		// --------------------------------------------------------------------
 		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);
@@ -928,24 +944,25 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 	private void tradeFromSignal(String type, int index)
 	{
 		boolean isBotMode = false;
+		GridStrategy gridStrategy = (GridStrategy) cmbStrategy.getSelectedItem();
 
 		if ("SHORT".equals(type))
 		{
 			Signal entry = lstShortSignals.get(index);
-			Double price = entry.getInPrice().doubleValue();
-			String sl = String.valueOf(entry.getStopLoss().abs());
-			String tp = String.valueOf(entry.getTakeProfit());
+			double price = entry.getInPrice().doubleValue();
+			double stopLoss = entry.getStopLoss().abs().multiply(BigDecimal.valueOf(0.01)).doubleValue();
+			double takeProfit = entry.getTakeProfit().multiply(BigDecimal.valueOf(0.01)).doubleValue();
 
-			FrmGrid.launch(entry.getSymbol().getNameLeft(), "SHORT", entry.getSymbol().priceToStr(price), sl, tp, isBotMode);
+			FrmGrid.launch(entry.getSymbol().getNameLeft(), "SHORT", entry.getSymbol().priceToStr(price), stopLoss, takeProfit, gridStrategy, isBotMode);
 		}
 		else
 		{
 			Signal entry = lstLongSignals.get(index);
-			Double price = entry.getInPrice().doubleValue();
-			String sl = String.valueOf(entry.getStopLoss().abs());
-			String tp = String.valueOf(entry.getTakeProfit());
+			double price = entry.getInPrice().doubleValue();
+			double stopLoss = entry.getStopLoss().abs().multiply(BigDecimal.valueOf(0.01)).doubleValue();
+			double takeProfit = entry.getTakeProfit().multiply(BigDecimal.valueOf(0.01)).doubleValue();
 
-			FrmGrid.launch(entry.getSymbol().getNameLeft(), "LONG", entry.getSymbol().priceToStr(price), sl, tp, isBotMode);
+			FrmGrid.launch(entry.getSymbol().getNameLeft(), "LONG", entry.getSymbol().priceToStr(price), stopLoss, takeProfit, gridStrategy, isBotMode);
 		}
 	}
 
