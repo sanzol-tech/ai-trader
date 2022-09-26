@@ -29,7 +29,7 @@ import javax.swing.border.EmptyBorder;
 
 import sanzol.aitrader.be.config.Config;
 import sanzol.aitrader.be.config.Constants;
-import sanzol.aitrader.be.service.BalanceService;
+import sanzol.aitrader.be.service.BalanceFuturesService;
 import sanzol.aitrader.be.service.BotListener;
 import sanzol.aitrader.be.service.BotService;
 import sanzol.aitrader.ui.config.Styles;
@@ -44,7 +44,7 @@ public class FrmBot extends JFrame implements BotListener
 	private static final String TITLE = Constants.APP_NAME + " - BOT";
 
 	private static FrmBot myJFrame = null;
-	
+
 	private JLabel lblError;
 
 	private JPanel pnlContent;
@@ -86,7 +86,7 @@ public class FrmBot extends JFrame implements BotListener
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmBot.class.getResource("/resources/bot.png")));
 		setLocationRelativeTo(null);
 		setResizable(false);
-		
+
 		pnlContent = new JPanel();
 		pnlStatusBar = new JPanel();
 		pnlStatusBar.setBorder(Styles.BORDER_UP);
@@ -109,12 +109,12 @@ public class FrmBot extends JFrame implements BotListener
 		);
 		getContentPane().setLayout(layout);
 		pnlContent.setLayout(null);
-		
+
 		scrollResult = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollResult.setBorder(UIManager.getBorder("TextField.border"));
 		scrollResult.setBounds(10, 11, 770, 282);
 		pnlContent.add(scrollResult);
-		
+
 		txtResult = new JTextArea();
 		txtResult.setFont(new Font("Courier New", Font.PLAIN, 12));
 		txtResult.setBackground(Styles.COLOR_TEXT_AREA_BG);
@@ -122,95 +122,95 @@ public class FrmBot extends JFrame implements BotListener
 		txtResult.setEditable(false);
 		txtResult.setBorder(new EmptyBorder(10, 10, 10, 10));
 		scrollResult.setViewportView(txtResult);
-		
+
 		lblBot = new JLabel();
 		lblBot.setText("Bot");
 		lblBot.setBounds(10, 304, 100, 14);
 		pnlContent.add(lblBot);
-		
+
 		lblTakeProfit = new JLabel();
 		lblTakeProfit.setText("Take profit");
 		lblTakeProfit.setBounds(400, 304, 100, 14);
 		pnlContent.add(lblTakeProfit);
-		
+
 		pnlBot = new JPanel();
 		pnlBot.setLayout(null);
 		pnlBot.setBorder(UIManager.getBorder("TextField.border"));
 		pnlBot.setBounds(10, 322, 380, 130);
 		pnlContent.add(pnlBot);
-		
+
 		chkAuto1 = new JCheckBox("Auto star position from signal");
 		chkAuto1.setBounds(22, 22, 280, 23);
 		pnlBot.add(chkAuto1);
-		
+
 		chkAuto2 = new JCheckBox("Auto post grid orders when position filled");
 		chkAuto2.setBounds(22, 48, 280, 23);
 		pnlBot.add(chkAuto2);
-		
+
 		btnSave = new JButton("SAVE");
 		btnSave.setOpaque(true);
 		btnSave.setBounds(290, 99, 80, 20);
 		pnlBot.add(btnSave);
-		
+
 		pnlTProfit = new JPanel();
 		pnlTProfit.setLayout(null);
 		pnlTProfit.setBorder(UIManager.getBorder("TextField.border"));
 		pnlTProfit.setBounds(400, 322, 380, 50);
 		pnlContent.add(pnlTProfit);
-		
+
 		chkTPRearrangement = new JCheckBox();
 		chkTPRearrangement.setText("Rearrangement");
 		chkTPRearrangement.setSelected(false);
 		chkTPRearrangement.setBounds(16, 14, 128, 23);
 		pnlTProfit.add(chkTPRearrangement);
-		
+
 		txtTProfit = new JTextField();
 		txtTProfit.setText("0");
 		txtTProfit.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtTProfit.setBounds(156, 16, 68, 20);
 		pnlTProfit.add(txtTProfit);
-		
+
 		btnTPSave = new JButton("SAVE");
 		btnTPSave.setOpaque(true);
 		btnTPSave.setBounds(290, 15, 80, 20);
 		pnlTProfit.add(btnTPSave);
-		
+
 		lblTpPercent = new JLabel("%");
 		lblTpPercent.setBounds(230, 18, 20, 14);
 		pnlTProfit.add(lblTpPercent);
-		
+
 		lblStopLoss = new JLabel();
 		lblStopLoss.setText("Stop loss");
 		lblStopLoss.setBounds(400, 383, 100, 14);
 		pnlContent.add(lblStopLoss);
-		
+
 		pnlStopLoss = new JPanel();
 		pnlStopLoss.setLayout(null);
 		pnlStopLoss.setBorder(UIManager.getBorder("TextField.border"));
 		pnlStopLoss.setBounds(400, 401, 380, 50);
 		pnlContent.add(pnlStopLoss);
-		
+
 		chkSLRearrangement = new JCheckBox();
 		chkSLRearrangement.setText("Rearrangement");
 		chkSLRearrangement.setSelected(false);
 		chkSLRearrangement.setBounds(16, 14, 128, 23);
 		pnlStopLoss.add(chkSLRearrangement);
-		
+
 		txtSlUsd = new JTextField();
 		txtSlUsd.setText("0");
 		txtSlUsd.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtSlUsd.setBounds(156, 16, 68, 20);
 		pnlStopLoss.add(txtSlUsd);
-		
+
 		btnSLSave = new JButton("SAVE");
 		btnSLSave.setOpaque(true);
 		btnSLSave.setBounds(290, 15, 80, 20);
 		pnlStopLoss.add(btnSLSave);
-		
+
 		lblSlUsd = new JLabel("usd");
 		lblSlUsd.setBounds(230, 18, 38, 14);
 		pnlStopLoss.add(lblSlUsd);
-		
+
 		// --------------------------------------------------------------------
 		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);
 		pnlStatusBarLayout.setHorizontalGroup(
@@ -230,7 +230,7 @@ public class FrmBot extends JFrame implements BotListener
 		pnlStatusBar.setLayout(pnlStatusBarLayout);
 
 		pack();
-		
+
 		// ---------------------------------------------------------------------
 
 		addWindowListener(new WindowAdapter()
@@ -309,7 +309,7 @@ public class FrmBot extends JFrame implements BotListener
 
 	private void saveSLConfig()
 	{
-		BigDecimal maxValue = BalanceService.getAccountBalance().getBalance();
+		BigDecimal maxValue = BalanceFuturesService.getAccountBalance().getBalance();
 		BigDecimal value = new BigDecimal(txtSlUsd.getText());
 		if (value.doubleValue() <= 0 || value.doubleValue() > maxValue.doubleValue())
 		{
@@ -318,7 +318,7 @@ public class FrmBot extends JFrame implements BotListener
 		}
 
 		BotService.setSlUsd(value);
-		BotService.setSlRearrangement(chkSLRearrangement.isSelected());		
+		BotService.setSlRearrangement(chkSLRearrangement.isSelected());
 		INFO("SL rearrangement updated !");
 	}
 

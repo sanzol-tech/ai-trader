@@ -14,7 +14,7 @@ public class SignalPoint
 
 	private BigDecimal shortPrice;
 	private BigDecimal longPrice;
-	
+
 	private BigDecimal shortTProfit;
 	private BigDecimal longTProfit;
 
@@ -67,7 +67,7 @@ public class SignalPoint
 
 		this.shortSLoss = PriceUtil.priceDistDown(shortPrice, shShock2, true);
 		this.longTSLoss = PriceUtil.priceDistUp(longPrice, lgShock2, true);
-		
+
 		if (shortSLoss.compareTo(BigDecimal.ZERO) == 0)
 			this.shortRatio = BigDecimal.ZERO;
 		else

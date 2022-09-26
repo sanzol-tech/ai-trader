@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.security.KeyManagementException;
@@ -25,10 +26,10 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -50,7 +51,7 @@ import sanzol.aitrader.be.model.Symbol;
 import sanzol.aitrader.be.service.AlertListener;
 import sanzol.aitrader.be.service.AlertService;
 import sanzol.aitrader.be.service.BalanceListener;
-import sanzol.aitrader.be.service.BalanceService;
+import sanzol.aitrader.be.service.BalanceFuturesService;
 import sanzol.aitrader.be.service.LastCandlestickListener;
 import sanzol.aitrader.be.service.LastCandlestickService;
 import sanzol.aitrader.be.service.PositionFuturesService;
@@ -64,7 +65,6 @@ import sanzol.util.BeepUtils;
 import sanzol.util.Convert;
 import sanzol.util.ExceptionUtils;
 import sanzol.util.log.LogService;
-import javax.swing.JComboBox;
 
 public class FrmMain extends JFrame implements PriceListener, SignalListener, AlertListener, BalanceListener, LastCandlestickListener, PositionListener
 {
@@ -103,7 +103,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 
 	private JLabel lblStrategy;
 	private JComboBox<GridStrategy> cmbStrategy;
-	
+
 	private JTextField txtBalance;
 	private JTextField txtPair;
 	private JTextField txtWithdrawal;
@@ -139,9 +139,9 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 		SignalService.attachRefreshObserver(this);
 
 		AlertService.attachRefreshObserver(this);
-		
+
 		onBalanceUpdate();
-		BalanceService.attachRefreshObserver(this);
+		BalanceFuturesService.attachRefreshObserver(this);
 
 		PositionFuturesService.attachRefreshObserver(this);
 	}
@@ -168,7 +168,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 		btnGrid.setText("GRID");
 		btnShoot = new JButton();
 		btnShoot.setText("SHOOT");
-		
+
 		btnAlerts = new JButton(Styles.IMAGE_BELL);
 		btnAlerts.setToolTipText("Alerts");
 		btnConfig = new JButton(Styles.IMAGE_WRENCH);
@@ -447,12 +447,12 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 		btnSymbols.setToolTipText("Signals");
 		btnSignals.setBounds(881, 10, 42, 26);
 		pnlContent.add(btnSignals);
-		
+
 		lblStrategy = new JLabel("Strategy");
 		lblStrategy.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblStrategy.setBounds(670, 16, 70, 14);
 		pnlContent.add(lblStrategy);
-		
+
 		cmbStrategy = new JComboBox<GridStrategy>();
 		cmbStrategy.setBounds(750, 14, 116, 20);
 		cmbStrategy.setModel(new DefaultComboBoxModel<GridStrategy>(GridStrategy.values()));
@@ -535,19 +535,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 
 		btnRestart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int resultOption = JOptionPane.showConfirmDialog(null, "Do you like to restart services ?", "Confirm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-				if (resultOption == 0)
-				{
-					try
-					{
-						SignalService.restartPoints();
-						INFO("Restarting signals...");
-					}
-					catch (Exception ex)
-					{
-						ERROR(ex);
-					}
-				}
+				FrmServices.launch();
 			}
 		});
 
@@ -616,7 +604,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 			{
 				PriceService.deattachRefreshObserver(thisFrm);
 				SignalService.deattachRefreshObserver(thisFrm);
-				BalanceService.deattachRefreshObserver(thisFrm);
+				BalanceFuturesService.deattachRefreshObserver(thisFrm);
 				LastCandlestickService.deattachRefreshObserver(thisFrm);
 				PositionFuturesService.deattachRefreshObserver(thisFrm);
 			}
@@ -624,7 +612,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 
 		listFavorites.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) 
+			public void mouseClicked(MouseEvent e)
 			{
 				@SuppressWarnings("unchecked")
 				JList<String> list = (JList<String>) e.getSource();
@@ -644,7 +632,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 
 		listShortSignals.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) 
+			public void mouseClicked(MouseEvent e)
 			{
 				@SuppressWarnings("unchecked")
 				JList<String> list = (JList<String>) e.getSource();
@@ -658,7 +646,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 
 		listLongSignals.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) 
+			public void mouseClicked(MouseEvent e)
 			{
 				@SuppressWarnings("unchecked")
 				JList<String> list = (JList<String>) e.getSource();
@@ -725,7 +713,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 			Styles.applyStyle();
 
 			dispose();
-			FrmMain.launch();
+			FrmMain.launch(true);
 		}
 		catch (Exception e)
 		{
@@ -733,9 +721,9 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 		}
 	}
 
-	public static void launch()
+	public static void launch(boolean invokeLater) throws InvocationTargetException, InterruptedException
 	{
-		EventQueue.invokeLater(new Runnable()
+		Runnable runnable = new Runnable()
 		{
 			public void run()
 			{
@@ -745,17 +733,19 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 				{
 					frame = new FrmMain();
 					frame.setVisible(true);
-
-					FrmSplash.close();
 				}
 				catch (Exception e)
 				{
 					e.printStackTrace();
-					System.exit(1);
+					System.exit(-1);
 				}
-
 			}
-		});
+		};
+
+		if (invokeLater)
+			EventQueue.invokeLater(runnable);
+		else
+			EventQueue.invokeAndWait(runnable);
 	}
 
 	// ------------------------------------------------------------------------
@@ -765,7 +755,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 	{
 		try
 		{
-			AccountBalance balance = BalanceService.getAccountBalance();
+			AccountBalance balance = BalanceFuturesService.getAccountBalance();
 			if (balance != null)
 			{
 				txtBalance.setText(Convert.usdToStr(balance.getBalance().doubleValue()));

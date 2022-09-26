@@ -29,8 +29,8 @@ public final class PositionFuturesService
 
 	private static boolean isStarted = false;
 
-	private static List<PositionRisk> lstPositionRisk;
-	private static List<Order> lstOpenOrders;
+	private static List<PositionRisk> lstPositionRisk = new ArrayList<PositionRisk>();
+	private static List<Order> lstOpenOrders = new ArrayList<Order>();
 
 	// ------------------------------------------------------------------------
 
@@ -106,7 +106,7 @@ public final class PositionFuturesService
 		}
 		return list;
 	}
-	
+
 	public static boolean existsPosition(String symbolName)
 	{
 		if (lstPositionRisk != null && !lstPositionRisk.isEmpty())
@@ -169,8 +169,10 @@ public final class PositionFuturesService
 		}
 		return null;
 	}
-	
+
 	// ------------------------------------------------------------------------
+
+	private static Timer timer1;
 
 	public static void start()
 	{
@@ -186,10 +188,21 @@ public final class PositionFuturesService
 				getPositions();
 			}
 		};
-		Timer timer = new Timer("PoitionService");
-		timer.schedule(task, 0, DEFAULT_PERIOD_MILLIS);
+		timer1 = new Timer("PoitionService");
+		timer1.schedule(task, 0, DEFAULT_PERIOD_MILLIS);
 
 		isStarted = true;
+	}
+
+	public static void close()
+	{
+		if (isStarted && timer1 != null)
+			timer1.cancel();
+
+		lstPositionRisk = new ArrayList<PositionRisk>();
+		lstOpenOrders = new ArrayList<Order>();
+
+		notifyAllLogObservers();
 	}
 
 	private synchronized static void getPositions()
@@ -263,7 +276,7 @@ public final class PositionFuturesService
 												side + " " + entry.getMarginType() + " " + entry.getLeverage(),
 												entry.getPositionAmt(),
 												symbol.priceToStr(entry.getMarkPrice()),
-												symbol.priceToStr(entry.getEntryPrice()), 
+												symbol.priceToStr(entry.getEntryPrice()),
 												Convert.usdToStr(entry.getUnRealizedProfit().doubleValue())));
 
 					if (includeOrders)
@@ -288,14 +301,14 @@ public final class PositionFuturesService
 		sb.append(StringUtils.repeat("-", 97));
 		sb.append("\n");
 		sb.append(sbBody);
-		
+
 		return sb.toString();
 	}
 
 	// ------------------------------------------------------------------------
 
 	private static List<PositionListener> observers = new ArrayList<PositionListener>();
-	
+
 	public static void attachRefreshObserver(PositionListener observer)
 	{
 		observers.add(observer);
@@ -318,7 +331,7 @@ public final class PositionFuturesService
 
 	public static void main(String[] args) throws InterruptedException, KeyManagementException, NoSuchAlgorithmException, IOException
 	{
-		ServerApp.start(MarketType.futures);
+		ServerApp.start(MarketType.futures, (e) -> { System.out.println(e); });
 
 		Thread.sleep(5000);
 

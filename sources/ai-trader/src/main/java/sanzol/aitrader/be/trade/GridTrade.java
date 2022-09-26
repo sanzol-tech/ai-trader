@@ -24,7 +24,7 @@ import sanzol.aitrader.be.model.PriceQty;
 import sanzol.aitrader.be.model.Symbol;
 import sanzol.aitrader.be.model.PositionOrder.State;
 import sanzol.aitrader.be.model.PositionOrder.Type;
-import sanzol.aitrader.be.service.BalanceService;
+import sanzol.aitrader.be.service.BalanceFuturesService;
 import sanzol.aitrader.be.service.BotService;
 import sanzol.aitrader.be.service.PriceService;
 
@@ -43,7 +43,7 @@ public class GridTrade
 	{
 		return position.getCoin();
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	public GridTrade(Position position)
@@ -115,7 +115,7 @@ public class GridTrade
 		// STOP LOSS
 		number++;
 		type = Type.SL_BUY;
-		
+
 		if (position.getPriceIncrType() == PriceIncrType.ARITHMETIC)
 			distance = distance + position.getDistBeforeSL();
 		else
@@ -257,7 +257,7 @@ public class GridTrade
 
 	private static boolean insufficientBalance(Double usdt)
 	{
-		AccountBalance accBalance = BalanceService.getAccountBalanceNow();
+		AccountBalance accBalance = BalanceFuturesService.getAccountBalanceNow();
 		double balance = accBalance.getBalance().doubleValue();
 		double withdrawAvailable = accBalance.getWithdrawAvailable().doubleValue();
 
@@ -272,7 +272,7 @@ public class GridTrade
 		{
 			return "Insufficient withdrawal available";
 		}
-		
+
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------
 		if (postStyle != PostStyle.OTHERS)
@@ -312,7 +312,7 @@ public class GridTrade
 					{
 						return "ERR: mark Price < in Price";
 					}
-					
+
 				}
 			}
 		}
@@ -365,8 +365,8 @@ public class GridTrade
 
 		if (pOrder.getType() == Type.BUY)
 		{
-			orderResult = postOrder(OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC, 
-									getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()), 
+			orderResult = postOrder(OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC,
+									getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),
 									null, null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
 		else if (pOrder.getType() == Type.SELL)
@@ -377,7 +377,7 @@ public class GridTrade
 		}
 		else if (pOrder.getType() == Type.TP_BUY)
 		{
-			orderResult = postOrder(OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC, 
+			orderResult = postOrder(OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC,
 									getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),
 									true, null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
@@ -411,11 +411,11 @@ public class GridTrade
 		return orderResult;
 	}
 
-	private Order postOrder(OrderSide side, OrderType orderType, TimeInForce timeInForce, 
+	private Order postOrder(OrderSide side, OrderType orderType, TimeInForce timeInForce,
 							String quantity, String price, Boolean reduceOnly, String newClientOrderId,
 							String stopPrice, WorkingType workingType, NewOrderRespType newOrderRespType, Boolean closePosition) throws KeyManagementException, InvalidKeyException, NoSuchAlgorithmException
 	{
-		return SyncFuturesClient.postOrder(position.getSymbol(), side, PositionSide.BOTH, orderType, timeInForce, 
+		return SyncFuturesClient.postOrder(position.getSymbol(), side, PositionSide.BOTH, orderType, timeInForce,
 										   quantity, price, reduceOnly, newClientOrderId, stopPrice, workingType, newOrderRespType, closePosition);
 	}
 

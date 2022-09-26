@@ -3,7 +3,7 @@ package api.client.spot.model.enums;
 public enum NewOrderRespType
 {
 	ACK("ACK"), RESULT("RESULT"), FULL("FULL");
-	
+
 	private final String code;
 
 	NewOrderRespType(String code)

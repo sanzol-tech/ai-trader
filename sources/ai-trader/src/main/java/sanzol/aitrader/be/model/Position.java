@@ -21,14 +21,14 @@ public class Position
 
 	private PositionSide side;
 	private PriceIncrType priceIncrType = PriceIncrType.GEOMETRIC;
-	private QtyIncrType qtyIncrType = QtyIncrType.POSITION; 
+	private QtyIncrType qtyIncrType = QtyIncrType.POSITION;
 	private boolean markPrice;
 	private Double inPrice = null;
 	private Double inQty = null;
 	private double distBeforeSL;
 	private double takeProfit;
 	private List<PriceQty> lstPriceQty = new ArrayList<PriceQty>();
-	
+
 	private List<PositionOrder> lstOrders;
 	private double sumUsd;
 
@@ -105,7 +105,7 @@ public class Position
 	{
 		this.inPrice = inPrice;
 	}
-	
+
 	public Double getInQty()
 	{
 		return inQty;
@@ -218,19 +218,19 @@ public class Position
 				sb.append("\n");
 			}
 
-			String line = String.format("%-3s %8s %8.2f %12s %12s %12s %12s %12s %12s | %12s %10.2f %12s %12s", 
-					entry.getNumber(), 
-					entry.getType().name(), 
-					entry.getDistance() * 100, 
+			String line = String.format("%-3s %8s %8.2f %12s %12s %12s %12s %12s %12s | %12s %10.2f %12s %12s",
+					entry.getNumber(),
+					entry.getType().name(),
+					entry.getDistance() * 100,
 					symbol.priceToStr(entry.getPrice()),
-					symbol.qtyToStr(entry.getCoins()), 
-					usdToStr(entry.getUsd()), 
-					symbol.qtyToStr(entry.getSumCoins()), 
-					usdToStr(entry.getSumUsd()), 
-					usdToStr(entry.getLost()), 
-					symbol.priceToStr(entry.getNewPrice()), 
-					entry.getRecoveryNeeded() * 100, 
-					symbol.priceToStr(entry.getTakeProfit()), 
+					symbol.qtyToStr(entry.getCoins()),
+					usdToStr(entry.getUsd()),
+					symbol.qtyToStr(entry.getSumCoins()),
+					usdToStr(entry.getSumUsd()),
+					usdToStr(entry.getLost()),
+					symbol.priceToStr(entry.getNewPrice()),
+					entry.getRecoveryNeeded() * 100,
+					symbol.priceToStr(entry.getTakeProfit()),
 					usdToStr(entry.getProfit()));
 
 			sb.append(line);
@@ -250,5 +250,5 @@ public class Position
 
 		return sb.toString();
 	}
-	
+
 }

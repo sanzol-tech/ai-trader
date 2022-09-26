@@ -86,7 +86,7 @@ public class BeepUtils
 			LogService.error(e);
 		}
 	}
-	
+
 	public static void beep4()
 	{
 		try
@@ -98,7 +98,7 @@ public class BeepUtils
 			LogService.error(e);
 		}
 	}
-	
+
 	public static void main(String[] args) throws InterruptedException
 	{
 		beep4();

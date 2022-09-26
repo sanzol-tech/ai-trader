@@ -72,7 +72,7 @@ public class FrmCoin extends JFrame implements PriceListener
 
 	private Symbol symbol;
 	private OrderBookService obService = null;
-	private boolean beepDone = false;	
+	private boolean beepDone = false;
 
 	private JPanel contentPane;
 	private JLabel lblError;
@@ -92,7 +92,7 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JButton btnShortBidPointBB1;
 	private JButton btnShortBidPointWA1;
 	private JButton btnCalcBB;
-	private JButton btnCalcWA;	
+	private JButton btnCalcWA;
 
 	private JLabel lnkBinance;
 	private JLabel lnkTradingview;
@@ -120,7 +120,7 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JLabel lblRatioBBLg;
 	private JLabel lblRatioWASh;
 	private JLabel lblRatioWALg;
-	
+
 	private JTextArea txtOBookAsk;
 	private JTextArea txtOBookBid;
 
@@ -128,7 +128,7 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JRadioButton rbBBDisplaced;
 	private JRadioButton rbWAPrice;
 	private JRadioButton rbWAPrevious;
-	
+
 	private JTextField txt24h;
 	private JTextField txtAskPointBB1;
 	private JTextField txtAskPointBB1Dist;
@@ -188,7 +188,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		pnlBottom.setBounds(30, 550, 700, 22);
 		pnlBottom.setLayout(new BorderLayout(0, 0));
 		contentPane.add(pnlBottom);
-		
+
 		lblError = new JLabel();
 		lblError.setMinimumSize(new Dimension(100, 20));
 		lblError.setBorder(new EmptyBorder(5, 0, 5, 5));
@@ -222,7 +222,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtMarkPrice.setColumns(10);
 		txtMarkPrice.setBounds(430, 284, 147, 20);
 		contentPane.add(txtMarkPrice);
-		
+
 		txtSymbolInfo = new JTextField();
 		txtSymbolInfo.setHorizontalAlignment(SwingConstants.TRAILING);
 		txtSymbolInfo.setFont(new Font("Courier New", Font.BOLD, 12));
@@ -230,7 +230,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtSymbolInfo.setColumns(10);
 		txtSymbolInfo.setBounds(583, 284, 147, 20);
 		contentPane.add(txtSymbolInfo);
-		
+
 		scrollOBookAsk = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollOBookAsk.setBounds(430, 54, 300, 220);
 		scrollOBookAsk.setBorder(UIManager.getBorder("TextField.border"));
@@ -254,7 +254,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtOBookBid.setFont(new Font("Courier New", Font.PLAIN, 12));
 		txtOBookBid.setEditable(false);
 		scrollOBookBid.setViewportView(txtOBookBid);
-		
+
 		pnlBB = new JPanel();
 		pnlBB.setLayout(null);
 		pnlBB.setBorder(UIManager.getBorder("TextField.border"));
@@ -318,39 +318,39 @@ public class FrmCoin extends JFrame implements PriceListener
 		lblDistBB = new JLabel("Dist %");
 		lblDistBB.setBounds(206, 11, 46, 14);
 		pnlBB.add(lblDistBB);
-		
+
 		txtAskPointBB2 = new JTextField();
 		txtAskPointBB2.setForeground(Styles.COLOR_TEXT_SHORT);
 		txtAskPointBB2.setEditable(false);
 		txtAskPointBB2.setColumns(10);
 		txtAskPointBB2.setBounds(86, 32, 110, 20);
 		pnlBB.add(txtAskPointBB2);
-		
+
 		txtAskPointBB2Dist = new JTextField();
 		txtAskPointBB2Dist.setForeground(Styles.COLOR_TEXT_SHORT);
 		txtAskPointBB2Dist.setEditable(false);
 		txtAskPointBB2Dist.setColumns(10);
 		txtAskPointBB2Dist.setBounds(206, 32, 80, 20);
 		pnlBB.add(txtAskPointBB2Dist);
-		
+
 		txtBidPointBB2 = new JTextField();
 		txtBidPointBB2.setForeground(Styles.COLOR_TEXT_LONG);
 		txtBidPointBB2.setEditable(false);
 		txtBidPointBB2.setColumns(10);
 		txtBidPointBB2.setBounds(86, 110, 110, 20);
 		pnlBB.add(txtBidPointBB2);
-		
+
 		txtBidPointBB2Dist = new JTextField();
 		txtBidPointBB2Dist.setForeground(Styles.COLOR_TEXT_LONG);
 		txtBidPointBB2Dist.setEditable(false);
 		txtBidPointBB2Dist.setColumns(10);
 		txtBidPointBB2Dist.setBounds(206, 110, 80, 20);
 		pnlBB.add(txtBidPointBB2Dist);
-		
+
 		lblAsk = new JLabel("ASK 2");
 		lblAsk.setBounds(24, 35, 52, 14);
 		pnlBB.add(lblAsk);
-		
+
 		lblBid_1 = new JLabel("BID 2");
 		lblBid_1.setBounds(24, 110, 52, 14);
 		pnlBB.add(lblBid_1);
@@ -408,14 +408,14 @@ public class FrmCoin extends JFrame implements PriceListener
 		lblDistWA = new JLabel("Dist %");
 		lblDistWA.setBounds(204, 12, 46, 14);
 		pnlWA.add(lblDistWA);
-		
+
 		txtBidPointWA2 = new JTextField();
 		txtBidPointWA2.setForeground(Styles.COLOR_TEXT_LONG);
 		txtBidPointWA2.setEditable(false);
 		txtBidPointWA2.setColumns(10);
 		txtBidPointWA2.setBounds(84, 136, 110, 20);
 		pnlWA.add(txtBidPointWA2);
-		
+
 		txtBidPointWA2Dist = new JTextField();
 		txtBidPointWA2Dist.setForeground(Styles.COLOR_TEXT_LONG);
 		txtBidPointWA2Dist.setEditable(false);
@@ -429,21 +429,21 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtBidPointWA3.setColumns(10);
 		txtBidPointWA3.setBounds(84, 162, 110, 20);
 		pnlWA.add(txtBidPointWA3);
-		
+
 		txtBidPointWA3Dist = new JTextField();
 		txtBidPointWA3Dist.setForeground(Styles.COLOR_TEXT_LONG);
 		txtBidPointWA3Dist.setEditable(false);
 		txtBidPointWA3Dist.setColumns(10);
 		txtBidPointWA3Dist.setBounds(204, 162, 80, 20);
 		pnlWA.add(txtBidPointWA3Dist);
-		
+
 		txtAskPointWA3 = new JTextField();
 		txtAskPointWA3.setForeground(Styles.COLOR_TEXT_SHORT);
 		txtAskPointWA3.setEditable(false);
 		txtAskPointWA3.setColumns(10);
 		txtAskPointWA3.setBounds(84, 32, 110, 20);
 		pnlWA.add(txtAskPointWA3);
-		
+
 		txtAskPointWA3Dist = new JTextField();
 		txtAskPointWA3Dist.setForeground(Styles.COLOR_TEXT_SHORT);
 		txtAskPointWA3Dist.setEditable(false);
@@ -457,7 +457,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtAskPointWA2.setColumns(10);
 		txtAskPointWA2.setBounds(84, 58, 110, 20);
 		pnlWA.add(txtAskPointWA2);
-		
+
 		txtAskPointWA2Dist = new JTextField();
 		txtAskPointWA2Dist.setForeground(Styles.COLOR_TEXT_SHORT);
 		txtAskPointWA2Dist.setEditable(false);
@@ -478,7 +478,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		btnLongBidPointWA1.setBackground(Styles.COLOR_BTN_LONG);
 		btnLongBidPointWA1.setBounds(294, 110, 46, 22);
 		pnlWA.add(btnLongBidPointWA1);
-		
+
 		lblShortWA = new JLabel("ASK 1");
 		lblShortWA.setBounds(22, 84, 52, 14);
 		pnlWA.add(lblShortWA);
@@ -490,7 +490,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		lblShort = new JLabel("ASK 2");
 		lblShort.setBounds(22, 58, 52, 14);
 		pnlWA.add(lblShort);
-		
+
 		lblBid = new JLabel("BID 2");
 		lblBid.setBounds(22, 136, 52, 14);
 		pnlWA.add(lblBid);
@@ -498,7 +498,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		lblBid = new JLabel("BID 3");
 		lblBid.setBounds(22, 162, 52, 14);
 		pnlWA.add(lblBid);
-		
+
 		lblRatioBBSh = new JLabel("1:x");
 		lblRatioBBSh.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRatioBBSh.setForeground(Styles.COLOR_TEXT_SHORT);
@@ -510,13 +510,13 @@ public class FrmCoin extends JFrame implements PriceListener
 		lblRatioBBLg.setForeground(Styles.COLOR_TEXT_LONG);
 		lblRatioBBLg.setBounds(296, 113, 46, 14);
 		pnlBB.add(lblRatioBBLg);
-		
+
 		lblRatioWASh = new JLabel("1:x");
 		lblRatioWASh.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRatioWASh.setForeground(Styles.COLOR_TEXT_SHORT);
 		lblRatioWASh.setBounds(294, 61, 46, 14);
 		pnlWA.add(lblRatioWASh);
-		
+
 		lblRatioWALg = new JLabel("1:x");
 		lblRatioWALg.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRatioWALg.setForeground(Styles.COLOR_TEXT_LONG);
@@ -552,7 +552,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		lblHigh.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblHigh.setBounds(240, 75, 62, 14);
 		contentPane.add(lblHigh);
-		
+
 		lblLow = new JLabel("LOW");
 		lblLow.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblLow.setBounds(240, 100, 62, 14);
@@ -581,7 +581,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtLow.setColumns(10);
 		txtLow.setBounds(314, 97, 86, 20);
 		contentPane.add(txtLow);
-		
+
 		txtHigh = new JTextField();
 		txtHigh.setHorizontalAlignment(SwingConstants.TRAILING);
 		txtHigh.setForeground(Styles.COLOR_TEXT_ALT1);
@@ -589,7 +589,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtHigh.setColumns(10);
 		txtHigh.setBounds(314, 72, 86, 20);
 		contentPane.add(txtHigh);
-		
+
 		lnkBinance = new JLabel("Binance");
 		lnkBinance.setForeground(Styles.COLOR_LINK);
 		lnkBinance.setBounds(30, 96, 87, 16);
@@ -609,7 +609,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		rbBBClassic.setSelected(true);
 		rbBBClassic.setBounds(136, 130, 76, 23);
 		contentPane.add(rbBBClassic);
-		
+
 		rbBBDisplaced = new JRadioButton("displaced");
 		rbBBDisplaced.setToolTipText("blocks from last price");
 		rbBBDisplaced.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -638,7 +638,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		rbWAPrice.setSelected(true);
 		rbWAPrice.setBounds(136, 314, 76, 23);
 		contentPane.add(rbWAPrice);
-		
+
 		rbWAPrevious = new JRadioButton("previous");
 		rbWAPrevious.setToolTipText("average since previous point");
 		rbWAPrevious.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -807,7 +807,7 @@ public class FrmCoin extends JFrame implements PriceListener
 
 					String priceChangePercent = String.format("%.2f", symbolInfo.getPriceChangePercent());
 					txt24h.setText(priceChangePercent);
-					
+
 					BigDecimal usdVolume24h = symbolInfo.getUsdVolume();
 					txtVolume.setText(PriceUtil.cashFormat(usdVolume24h));
 
@@ -826,7 +826,7 @@ public class FrmCoin extends JFrame implements PriceListener
 
 	// ----------------------------------------------------------------------------------
 
-	public void calc() throws KeyManagementException, NoSuchAlgorithmException 
+	public void calc() throws KeyManagementException, NoSuchAlgorithmException
 	{
 		BBType bbType = rbBBClassic.isSelected() ? BBType.classic : BBType.displaced;
 		Integer bbBlocks = Integer.valueOf(txtBBBlocks.getText());
@@ -891,7 +891,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtAskPointWA3.setText(symbol.priceToStr(obService.getAskWAvgPoint3()));
 		txtAskPointWA2.setText(symbol.priceToStr(obService.getAskWAvgPoint2()));
 		txtAskPointWA1.setText(symbol.priceToStr(obService.getAskWAvgPoint1()));
-		
+
 		txtBidPointWA1.setText(symbol.priceToStr(obService.getBidWAvgPoint1()));
 		txtBidPointWA2.setText(symbol.priceToStr(obService.getBidWAvgPoint2()));
 		txtBidPointWA3.setText(symbol.priceToStr(obService.getBidWAvgPoint3()));
@@ -907,7 +907,7 @@ public class FrmCoin extends JFrame implements PriceListener
 
 		BigDecimal shortSLoss = PriceUtil.priceDistDown(shortPrice, shShock2, true);
 		BigDecimal longTSLoss = PriceUtil.priceDistUp(longPrice, lgShock2, true);
-		
+
 		if (shortSLoss.compareTo(BigDecimal.ZERO) == 0)
 		{
 			lblRatioBBSh.setText("1:0");
@@ -934,7 +934,7 @@ public class FrmCoin extends JFrame implements PriceListener
 
 		BigDecimal shortSLoss = PriceUtil.priceDistDown(shortPrice, shShock2, true);
 		BigDecimal longTSLoss = PriceUtil.priceDistUp(longPrice, lgShock2, true);
-		
+
 		if (shortSLoss.compareTo(BigDecimal.ZERO) == 0)
 		{
 			lblRatioWASh.setText("1:0");
@@ -958,7 +958,7 @@ public class FrmCoin extends JFrame implements PriceListener
 	{
 		if (obService == null)
 		{
-			return;	
+			return;
 		}
 
 		try
@@ -970,10 +970,10 @@ public class FrmCoin extends JFrame implements PriceListener
 
 			BigDecimal distSh1 = PriceUtil.priceDistUp(mrkPrice, obService.getAskBBlkPoint1(), false);
 			txtAskPointBB1Dist.setText(Convert.toStrPercent(distSh1) + " %");
-			
+
 			BigDecimal distLg1 = PriceUtil.priceDistDown(mrkPrice, obService.getBidBBlkPoint1(), false);
 			txtBidPointBB1Dist.setText(Convert.toStrPercent(distLg1) + " %");
-			
+
 			BigDecimal distLg2 = PriceUtil.priceDistDown(mrkPrice, obService.getBidBBlkPoint2(), false);
 			txtBidPointBB2Dist.setText(Convert.toStrPercent(distLg2) + " %");
 
@@ -1094,7 +1094,7 @@ public class FrmCoin extends JFrame implements PriceListener
 			sb.append("chg  10d: " + Convert.toStrPercent(klinePlus.getPriceChangePercent()) + " %").append("\n");
 			sb.append("move 10d: " + Convert.toStrPercent(klinePlus.getPriceMove()) + " %").append("\n");
 			sb.append("vol  10d: " + PriceUtil.cashFormat(klinePlus.getQuoteVolume())).append("\n");
-			
+
 			klinePlus = KlineMerge.getInstance(lst1m);
 			sb.append("\n");
 			sb.append("chg  12h: " + Convert.toStrPercent(klinePlus.getPriceChangePercent()) + " %").append("\n");

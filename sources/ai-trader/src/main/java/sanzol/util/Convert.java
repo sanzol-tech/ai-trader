@@ -19,7 +19,7 @@ public final class Convert
 	}
 
 	// --- USD ---------------------------------------------------------------
-	
+
 	public static String usdToStr(BigDecimal usd)
 	{
 		String pattern = "#0.00";
@@ -65,9 +65,9 @@ public final class Convert
 
 		return DoubleRounder.round(Double.valueOf(str) / 100, 4);
 	}
-	
+
 	// --- TIME --------------------------------------------------------------
-	
+
 	public static String convertTime(long time)
 	{
 		Date date = new Date(time);

@@ -119,10 +119,10 @@ public final class BotService
 					info(symbol.getNameLeft() + " TP-REARRANGEMENT");
 					info(String.format("[qty: %f price: %f] --> [qty: %f price: %f]", tpQty, tpPrice, posQty, newPrice));
 					BeepUtils.beep2();
-		
+
 					// CANCEL ORDER
 					SimpleTrade.cancelOrder(tpOrder);
-		
+
 					// ADD NEW ORDER
 					SimpleTrade.postTprofit(symbol, side, newPrice, posQty);
 				}
@@ -169,10 +169,10 @@ public final class BotService
 					info(symbol.getNameLeft() + " SL-REARRANGEMENT");
 					info(String.format("(%f %s) : [price: %f] --> [price: %f]", slUsd, Config.DEFAULT_SYMBOL_RIGHT, slPriceCur, slPriceNew));
 					BeepUtils.beep2();
-	
+
 					// CANCEL SL-ORDER
 					SimpleTrade.cancelOrder(slOrder);
-	
+
 					// ADD NEW SL-ORDER
 					SimpleTrade.postSMarket(symbol, side, slPriceNew);
 				}
@@ -198,7 +198,7 @@ public final class BotService
 
 	// ------------------------------------------------------------------------
 	// LOG
-	// ------------------------------------------------------------------------	
+	// ------------------------------------------------------------------------
 
 	private static final long LOG_MAXSIZE = 10000;
 
@@ -243,7 +243,7 @@ public final class BotService
 		log("ERROR", msg);
 	}
 
-	// ------------------------------------------------------------------------	
+	// ------------------------------------------------------------------------
 
 	private static List<BotListener> observers = new ArrayList<BotListener>();
 

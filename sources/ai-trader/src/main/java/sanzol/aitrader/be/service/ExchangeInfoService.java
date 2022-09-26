@@ -15,30 +15,47 @@ import api.client.model.ExchangeInfo;
 import api.client.model.ExchangeInfoEntry;
 import api.client.spot.impl.SyncSpotClient;
 import sanzol.aitrader.be.config.Config;
+import sanzol.util.log.LogService;
 
 public class ExchangeInfoService
 {
 	private static Map<String, ExchangeInfoEntry> mapExchangeInfo = new ConcurrentHashMap<String, ExchangeInfoEntry>();
-	private static long time;
+	private static long timestamp = 0;
 
-	public static void start() throws KeyManagementException, NoSuchAlgorithmException, IOException
+	public static boolean start()
 	{
-		ExchangeInfo exchangeInfo;
-		if (ApiConfig.MARKET_TYPE == MarketType.futures)
-			exchangeInfo = SyncFuturesClient.getExchangeInformation();
-		else
-			exchangeInfo = SyncSpotClient.getExchangeInformation();
-
-		List<ExchangeInfoEntry> lstExchangeInfoEntries = exchangeInfo.getSymbols();
-		time = System.currentTimeMillis();
-
-		for (ExchangeInfoEntry entry : lstExchangeInfoEntries)
+		try
 		{
-			if (entry.getQuoteAsset().equalsIgnoreCase(Config.DEFAULT_SYMBOL_RIGHT) && "TRADING".equalsIgnoreCase(entry.getStatus()))
+			ExchangeInfo exchangeInfo;
+			if (ApiConfig.MARKET_TYPE == MarketType.futures)
+				exchangeInfo = SyncFuturesClient.getExchangeInformation();
+			else
+				exchangeInfo = SyncSpotClient.getExchangeInformation();
+
+			List<ExchangeInfoEntry> lstExchangeInfoEntries = exchangeInfo.getSymbols();
+			timestamp = System.currentTimeMillis();
+
+			for (ExchangeInfoEntry entry : lstExchangeInfoEntries)
 			{
-				mapExchangeInfo.put(entry.getSymbol(), entry);
+				if (entry.getQuoteAsset().equalsIgnoreCase(Config.DEFAULT_SYMBOL_RIGHT) && "TRADING".equalsIgnoreCase(entry.getStatus()))
+				{
+					mapExchangeInfo.put(entry.getSymbol(), entry);
+				}
 			}
+
+			return true;
 		}
+		catch (Exception e)
+		{
+			LogService.error(e);
+			return false;
+		}
+	}
+
+	public static void close()
+	{
+		mapExchangeInfo = new ConcurrentHashMap<String, ExchangeInfoEntry>();
+		timestamp = 0;
 	}
 
 	public static ExchangeInfoEntry getExchangeInfo(String symbolPair) throws KeyManagementException, NoSuchAlgorithmException, IOException
@@ -48,7 +65,7 @@ public class ExchangeInfoService
 			return null;
 		}
 
-		if (time + TimeUnit.HOURS.toMillis(4) < System.currentTimeMillis())
+		if (timestamp + TimeUnit.HOURS.toMillis(4) < System.currentTimeMillis())
 		{
 			mapExchangeInfo = new ConcurrentHashMap<String, ExchangeInfoEntry>();
 			start();

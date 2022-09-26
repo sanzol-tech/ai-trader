@@ -31,9 +31,9 @@ public final class PositionSpotService
 
 	private static boolean isStarted = false;
 
-	private static List<AssetBalance> lstBalances;
-	private static List<Order> lstOpenOrders;
-	private static List<Order> lstFilledOrders;
+	private static List<AssetBalance> lstBalances = new ArrayList<AssetBalance>();
+	private static List<Order> lstOpenOrders = new ArrayList<Order>();
+	private static List<Order> lstFilledOrders = new ArrayList<Order>();
 
 	// ------------------------------------------------------------------------
 
@@ -78,6 +78,8 @@ public final class PositionSpotService
 
 	// ------------------------------------------------------------------------
 
+	private static Timer timer1;
+
 	public static void start()
 	{
 		if (isStarted)
@@ -92,10 +94,22 @@ public final class PositionSpotService
 				getPositions();
 			}
 		};
-		Timer timer = new Timer("PositionService");
-		timer.schedule(task, 0, DEFAULT_PERIOD_MILLIS);
+		timer1 = new Timer("PositionService");
+		timer1.schedule(task, 0, DEFAULT_PERIOD_MILLIS);
 
 		isStarted = true;
+	}
+
+	public static void close()
+	{
+		if (isStarted && timer1 != null)
+			timer1.cancel();
+
+		lstBalances = new ArrayList<AssetBalance>();
+		lstOpenOrders = new ArrayList<Order>();
+		lstFilledOrders = new ArrayList<Order>();
+
+		notifyAllLogObservers();
 	}
 
 	private synchronized static void getPositions()
@@ -163,7 +177,7 @@ public final class PositionSpotService
 
 		return sb.toString();
 	}
-	
+
 	public static String toStringPositions(boolean includeOrders) throws KeyManagementException, NoSuchAlgorithmException, IOException, InvalidKeyException
 	{
 		if (lstBalances == null || lstBalances.isEmpty())
@@ -197,7 +211,7 @@ public final class PositionSpotService
 			sbBody.append(toStringFilledOrders(entry.getAsset()));
 			sbBody.append(StringUtils.repeat("-",97));
 			sbBody.append("\n");
-*/			
+*/
 		}
 
 		StringBuilder sb  = new StringBuilder();
@@ -205,14 +219,14 @@ public final class PositionSpotService
 		sb.append(StringUtils.repeat("-", 97));
 		sb.append("\n");
 		sb.append(sbBody);
-		
+
 		return sb.toString();
 	}
 
 	// ------------------------------------------------------------------------
 
 	private static List<PositionListener> observers = new ArrayList<PositionListener>();
-	
+
 	public static void attachRefreshObserver(PositionListener observer)
 	{
 		observers.add(observer);

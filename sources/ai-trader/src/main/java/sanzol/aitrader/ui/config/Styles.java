@@ -44,7 +44,7 @@ public final class Styles
 
 	public static MatteBorder BORDER_UP;
 	public static MatteBorder BORDER_DOWN;
-	
+
 	public static void applyStyle() throws UnsupportedLookAndFeelException
 	{
 		if (Config.isDarkMode())
@@ -56,7 +56,7 @@ public final class Styles
 	public void repaintAll()
 	{
 		/*
-		initComponents();			
+		initComponents();
 		for(Window window: Window.getWindows()) {
 		    SwingUtilities.updateComponentTreeUI(window);
 		}

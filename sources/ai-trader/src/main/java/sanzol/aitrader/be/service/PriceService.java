@@ -22,6 +22,7 @@ import api.client.spot.impl.SyncSpotClient;
 import sanzol.aitrader.be.config.Config;
 import sanzol.aitrader.be.model.Symbol;
 import sanzol.aitrader.be.model.SymbolInfo;
+import sanzol.util.log.LogService;
 import sanzol.util.price.PriceUtil;
 
 public class PriceService
@@ -69,7 +70,7 @@ public class PriceService
 		for (SymbolTickerEvent entry : lstSymbolTickerEvent)
 		{
 			SymbolInfo symbolInfo = SymbolInfo.getInstance(entry);
-			
+
 			if (symbolInfo == null)
 			{
 				continue;
@@ -123,7 +124,7 @@ public class PriceService
 		{
 			list.add(entry.getSymbol().getPair());
 		}
-		
+
 		return list;
 	}
 
@@ -167,36 +168,54 @@ public class PriceService
 			System.out.println(entry.getSymbol() + " : " + entry.getLastPrice());
 		}
 		*/
-		
+
 		notifyAllLogObservers();
 	}
 
 	// ------------------------------------------------------------------------
 
-	public static void start() throws KeyManagementException, NoSuchAlgorithmException
+	public static boolean start()
 	{
-		// ---- GET SNAPSHOOT ---------------------------------------------
-		List<SymbolTicker> lstSymbolTickers;
-		if (ApiConfig.MARKET_TYPE == MarketType.futures)
-			lstSymbolTickers = SyncFuturesClient.getSymbolTickers();
-		else
-			lstSymbolTickers = SyncSpotClient.getSymbolTickers();
-
-		for (SymbolTicker entry : lstSymbolTickers)
+		try
 		{
-			if (entry.getSymbol().endsWith(Config.DEFAULT_SYMBOL_RIGHT))
+			// ---- GET SNAPSHOOT ---------------------------------------------
+			List<SymbolTicker> lstSymbolTickers;
+			if (ApiConfig.MARKET_TYPE == MarketType.futures)
+				lstSymbolTickers = SyncFuturesClient.getSymbolTickers();
+			else
+				lstSymbolTickers = SyncSpotClient.getSymbolTickers();
+
+			for (SymbolTicker entry : lstSymbolTickers)
 			{
-				mapTickers.put(entry.getSymbol(), entry.toSymbolTickerEvent());
+				if (entry.getSymbol().endsWith(Config.DEFAULT_SYMBOL_RIGHT))
+				{
+					mapTickers.put(entry.getSymbol(), entry.toSymbolTickerEvent());
+				}
 			}
+
+			// ----------------------------------------------------------------
+
+			wsSymbolTicker = WsMarketTickers.create((event) -> {
+				onMessage(event);
+			});
+			wsSymbolTicker.connect();
+
+			return true;
 		}
+		catch (Exception e)
+		{
+			LogService.error(e);
+			return false;
+		}
+	}
 
-		// ----------------------------------------------------------------
+	public static void close()
+	{
+		wsSymbolTicker.close();
 
-		wsSymbolTicker = WsMarketTickers.create((event) -> {
-			onMessage(event);
-		});
-		wsSymbolTicker.connect();
+		mapTickers = new ConcurrentHashMap<String, SymbolTickerEvent>();
 
+		notifyAllLogObservers();
 	}
 
 	public static void main(String[] args) throws URISyntaxException, KeyManagementException, NoSuchAlgorithmException

@@ -11,11 +11,11 @@ import sanzol.aitrader.be.service.BalanceService;
 import sanzol.aitrader.be.service.DepthCache;
 import sanzol.aitrader.be.service.ExchangeInfoService;
 import sanzol.aitrader.be.service.LastCandlestickService;
-import sanzol.aitrader.be.service.PositionFuturesService;
-import sanzol.aitrader.be.service.PositionSpotService;
+import sanzol.aitrader.be.service.PositionService;
 import sanzol.aitrader.be.service.PriceService;
 import sanzol.aitrader.be.service.SignalService;
 import sanzol.util.log.LogService;
+import sanzol.util.observable.Handler;
 
 public final class ServerApp
 {
@@ -26,55 +26,26 @@ public final class ServerApp
 		return keyLoadedOK;
 	}
 
-	public static void initialize(MarketType marketType)
+	@SuppressWarnings("resource")
+	private static void checkAnotherInstanceRunning(MarketType marketType)
 	{
-		verifyFolders();
+		final int portSpot = 22723;
+		final int portFutures = 22722;
 
-		keyLoadedOK = PrivateConfig.loadKey();
-
-		try
-		{
-			Config.load();
-
-			if (keyLoadedOK)
-			{
-				if (marketType == MarketType.spot)
-				{
-					// BalanceService.start();
-					PositionSpotService.start();
-				}
-				else
-				{
-					BalanceService.start();
-					PositionFuturesService.start();
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			LogService.error(e);
-		}
-	}
-
-	public static class InitializeTask implements Runnable
-	{
-		@Override
-		public void run()
-		{
+		new Thread(() -> {
 			try
 			{
-				ExchangeInfoService.start();
-				PriceService.start();
-				LastCandlestickService.start("btcusdt");
-				DepthCache.start();
-				SignalService.start();
-				AlertService.start();
+				if (marketType == MarketType.spot)
+					new ServerSocket(portSpot).accept();
+				else
+					new ServerSocket(portFutures).accept();
 			}
-			catch (Exception e)
+			catch (IOException e)
 			{
-				LogService.error(e);
+				System.err.println("another instance is running");
+				System.exit(-1);
 			}
-		}
+		}, "checkAnotherInstanceRunning").start();
 	}
 
 	private static void verifyFolders()
@@ -105,39 +76,131 @@ public final class ServerApp
 		}
 	}
 
-	@SuppressWarnings("resource")
-	private static void assertNoOtherInstanceRunning(MarketType marketType)
+	public static void start(MarketType marketType, Handler<String> observer)
 	{
-		new Thread(() -> {
-			try
-			{
-				if (marketType == MarketType.spot)
-					new ServerSocket(22723).accept();
-				else
-					new ServerSocket(22722).accept();
-			}
-			catch (IOException e)
-			{
-				System.err.println("another instance is running");
-				System.exit(-1);
-			}
-		}).start();
+		try
+		{
+			ApiConfig.setMarketType(marketType);
+			checkAnotherInstanceRunning(marketType);
+			verifyFolders();
+			keyLoadedOK = PrivateConfig.loadKey();
+			Config.load();
+			servicesStart();
+			observer.handle("ServerApp started");
+		}
+		catch (Exception e)
+		{
+			LogService.error(e);
+		}
 	}
 
-	public static void start(MarketType marketType)
+	// --- Services ----------------------------------------------------------
+	public static void servicesStart()
 	{
-		ApiConfig.setMarketType(marketType);
-		assertNoOtherInstanceRunning(marketType);
-		
-		initialize(marketType);
+		LogService.info("Starting services");
 
-		Thread thread = new Thread(new InitializeTask(), "initializeTask");
+		Runnable runnable = () ->
+		{
+			try
+			{
+				ExchangeInfoService.start();
+
+				PriceService.start();
+				LastCandlestickService.start("btcusdt");
+				DepthCache.start();
+				SignalService.start();
+				AlertService.start();
+				if (keyLoadedOK)
+				{
+					BalanceService.start();
+					PositionService.start();
+				}
+			}
+			catch (Exception e)
+			{
+				LogService.error(e);
+			}
+		};
+		Thread thread = new Thread(runnable, "servicesStart");
 		thread.start();
 	}
 
+	public static void servicesRestart(boolean prices, boolean last30mBtc, boolean depthCache, boolean signals, boolean alerts, boolean balance, boolean positions)
+	{
+		LogService.info("Restarting services");
+
+		Runnable runnable = () ->
+		{
+			// --- CLOSE ------------------------------------------------------
+			if (prices)
+			{
+				PriceService.close();
+			}
+			if (last30mBtc)
+			{
+				LastCandlestickService.close();
+			}
+			if (depthCache)
+			{
+				DepthCache.removeAll();
+			}
+			if (signals)
+			{
+				SignalService.close();
+			}
+			if (alerts)
+			{
+				AlertService.close();
+			}
+			if (keyLoadedOK && alerts)
+			{
+				BalanceService.close();
+			}
+			if (keyLoadedOK && alerts)
+			{
+				PositionService.close();
+			}
+
+			// --- START ------------------------------------------------------
+			if (prices)
+			{
+				PriceService.start();
+			}
+			if (last30mBtc)
+			{
+				LastCandlestickService.start("btcusdt");
+			}
+			if (depthCache)
+			{
+				DepthCache.start();
+			}
+			if (signals)
+			{
+				SignalService.start();
+			}
+			if (alerts)
+			{
+				AlertService.start();
+			}
+			if (keyLoadedOK && alerts)
+			{
+				BalanceService.start();
+			}
+			if (keyLoadedOK && alerts)
+			{
+				PositionService.start();
+			}
+
+		};
+		Thread thread = new Thread(runnable, "servicesRestart");
+		thread.start();
+	}
+
+	// --- -------- ----------------------------------------------------------
+
 	public static void main(String[] args)
 	{
-		start(MarketType.futures);
+		start(MarketType.futures, (e) -> { System.out.println(e); });
 	}
 
 }

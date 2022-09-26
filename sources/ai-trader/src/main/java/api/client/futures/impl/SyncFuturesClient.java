@@ -90,7 +90,7 @@ public class SyncFuturesClient
 		final String path = "/fapi/v1/depth";
 
 		if (limit == null) limit = MAX_DEPTH_LIMIT;
-		
+
 		Client client = CustomClient.getClient();
 		Response response = client
 				.target(ApiConstants.FUTURES_BASE_URL)
@@ -150,7 +150,7 @@ public class SyncFuturesClient
 	public static List<AccountBalance> getBalance() throws KeyManagementException, NoSuchAlgorithmException, InvalidKeyException
 	{
 		final String path = "/fapi/v1/balance";
-		
+
 		Client client = CustomClient.getClient();
 
 		String recvWindow = Long.toString(60_000L);
@@ -173,7 +173,7 @@ public class SyncFuturesClient
 
 		verifyResponseStatus(response);
 
-		return response.readEntity(new GenericType<List<AccountBalance>>() {});		
+		return response.readEntity(new GenericType<List<AccountBalance>>() {});
 	}
 
 	public static List<PositionRisk> getPositionRisk() throws KeyManagementException, NoSuchAlgorithmException, InvalidKeyException
@@ -201,16 +201,16 @@ public class SyncFuturesClient
 			.get();
 
 		verifyResponseStatus(response);
-		
-		return response.readEntity(new GenericType<List<PositionRisk>>() {});		
+
+		return response.readEntity(new GenericType<List<PositionRisk>>() {});
 	}
 
 	public static List<Order> getOpenOrders() throws KeyManagementException, NoSuchAlgorithmException, InvalidKeyException
 	{
 		final String path = "/fapi/v1/openOrders";
-		
+
 		Client client = CustomClient.getClient();
-		
+
 		String recvWindow = Long.toString(60_000L);
 		String timestamp = Long.toString(System.currentTimeMillis());
 
@@ -231,15 +231,15 @@ public class SyncFuturesClient
 
 		verifyResponseStatus(response);
 
-		return response.readEntity(new GenericType<List<Order>>() {});		
+		return response.readEntity(new GenericType<List<Order>>() {});
 	}
 
-	public static Order postOrder(String symbol, OrderSide side, PositionSide positionSide, OrderType orderType, TimeInForce timeInForce, 
-								  String quantity, String price, Boolean reduceOnly, String newClientOrderId, String stopPrice, 
+	public static Order postOrder(String symbol, OrderSide side, PositionSide positionSide, OrderType orderType, TimeInForce timeInForce,
+								  String quantity, String price, Boolean reduceOnly, String newClientOrderId, String stopPrice,
 								  WorkingType workingType, NewOrderRespType newOrderRespType, Boolean closePosition) throws KeyManagementException, NoSuchAlgorithmException, InvalidKeyException
 	{
 		final String path = "/fapi/v1/order";
-		
+
 		Client client = CustomClient.getClient();
 
 		String recvWindow = Long.toString(60_000L);
@@ -263,7 +263,7 @@ public class SyncFuturesClient
 			.queryParam("closePosition", closePosition)
 			.queryParam("recvWindow", recvWindow)
 			.queryParam("timestamp", timestamp);
-		
+
 		String signature = ApiSignature.createSignature(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, target.getUri().getQuery());
 
 		Response response = target
@@ -274,8 +274,8 @@ public class SyncFuturesClient
 			.post(null);
 
 		verifyResponseStatus(response);
-		
-		return response.readEntity(Order.class);		
+
+		return response.readEntity(Order.class);
 	}
 
 	public static Order cancelOrder(String symbol, Long orderId, String origClientOrderId) throws KeyManagementException, NoSuchAlgorithmException, InvalidKeyException
@@ -306,8 +306,8 @@ public class SyncFuturesClient
 			.delete();
 
 		verifyResponseStatus(response);
-		
-		return response.readEntity(Order.class);		
+
+		return response.readEntity(Order.class);
 	}
 
 	// ------------------------------------------------------------------------
@@ -341,7 +341,7 @@ public class SyncFuturesClient
 		try
 		{
 			postOrder(
-					"BTCUSDT", OrderSide.BUY, PositionSide.BOTH, OrderType.LIMIT, TimeInForce.GTC, 
+					"BTCUSDT", OrderSide.BUY, PositionSide.BOTH, OrderType.LIMIT, TimeInForce.GTC,
 					"0.001", "15000", null, null, null, WorkingType.CONTRACT_PRICE,
 					NewOrderRespType.RESULT, false);
 		}

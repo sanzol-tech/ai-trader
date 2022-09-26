@@ -30,7 +30,7 @@ public class Kline
 		this.quoteVolume = quoteVolume;
 		this.count = count;
 	}
-	
+
 	public BigDecimal getOpenPrice()
 	{
 		return openPrice;

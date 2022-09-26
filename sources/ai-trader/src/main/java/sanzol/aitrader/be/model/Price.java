@@ -49,7 +49,7 @@ public class Price
 	{
 		if (value == null)
 			return null;
-		
+
 		return value.doubleValue();
 	}
 
@@ -57,13 +57,13 @@ public class Price
 	{
 		return value;
 	}
-	
+
 	@Override
 	public String toString()
 	{
 		if (value == null)
 			return "";
-		
+
 		return symbol.priceToStr(value);
 	}
 

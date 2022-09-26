@@ -24,10 +24,10 @@ public class Config
 	public static final String DEFAULT_SYMBOL_RIGHT = "USDT";
 
 	private static final String[] FAVORITE_SYMBOLS = new String[]
-		{"1000SHIB", "ADA", "ALGO", "ALICE", "ATOM", "AVAX", "BAT", "BCH", 
-		 "BNB", "BTC", "DASH", "DOGE", "DOT", "ETC", "ETH", "FTM", "GALA", 
-		 "KAVA", "LINK", "LTC", "MANA", "MATIC", "NEAR", "NEO", "OCEAN", 
-		 "QTUM", "ROSE", "RUNE", "SAND", "SOL", "SUSHI", "TRX", "UNI", 
+		{"1000SHIB", "ADA", "ALGO", "ALICE", "ATOM", "AVAX", "BAT", "BCH",
+		 "BNB", "BTC", "DASH", "DOGE", "DOT", "ETC", "ETH", "FTM", "GALA",
+		 "KAVA", "LINK", "LTC", "MANA", "MATIC", "NEAR", "NEO", "OCEAN",
+		 "QTUM", "ROSE", "RUNE", "SAND", "SOL", "SUSHI", "TRX", "UNI",
 		 "VET", "XLM", "XMR", "XRP", "ZEC"};
 
 	// Better symbols
@@ -133,7 +133,7 @@ public class Config
 	{
 		return leverage != null ? leverage : LEVERAGE;
 	}
-	
+
 	public static Integer getPositionsMax()
 	{
 		return positionsMax != null ? positionsMax : POSITIONS_MAX;
@@ -198,9 +198,9 @@ public class Config
 	{
 		return inQty != null ? inQty : IN_QTY;
 	}
-	
+
 	// -----------------------------------------------------------------------
-	
+
 	public static void setIsDarkMode(Boolean isDarkMode)
 	{
 		Config.isDarkMode = isDarkMode;
@@ -380,14 +380,14 @@ public class Config
 	{
 		Config.inQty = inQty;
 	}
-	
+
 	public static void setInQty(String inQty)
 	{
 		Config.inQty = Double.valueOf(inQty);
 	}
-	
+
 	// -----------------------------------------------------------------------
-	
+
 	public static void save() throws FileNotFoundException, IOException
 	{
 		File basepath = new File(Constants.DEFAULT_USER_FOLDER, ApiConfig.MARKET_TYPE.toString());
@@ -403,7 +403,7 @@ public class Config
 			prop.setProperty("betterSymbolsMaxChange", String.valueOf(getBetterSymbolsMaxChange()));
 			prop.setProperty("blocksToAnalizeBB", String.valueOf(getBlocksToAnalizeBB()));
 			prop.setProperty("blocksToAnalizeWA", String.valueOf(getBlocksToAnalizeWA()));
-			
+
 			prop.setProperty("iterations", String.valueOf(getIterations()));
 			prop.setProperty("pipBase", String.valueOf(getPipBase()));
 			prop.setProperty("pipCoef", String.valueOf(getPipCoef()));
@@ -451,7 +451,7 @@ public class Config
 					blocksToAnalizeBB = Integer.valueOf(prop.getProperty("blocksToAnalizeBB"));
 				if (prop.containsKey("blocksToAnalizeWA"))
 					blocksToAnalizeWA = Integer.valueOf(prop.getProperty("blocksToAnalizeWA"));
-				
+
 				if (prop.containsKey("iterations"))
 					iterations = Integer.valueOf(prop.getProperty("iterations"));
 				if (prop.containsKey("pipBase"))

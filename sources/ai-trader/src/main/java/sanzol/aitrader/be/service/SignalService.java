@@ -80,68 +80,80 @@ public final class SignalService
 
 	// -----------------------------------------------------------------------
 
-	public static void start()
+	private static Timer timer1;
+	private static Timer timer2;
+
+	public static boolean start()
 	{
-		if (!isStarted)
+		try
 		{
-			LogService.info("SignalService - Start");
+			if (!isStarted)
+			{
+				startTask1();
+				startTask2();
 
-			Timer timer1 = new Timer("calcSignals");
-			timer1.schedule(new MyTask1(), TimeUnit.SECONDS.toMillis(240), TimeUnit.SECONDS.toMillis(2));
+				isStarted = true;
+			}
 
-			Timer timer2 = new Timer("searchPoints");
-			timer2.schedule(new MyTask2(), TimeUnit.SECONDS.toMillis(200), TimeUnit.SECONDS.toMillis(60));
-
-			isStarted = true;
+			return true;
+		}
+		catch (Exception e)
+		{
+			LogService.error(e);
+			return false;
 		}
 	}
 
-	public static class MyTask1 extends TimerTask
+	public static void startTask1()
 	{
-		@Override
-		public void run()
+		LogService.info("SignalService - calcSignals - Start");
+
+		TimerTask task = new TimerTask()
 		{
-			calcSignals();
+			public void run()
+			{
+				calcSignals();
+				notifyAllLogObservers();
+			}
+		};
+		timer1 = new Timer("calcSignals");
+		timer1.schedule(task, TimeUnit.SECONDS.toMillis(240), TimeUnit.SECONDS.toMillis(2));
+	}
+
+	public static void startTask2()
+	{
+		LogService.info("SignalService - searchPoints - Start");
+
+		TimerTask task = new TimerTask()
+		{
+			public void run()
+			{
+				searchPoints();
+				notifyAllLogObservers();
+			}
+		};
+		timer2 = new Timer("searchPoints");
+		timer2.schedule(task, TimeUnit.SECONDS.toMillis(200), TimeUnit.SECONDS.toMillis(60));
+	}
+
+	public static void close()
+	{
+		if (isStarted)
+		{
+			if (timer1 != null)
+				timer1.cancel();
+
+			if (timer2 != null)
+				timer2.cancel();
+
+			mapSignalPoints = new ConcurrentHashMap<String, SignalPoint>();
+			lstShortSignals = new ArrayList<Signal>();
+			lstLongSignals = new ArrayList<Signal>();
+
+			isStarted = false;
+
 			notifyAllLogObservers();
 		}
-	}
-
-	public static class MyTask2 extends TimerTask
-	{
-		@Override
-		public void run()
-		{
-			searchPoints();
-		}
-	}
-
-	// -----------------------------------------------------------------------
-
-	private static class RestartPoints implements Runnable
-	{
-		@Override
-		public void run()
-		{
-			try
-			{
-				mapSignalPoints = new ConcurrentHashMap<String, SignalPoint>();
-				lstShortSignals = new ArrayList<Signal>();
-				lstLongSignals = new ArrayList<Signal>();
-
-				DepthCache.removeAll();
-				DepthCache.start();
-			}
-			catch (Exception e)
-			{
-				LogService.error(e);
-			}
-		}
-	}
-
-	public static void restartPoints()
-	{
-		Thread thread = new Thread(new RestartPoints(), "restartPoints");
-		thread.start();
 	}
 
 	// -----------------------------------------------------------------------
@@ -151,7 +163,7 @@ public final class SignalService
 		try
 		{
 			List<SymbolInfo> lstSymbolsInfo = PriceService.getLstSymbolsInfo(onlyFavorites, onlyBetters);
-			
+
 			int count = 0;
 			for (SymbolInfo symbolInfo : lstSymbolsInfo)
 			{
@@ -248,7 +260,7 @@ public final class SignalService
 	private static void expireShocks(Symbol symbol, String reason)
 	{
 		mapSignalPoints.get(symbol.getPair()).setExpirationTime(System.currentTimeMillis());
-		
+
 		LogService.info("EXPIRE SIGNALS FROM " + symbol.getNameLeft() + " - " + reason);
 	}
 
@@ -268,7 +280,7 @@ public final class SignalService
 
 			for (SignalPoint entry : mapSignalPoints.values())
 			{
-				if (entry.getExpirationTime() < System.currentTimeMillis() || 
+				if (entry.getExpirationTime() < System.currentTimeMillis() ||
 				   (entry.getShortPrice().doubleValue() == 0 && entry.getLongPrice().doubleValue() == 0))
 				{
 					continue;
@@ -345,7 +357,7 @@ public final class SignalService
 
 		lstShortSignals = lstShorts;
 		lstLongSignals = lstLongs;
-	}	
+	}
 
 	// -----------------------------------------------------------------------
 
@@ -426,7 +438,7 @@ public final class SignalService
 		return text;
 	}
 
-	// ------------------------------------------------------------------------	
+	// ------------------------------------------------------------------------
 
 	private static List<SignalListener> observers = new ArrayList<SignalListener>();
 
@@ -457,7 +469,7 @@ public final class SignalService
 		Thread.sleep(5000);
 
 		searchPoints();
-		System.out.println(""); 
+		System.out.println("");
 		System.out.println(toStringShocks());
 		saveShocks();
 

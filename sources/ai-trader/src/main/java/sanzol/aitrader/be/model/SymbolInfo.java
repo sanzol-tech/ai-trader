@@ -33,7 +33,7 @@ public class SymbolInfo
 	private boolean isBestLong = false;
 
 	private static final BigDecimal TWO = BigDecimal.valueOf(2);
-	
+
 	public static SymbolInfo getInstance(SymbolTickerEvent symbolTickerEvent) throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
 		Symbol _symbol = Symbol.getInstance(symbolTickerEvent.getSymbol());
@@ -43,7 +43,7 @@ public class SymbolInfo
 		}
 
 		SymbolInfo si = new SymbolInfo();
-		
+
 		si.symbol = _symbol;
 
 		si.lastPrice = symbolTickerEvent.getLastPrice();
@@ -63,7 +63,7 @@ public class SymbolInfo
 		si.isBestLong = (si.lastPrice.doubleValue() < si.avgLow.doubleValue());
 
 		return si;
-	}	
+	}
 
 	// ------------------------------------------------------------------------
 

@@ -26,7 +26,7 @@ public class Signal
 		//
 	}
 
-	public Signal(String type, Symbol symbol, BigDecimal markPrice, BigDecimal change24h, BigDecimal volume, String bestSide, 
+	public Signal(String type, Symbol symbol, BigDecimal markPrice, BigDecimal change24h, BigDecimal volume, String bestSide,
 				  BigDecimal inPrice, BigDecimal distance, BigDecimal takeProfit, BigDecimal stopLoss, BigDecimal ratio)
 	{
 		this.type = type;
@@ -154,7 +154,7 @@ public class Signal
 
 	// -------------------------------------------------------------------------
 	// -------------------------------------------------------------------------
-	
+
 	public String getStrMarkPrice()
 	{
 		return symbol.priceToStr(markPrice);

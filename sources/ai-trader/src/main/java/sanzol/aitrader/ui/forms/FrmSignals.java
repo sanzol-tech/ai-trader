@@ -64,9 +64,9 @@ public class FrmSignals extends JFrame implements SignalListener
 	public FrmSignals()
 	{
 		initComponents();
-		
+
 		createTable();
-		
+
 		SignalService.attachRefreshObserver(this);
 	}
 
@@ -86,7 +86,7 @@ public class FrmSignals extends JFrame implements SignalListener
 		pnlStatusBar.setBorder(Styles.BORDER_UP);
 
 		lblError = new JLabel();
-        
+
         scrollShort = new JScrollPane();
         scrollLong = new JScrollPane();
 
@@ -125,7 +125,7 @@ public class FrmSignals extends JFrame implements SignalListener
         scrollShort.setViewportView(tableShort);
 
         pnlContent.setLayout(pnlContentLayout);
-		
+
 		JLabel lblStrategy = new JLabel("Strategy");
 		lblStrategy.setHorizontalAlignment(SwingConstants.TRAILING);
 		cmbStrategy = new JComboBox<GridStrategy>();
@@ -250,7 +250,7 @@ public class FrmSignals extends JFrame implements SignalListener
 
 					String _stopLoss = ((String) tableShort.getValueAt(index, 4)).replace(" %", "");
 					double stopLoss = Math.abs(Double.valueOf(_stopLoss)) / 100;
-					
+
 					FrmGrid.launch(symbol.getNameLeft(), "SHORT", shShort.toString(), stopLoss, takeProfit, gridStrategy, isBotMode);
 				}
 				else

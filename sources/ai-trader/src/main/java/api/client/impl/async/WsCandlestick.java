@@ -21,7 +21,7 @@ import sanzol.util.log.LogService;
 public class WsCandlestick extends WebSocketClient
 {
 	private Handler<CandlestickEvent> observer;
-	
+
 	private String symbolPair;
 	private IntervalType intervalType;
 

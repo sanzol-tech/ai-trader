@@ -24,7 +24,7 @@ public class DepthService
 	private static final double MIN_DISTANCE = .3;
 
 	private WsDepth wsDepth;
-	
+
 	private String symbolPair;
 	private TreeMap<BigDecimal, DepthEntry> mapAsks;
 	private TreeMap<BigDecimal, DepthEntry> mapBids;
@@ -129,7 +129,7 @@ public class DepthService
 
 			// ----------------------------------------------------------------
 			DepthService depthService = new DepthService();
-			
+
 			// ----------------------------------------------------------------
 			if (mode == DepthMode.async_only)
 			{

@@ -28,29 +28,6 @@ public final class AlertService
 		return mapAlerts;
 	}
 
-	public static void start()
-	{
-		if (!isStarted)
-		{
-			LogService.info("AlertService - Start");
-
-			Timer timer1 = new Timer("verifyAlerts");
-			timer1.schedule(new MyTask1(), TimeUnit.SECONDS.toMillis(15), TimeUnit.SECONDS.toMillis(5));
-
-			isStarted = true;
-		}
-	}
-
-	public static class MyTask1 extends TimerTask
-	{
-		@Override
-		public void run()
-		{
-			verifyAlerts();
-			notifyAllLogObservers(null);
-		}
-	}
-
 	public static void add(Alert alert)
 	{
 		/*
@@ -138,6 +115,41 @@ public final class AlertService
 		LogService.debug(alertState.toString() + " / " + alert.toString());
 
 		notifyAllLogObservers(alert);
+	}
+
+	// ------------------------------------------------------------------------
+
+	private static Timer timer1;
+
+	public static void start()
+	{
+		if (isStarted)
+		{
+			return;
+		}
+
+		LogService.info("AlertService - Start");
+
+		TimerTask task = new TimerTask()
+		{
+			public void run()
+			{
+				verifyAlerts();
+				notifyAllLogObservers(null);
+			}
+		};
+		timer1 = new Timer("verifyAlerts");
+		timer1.schedule(task, TimeUnit.SECONDS.toMillis(15), TimeUnit.SECONDS.toMillis(5));
+
+		isStarted = true;
+	}
+
+	public static void close()
+	{
+		if (timer1 != null)
+			timer1.cancel();
+
+		mapAlerts = new ConcurrentHashMap<String, Alert>();
 	}
 
 	// ------------------------------------------------------------------------

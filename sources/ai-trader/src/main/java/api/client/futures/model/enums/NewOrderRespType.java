@@ -3,7 +3,7 @@ package api.client.futures.model.enums;
 public enum NewOrderRespType
 {
 	ACK("ACK"), RESULT("RESULT");
-	
+
 	private final String code;
 
 	NewOrderRespType(String code)

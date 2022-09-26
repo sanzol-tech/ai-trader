@@ -44,7 +44,7 @@ public class FrmSymbols extends JFrame implements PriceListener
 	private static FrmSymbols myJFrame = null;
 
     private DefaultTableModel tableModel;
-	
+
 	private JLabel lblError;
 
 	private JPanel pnlContent;
@@ -88,7 +88,7 @@ public class FrmSymbols extends JFrame implements PriceListener
 		txtWithdrawal.setEditable(false);
 
 		lblError = new JLabel();
-        
+
         table = new JTable();
         table.setShowHorizontalLines(true);
         table.setShowVerticalLines(true);
@@ -157,7 +157,7 @@ public class FrmSymbols extends JFrame implements PriceListener
 					.addComponent(pnlStatusBar, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE))
 		);
 		getContentPane().setLayout(layout);
-		
+
 		// --------------------------------------------------------------------
 		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);
 		pnlStatusBarLayout.setHorizontalGroup(
@@ -185,7 +185,7 @@ public class FrmSymbols extends JFrame implements PriceListener
 			@Override
 			public void windowClosed(WindowEvent e)
 			{
-				PriceService.deattachRefreshObserver(myJFrame);				
+				PriceService.deattachRefreshObserver(myJFrame);
 				myJFrame = null;
 			}
 		});
@@ -201,17 +201,17 @@ public class FrmSymbols extends JFrame implements PriceListener
                 }
             }
         });
-		
+
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	@Override
 	public void onPriceUpdate()
 	{
 		loadTable();
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	private class TableModel extends DefaultTableModel
@@ -240,15 +240,15 @@ public class FrmSymbols extends JFrame implements PriceListener
 	    	tableModel.addColumn("MORE");
 
 			table.setModel(tableModel);
-			
+
 	        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
 	        rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
-	        
+	
 	        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 	        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 
 	        int tableWidth = table.getWidth();
-	        		
+	
 	        table.getColumnModel().getColumn(0).setPreferredWidth((int)(tableWidth * 0.17));
 
 	        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
@@ -256,13 +256,13 @@ public class FrmSymbols extends JFrame implements PriceListener
 
 	        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
 	        table.getColumnModel().getColumn(2).setPreferredWidth((int)(tableWidth * 0.125));
-	        
+	
 	        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
 	        table.getColumnModel().getColumn(3).setPreferredWidth((int)(tableWidth * 0.08));
-	        
+	
 	        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
 	        table.getColumnModel().getColumn(4).setPreferredWidth((int)(tableWidth * 0.125));
-	        
+	
 	        table.getColumnModel().getColumn(5).setCellRenderer(centerRenderer);
 	        table.getColumnModel().getColumn(5).setPreferredWidth((int)(tableWidth * 0.08));
 
@@ -283,7 +283,7 @@ public class FrmSymbols extends JFrame implements PriceListener
 
 		for (SymbolInfo entry : lstSymbolsInfo)
 		{
-        	Object row[] = { 
+        	Object row[] = {
     				entry.getSymbol().getNameLeft(),
 					entry.getSymbol().priceToStr(entry.getLastPrice()),
     				PriceUtil.cashFormat(entry.getUsdVolume()),

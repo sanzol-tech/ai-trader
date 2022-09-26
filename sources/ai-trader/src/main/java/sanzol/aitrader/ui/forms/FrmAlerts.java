@@ -46,11 +46,11 @@ public class FrmAlerts extends JFrame implements AlertListener
 	private static final String TITLE = Constants.APP_NAME + " - Alerts";
 
 	private static FrmAlerts myJFrame = null;
-	
+
 	private Symbol symbol;
-	
+
     private DefaultTableModel tableModel;
-	
+
 	private JLabel lblError;
 
 	private JPanel pnlContent;
@@ -64,7 +64,7 @@ public class FrmAlerts extends JFrame implements AlertListener
 	private JTextField txtShortLimit;
 	private JTextField txtShortAlert;
 
-	private JLabel lblLastPrice;	
+	private JLabel lblLastPrice;
 
 	private JButton btnSearch;
 	private JButton btnUpdate;
@@ -96,14 +96,14 @@ public class FrmAlerts extends JFrame implements AlertListener
 		pnlStatusBar.setBorder(Styles.BORDER_UP);
 
 		lblError = new JLabel();
-        
+
         table = new JTable();
         table.setShowHorizontalLines(true);
         table.setShowVerticalLines(true);
 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(table);
-        
+
 		// --------------------------------------------------------------------
         GroupLayout pnlContentLayout = new GroupLayout(pnlContent);
         pnlContentLayout.setHorizontalGroup(
@@ -121,7 +121,7 @@ public class FrmAlerts extends JFrame implements AlertListener
         			.addContainerGap())
         );
         pnlContent.setLayout(pnlContentLayout);
-        
+
 		// --------------------------------------------------------------------
         JPanel panel = new JPanel();
 
@@ -141,59 +141,59 @@ public class FrmAlerts extends JFrame implements AlertListener
         			.addContainerGap())
         );
         panel.setLayout(null);
-        
+
         txtSymbolLeft = new JTextField();
         txtSymbolLeft.setBounds(10, 31, 86, 20);
         panel.add(txtSymbolLeft);
-        
+
         txtSymbolRight = new JTextField();
 		txtSymbolRight.setEditable(false);
 		txtSymbolRight.setText(Config.DEFAULT_SYMBOL_RIGHT);
         txtSymbolRight.setBounds(102, 31, 86, 20);
         panel.add(txtSymbolRight);
-        
+
         JLabel lblShort = new JLabel();
         lblShort.setHorizontalAlignment(SwingConstants.TRAILING);
         lblShort.setText("Short");
         lblShort.setBounds(214, 32, 34, 14);
         panel.add(lblShort);
-        
+
         JLabel lblLong = new JLabel();
         lblLong.setHorizontalAlignment(SwingConstants.TRAILING);
         lblLong.setText("Long");
         lblLong.setBounds(214, 58, 34, 14);
         panel.add(lblLong);
-        
+
         txtLongAlert = new JTextField();
         txtLongAlert.setHorizontalAlignment(SwingConstants.TRAILING);
         txtLongAlert.setBounds(258, 57, 80, 20);
         panel.add(txtLongAlert);
-        
+
         txtLongLimit = new JTextField();
         txtLongLimit.setHorizontalAlignment(SwingConstants.TRAILING);
         txtLongLimit.setBounds(348, 57, 80, 20);
         panel.add(txtLongLimit);
-        
+
         txtShortLimit = new JTextField();
         txtShortLimit.setHorizontalAlignment(SwingConstants.TRAILING);
         txtShortLimit.setBounds(348, 31, 80, 20);
         panel.add(txtShortLimit);
-        
+
         txtShortAlert = new JTextField();
         txtShortAlert.setHorizontalAlignment(SwingConstants.TRAILING);
         txtShortAlert.setBounds(258, 31, 80, 20);
         panel.add(txtShortAlert);
-        
+
         JLabel lblAlert = new JLabel();
         lblAlert.setText("Alert");
         lblAlert.setBounds(258, 11, 80, 14);
         panel.add(lblAlert);
-        
+
         JLabel lblLimit = new JLabel();
         lblLimit.setText("Limit");
         lblLimit.setBounds(348, 11, 80, 14);
         panel.add(lblLimit);
-        
+
         btnUpdate = new JButton();
         btnUpdate.setText("Update");
         btnUpdate.setBounds(449, 31, 70, 49);
@@ -203,12 +203,12 @@ public class FrmAlerts extends JFrame implements AlertListener
         lblSymbol.setText("SYMBOL");
         lblSymbol.setBounds(10, 11, 86, 14);
         panel.add(lblSymbol);
-        
+
 		btnSearch = new JButton(Styles.IMAGE_SEARCH);
         btnSearch.setOpaque(true);
         btnSearch.setBounds(10, 57, 178, 22);
         panel.add(btnSearch);
-        
+
         lblLastPrice = new JLabel();
         lblLastPrice.setHorizontalAlignment(SwingConstants.TRAILING);
         lblLastPrice.setForeground(Styles.COLOR_TEXT_ALT1);
@@ -235,7 +235,7 @@ public class FrmAlerts extends JFrame implements AlertListener
 					.addComponent(pnlStatusBar, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE))
 		);
 		getContentPane().setLayout(layout);
-		
+
 		// --------------------------------------------------------------------
 		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);
 		pnlStatusBarLayout.setHorizontalGroup(
@@ -285,7 +285,7 @@ public class FrmAlerts extends JFrame implements AlertListener
 				search();
 			}
 		});
-        
+
         btnUpdate.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		addAlert();
@@ -428,12 +428,12 @@ public class FrmAlerts extends JFrame implements AlertListener
 			for (Alert entry : mapAlerts.values())
 			{
 				Symbol eSymbol = entry.getSymbol();
-	        	Object row[] = { 
-	    				entry.getSymbol().getNameLeft(), 
+	        	Object row[] = {
+	    				entry.getSymbol().getNameLeft(),
 	    				entry.getAlertState(),
-	    				eSymbol.priceToStr(entry.getShortAlert()), 
-	    				eSymbol.priceToStr(entry.getShortLimit()), 
-	    				eSymbol.priceToStr(entry.getLongAlert()), 
+	    				eSymbol.priceToStr(entry.getShortAlert()),
+	    				eSymbol.priceToStr(entry.getShortLimit()),
+	    				eSymbol.priceToStr(entry.getLongAlert()),
 	    				eSymbol.priceToStr(entry.getLongLimit()),
 	    				DateTimeUtils.millisToReadable(entry.getTimeOut() - System.currentTimeMillis())
 	        		};
@@ -460,7 +460,7 @@ public class FrmAlerts extends JFrame implements AlertListener
 			myJFrame.setState(Frame.NORMAL);
 			return;
 		}
-		
+
 		EventQueue.invokeLater(new Runnable()
 		{
 			public void run()

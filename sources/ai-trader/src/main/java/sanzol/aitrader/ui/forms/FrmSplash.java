@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -53,9 +54,10 @@ public class FrmSplash extends JFrame
 		frame.dispose();
 	}
 
-	public static void launch()
+	public static void launch() throws InvocationTargetException, InterruptedException
 	{
-		EventQueue.invokeLater(new Runnable()
+		// EventQueue.invokeLater(new Runnable()
+		EventQueue.invokeAndWait(new Runnable()
 		{
 			public void run()
 			{

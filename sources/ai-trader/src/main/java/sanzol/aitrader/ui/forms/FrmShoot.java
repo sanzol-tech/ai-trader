@@ -33,7 +33,7 @@ import sanzol.aitrader.be.config.Config;
 import sanzol.aitrader.be.config.Constants;
 import sanzol.aitrader.be.model.GOrder;
 import sanzol.aitrader.be.model.Symbol;
-import sanzol.aitrader.be.service.BalanceService;
+import sanzol.aitrader.be.service.BalanceFuturesService;
 import sanzol.aitrader.be.service.PositionFuturesService;
 import sanzol.aitrader.be.service.PriceListener;
 import sanzol.aitrader.be.service.PriceService;
@@ -109,8 +109,8 @@ public class FrmShoot extends JFrame implements PriceListener
 		pnlStatusBar.setBorder(Styles.BORDER_UP);
 
 		lblError = new JLabel();
-		
-		
+
+
 		txtShootPrice = new JTextField();
 		txtShootPrice.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtShootPrice.setBounds(108, 175, 86, 20);
@@ -370,9 +370,9 @@ public class FrmShoot extends JFrame implements PriceListener
 		);
 		pnlStatusBar.setLayout(pnlStatusBarLayout);
 
-		
+
 		pack();
-		
+
 		// ---------------------------------------------------------------------
 
 		FrmShoot thisFrm = this;
@@ -394,7 +394,7 @@ public class FrmShoot extends JFrame implements PriceListener
 					btnPost.setIcon(Styles.IMAGE_EXECUTE_LIGHT);
 				}
 				else if (e.getStateChange() == ItemEvent.DESELECTED) {
-					btnPost.setBackground(Styles.COLOR_BTN_LONG);					
+					btnPost.setBackground(Styles.COLOR_BTN_LONG);
 					btnPost.setIcon(Styles.IMAGE_EXECUTE_LIGHT);
 				}
 			}
@@ -436,7 +436,7 @@ public class FrmShoot extends JFrame implements PriceListener
 				calc(BigDecimal.valueOf(2.0));
 			}
 		});
-		
+
 		btnCalc.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				calc(null);
@@ -484,7 +484,7 @@ public class FrmShoot extends JFrame implements PriceListener
 		rbShort.setEnabled(!isPosition);
 		rbLong.setEnabled(!isPosition);
 	}
-	
+
 	private void search()
 	{
 		INFO("");
@@ -507,7 +507,7 @@ public class FrmShoot extends JFrame implements PriceListener
 				txtMarkPrice.setText(coin.priceToStr(mrkPrice));
 				String priceChangePercent = String.format("%.2f", symbolTicker.getPriceChangePercent());
 				txt24h.setText(priceChangePercent);
-	
+
 				PositionRisk positionRisk = PositionFuturesService.getPositionRisk(coin.getPair());
 				boolean isPosition = positionRisk != null && positionRisk.getPositionAmt().compareTo(BigDecimal.ZERO) != 0;
 				enableControls(isPosition);
@@ -515,15 +515,15 @@ public class FrmShoot extends JFrame implements PriceListener
 				if (isPosition)
 				{
 					txtPositionPrice.setText(coin.priceToStr(positionRisk.getEntryPrice()));
-		
+
 					double amt = Math.abs(positionRisk.getPositionAmt().doubleValue());
 					txtPositionQty.setText(coin.qtyToStr(amt));
-		
+
 					if (positionRisk.getPositionAmt().doubleValue() < 0)
 					{
 						BigDecimal posDist = positionRisk.getEntryPrice().divide(mrkPrice, RoundingMode.HALF_UP).subtract(BigDecimal.ONE);
 						txtPositionDist.setText(Convert.toStrPercent(posDist));
-		
+
 						rbShort.setSelected(true);
 						btnPost.setBackground(Styles.COLOR_BTN_SHORT);
 						btnPost.setIcon(Styles.IMAGE_EXECUTE_LIGHT);
@@ -533,7 +533,7 @@ public class FrmShoot extends JFrame implements PriceListener
 					{
 						BigDecimal posDist = BigDecimal.ONE.subtract(positionRisk.getEntryPrice().divide(mrkPrice, RoundingMode.HALF_UP));
 						txtPositionDist.setText(Convert.toStrPercent(posDist));
-		
+
 						rbLong.setSelected(true);
 						btnPost.setBackground(Styles.COLOR_BTN_LONG);
 						btnPost.setIcon(Styles.IMAGE_EXECUTE_LIGHT);
@@ -544,7 +544,7 @@ public class FrmShoot extends JFrame implements PriceListener
 			{
 				ERROR("Symbol not found");
 			}
-			
+
 		}
 		catch(Exception e)
 		{
@@ -560,7 +560,7 @@ public class FrmShoot extends JFrame implements PriceListener
 			String side = rbLong.isSelected() ? "BUY" : "SELL";
 
 			// --- POSITION ---------------------------------------------------
-			BigDecimal posPrice = new BigDecimal(txtPositionPrice.getText());  
+			BigDecimal posPrice = new BigDecimal(txtPositionPrice.getText());
 			BigDecimal posQty = new BigDecimal(txtPositionQty.getText());
 
 			// --- SHOOT ------------------------------------------------------
@@ -575,7 +575,7 @@ public class FrmShoot extends JFrame implements PriceListener
 				shootQty = new BigDecimal(txtShootQty.getText());
 			else
 				shootQty = posQty.multiply(x).setScale(coin.getQtyPrecision(), RoundingMode.UP);
-			
+
 			// --- CALC -------------------------------------------------------
 			Map<String, GOrder> mapPosition = SimpleTrade.calc(coin, side, posPrice, posQty, shootPrice, shootQty);
 
@@ -601,7 +601,7 @@ public class FrmShoot extends JFrame implements PriceListener
 
 	private static boolean insufficientBalance(Double usdt)
 	{
-		AccountBalance accBalance = BalanceService.getAccountBalanceNow();
+		AccountBalance accBalance = BalanceFuturesService.getAccountBalanceNow();
 		double balance = accBalance.getBalance().doubleValue();
 		double withdrawAvailable = accBalance.getWithdrawAvailable().doubleValue();
 
@@ -625,7 +625,7 @@ public class FrmShoot extends JFrame implements PriceListener
 			}
 
 			// ----------------------------------------------------------------
-			String msg = String.format("Post order %s  /  %s  /  %s  /  %s ? *The price can be better than the selected one", coin.getPair(), side, coin.priceToStr(price), coin.qtyToStr(coins));			
+			String msg = String.format("Post order %s  /  %s  /  %s  /  %s ? *The price can be better than the selected one", coin.getPair(), side, coin.priceToStr(price), coin.qtyToStr(coins));
 
 			int resultOption = JOptionPane.showConfirmDialog(null, msg, "Confirm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (resultOption == 0)
@@ -673,9 +673,9 @@ public class FrmShoot extends JFrame implements PriceListener
 			ERROR(e);
 		}
 	}
-	
+
 	// ----------------------------------------------------------------------------------
-	
+
 	public static void launch()
 	{
 		if (isOpen)

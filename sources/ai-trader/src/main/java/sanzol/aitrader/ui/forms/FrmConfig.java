@@ -61,11 +61,11 @@ public class FrmConfig extends JFrame
 
 	private JRadioButton rbArithmetic;
 	private JRadioButton rbGeometric;
-	private JRadioButton rbOverLastOrder; 
+	private JRadioButton rbOverLastOrder;
 	private JRadioButton rbOverPosition;
 	private JRadioButton rbQtyUsd;
 	private JRadioButton rbQtyBalance;
-	
+
 	private JPasswordField txtApiKey;
 	private JPasswordField txtSecretKey;
 
@@ -87,7 +87,7 @@ public class FrmConfig extends JFrame
 	private JCheckBox chkPIP;
 	private JTextField txtPIPBase;
 	private JTextField txtPIPCoef;
-	
+
 	public FrmConfig()
 	{
 		initComponents();
@@ -146,27 +146,27 @@ public class FrmConfig extends JFrame
 				.addComponent(pnlStatusBar, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE))
 		);
 		pnlContent2.setLayout(null);
-		
+
 		txtApiKey = new JPasswordField();
 		txtApiKey.setBounds(24, 30, 340, 20);
 		pnlContent2.add(txtApiKey);
 		txtApiKey.setFont(new Font("Courier New", Font.PLAIN, 8));
 		txtApiKey.setColumns(10);
-		
+
 		JLabel lblApiKey = new JLabel("Api Key");
 		lblApiKey.setBounds(24, 11, 80, 14);
 		pnlContent2.add(lblApiKey);
-		
+
 		JLabel lblSecretKey = new JLabel("Secret Key");
 		lblSecretKey.setBounds(380, 11, 80, 14);
 		pnlContent2.add(lblSecretKey);
-		
+
 		txtSecretKey = new JPasswordField();
 		txtSecretKey.setBounds(380, 30, 340, 20);
 		pnlContent2.add(txtSecretKey);
 		txtSecretKey.setFont(new Font("Courier New", Font.PLAIN, 8));
 		txtSecretKey.setColumns(10);
-		
+
 		btnSaveKey = new JButton("SAVE");
 		btnSaveKey.setBounds(753, 27, 72, 22);
 		pnlContent2.add(btnSaveKey);
@@ -174,7 +174,7 @@ public class FrmConfig extends JFrame
 
 		getContentPane().setLayout(layout);
 		pnlContent.setLayout(null);
-		
+
 		JPanel pnlSymbols = new JPanel();
 		pnlSymbols.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Symbols ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		pnlSymbols.setBounds(15, 11, 490, 145);
@@ -191,7 +191,7 @@ public class FrmConfig extends JFrame
 		txtFavCoins.setWrapStyleWord(true);
 
 		JScrollPane scroll = new JScrollPane(txtFavCoins, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scroll.setBorder(UIManager.getBorder("TextField.border"));		
+		scroll.setBorder(UIManager.getBorder("TextField.border"));
 		scroll.setBounds(24, 46, 440, 72);
 		pnlSymbols.add(scroll);
 
@@ -264,15 +264,15 @@ public class FrmConfig extends JFrame
 		ButtonGroup bg1 = new javax.swing.ButtonGroup();
 		bg1.add(rbArithmetic);
 		bg1.add(rbGeometric);
-		
+
 		rbOverLastOrder = new JRadioButton("Over last order qty");
 		rbOverLastOrder.setBounds(124, 78, 140, 23);
 		pnlGrid.add(rbOverLastOrder);
-		
+
 		rbOverPosition = new JRadioButton("Over position qty");
 		rbOverPosition.setBounds(124, 99, 140, 23);
 		pnlGrid.add(rbOverPosition);
-		
+
 		ButtonGroup bg2 = new javax.swing.ButtonGroup();
 		bg2.add(rbOverLastOrder);
 		bg2.add(rbOverPosition);
@@ -281,17 +281,17 @@ public class FrmConfig extends JFrame
 		scroll.setBorder(UIManager.getBorder("TextField.border"));
 		scroll.setBounds(37, -89, 437, 28);
 		pnlGrid.add(scroll);
-		
+
 		chkPIP = new JCheckBox("Progr. price increase");
 		chkPIP.setBounds(122, 23, 142, 23);
 		pnlGrid.add(chkPIP);
-		
+
 		txtPIPBase = new JTextField();
 		txtPIPBase.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtPIPBase.setColumns(10);
 		txtPIPBase.setBounds(122, 46, 72, 20);
 		pnlGrid.add(txtPIPBase);
-		
+
 		txtPIPCoef = new JTextField();
 		txtPIPCoef.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtPIPCoef.setColumns(10);
@@ -360,14 +360,14 @@ public class FrmConfig extends JFrame
 		JLabel lblPositionsMax = new JLabel("Max positions");
 		lblPositionsMax.setBounds(115, 27, 80, 14);
 		panelPositions.add(lblPositionsMax);
-		
+
 		txtInQtyUsd = new JTextField();
 		txtInQtyUsd.setBounds(216, 50, 72, 20);
 		txtInQtyUsd.setText("10.0");
 		txtInQtyUsd.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtInQtyUsd.setColumns(10);
 		panelPositions.add(txtInQtyUsd);
-	
+
 		rbQtyUsd = new JRadioButton("Usd");
 		rbQtyUsd.setBounds(214, 27, 90, 23);
 		panelPositions.add(rbQtyUsd);
@@ -379,7 +379,7 @@ public class FrmConfig extends JFrame
 		ButtonGroup bg3 = new javax.swing.ButtonGroup();
 		bg3.add(rbQtyUsd);
 		bg3.add(rbQtyBalance);
-		
+
 		txtInQtyBalance = new JTextField();
 		txtInQtyBalance.setBounds(216, 101, 72, 20);
 		panelPositions.add(txtInQtyBalance);
@@ -446,19 +446,19 @@ public class FrmConfig extends JFrame
 				myJFrame = null;
 			}
 		});
-		
+
 		btnSaveConfig.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				saveConfig();
 			}
 		});
-		
+
 		btnSaveKey.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				saveKey();
 			}
 		});
-		
+
 	}
 
 	private void pageload()

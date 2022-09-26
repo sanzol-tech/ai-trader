@@ -3,7 +3,7 @@ package api.client.futures.model.enums;
 public enum TimeInForce
 {
 	GTC("GTC"), IOC("IOC"), FOK("FOK"), GTE_GTC("GTE_GTC");
-	
+
 	private final String code;
 
 	TimeInForce(String code)

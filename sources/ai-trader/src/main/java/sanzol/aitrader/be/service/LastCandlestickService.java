@@ -9,6 +9,7 @@ import api.client.futures.model.enums.IntervalType;
 import api.client.impl.async.WsCandlestick;
 import api.client.impl.config.ApiConfig;
 import api.client.model.event.CandlestickEvent;
+import sanzol.util.log.LogService;
 import sanzol.util.price.PriceUtil;
 
 public class LastCandlestickService
@@ -29,7 +30,7 @@ public class LastCandlestickService
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	private static List<LastCandlestickListener> observers = new ArrayList<LastCandlestickListener>();
 
 	public static void attachRefreshObserver(LastCandlestickListener observer)
@@ -61,23 +62,43 @@ public class LastCandlestickService
 
 		priceChangePercent = PriceUtil.priceChange(openPrice, closePrice, true);
 		priceMove = PriceUtil.priceChange(lowPrice, highPrice, true);
-		
+
 		notifyAllLogObservers();
 	}
 
 	// ------------------------------------------------------------------------
 
-	public static void start(String symbolPair)
+	public static boolean start(String symbolPair)
 	{
-		start(symbolPair, IntervalType._30m);
+		return start(symbolPair, IntervalType._30m);
 	}
 
-	public static void start(String symbolPair, IntervalType intervalType)
+	public static boolean start(String symbolPair, IntervalType intervalType)
 	{
-		wsCandlestick = WsCandlestick.create(symbolPair, intervalType, (event) -> {
-			onMessage(event);
-		});
-		wsCandlestick.connect();
+		try
+		{
+			wsCandlestick = WsCandlestick.create(symbolPair, intervalType, (event) -> {
+				onMessage(event);
+			});
+			wsCandlestick.connect();
+
+			return true;
+		}
+		catch (Exception e)
+		{
+			LogService.error(e);
+			return false;
+		}
+	}
+
+	public static void close()
+	{
+		wsCandlestick.close();
+
+		priceChangePercent = BigDecimal.ZERO;
+		priceMove = BigDecimal.ZERO;
+
+		notifyAllLogObservers();
 	}
 
 	public static void main(String[] args) throws URISyntaxException

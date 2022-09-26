@@ -38,7 +38,7 @@ public class FrmPositions extends JFrame implements PositionListener
 	private JTextArea textArea;
 
 	private JLabel lblError;
-	
+
 	private JCheckBox chkIncludeOrders;
 
 	public FrmPositions()
@@ -49,7 +49,7 @@ public class FrmPositions extends JFrame implements PositionListener
 		PositionFuturesService.attachRefreshObserver(this);
 	}
 
-	private void initComponents() 
+	private void initComponents()
 	{
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 760, 500);
@@ -113,7 +113,7 @@ public class FrmPositions extends JFrame implements PositionListener
 		});
 
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	@Override

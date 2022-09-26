@@ -89,7 +89,7 @@ public class SyncSpotClient
 		final String path = "/api/v3/depth";
 
 		if (limit == null) limit = MAX_DEPTH_LIMIT;
-		
+
 		Client client = CustomClient.getClient();
 		Response response = client
 				.target(ApiConstants.SPOT_BASE_URL)
@@ -151,7 +151,7 @@ public class SyncSpotClient
 		final String path = "/api/v3/account";
 
 		Client client = CustomClient.getClient();
-		
+
 		String recvWindow = Long.toString(60_000L);
 		String timestamp = Long.toString(System.currentTimeMillis());
 
@@ -177,7 +177,7 @@ public class SyncSpotClient
 		// Remove all zero balances
 		account.getBalances().removeIf((AssetBalance entry) -> BigDecimal.ZERO.compareTo(entry.getFree()) == 0 && BigDecimal.ZERO.compareTo(entry.getLocked()) == 0);
 
-		return account;		
+		return account;
 	}
 
 	public static List<Order> getOpenOrders() throws KeyManagementException, NoSuchAlgorithmException, InvalidKeyException
@@ -185,7 +185,7 @@ public class SyncSpotClient
 		final String path = "/api/v3/openOrders";
 
 		Client client = CustomClient.getClient();
-		
+
 		String recvWindow = Long.toString(60_000L);
 		String timestamp = Long.toString(System.currentTimeMillis());
 
@@ -206,15 +206,15 @@ public class SyncSpotClient
 
 		verifyResponseStatus(response);
 
-		return response.readEntity(new GenericType<List<Order>>() {});		
+		return response.readEntity(new GenericType<List<Order>>() {});
 	}
-	
+
 	public static List<Order> getFilledOrders(String symbol) throws KeyManagementException, NoSuchAlgorithmException, InvalidKeyException
 	{
 		final String path = "/api/v3/allOrders";
 
 		Client client = CustomClient.getClient();
-		
+
 		String recvWindow = Long.toString(60_000L);
 		String timestamp = Long.toString(System.currentTimeMillis());
 
@@ -237,15 +237,15 @@ public class SyncSpotClient
 		verifyResponseStatus(response);
 
 		List<Order> lstOrders = response.readEntity(new GenericType<List<Order>>() {});
-		
+
 		// Remove all no NEW
 		lstOrders.removeIf((Order entry) -> entry.getStatus() != OrderStatus.FILLED);
-		
-		return lstOrders;		
+
+		return lstOrders;
 	}
 
-	public static Order postOrder(String symbol, OrderSide side, OrderType orderType, TimeInForce timeInForce, 
-								  String quantity, String price, String newClientOrderId, String stopPrice, 
+	public static Order postOrder(String symbol, OrderSide side, OrderType orderType, TimeInForce timeInForce,
+								  String quantity, String price, String newClientOrderId, String stopPrice,
 								  String icebergQty, NewOrderRespType newOrderRespType) throws KeyManagementException, NoSuchAlgorithmException, InvalidKeyException
 	{
 		final String path = "/api/v3/order";
@@ -279,12 +279,12 @@ public class SyncSpotClient
 			.header("X-MBX-APIKEY", PrivateConfig.API_KEY)
 			.accept(MediaType.TEXT_XML)
 			.post(null);
-		
+
 		verifyResponseStatus(response);
 
-		return response.readEntity(Order.class);		
+		return response.readEntity(Order.class);
 	}
-	
+
 	public static Order cancelOrder(String symbol, Long orderId, String origClientOrderId) throws KeyManagementException, NoSuchAlgorithmException, InvalidKeyException
 	{
 		final String path = "/api/v3/order";
@@ -314,17 +314,17 @@ public class SyncSpotClient
 
 		verifyResponseStatus(response);
 
-		return response.readEntity(Order.class);		
+		return response.readEntity(Order.class);
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	public static void main(String[] args) throws KeyManagementException, NoSuchAlgorithmException, IOException, InvalidKeyException
 	{
 		PrivateConfig.loadKey();
-		
+
 		Account acc = getAccountInformation();
-		
+
 		for (AssetBalance entry : acc.getBalances())
 		{
 			System.out.println(entry);

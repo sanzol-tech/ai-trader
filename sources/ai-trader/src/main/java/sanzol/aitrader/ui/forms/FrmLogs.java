@@ -33,7 +33,7 @@ public class FrmLogs extends JFrame implements LogListener
 	private static final String TITLE = Constants.APP_NAME + " - Logs";
 
 	private static FrmLogs myJFrame = null;
-	
+
     DefaultTableModel tableModel;
 
     private JLabel lblError;
@@ -46,7 +46,7 @@ public class FrmLogs extends JFrame implements LogListener
 	public FrmLogs()
 	{
 		initComponents();
-		
+
 		onLogUpdate();
 		LogService.attachRefreshObserver(this);
 	}
@@ -72,7 +72,7 @@ public class FrmLogs extends JFrame implements LogListener
 		txtWithdrawal.setEditable(false);
 
 		lblError = new JLabel();
-        
+
         JScrollPane scrollPane = new JScrollPane();
 
         GroupLayout pnlContentLayout = new GroupLayout(pnlContent);

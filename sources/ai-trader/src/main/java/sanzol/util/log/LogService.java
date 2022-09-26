@@ -12,7 +12,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 public class LogService
 {
 	public enum LogType { DEBUG, INFO, WARN, ERROR }
-	
+
 	private static final boolean CONSOLE_ENABLED = false;
 
 	private static final boolean DEBUG_ENABLED = false;
@@ -93,7 +93,7 @@ public class LogService
 		log(LogType.ERROR, path + " : " + ExceptionUtils.getMessage(ex));
 	}
 
-	// ------------------------------------------------------------------------	
+	// ------------------------------------------------------------------------
 
 	private static List<LogListener> observers = new ArrayList<LogListener>();
 

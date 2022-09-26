@@ -49,7 +49,7 @@ public class OrderBookService
 
 	private BigDecimal minPrice;
 	private BigDecimal maxPrice;
-	
+
 	private BigDecimal blockSize0;
 	private List<DepthEntry> asksGrp0;
 	private List<DepthEntry> bidsGrp0;
@@ -130,7 +130,7 @@ public class OrderBookService
 
 		minPrice = calcMinPrice();
 		maxPrice = calcMaxPrice();
-		
+
 		if (bbType == BBType.classic)
 			calcBBClassic(BigDecimal.valueOf(blocksToAnalizeBB));
 		else
@@ -246,17 +246,17 @@ public class OrderBookService
 				askFixedPoint1 = askWAvgPoint1;
 			else
 				askFixedPoint1 = askBBlkPoint1;
-	
+
 			if (bidWAvgPoint1 != null && bidWAvgPoint1.doubleValue() < bidBBlkPoint1.doubleValue())
 				bidFixedPoint1 = bidWAvgPoint1;
 			else
 				bidFixedPoint1 = bidBBlkPoint1;
-			
+
 			if (askWAvgPoint2 != null && askWAvgPoint2.doubleValue() > askBBlkPoint2.doubleValue())
 				askFixedPoint2 = askWAvgPoint2;
 			else
 				askFixedPoint2 = askBBlkPoint2;
-	
+
 			if (bidWAvgPoint2 != null && bidWAvgPoint2.doubleValue() < bidBBlkPoint2.doubleValue())
 				bidFixedPoint2 = bidWAvgPoint2;
 			else
@@ -291,7 +291,7 @@ public class OrderBookService
 	{
 		return maxPrice;
 	}
-	
+
 	// ------------------------------------------------------------------------
 
 	public BigDecimal getAskBBlkPoint1()
@@ -389,7 +389,7 @@ public class OrderBookService
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	private static BigDecimal getBlockSize(BigDecimal price, BigDecimal size)
 	{
 		if (price.doubleValue() < 0.0001)
@@ -470,8 +470,8 @@ public class OrderBookService
 		newElement.setPrice(prev.getPrice());
 		newElement.setQty(qty);
 		asksGrp.add(newElement);
-		
-		return asksGrp; 
+
+		return asksGrp;
 	}
 
 	private ArrayList<DepthEntry> loadBidsGrp(List<DepthEntry> lstBids, BigDecimal blockSize, BigDecimal priceFrom)
@@ -509,7 +509,7 @@ public class OrderBookService
 		newElement.setPrice(prev.getPrice());
 		newElement.setQty(qty);
 		bidsGrp.add(newElement);
-		
+
 		return bidsGrp;
 	}
 
@@ -687,7 +687,7 @@ public class OrderBookService
 			{
 				break;
 			}
-			
+
 			avgQty += e.getQty().doubleValue();
 			count++;
 		}
@@ -704,13 +704,13 @@ public class OrderBookService
 			{
 				continue;
 			}
-			
+
 			list.add(new DepthEntry(e.getPrice(), e.getQty()));
 		}
 		Collections.sort(list, Comparator.comparing(DepthEntry::getQty).reversed());
 		list = list.stream().limit(10).collect(Collectors.toList());
 		Collections.sort(list, Comparator.comparing(DepthEntry::getPrice).reversed());
-		
+
 		return list;
 	}
 
@@ -726,7 +726,7 @@ public class OrderBookService
 			{
 				break;
 			}
-			
+
 			avgQty += e.getQty().doubleValue();
 			count++;
 		}
@@ -743,7 +743,7 @@ public class OrderBookService
 			{
 				continue;
 			}
-			
+
 			list.add(new DepthEntry(e.getPrice(), e.getQty()));
 		}
 		Collections.sort(list, Comparator.comparing(DepthEntry::getQty).reversed());
@@ -751,7 +751,7 @@ public class OrderBookService
 		Collections.sort(list, Comparator.comparing(DepthEntry::getPrice).reversed());
 
 		return list;
-	}	
+	}
 
 	public String printSuperBlks(List<DepthEntry> lst)
 	{
@@ -931,11 +931,11 @@ public class OrderBookService
 	{
 		ExchangeInfoService.start();
 		PriceService.start();
-		
+
 		String pair = "NEARUSDT";
 		Symbol symbol = Symbol.getInstance(pair);
 
-		OrderBookService obService = OrderBookService.getInstance(symbol).request(DepthMode.snapshot_only, 0);		
+		OrderBookService obService = OrderBookService.getInstance(symbol).request(DepthMode.snapshot_only, 0);
 		obService.calc(BBType.classic, 8, WAType.price, 8);
 		obService.export();
 
@@ -993,7 +993,7 @@ public class OrderBookService
 
 		System.out.println("min price: " + obService.minPrice);
 		System.out.println("max price: " + obService.maxPrice);
-		
+
 		System.out.println("\ncoin");
 		System.out.println(obService.calcDepthDiff(BigDecimal.valueOf(0.03), false));
 		System.out.println(obService.calcDepthDiff(BigDecimal.valueOf(0.05), false));

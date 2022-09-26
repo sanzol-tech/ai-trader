@@ -1,14 +1,12 @@
 package sanzol.aitrader.be.service;
 
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import sanzol.aitrader.be.enums.DepthMode;
 import sanzol.aitrader.be.model.SymbolInfo;
+import sanzol.util.log.LogService;
 
 public class DepthCache
 {
@@ -58,20 +56,30 @@ public class DepthCache
 		}
 	}
 
-	public static void start() throws InterruptedException, KeyManagementException, NoSuchAlgorithmException, IOException
+	public static boolean start()
 	{
-		List<SymbolInfo> topSymbols = PriceService.getLstSymbolsInfo(false, false);
-		int maxSize = Math.min(topSymbols.size(), MAX_CACHE_SIZE);
-		topSymbols = topSymbols.subList(0, maxSize);
-
-		for (SymbolInfo symbolInfo : topSymbols)
+		try
 		{
-			String symbolPair = symbolInfo.getSymbolPair();
+			List<SymbolInfo> topSymbols = PriceService.getLstSymbolsInfo(false, false);
+			int maxSize = Math.min(topSymbols.size(), MAX_CACHE_SIZE);
+			topSymbols = topSymbols.subList(0, maxSize);
 
-			if (add(symbolPair))
+			for (SymbolInfo symbolInfo : topSymbols)
 			{
-				Thread.sleep(300);
+				String symbolPair = symbolInfo.getSymbolPair();
+
+				if (add(symbolPair))
+				{
+					Thread.sleep(300);
+				}
 			}
+
+			return true;
+		}
+		catch (Exception e)
+		{
+			LogService.error(e);
+			return false;
 		}
 	}
 

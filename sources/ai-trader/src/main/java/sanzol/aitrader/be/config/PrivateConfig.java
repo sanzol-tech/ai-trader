@@ -33,13 +33,14 @@ public class PrivateConfig
 
 			PrivateConfig.API_KEY = key.split("::")[0];
 			PrivateConfig.SECRET_KEY = key.split("::")[1];
+
+			return true;
 		}
 		catch (Exception e)
 		{
 			LogService.error(e);
 			return false;
 		}
-		return true;
 	}
 
 	public static void setKey(String apiKey, String secretKey) throws IOException
