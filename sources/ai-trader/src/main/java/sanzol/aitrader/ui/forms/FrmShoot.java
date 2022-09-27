@@ -50,7 +50,7 @@ public class FrmShoot extends JFrame implements PriceListener
 
 	private static boolean isOpen = false;
 
-	private Symbol coin;
+	private Symbol symbol;
 
 	private JLabel lblError;
 	private JPanel pnlContent;
@@ -493,31 +493,32 @@ public class FrmShoot extends JFrame implements PriceListener
 			clean();
 
 			txtSymbolLeft.setText(txtSymbolLeft.getText().toUpperCase());
-			String symbol = txtSymbolLeft.getText();
-			coin = Symbol.getInstance(Symbol.getFullSymbol(symbol));
-			if (coin != null)
+			String symbolLeft = txtSymbolLeft.getText();
+			symbol = Symbol.fromSymbolLeft(symbolLeft);
+
+			if (symbol != null)
 			{
-				SymbolTickerEvent symbolTicker = PriceService.getSymbolTickerEvent(coin);
+				SymbolTickerEvent symbolTicker = PriceService.getSymbolTickerEvent(symbol);
 				if (symbolTicker == null)
 				{
 					return;
 				}
 
-				BigDecimal mrkPrice = PriceService.getLastPrice(coin);
-				txtMarkPrice.setText(coin.priceToStr(mrkPrice));
+				BigDecimal mrkPrice = PriceService.getLastPrice(symbol);
+				txtMarkPrice.setText(symbol.priceToStr(mrkPrice));
 				String priceChangePercent = String.format("%.2f", symbolTicker.getPriceChangePercent());
 				txt24h.setText(priceChangePercent);
 
-				PositionRisk positionRisk = PositionFuturesService.getPositionRisk(coin.getPair());
+				PositionRisk positionRisk = PositionFuturesService.getPositionRisk(symbol.getPair());
 				boolean isPosition = positionRisk != null && positionRisk.getPositionAmt().compareTo(BigDecimal.ZERO) != 0;
 				enableControls(isPosition);
 
 				if (isPosition)
 				{
-					txtPositionPrice.setText(coin.priceToStr(positionRisk.getEntryPrice()));
+					txtPositionPrice.setText(symbol.priceToStr(positionRisk.getEntryPrice()));
 
 					double amt = Math.abs(positionRisk.getPositionAmt().doubleValue());
-					txtPositionQty.setText(coin.qtyToStr(amt));
+					txtPositionQty.setText(symbol.qtyToStr(amt));
 
 					if (positionRisk.getPositionAmt().doubleValue() < 0)
 					{
@@ -568,28 +569,28 @@ public class FrmShoot extends JFrame implements PriceListener
 			if (txtShootPrice.getText() != null && !txtShootPrice.getText().isEmpty())
 				shootPrice = new BigDecimal(txtShootPrice.getText());
 			else
-				shootPrice = PriceService.getLastPrice(coin);
+				shootPrice = PriceService.getLastPrice(symbol);
 
 			BigDecimal shootQty;
 			if (x == null)
 				shootQty = new BigDecimal(txtShootQty.getText());
 			else
-				shootQty = posQty.multiply(x).setScale(coin.getQtyPrecision(), RoundingMode.UP);
+				shootQty = posQty.multiply(x).setScale(symbol.getQtyPrecision(), RoundingMode.UP);
 
 			// --- CALC -------------------------------------------------------
-			Map<String, GOrder> mapPosition = SimpleTrade.calc(coin, side, posPrice, posQty, shootPrice, shootQty);
+			Map<String, GOrder> mapPosition = SimpleTrade.calc(symbol, side, posPrice, posQty, shootPrice, shootQty);
 
 			// ----------------------------------------------------------------
 			txtPositionUsd.setText(Convert.usdToStr(mapPosition.get("POS").getUsd()));
 			txtPositionDist.setText(Convert.toStrPercent(mapPosition.get("POS").getDist()));
 
-			txtShootPrice.setText(coin.priceToStr(mapPosition.get("SHOOT").getPrice()));
-			txtShootQty.setText(coin.qtyToStr(mapPosition.get("SHOOT").getCoins()));
+			txtShootPrice.setText(symbol.priceToStr(mapPosition.get("SHOOT").getPrice()));
+			txtShootQty.setText(symbol.qtyToStr(mapPosition.get("SHOOT").getCoins()));
 			txtShootUsd.setText(Convert.usdToStr(mapPosition.get("SHOOT").getUsd()));
 			txtShootDist.setText(Convert.toStrPercent(mapPosition.get("SHOOT").getDist()));
 
-			txtResultPrice.setText(coin.priceToStr(mapPosition.get("RESULT").getPrice()));
-			txtResultQty.setText(coin.qtyToStr(mapPosition.get("RESULT").getCoins()));
+			txtResultPrice.setText(symbol.priceToStr(mapPosition.get("RESULT").getPrice()));
+			txtResultQty.setText(symbol.qtyToStr(mapPosition.get("RESULT").getCoins()));
 			txtResultUsd.setText(Convert.usdToStr(mapPosition.get("RESULT").getUsd()));
 			txtResultDist.setText(Convert.toStrPercent(mapPosition.get("RESULT").getDist()));
 		}
@@ -625,12 +626,12 @@ public class FrmShoot extends JFrame implements PriceListener
 			}
 
 			// ----------------------------------------------------------------
-			String msg = String.format("Post order %s  /  %s  /  %s  /  %s ? *The price can be better than the selected one", coin.getPair(), side, coin.priceToStr(price), coin.qtyToStr(coins));
+			String msg = String.format("Post order %s  /  %s  /  %s  /  %s ? *The price can be better than the selected one", symbol.getPair(), side, symbol.priceToStr(price), symbol.qtyToStr(coins));
 
 			int resultOption = JOptionPane.showConfirmDialog(null, msg, "Confirm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (resultOption == 0)
 			{
-				BigDecimal mrkPrice = PriceService.getLastPrice(coin);
+				BigDecimal mrkPrice = PriceService.getLastPrice(symbol);
 				if (("SHORT".equals(side) && mrkPrice.doubleValue() > price.doubleValue()) ||
 					("LONG".equals(side) && mrkPrice.doubleValue() < price.doubleValue()))
 				{
@@ -638,7 +639,7 @@ public class FrmShoot extends JFrame implements PriceListener
 				}
 
 				// String result = String.format("Post order %s  /  %s  /  %s  /  %s", coin.getName(), side.name(), coin.priceToStr(price), coin.coinsToStr(coins));
-				String result = SimpleTrade.postOrder(coin, side, price, coins);
+				String result = SimpleTrade.postOrder(symbol, side, price, coins);
 
 				INFO(result);
 			}
@@ -656,13 +657,13 @@ public class FrmShoot extends JFrame implements PriceListener
 	{
 		try
 		{
-			if (coin != null)
+			if (symbol != null)
 			{
-				SymbolTickerEvent symbolTicker = PriceService.getSymbolTickerEvent(coin);
+				SymbolTickerEvent symbolTicker = PriceService.getSymbolTickerEvent(symbol);
 				if (symbolTicker != null)
 				{
-					BigDecimal mrkPrice = PriceService.getLastPrice(coin);
-					txtMarkPrice.setText(coin.priceToStr(mrkPrice));
+					BigDecimal mrkPrice = PriceService.getLastPrice(symbol);
+					txtMarkPrice.setText(symbol.priceToStr(mrkPrice));
 					String priceChangePercent = String.format("%.2f%%", symbolTicker.getPriceChangePercent());
 					txt24h.setText(priceChangePercent);
 				}

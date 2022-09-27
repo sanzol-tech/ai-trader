@@ -2,9 +2,10 @@ package sanzol.aitrader.ui.config;
 
 import java.lang.reflect.InvocationTargetException;
 
+import api.client.impl.config.ApiConfig;
 import api.client.impl.model.enums.MarketType;
 import sanzol.aitrader.be.config.ServerApp;
-import sanzol.aitrader.ui.forms.FrmConfig;
+import sanzol.aitrader.ui.forms.FrmConfigApiKey;
 import sanzol.aitrader.ui.forms.FrmMain;
 import sanzol.aitrader.ui.forms.FrmSplash;
 import sanzol.util.log.LogService;
@@ -26,6 +27,8 @@ public final class Application
 
 	private static void start(MarketType marketType) throws InvocationTargetException, InterruptedException
 	{
+		ApiConfig.setMarketType(marketType);
+
 		FrmSplash.launch();
 		ServerApp.start(marketType, (e) -> { onServerAppStarted(e); });
 
@@ -35,7 +38,7 @@ public final class Application
 
 		if (!ServerApp.isKeyLoadedOK())
 		{
-			FrmConfig.launch();
+			FrmConfigApiKey.launch();
 		}
 	}
 

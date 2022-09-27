@@ -302,7 +302,7 @@ public class FrmAlerts extends JFrame implements AlertListener
 			txtSymbolLeft.setText(txtSymbolLeft.getText().toUpperCase());
 			String symbolLeft = txtSymbolLeft.getText();
 			String symbolRight = txtSymbolRight.getText();
-			symbol = Symbol.getInstance(symbolLeft + symbolRight);
+			symbol = Symbol.fromPair(symbolLeft + symbolRight);
 
 			if (symbol != null)
 			{

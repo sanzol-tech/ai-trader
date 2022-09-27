@@ -75,7 +75,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	private static final String TITLE = Constants.APP_NAME;
 
 	private Symbol symbol;
-	private GridTrade pMaker;
+	private GridTrade gridTrade;
 	private PositionSide positionSide = null;
 	private boolean isBotMode = false;
 	private boolean isOpenPosition = false;
@@ -820,7 +820,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		{
 			txtSymbolLeft.setText(txtSymbolLeft.getText().toUpperCase());
 			String symbolLeft = txtSymbolLeft.getText();
-			symbol = Symbol.getInstance(Symbol.getFullSymbol(symbolLeft));
+			symbol = Symbol.fromSymbolLeft(symbolLeft);
 
 			if (symbol != null)
 			{
@@ -1365,6 +1365,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 	private Double getInQty(double inPrice)
 	{
+		final double minUsdAmount = ApiConfig.MIN_USD_AMOUNT;
+
 		if (isOpenPosition)
 		{
 			double qty = Math.abs(Double.valueOf(txtInQty.getText()));
@@ -1385,7 +1387,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 				double balancePercent = Convert.strPercentToDbl(txtInQty.getText());
 				AccountBalance accBalance = BalanceFuturesService.getAccountBalance();
 				double balance = accBalance.getBalance().doubleValue();
-				return DoubleRounder.round(Math.max(5, balance * balancePercent) / inPrice, symbol.getQtyPrecision(), RoundingMode.CEILING);
+				return DoubleRounder.round(Math.max(minUsdAmount, balance * balancePercent) / inPrice, symbol.getQtyPrecision(), RoundingMode.CEILING);
 			}
 		}
 		else if (cmbQtyType.getSelectedItem().equals(QuantityType.USD))
@@ -1421,8 +1423,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		{
 			positionSide = PositionSide.SHORT;
 			Position position = acquireArguments(PositionSide.SHORT);
-			pMaker = new GridTrade(position);
-			pMaker.createShort();
+			gridTrade = new GridTrade(position);
+			gridTrade.createShort();
 
 			//-----------------------------------------------------------------
 			txtResult.setForeground(Styles.COLOR_TEXT_SHORT);
@@ -1450,8 +1452,8 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		{
 			positionSide = PositionSide.LONG;
 			Position position = acquireArguments(PositionSide.LONG);
-			pMaker = new GridTrade(position);
-			pMaker.createLong();
+			gridTrade = new GridTrade(position);
+			gridTrade.createLong();
 
 			//-----------------------------------------------------------------
 			txtResult.setForeground(Styles.COLOR_TEXT_LONG);
@@ -1469,7 +1471,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	private void clean()
 	{
 		positionSide = null;
-		pMaker = null;
+		gridTrade = null;
 		INFO("");
 		txtResult.setText("");
 
@@ -1488,15 +1490,15 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		INFO("");
 		try
 		{
-			String result = pMaker.post(postStyle);
+			String result = gridTrade.post(postStyle);
 			if (result != null)
 			{
 				ERROR(result);
 			}
 
-			txtResult.setForeground(pMaker.getPosition().getSide() == PositionSide.SHORT ? Styles.COLOR_TEXT_SHORT : Styles.COLOR_TEXT_LONG);
-			txtResult.setText(pMaker.getPosition().toString());
-			save(symbol.getPair() + "_" + pMaker.getPosition().getSide().name());
+			txtResult.setForeground(gridTrade.getPosition().getSide() == PositionSide.SHORT ? Styles.COLOR_TEXT_SHORT : Styles.COLOR_TEXT_LONG);
+			txtResult.setText(gridTrade.getPosition().toString());
+			save(symbol.getPair() + "_" + gridTrade.getPosition().getSide().name());
 
 			// ------------------------------------------------------------
 			btnPostFirst.setEnabled(false);

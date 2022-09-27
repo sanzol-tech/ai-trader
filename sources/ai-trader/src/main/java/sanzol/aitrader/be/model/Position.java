@@ -54,7 +54,7 @@ public class Position
 
 	// ------------------------------------------------------------------------
 
-	public String getSymbol()
+	public String getSymbolPair()
 	{
 		return symbol.getPair();
 	}
@@ -86,7 +86,7 @@ public class Position
 
 	// ------------------------------------------------------------------------
 
-	public Symbol getCoin()
+	public Symbol getSymbol()
 	{
 		return symbol;
 	}

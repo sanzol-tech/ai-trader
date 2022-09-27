@@ -933,7 +933,7 @@ public class OrderBookService
 		PriceService.start();
 
 		String pair = "NEARUSDT";
-		Symbol symbol = Symbol.getInstance(pair);
+		Symbol symbol = Symbol.fromPair(pair);
 
 		OrderBookService obService = OrderBookService.getInstance(symbol).request(DepthMode.snapshot_only, 0);
 		obService.calc(BBType.classic, 8, WAType.price, 8);

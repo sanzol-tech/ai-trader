@@ -122,7 +122,12 @@ public class Symbol
 		return symbol;
 	}
 
-	public static Symbol getInstance(String symbolPair) throws KeyManagementException, NoSuchAlgorithmException, IOException
+	public static Symbol fromSymbolLeft(String symbolLeft) throws KeyManagementException, NoSuchAlgorithmException, IOException
+	{
+		return fromPair(symbolLeft + Config.DEFAULT_SYMBOL_RIGHT);
+	}
+
+	public static Symbol fromPair(String symbolPair) throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
 		if (!symbolPair.endsWith(Config.DEFAULT_SYMBOL_RIGHT))
 		{
@@ -167,9 +172,9 @@ public class Symbol
 		return DoubleRounder.round(price, pricePrecision);
 	}
 
-	public double roundQty(double coins)
+	public double roundQty(double qty)
 	{
-		return DoubleRounder.round(coins, qtyPrecision);
+		return DoubleRounder.round(qty, qtyPrecision);
 	}
 
 	public BigDecimal addTicks(BigDecimal price, int ticks)
@@ -192,16 +197,6 @@ public class Symbol
 		return price - Math.pow(10, -pricePrecision) * ticks;
 	}
 
-	public static String getFullSymbol(String symbolLeft)
-	{
-		return symbolLeft + Config.DEFAULT_SYMBOL_RIGHT;
-	}
-
-	public static String getRightSymbol(String symbolName)
-	{
-		return symbolName.substring(0, symbolName.length() - Config.DEFAULT_SYMBOL_RIGHT.length());
-	}
-
 	// ------------------------------------------------------------------------
 
 	@Override
@@ -216,7 +211,7 @@ public class Symbol
 	{
 		ApiConfig.setSpot();
 		ExchangeInfoService.start();
-		Symbol symbol = getInstance("REEFUSDT");
+		Symbol symbol = fromPair("REEFUSDT");
 
 		System.out.println(symbol.getPair());
 		System.out.println(symbol.getNameLeft());

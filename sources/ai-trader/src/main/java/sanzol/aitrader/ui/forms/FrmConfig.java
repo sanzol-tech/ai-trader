@@ -2,14 +2,12 @@ package sanzol.aitrader.ui.forms;
 
 import java.awt.Component;
 import java.awt.EventQueue;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.math.BigDecimal;
 
 import javax.swing.ButtonGroup;
@@ -19,9 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -34,7 +30,6 @@ import javax.swing.border.TitledBorder;
 
 import sanzol.aitrader.be.config.Config;
 import sanzol.aitrader.be.config.Constants;
-import sanzol.aitrader.be.config.PrivateConfig;
 import sanzol.aitrader.be.enums.PriceIncrType;
 import sanzol.aitrader.be.enums.QtyIncrType;
 import sanzol.aitrader.be.enums.QuantityType;
@@ -52,10 +47,8 @@ public class FrmConfig extends JFrame
 	private JLabel lblError;
 
 	private JButton btnSaveConfig;
-	private JButton btnSaveKey;
 
 	private JPanel pnlContent;
-	private JPanel pnlContent2;
 	private JPanel pnlStatusBar;
 	private JPanel pnlTopBar;
 
@@ -65,9 +58,6 @@ public class FrmConfig extends JFrame
 	private JRadioButton rbOverPosition;
 	private JRadioButton rbQtyUsd;
 	private JRadioButton rbQtyBalance;
-
-	private JPasswordField txtApiKey;
-	private JPasswordField txtSecretKey;
 
 	private JTextArea txtFavCoins;
 	private JTextField txtBSMinVolume;
@@ -107,7 +97,6 @@ public class FrmConfig extends JFrame
 		pnlTopBar.setBorder(Styles.BORDER_UP);
 		pnlContent = new JPanel();
 		pnlContent.setBorder(Styles.BORDER_DOWN);
-		pnlContent2 = new JPanel();
 		pnlStatusBar = new JPanel();
 		pnlStatusBar.setBorder(Styles.BORDER_UP);
 
@@ -131,46 +120,17 @@ public class FrmConfig extends JFrame
 			layout.createParallelGroup(Alignment.LEADING)
 				.addComponent(pnlTopBar, GroupLayout.DEFAULT_SIZE, 840, Short.MAX_VALUE)
 				.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 840, Short.MAX_VALUE)
-				.addComponent(pnlContent2, GroupLayout.DEFAULT_SIZE, 840, Short.MAX_VALUE)
 				.addComponent(pnlStatusBar, GroupLayout.DEFAULT_SIZE, 840, Short.MAX_VALUE)
 		);
 		layout.setVerticalGroup(
 			layout.createParallelGroup(Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
-				.addComponent(pnlTopBar, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(ComponentPlacement.RELATED)
-				.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)
-				.addPreferredGap(ComponentPlacement.RELATED)
-				.addComponent(pnlContent2, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(ComponentPlacement.RELATED)
-				.addComponent(pnlStatusBar, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE))
+					.addComponent(pnlTopBar, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(pnlStatusBar, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE))
 		);
-		pnlContent2.setLayout(null);
-
-		txtApiKey = new JPasswordField();
-		txtApiKey.setBounds(24, 30, 340, 20);
-		pnlContent2.add(txtApiKey);
-		txtApiKey.setFont(new Font("Courier New", Font.PLAIN, 8));
-		txtApiKey.setColumns(10);
-
-		JLabel lblApiKey = new JLabel("Api Key");
-		lblApiKey.setBounds(24, 11, 80, 14);
-		pnlContent2.add(lblApiKey);
-
-		JLabel lblSecretKey = new JLabel("Secret Key");
-		lblSecretKey.setBounds(380, 11, 80, 14);
-		pnlContent2.add(lblSecretKey);
-
-		txtSecretKey = new JPasswordField();
-		txtSecretKey.setBounds(380, 30, 340, 20);
-		pnlContent2.add(txtSecretKey);
-		txtSecretKey.setFont(new Font("Courier New", Font.PLAIN, 8));
-		txtSecretKey.setColumns(10);
-
-		btnSaveKey = new JButton("SAVE");
-		btnSaveKey.setBounds(753, 27, 72, 22);
-		pnlContent2.add(btnSaveKey);
-		btnSaveKey.setOpaque(true);
 
 		getContentPane().setLayout(layout);
 		pnlContent.setLayout(null);
@@ -453,21 +413,12 @@ public class FrmConfig extends JFrame
 			}
 		});
 
-		btnSaveKey.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				saveKey();
-			}
-		});
-
 	}
 
 	private void pageload()
 	{
 		try
 		{
-			txtApiKey.setText(PrivateConfig.API_KEY);
-			txtSecretKey.setText(PrivateConfig.SECRET_KEY);
-
 			loadConfig();
 		}
 		catch(Exception e)
@@ -576,24 +527,6 @@ public class FrmConfig extends JFrame
 			INFO("CONFIG SAVED");
 		}
 		catch (Exception e)
-		{
-			ERROR(e);
-		}
-	}
-
-	@SuppressWarnings("deprecation")
-	private void saveKey()
-	{
-		try
-		{
-			int resultOption = JOptionPane.showConfirmDialog(null, "Are you sure you want to continue ?", "Confirm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-			if (resultOption == 0)
-			{
-				PrivateConfig.setKey(txtApiKey.getText(), txtSecretKey.getText());
-				INFO("KEY SAVED. PLEASE RESTART !!!");
-			}
-		}
-		catch (IOException e)
 		{
 			ERROR(e);
 		}

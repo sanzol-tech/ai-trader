@@ -15,6 +15,7 @@ import api.client.futures.model.enums.OrderType;
 import api.client.futures.model.enums.PositionSide;
 import api.client.futures.model.enums.TimeInForce;
 import api.client.futures.model.enums.WorkingType;
+import api.client.impl.config.ApiConfig;
 import sanzol.aitrader.be.config.Config;
 import sanzol.aitrader.be.enums.PriceIncrType;
 import sanzol.aitrader.be.enums.QtyIncrType;
@@ -41,9 +42,40 @@ public class GridTrade
 
 	public Symbol getSymbol()
 	{
-		return position.getCoin();
+		return position.getSymbol();
 	}
 
+	private double roundPrice(double price)
+	{
+		return position.getSymbol().roundPrice(price);
+	}
+
+	private double roundQty(double value)
+	{
+		final double minQty = position.getSymbol().getMinQty().doubleValue();
+		double qty = position.getSymbol().roundQty(value);
+		return Math.max(minQty, qty);
+	}
+
+	private double minQty(double qty, double price)
+	{
+		final double minUsdAmount = ApiConfig.MIN_USD_AMOUNT;
+
+		if (qty * price >= minUsdAmount)
+		{
+			return qty;
+		}
+		
+		final double minQty = position.getSymbol().getMinQty().doubleValue();
+		
+		while (qty * price < minUsdAmount)
+		{
+			qty += minQty;
+		}
+		
+		return qty;
+	}
+	
 	// ------------------------------------------------------------------------
 
 	public GridTrade(Position position)
@@ -66,7 +98,7 @@ public class GridTrade
 		double distance = 0;
 		double qtyIncr = 0;
 		double price = position.getInPrice();
-		double qty = position.getInQty();
+		double qty = minQty(roundQty(position.getInQty()), price);
 		double usd = qty * price;
 		double sumCoins = qty;
 		double sumUsd = usd;
@@ -88,17 +120,17 @@ public class GridTrade
 			else
 				distance = (1 + distance) * (1 + entry.getPriceDist()) - 1;
 
-			price = getSymbol().roundPrice(position.getInPrice() * (1 + distance));
+			price = roundPrice(position.getInPrice() * (1 + distance));
 
 			if (position.getQtyIncrType() == QtyIncrType.ORDER)
 			{
-				// qty = getSymbol().roundQty(qty * (1 + entry.getQtyIncr()));
-
 				qtyIncr = (1 + qtyIncr) * (1 + entry.getQtyIncr()) - 1;
-				qty = getSymbol().roundQty(position.getInQty() * (1 + qtyIncr));
+				qty = minQty(roundQty(position.getInQty() * (1 + qtyIncr)), price);
 			}
 			else
-				qty = getSymbol().roundQty(sumCoins * entry.getQtyIncr());
+			{
+				qty = minQty(roundQty(sumCoins * entry.getQtyIncr()), price);
+			}
 
 			usd = price * qty;
 			sumCoins += qty;
@@ -121,7 +153,7 @@ public class GridTrade
 		else
 			distance = (1 + distance) * (1 + position.getDistBeforeSL()) - 1;
 
-		price = getSymbol().roundPrice(position.getInPrice() * (1 + distance));
+		price = roundPrice(position.getInPrice() * (1 + distance));
 		qty = sumCoins;
 		usd = sumUsd;
 		sumCoins = 0;
@@ -166,7 +198,7 @@ public class GridTrade
 		double distance = 0;
 		double qtyIncr = 0;
 		double price = position.getInPrice();
-		double qty = position.getInQty();
+		double qty = minQty(roundQty(position.getInQty()), price);
 		double usd = qty * price;
 		double sumCoins = qty;
 		double sumUsd = usd;
@@ -188,17 +220,17 @@ public class GridTrade
 			else
 				distance = (1 + distance) * (1 - entry.getPriceDist()) - 1;
 
-			price = getSymbol().roundPrice(position.getInPrice() * (1 + distance));
+			price = roundPrice(position.getInPrice() * (1 + distance));
 
 			if (position.getQtyIncrType() == QtyIncrType.ORDER)
 			{
-				// qty = getSymbol().roundQty(qty * (1 + entry.getQtyIncr()));
-
 				qtyIncr = (1 + qtyIncr) * (1 + entry.getQtyIncr()) - 1;
-				qty = getSymbol().roundQty(position.getInQty() * (1 + qtyIncr));
+				qty = minQty(roundQty(position.getInQty() * (1 + qtyIncr)), price);
 			}
 			else
-				qty = getSymbol().roundQty(sumCoins * entry.getQtyIncr());
+			{
+				qty = minQty(roundQty(sumCoins * entry.getQtyIncr()), price);
+			}
 
 			usd = price * qty;
 			sumCoins += qty;
@@ -221,7 +253,7 @@ public class GridTrade
 		else
 			distance = (1 + distance) * (1 - position.getDistBeforeSL()) - 1;
 
-		price = getSymbol().roundPrice(position.getInPrice() * (1 + distance));
+		price = roundPrice(position.getInPrice() * (1 + distance));
 		qty = sumCoins;
 		usd = sumUsd;
 		sumCoins = 0;
@@ -277,7 +309,7 @@ public class GridTrade
 		// --------------------------------------------------------------------
 		if (postStyle != PostStyle.OTHERS)
 		{
-			double markPrice = PriceService.getLastPrice(position.getCoin()).doubleValue();
+			double markPrice = PriceService.getLastPrice(position.getSymbol()).doubleValue();
 			if (position.isShort())
 			{
 				if (position.isMarkPrice())
@@ -415,7 +447,7 @@ public class GridTrade
 							String quantity, String price, Boolean reduceOnly, String newClientOrderId,
 							String stopPrice, WorkingType workingType, NewOrderRespType newOrderRespType, Boolean closePosition) throws KeyManagementException, InvalidKeyException, NoSuchAlgorithmException
 	{
-		return SyncFuturesClient.postOrder(position.getSymbol(), side, PositionSide.BOTH, orderType, timeInForce,
+		return SyncFuturesClient.postOrder(position.getSymbolPair(), side, PositionSide.BOTH, orderType, timeInForce,
 										   quantity, price, reduceOnly, newClientOrderId, stopPrice, workingType, newOrderRespType, closePosition);
 	}
 

@@ -30,7 +30,7 @@ public class FrmSplash extends JFrame
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 380, 240);
 		setUndecorated(true);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmMain.class.getResource("/resources/logo.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmSplash.class.getResource("/resources/logo.png")));
 		setLocationRelativeTo(null);
 		setResizable(false);
 

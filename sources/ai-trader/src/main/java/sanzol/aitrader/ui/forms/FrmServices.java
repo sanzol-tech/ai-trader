@@ -37,10 +37,11 @@ public class FrmServices extends JFrame
 
 	public FrmServices()
 	{
+		setResizable(false);
 		setTitle(Constants.APP_NAME + " - Restart");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 320, 250);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmBot.class.getResource("/resources/wrench.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmServices.class.getResource("/resources/wrench.png")));
 		setLocationRelativeTo(null);
 
 		contentPane = new JPanel();
@@ -84,12 +85,8 @@ public class FrmServices extends JFrame
 		contentPane.add(chkPositions);
 
 		JButton btnRestart = new JButton("Restart");
-		btnRestart.setBounds(106, 177, 89, 23);
+		btnRestart.setBounds(205, 177, 89, 23);
 		contentPane.add(btnRestart);
-
-		JButton btnOnOff = new JButton("On / Off");
-		btnOnOff.setBounds(205, 177, 89, 23);
-		contentPane.add(btnOnOff);
 
 		// ---------------------------------------------------------------------
 
@@ -105,12 +102,6 @@ public class FrmServices extends JFrame
 		btnRestart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				restart();
-			}
-		});
-
-		btnOnOff.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				onOff();
 			}
 		});
 
@@ -134,11 +125,6 @@ public class FrmServices extends JFrame
 			myJFrame = null;
 			dispose();
 		}
-	}
-
-	private void onOff()
-	{
-		//
 	}
 
 	public static void launch()

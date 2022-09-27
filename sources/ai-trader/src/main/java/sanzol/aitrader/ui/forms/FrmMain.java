@@ -83,6 +83,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 
 	private JButton btnAlerts;
 	private JButton btnConfig;
+	private JButton btnApiKey;
 	private JButton btnLog;
 	private JButton btnRestart;
 	private JButton btnSkin;
@@ -173,6 +174,8 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 		btnAlerts.setToolTipText("Alerts");
 		btnConfig = new JButton(Styles.IMAGE_WRENCH);
 		btnConfig.setToolTipText("Config");
+		btnApiKey = new JButton(Styles.IMAGE_KEY);
+		btnApiKey.setToolTipText("Api Key");
 		btnLog = new JButton(Styles.IMAGE_BUG);
 		btnLog.setToolTipText("View log messages");
 		btnRestart = new JButton(Styles.IMAGE_REDO);
@@ -282,6 +285,8 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnConfig)
 					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnApiKey)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnLog)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnRestart)
@@ -306,6 +311,9 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 						.addGroup(pnlTopBarLayout.createSequentialGroup()
 							.addGap(12)
 							.addComponent(btnConfig))
+						.addGroup(pnlTopBarLayout.createSequentialGroup()
+							.addGap(12)
+							.addComponent(btnApiKey))
 						.addGroup(pnlTopBarLayout.createSequentialGroup()
 							.addGap(12)
 							.addComponent(btnLog))
@@ -530,6 +538,12 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 		btnConfig.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				FrmConfig.launch();
+			}
+		});
+
+		btnApiKey.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				FrmConfigApiKey.launch();
 			}
 		});
 
@@ -841,7 +855,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 	public void btcInfo() throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
 		final String BTC_PAIR_SYMBOL = "BTC" + Config.DEFAULT_SYMBOL_RIGHT;
-		Symbol coin = Symbol.getInstance(BTC_PAIR_SYMBOL);
+		Symbol coin = Symbol.fromPair(BTC_PAIR_SYMBOL);
 		if (!PriceService.getMapTickers().containsKey(coin.getPair()))
 		{
 			return;

@@ -36,7 +36,7 @@ public class SymbolInfo
 
 	public static SymbolInfo getInstance(SymbolTickerEvent symbolTickerEvent) throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
-		Symbol _symbol = Symbol.getInstance(symbolTickerEvent.getSymbol());
+		Symbol _symbol = Symbol.fromPair(symbolTickerEvent.getSymbol());
 		if (_symbol == null)
 		{
 			return null;

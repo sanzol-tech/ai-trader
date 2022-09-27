@@ -85,7 +85,7 @@ public final class BotService
 			{
 				if (entry.getPositionAmt().compareTo(BigDecimal.ZERO) != 0)
 				{
-					Symbol symbol = Symbol.getInstance(entry.getSymbol());
+					Symbol symbol = Symbol.fromPair(entry.getSymbol());
 					if (symbol != null)
 					{
 						String side = (entry.getPositionAmt().doubleValue() < 0 ? "SHORT" : "LONG");

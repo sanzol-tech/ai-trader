@@ -80,7 +80,6 @@ public final class ServerApp
 	{
 		try
 		{
-			ApiConfig.setMarketType(marketType);
 			checkAnotherInstanceRunning(marketType);
 			verifyFolders();
 			keyLoadedOK = PrivateConfig.loadKey();

@@ -7,6 +7,7 @@ public final class ApiConfig
 	public static MarketType MARKET_TYPE = MarketType.futures;
 	public static String BASE_URL = ApiConstants.FUTURES_BASE_URL;
 	public static String WS_BASE_URL = ApiConstants.FUTURES_WS_BASE_URL;
+	public static double MIN_USD_AMOUNT = ApiConstants.FUTURES_MIN_USD_AMOUNT;
 
 	public static void setMarketType(MarketType marketType)
 	{
@@ -21,6 +22,7 @@ public final class ApiConfig
 		MARKET_TYPE = MarketType.spot;
 		BASE_URL = ApiConstants.SPOT_BASE_URL;
 		WS_BASE_URL = ApiConstants.SPOT_WS_BASE_URL;
+		MIN_USD_AMOUNT = ApiConstants.SPOT_MIN_USD_AMOUNT;
 	}
 
 	public static void setFutures()
@@ -28,6 +30,7 @@ public final class ApiConfig
 		MARKET_TYPE = MarketType.futures;
 		BASE_URL = ApiConstants.FUTURES_BASE_URL;
 		WS_BASE_URL = ApiConstants.FUTURES_WS_BASE_URL;
+		MIN_USD_AMOUNT = ApiConstants.FUTURES_MIN_USD_AMOUNT;
 	}
 
 }
