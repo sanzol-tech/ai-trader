@@ -1,16 +1,18 @@
 package sanzol.aitrader.be.enums;
 
+import api.client.impl.config.ApiConfig;
+
 public enum GridStrategy
 {
 	DEFAULT("Default", null, null, null, null, null, null, null, null, null, null, null),
-	SIGNAL("Signal", QuantityType.BALANCE, 0.3, 0, null, null, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.02, 1.0, null, null),
-	SIMPLE("Simple", QuantityType.BALANCE, 0.3, 0, null, null, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.02, 1.0, 0.01, 0.02),
-	BTC("Btc", QuantityType.BALANCE, 0.05, 5, null, null, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.02, 1.0, 0.005, 0.02),
-	ALTCOIN("Altcoin", QuantityType.BALANCE, 0.05, 6, null, null, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.025, 0.5, 0.005, 0.02),
-	CLASSIC6("Classic 6", QuantityType.BALANCE, 0.05, 6, null, null, PriceIncrType.GEOMETRIC, QtyIncrType.ORDER, 0.02, 0.4, 0.005, 0.02),
-	CLASSIC8("Classic 8", QuantityType.BALANCE, 0.05, 8, null, null, PriceIncrType.GEOMETRIC, QtyIncrType.ORDER, 0.02, 0.4, 0.005, 0.02),
-	INCREMENTAL1("Incremental 1", QuantityType.BALANCE, 0.05, 6, 0.025, 1.1, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.025, 0.4, 0.01, 0.02),
-	INCREMENTAL2("Incremental 2", QuantityType.BALANCE, 0.05, 7, 0.025, 1.1, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.025, 0.5, 0.01, 0.02);
+	SIGNAL("Signal", QuantityType.USD, ApiConfig.MIN_USD_AMOUNT, 0, null, null, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.02, 1.0, null, null),
+	SIMPLE("Simple", QuantityType.USD, ApiConfig.MIN_USD_AMOUNT, 0, null, null, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.02, 1.0, 0.01, 0.02),
+	BTC("Btc", QuantityType.USD, ApiConfig.MIN_USD_AMOUNT, 6, null, null, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.02, 0.8, 0.005, 0.02),
+	ALTCOIN("Altcoin", QuantityType.USD, ApiConfig.MIN_USD_AMOUNT, 10, null, null, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.025, 0.5, 0.005, 0.02),
+	CLASSIC6("Classic 6", QuantityType.USD, ApiConfig.MIN_USD_AMOUNT, 6, null, null, PriceIncrType.GEOMETRIC, QtyIncrType.ORDER, 0.02, 1.4, 0.005, 0.02),
+	CLASSIC8("Classic 8", QuantityType.USD, ApiConfig.MIN_USD_AMOUNT, 8, null, null, PriceIncrType.GEOMETRIC, QtyIncrType.ORDER, 0.02, 1.4, 0.005, 0.02),
+	INCREMENTAL1("Incremental 1", QuantityType.USD, ApiConfig.MIN_USD_AMOUNT, 6, 0.025, 1.1, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.025, 0.4, 0.01, 0.02),
+	INCREMENTAL2("Incremental 2", QuantityType.USD, ApiConfig.MIN_USD_AMOUNT, 7, 0.025, 1.1, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.025, 0.5, 0.01, 0.02);
 
 	private final String name;
 	private final QuantityType quantityType;

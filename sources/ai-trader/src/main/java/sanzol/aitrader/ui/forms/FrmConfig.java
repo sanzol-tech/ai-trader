@@ -490,6 +490,7 @@ public class FrmConfig extends JFrame
 
 	private void saveConfig()
 	{
+		INFO("");
 		try
 		{
 			Config.setFavoriteSymbols(txtFavCoins.getText());

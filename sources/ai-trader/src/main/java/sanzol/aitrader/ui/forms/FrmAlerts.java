@@ -47,6 +47,8 @@ public class FrmAlerts extends JFrame implements AlertListener
 
 	private static FrmAlerts myJFrame = null;
 
+	private BigDecimal lastPrice = BigDecimal.ZERO;
+	
 	private Symbol symbol;
 
     private DefaultTableModel tableModel;
@@ -327,12 +329,40 @@ public class FrmAlerts extends JFrame implements AlertListener
 
 	private void addAlert()
 	{
+		INFO("");
 		try
 		{
 			BigDecimal shortAlert = new BigDecimal(txtShortAlert.getText());
 			BigDecimal shortLimit = new BigDecimal(txtShortLimit.getText());
 			BigDecimal longAlert = new BigDecimal(txtLongAlert.getText());
 			BigDecimal longLimit = new BigDecimal(txtLongLimit.getText());
+
+			String msg = "";
+			if (shortAlert.doubleValue() >= shortLimit.doubleValue())
+			{
+				msg = "shortAlert must be less than shortLimit";
+			}
+			else if (longAlert.doubleValue() <= longLimit.doubleValue())
+			{
+				msg = "longAlert must be greater than longLimit";
+			}
+			else if (shortLimit.doubleValue() <= longLimit.doubleValue())
+			{
+				msg = "shortLimit must be greater than longLimit";
+			}
+			else if (shortAlert.doubleValue() <= lastPrice.doubleValue())
+			{
+				msg = "shortAlert must be greater than lastPrice";
+			}
+			else if (longAlert.doubleValue() >= lastPrice.doubleValue())
+			{
+				msg = "longAlert must be less than lastPrice";
+			}
+			if (!msg.isEmpty())
+			{
+				ERROR(msg);
+				return;
+			}
 
 			Alert alert = new Alert(symbol, shortAlert, shortLimit, longAlert, longLimit);
 			AlertService.add(alert);
@@ -352,7 +382,7 @@ public class FrmAlerts extends JFrame implements AlertListener
 	{
 		if (symbol != null)
 		{
-			BigDecimal lastPrice = PriceService.getLastPrice(symbol);
+			lastPrice = PriceService.getLastPrice(symbol);
 			lblLastPrice.setText(symbol.priceToStr(lastPrice));
 		}
 

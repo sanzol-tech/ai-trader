@@ -528,9 +528,9 @@ public class FrmCoin extends JFrame implements PriceListener
 		btnExport.setBounds(430, 24, 87, 22);
 		contentPane.add(btnExport);
 
-		btnMore = new JButton("+");
+		btnMore = new JButton(Styles.IMAGE_FLASK);
 		btnMore.setOpaque(true);
-		btnMore.setBounds(525, 24, 50, 22);
+		btnMore.setBounds(530, 24, 40, 22);
 		contentPane.add(btnMore);
 
 		btnAsyncCache = new JButton("Async cache");
@@ -1041,6 +1041,9 @@ public class FrmCoin extends JFrame implements PriceListener
 	{
 		try
 		{
+			btnMore.setEnabled(false);
+			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
 			StringBuilder sb = new StringBuilder();
 
 			// --- absolutes max / min prices ---------------------------------
@@ -1119,6 +1122,12 @@ public class FrmCoin extends JFrame implements PriceListener
 		{
 			ERROR(e);
 		}
+		finally
+		{
+			btnMore.setEnabled(true);
+			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		}
+
 	}
 
 	// ----------------------------------------------------------------------------------
@@ -1194,4 +1203,5 @@ public class FrmCoin extends JFrame implements PriceListener
 		lblError.setForeground(Styles.COLOR_TEXT_INFO);
 		lblError.setText(" " + msg);
 	}
+	
 }

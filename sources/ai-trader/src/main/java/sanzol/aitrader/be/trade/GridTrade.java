@@ -1,5 +1,6 @@
 package sanzol.aitrader.be.trade;
 
+import java.math.BigDecimal;
 import java.security.InvalidKeyException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -17,14 +18,14 @@ import api.client.futures.model.enums.TimeInForce;
 import api.client.futures.model.enums.WorkingType;
 import api.client.impl.config.ApiConfig;
 import sanzol.aitrader.be.config.Config;
+import sanzol.aitrader.be.enums.GridOrderStatus;
+import sanzol.aitrader.be.enums.GridOrderType;
+import sanzol.aitrader.be.enums.GridSide;
 import sanzol.aitrader.be.enums.PriceIncrType;
 import sanzol.aitrader.be.enums.QtyIncrType;
-import sanzol.aitrader.be.model.Position;
-import sanzol.aitrader.be.model.PositionOrder;
+import sanzol.aitrader.be.model.GridOrder;
 import sanzol.aitrader.be.model.PriceQty;
 import sanzol.aitrader.be.model.Symbol;
-import sanzol.aitrader.be.model.PositionOrder.State;
-import sanzol.aitrader.be.model.PositionOrder.Type;
 import sanzol.aitrader.be.service.BalanceFuturesService;
 import sanzol.aitrader.be.service.BotService;
 import sanzol.aitrader.be.service.PriceService;
@@ -33,31 +34,31 @@ public class GridTrade
 {
 	public enum PostStyle { ALL, FIRST, OTHERS }
 
-	private Position position;
+	private GridPosition gridPosition;
 
-	public Position getPosition()
+	public GridPosition getGridPosition()
 	{
-		return position;
+		return gridPosition;
 	}
 
 	public Symbol getSymbol()
 	{
-		return position.getSymbol();
+		return gridPosition.getSymbol();
 	}
 
 	private double roundPrice(double price)
 	{
-		return position.getSymbol().roundPrice(price);
+		return gridPosition.getSymbol().roundPrice(price);
 	}
 
 	private double roundQty(double value)
 	{
-		final double minQty = position.getSymbol().getMinQty().doubleValue();
-		double qty = position.getSymbol().roundQty(value);
+		final double minQty = gridPosition.getSymbol().getMinQty().doubleValue();
+		double qty = gridPosition.getSymbol().roundQty(value);
 		return Math.max(minQty, qty);
 	}
 
-	private double minQty(double qty, double price)
+	private double fixMinQty(double qty, double price)
 	{
 		final double minUsdAmount = ApiConfig.MIN_USD_AMOUNT;
 
@@ -66,7 +67,7 @@ public class GridTrade
 			return qty;
 		}
 		
-		final double minQty = position.getSymbol().getMinQty().doubleValue();
+		final double minQty = gridPosition.getSymbol().getMinQty().doubleValue();
 		
 		while (qty * price < minUsdAmount)
 		{
@@ -75,12 +76,12 @@ public class GridTrade
 		
 		return qty;
 	}
-	
+
 	// ------------------------------------------------------------------------
 
-	public GridTrade(Position position)
+	public GridTrade(GridPosition position)
 	{
-		this.position = position;
+		this.gridPosition = position;
 	}
 
 	// ------------------------------------------------------------------------
@@ -89,71 +90,68 @@ public class GridTrade
 
 	public void createShort()
 	{
-		List<PositionOrder> lstOrders = new ArrayList<PositionOrder>();
-		position.setLstOrders(lstOrders);
+		List<GridOrder> lstOrders = new ArrayList<GridOrder>();
+		gridPosition.setLstOrders(lstOrders);
 
 		// FIRST ORDER
 		int number = 0;
-		Type type = Type.SELL;
+		GridOrderType type = GridOrderType.SELL;
 		double distance = 0;
-		double qtyIncr = 0;
-		double price = position.getInPrice();
-		double qty = minQty(roundQty(position.getInQty()), price);
+		double price = gridPosition.getInPrice();
+		double _qty = fixMinQty(roundQty(gridPosition.getInQty()), price);
+		double qty = _qty;
 		double usd = qty * price;
 		double sumCoins = qty;
 		double sumUsd = usd;
 		double lost = 0;
 		double newPrice = sumUsd / sumCoins;
-		double takeProfit = newPrice * (1 - position.getTakeProfit());
+		double takeProfit = newPrice * (1 - gridPosition.getTakeProfit());
 		double profit = sumUsd - sumCoins * takeProfit;
 		double recoveryNeeded = newPrice / price - 1;
-		lstOrders.add(new PositionOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
+		lstOrders.add(new GridOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
 
-		// RE SELLS
-		for (PriceQty entry : position.getLstPriceQty())
+		// SELLS
+		for (PriceQty entry : gridPosition.getLstPriceQty())
 		{
 			number++;
-			type = Type.SELL;
+			type = GridOrderType.SELL;
 
-			if (position.getPriceIncrType() == PriceIncrType.ARITHMETIC)
+			if (gridPosition.getPriceIncrType() == PriceIncrType.ARITHMETIC)
 				distance = distance + entry.getPriceDist();
 			else
 				distance = (1 + distance) * (1 + entry.getPriceDist()) - 1;
 
-			price = roundPrice(position.getInPrice() * (1 + distance));
+			price = roundPrice(gridPosition.getInPrice() * (1 + distance));
 
-			if (position.getQtyIncrType() == QtyIncrType.ORDER)
-			{
-				qtyIncr = (1 + qtyIncr) * (1 + entry.getQtyIncr()) - 1;
-				qty = minQty(roundQty(position.getInQty() * (1 + qtyIncr)), price);
-			}
+			if (gridPosition.getQtyIncrType() == QtyIncrType.ORDER)
+				_qty = _qty * entry.getQtyIncr();
 			else
-			{
-				qty = minQty(roundQty(sumCoins * entry.getQtyIncr()), price);
-			}
+				_qty = sumCoins * entry.getQtyIncr();
+
+			qty = fixMinQty(roundQty(_qty), price);
 
 			usd = price * qty;
 			sumCoins += qty;
 			sumUsd += usd;
 			lost = sumUsd - sumCoins * price;
 			newPrice = sumUsd / sumCoins;
-			takeProfit = newPrice * (1 - position.getTakeProfit());
+			takeProfit = newPrice * (1 - gridPosition.getTakeProfit());
 			profit = sumUsd - sumCoins * takeProfit;
 			recoveryNeeded = newPrice / price - 1;
-			lstOrders.add(new PositionOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
+			lstOrders.add(new GridOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
 		}
-		position.setSumUsd(sumUsd);
+		gridPosition.setSumUsd(sumUsd);
 
 		// STOP LOSS
 		number++;
-		type = Type.SL_BUY;
+		type = GridOrderType.SL_BUY;
 
-		if (position.getPriceIncrType() == PriceIncrType.ARITHMETIC)
-			distance = distance + position.getDistBeforeSL();
+		if (gridPosition.getPriceIncrType() == PriceIncrType.ARITHMETIC)
+			distance = distance + gridPosition.getDistBeforeSL();
 		else
-			distance = (1 + distance) * (1 + position.getDistBeforeSL()) - 1;
+			distance = (1 + distance) * (1 + gridPosition.getDistBeforeSL()) - 1;
 
-		price = roundPrice(position.getInPrice() * (1 + distance));
+		price = roundPrice(gridPosition.getInPrice() * (1 + distance));
 		qty = sumCoins;
 		usd = sumUsd;
 		sumCoins = 0;
@@ -163,15 +161,15 @@ public class GridTrade
 		takeProfit = 0;
 		profit = 0;
 		recoveryNeeded = newPrice / price - 1;
-		lstOrders.add(new PositionOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
+		lstOrders.add(new GridOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
 
 		// TAKE PROFIT
 		number++;
-		type = Type.TP_BUY;
+		type = GridOrderType.TP_BUY;
 		distance = 0;
 		price = lstOrders.get(0).getTakeProfit();
 		qty = lstOrders.get(0).getCoins();
-		usd = price * qty;
+		usd = qty * price;
 		sumCoins = 0;
 		sumUsd = 0;
 		lost = 0;
@@ -179,7 +177,7 @@ public class GridTrade
 		takeProfit = 0;
 		profit = 0;
 		recoveryNeeded = 0;
-		lstOrders.add(new PositionOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
+		lstOrders.add(new GridOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
 
 	}
 
@@ -189,71 +187,68 @@ public class GridTrade
 
 	public void createLong()
 	{
-		List<PositionOrder> lstOrders = new ArrayList<PositionOrder>();
-		position.setLstOrders(lstOrders);
+		List<GridOrder> lstOrders = new ArrayList<GridOrder>();
+		gridPosition.setLstOrders(lstOrders);
 
 		// FIRST ORDER
 		int number = 0;
-		Type type = Type.BUY;
+		GridOrderType type = GridOrderType.BUY;
 		double distance = 0;
-		double qtyIncr = 0;
-		double price = position.getInPrice();
-		double qty = minQty(roundQty(position.getInQty()), price);
+		double price = gridPosition.getInPrice();
+		double _qty = fixMinQty(roundQty(gridPosition.getInQty()), price);
+		double qty = _qty;
 		double usd = qty * price;
 		double sumCoins = qty;
 		double sumUsd = usd;
 		double lost = 0;
 		double newPrice = sumUsd / sumCoins;
-		double takeProfit = newPrice * (1 + position.getTakeProfit());
+		double takeProfit = newPrice * (1 + gridPosition.getTakeProfit());
 		double profit = sumCoins * takeProfit - sumUsd;
 		double recoveryNeeded = newPrice / price - 1;
-		lstOrders.add(new PositionOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
+		lstOrders.add(new GridOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
 
-		// RE BUYS
-		for (PriceQty entry : position.getLstPriceQty())
+		// BUYS
+		for (PriceQty entry : gridPosition.getLstPriceQty())
 		{
 			number++;
-			type = Type.BUY;
+			type = GridOrderType.BUY;
 
-			if (position.getPriceIncrType() == PriceIncrType.ARITHMETIC)
+			if (gridPosition.getPriceIncrType() == PriceIncrType.ARITHMETIC)
 				distance = distance - entry.getPriceDist();
 			else
 				distance = (1 + distance) * (1 - entry.getPriceDist()) - 1;
 
-			price = roundPrice(position.getInPrice() * (1 + distance));
+			price = roundPrice(gridPosition.getInPrice() * (1 + distance));
 
-			if (position.getQtyIncrType() == QtyIncrType.ORDER)
-			{
-				qtyIncr = (1 + qtyIncr) * (1 + entry.getQtyIncr()) - 1;
-				qty = minQty(roundQty(position.getInQty() * (1 + qtyIncr)), price);
-			}
+			if (gridPosition.getQtyIncrType() == QtyIncrType.ORDER)
+				_qty = _qty * entry.getQtyIncr();
 			else
-			{
-				qty = minQty(roundQty(sumCoins * entry.getQtyIncr()), price);
-			}
+				_qty = sumCoins * entry.getQtyIncr();
 
+			qty = fixMinQty(roundQty(_qty), price);
+			
 			usd = price * qty;
 			sumCoins += qty;
 			sumUsd += usd;
 			lost = -1 * (sumUsd - sumCoins * price);
 			newPrice = sumUsd / sumCoins;
-			takeProfit = newPrice * (1 + position.getTakeProfit());
+			takeProfit = newPrice * (1 + gridPosition.getTakeProfit());
 			profit = sumCoins * takeProfit - sumUsd;
 			recoveryNeeded = newPrice / price - 1;
-			lstOrders.add(new PositionOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
+			lstOrders.add(new GridOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
 		}
-		position.setSumUsd(sumUsd);
+		gridPosition.setSumUsd(sumUsd);
 
 		// STOP LOSS
 		number++;
-		type = Type.SL_SELL;
+		type = GridOrderType.SL_SELL;
 
-		if (position.getPriceIncrType() == PriceIncrType.ARITHMETIC)
-			distance = distance - position.getDistBeforeSL();
+		if (gridPosition.getPriceIncrType() == PriceIncrType.ARITHMETIC)
+			distance = distance - gridPosition.getDistBeforeSL();
 		else
-			distance = (1 + distance) * (1 - position.getDistBeforeSL()) - 1;
+			distance = (1 + distance) * (1 - gridPosition.getDistBeforeSL()) - 1;
 
-		price = roundPrice(position.getInPrice() * (1 + distance));
+		price = roundPrice(gridPosition.getInPrice() * (1 + distance));
 		qty = sumCoins;
 		usd = sumUsd;
 		sumCoins = 0;
@@ -263,15 +258,15 @@ public class GridTrade
 		takeProfit = 0;
 		profit = 0;
 		recoveryNeeded = newPrice / price - 1;
-		lstOrders.add(new PositionOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
+		lstOrders.add(new GridOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
 
 		// TAKE PROFIT
 		number++;
-		type = Type.TP_SELL;
+		type = GridOrderType.TP_SELL;
 		distance = 0;
 		price = lstOrders.get(0).getTakeProfit();
 		qty = lstOrders.get(0).getCoins();
-		usd = price * qty;
+		usd = qty * price;
 		sumCoins = 0;
 		sumUsd = 0;
 		lost = 0;
@@ -279,7 +274,7 @@ public class GridTrade
 		takeProfit = 0;
 		profit = 0;
 		recoveryNeeded = 0;
-		lstOrders.add(new PositionOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
+		lstOrders.add(new GridOrder(number, type, distance, price, qty, usd, sumCoins, sumUsd, lost, newPrice, takeProfit, profit, recoveryNeeded));
 
 	}
 
@@ -300,60 +295,23 @@ public class GridTrade
 	{
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------
-		if (insufficientBalance(position.getSumUsd()))
+		if (insufficientBalance(gridPosition.getSumUsd()))
 		{
 			return "Insufficient withdrawal available";
 		}
 
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------
-		if (postStyle != PostStyle.OTHERS)
-		{
-			double markPrice = PriceService.getLastPrice(position.getSymbol()).doubleValue();
-			if (position.isShort())
-			{
-				if (position.isMarkPrice())
-				{
-					if (markPrice < getSymbol().subTicks(position.getInPrice(), 20))
-					{
-						return "ERR: mark Price < in Price";
-					}
-					position.setInPrice(markPrice);
-				}
-				else
-				{
-					if (markPrice > position.getInPrice())
-					{
-						return "ERR: mark Price > in Price";
-					}
-				}
-			}
-			else
-			{
-				if (position.isMarkPrice())
-				{
-					if (markPrice > getSymbol().addTicks(position.getInPrice(), 20))
-					{
-						return "ERR: mark Price > in Price";
-					}
-					position.setInPrice(markPrice);
-				}
-				else
-				{
-					if (markPrice < position.getInPrice())
-					{
-						return "ERR: mark Price < in Price";
-					}
 
-				}
-			}
-		}
+		BigDecimal lastPrice = PriceService.getLastPrice(gridPosition.getSymbol());
+		BigDecimal inPrice = (gridPosition.getSide() == GridSide.SHORT) ? gridPosition.getSymbol().subTicks(lastPrice, 10) : gridPosition.getSymbol().addTicks(lastPrice, 10);
+		gridPosition.setInPrice(inPrice.doubleValue());
 
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------
-		for (int i = 0; i < position.getLstOrders().size(); i++)
+		for (int i = 0; i < gridPosition.getLstOrders().size(); i++)
 		{
-			PositionOrder entry = position.getLstOrders().get(i);
+			GridOrder entry = gridPosition.getLstOrders().get(i);
 
 			if (postStyle == PostStyle.FIRST && i > 0)
 			{
@@ -363,12 +321,12 @@ public class GridTrade
 			{
 				continue;
 			}
-			if (entry.getState() == State.EXECUTED)
+			if (entry.getStatus() == GridOrderStatus.FILLED)
 			{
 				continue;
 			}
 
-			if (entry.getType().equals(Type.BUY) || entry.getType().equals(Type.SELL))
+			if (entry.getType().equals(GridOrderType.BUY) || entry.getType().equals(GridOrderType.SELL))
 			{
 				postOrder(entry);
 			}
@@ -384,49 +342,49 @@ public class GridTrade
 		return null;
 	}
 
-	private Order postOrder(PositionOrder pOrder) throws KeyManagementException, InvalidKeyException, NoSuchAlgorithmException
+	private Order postOrder(GridOrder pOrder) throws KeyManagementException, InvalidKeyException, NoSuchAlgorithmException
 	{
 		Order orderResult = null;
 
-		if ((pOrder.getType() == Type.TP_BUY || pOrder.getType() == Type.TP_SELL) && BotService.isTpRearrangement())
+		if ((pOrder.getType() == GridOrderType.TP_BUY || pOrder.getType() == GridOrderType.TP_SELL) && BotService.isTpRearrangement())
 		{
-			pOrder.setState(State.DISCARED);
+			pOrder.setStatus(GridOrderStatus.DISCARED);
 			pOrder.setResult("TP rearrangement is enabled");
 			return orderResult;
 		}
 
-		if (pOrder.getType() == Type.BUY)
+		if (pOrder.getType() == GridOrderType.BUY)
 		{
 			orderResult = postOrder(OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC,
 									getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),
 									null, null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
-		else if (pOrder.getType() == Type.SELL)
+		else if (pOrder.getType() == GridOrderType.SELL)
 		{
 			orderResult = postOrder(OrderSide.SELL, OrderType.LIMIT, TimeInForce.GTC,
 									getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),
 									null, null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
-		else if (pOrder.getType() == Type.TP_BUY)
+		else if (pOrder.getType() == GridOrderType.TP_BUY)
 		{
 			orderResult = postOrder(OrderSide.BUY, OrderType.LIMIT, TimeInForce.GTC,
 									getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),
 									true, null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
-		else if (pOrder.getType() == Type.TP_SELL)
+		else if (pOrder.getType() == GridOrderType.TP_SELL)
 		{
 			orderResult = postOrder(OrderSide.SELL, OrderType.LIMIT, TimeInForce.GTC,
 									getSymbol().qtyToStr(pOrder.getCoins()), getSymbol().priceToStr(pOrder.getPrice()),
 									true, null, null, WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, null);
 		}
-		else if (pOrder.getType() == Type.SL_BUY)
+		else if (pOrder.getType() == GridOrderType.SL_BUY)
 		{
 			double stopPrice = pOrder.getPrice();
 			orderResult = postOrder(OrderSide.BUY, OrderType.STOP_MARKET, TimeInForce.GTE_GTC,
 									null, null,
 									null, null, getSymbol().priceToStr(stopPrice), WorkingType.CONTRACT_PRICE, NewOrderRespType.RESULT, true);
 		}
-		else if (pOrder.getType() == Type.SL_SELL)
+		else if (pOrder.getType() == GridOrderType.SL_SELL)
 		{
 			double stopPrice = pOrder.getPrice();
 			orderResult = postOrder(OrderSide.SELL, OrderType.STOP_MARKET, TimeInForce.GTE_GTC,
@@ -436,7 +394,7 @@ public class GridTrade
 
 		if (orderResult != null)
 		{
-			pOrder.setState(State.EXECUTED);
+			pOrder.setStatus(GridOrderStatus.FILLED);
 			pOrder.setResult(orderResult.getStatus());
 		}
 
@@ -447,7 +405,7 @@ public class GridTrade
 							String quantity, String price, Boolean reduceOnly, String newClientOrderId,
 							String stopPrice, WorkingType workingType, NewOrderRespType newOrderRespType, Boolean closePosition) throws KeyManagementException, InvalidKeyException, NoSuchAlgorithmException
 	{
-		return SyncFuturesClient.postOrder(position.getSymbolPair(), side, PositionSide.BOTH, orderType, timeInForce,
+		return SyncFuturesClient.postOrder(gridPosition.getSymbol().getPair(), side, PositionSide.BOTH, orderType, timeInForce,
 										   quantity, price, reduceOnly, newClientOrderId, stopPrice, workingType, newOrderRespType, closePosition);
 	}
 

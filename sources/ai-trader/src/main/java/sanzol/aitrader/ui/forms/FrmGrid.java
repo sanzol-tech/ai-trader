@@ -14,7 +14,6 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,27 +37,24 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.decimal4j.util.DoubleRounder;
 
-import api.client.futures.model.AccountBalance;
 import api.client.futures.model.PositionRisk;
-import api.client.futures.model.enums.PositionSide;
 import api.client.impl.config.ApiConfig;
 import sanzol.aitrader.be.config.Config;
 import sanzol.aitrader.be.config.Constants;
+import sanzol.aitrader.be.enums.GridSide;
 import sanzol.aitrader.be.enums.GridStrategy;
 import sanzol.aitrader.be.enums.PriceIncrType;
 import sanzol.aitrader.be.enums.QtyIncrType;
 import sanzol.aitrader.be.enums.QuantityType;
-import sanzol.aitrader.be.model.Position;
 import sanzol.aitrader.be.model.PriceQty;
 import sanzol.aitrader.be.model.Symbol;
-import sanzol.aitrader.be.service.BalanceFuturesService;
 import sanzol.aitrader.be.service.PositionFuturesService;
 import sanzol.aitrader.be.service.PositionListener;
 import sanzol.aitrader.be.service.PriceListener;
 import sanzol.aitrader.be.service.PriceService;
+import sanzol.aitrader.be.trade.GridPosition;
 import sanzol.aitrader.be.trade.GridTrade;
 import sanzol.aitrader.be.trade.GridTrade.PostStyle;
 import sanzol.aitrader.ui.config.CharConstants;
@@ -76,7 +72,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 	private Symbol symbol;
 	private GridTrade gridTrade;
-	private PositionSide positionSide = null;
+	private GridSide gridSide = null;
 	private boolean isBotMode = false;
 	private boolean isOpenPosition = false;
 
@@ -123,6 +119,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	private JTextField txtGPrice7;
 	private JTextField txtGPrice8;
 	private JTextField txtGPrice9;
+	private JTextField txtGPrice10;
 
 	private JTextField txtGQty1;
 	private JTextField txtGQty2;
@@ -133,6 +130,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	private JTextField txtGQty7;
 	private JTextField txtGQty8;
 	private JTextField txtGQty9;
+	private JTextField txtGQty10;
 
 	private JTextField txtError;
 
@@ -342,6 +340,18 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		txtGQty9.setColumns(10);
 		pnlGridTempl.add(txtGQty9);
 
+		txtGPrice10 = new JTextField();
+		txtGPrice10.setBounds(695, 18, 60, 20);
+		txtGPrice10.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtGPrice10.setColumns(10);
+		pnlGridTempl.add(txtGPrice10);
+
+		txtGQty10 = new JTextField();
+		txtGQty10.setBounds(695, 46, 60, 20);
+		txtGQty10.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtGQty10.setColumns(10);
+		pnlGridTempl.add(txtGQty10);
+		
 		btnShort = new JButton("SHORT");
 		btnShort.setBounds(16, 138, 105, 32);
 		btnShort.setFont(new Font("Tahoma", Font.PLAIN, 12));
@@ -352,7 +362,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		pnlPosition = new JPanel();
 		pnlPosition.setLayout(null);
 		pnlPosition.setBorder(UIManager.getBorder("TextField.border"));
-		pnlPosition.setBounds(252, 16, 200, 111);
+		pnlPosition.setBounds(252, 16, 228, 111);
 		contentPane.add(pnlPosition);
 
 		lblPrice = new JLabel("Price");
@@ -370,7 +380,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		pnlPosition.add(chkLastPrice);
 
 		cmbQtyType = new JComboBox<QuantityType>();
-		cmbQtyType.setBounds(116, 77, 65, 22);
+		cmbQtyType.setBounds(116, 77, 92, 22);
 		pnlPosition.add(cmbQtyType);
 		cmbQtyType.setModel(new DefaultComboBoxModel<QuantityType>(QuantityType.values()));
 
@@ -397,7 +407,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		JPanel pnlGridConfig = new JPanel();
 		pnlGridConfig.setLayout(null);
 		pnlGridConfig.setBorder(UIManager.getBorder("TextField.border"));
-		pnlGridConfig.setBounds(466, 16, 480, 111);
+		pnlGridConfig.setBounds(490, 16, 460, 111);
 		contentPane.add(pnlGridConfig);
 
 		JLabel lblItarations = new JLabel("Iterations");
@@ -406,24 +416,24 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		pnlGridConfig.add(lblItarations);
 
 		JLabel lblPriceIncr = new JLabel("Price Incr %");
-		lblPriceIncr.setBounds(295, 11, 80, 14);
+		lblPriceIncr.setBounds(280, 11, 80, 14);
 		pnlGridConfig.add(lblPriceIncr);
 
 		JLabel lblTProfit = new JLabel("Take profit %");
 		lblTProfit.setHorizontalAlignment(SwingConstants.LEFT);
-		lblTProfit.setBounds(390, 62, 80, 14);
+		lblTProfit.setBounds(360, 62, 80, 14);
 		pnlGridConfig.add(lblTProfit);
 
 		txtTProfit = new JTextField();
 		txtTProfit.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtTProfit.setColumns(10);
-		txtTProfit.setBounds(390, 81, 72, 20);
+		txtTProfit.setBounds(360, 81, 72, 20);
 		pnlGridConfig.add(txtTProfit);
 
 		txtPriceIncr = new JTextField();
 		txtPriceIncr.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtPriceIncr.setColumns(10);
-		txtPriceIncr.setBounds(295, 30, 72, 20);
+		txtPriceIncr.setBounds(280, 30, 72, 20);
 		pnlGridConfig.add(txtPriceIncr);
 
 		txtIterations = new JTextField();
@@ -433,23 +443,23 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		pnlGridConfig.add(txtIterations);
 
 		JLabel lblCoinsIncr = new JLabel("Qty Incr %");
-		lblCoinsIncr.setBounds(295, 62, 80, 14);
+		lblCoinsIncr.setBounds(280, 62, 80, 14);
 		pnlGridConfig.add(lblCoinsIncr);
 
 		txtCoinsIncr = new JTextField();
 		txtCoinsIncr.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtCoinsIncr.setColumns(10);
-		txtCoinsIncr.setBounds(295, 81, 72, 20);
+		txtCoinsIncr.setBounds(280, 81, 72, 20);
 		pnlGridConfig.add(txtCoinsIncr);
 
 		txtStopLoss = new JTextField();
 		txtStopLoss.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtStopLoss.setColumns(10);
-		txtStopLoss.setBounds(390, 30, 72, 20);
+		txtStopLoss.setBounds(360, 30, 72, 20);
 		pnlGridConfig.add(txtStopLoss);
 
 		JLabel lblDistSL = new JLabel("SL after last %");
-		lblDistSL.setBounds(390, 11, 90, 14);
+		lblDistSL.setBounds(360, 11, 90, 14);
 		pnlGridConfig.add(lblDistSL);
 
 		rbArithmetic = new JRadioButton("Arithmetic");
@@ -468,12 +478,12 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 		rbOverLastOrder = new JRadioButton("Over last order qty");
 		rbOverLastOrder.setSelected(true);
-		rbOverLastOrder.setBounds(120, 56, 140, 23);
+		rbOverLastOrder.setBounds(112, 56, 140, 23);
 		pnlGridConfig.add(rbOverLastOrder);
 
 		rbOverPosition = new JRadioButton("Over position qty");
 		rbOverPosition.setSelected(false);
-		rbOverPosition.setBounds(120, 77, 140, 23);
+		rbOverPosition.setBounds(112, 77, 140, 23);
 		pnlGridConfig.add(rbOverPosition);
 
 		ButtonGroup bg4 = new javax.swing.ButtonGroup();
@@ -488,17 +498,17 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		txtPIPBase = new JTextField();
 		txtPIPBase.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtPIPBase.setColumns(10);
-		txtPIPBase.setBounds(116, 30, 72, 20);
+		txtPIPBase.setBounds(110, 30, 72, 20);
 		pnlGridConfig.add(txtPIPBase);
 
 		txtPIPCoef = new JTextField();
 		txtPIPCoef.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtPIPCoef.setColumns(10);
-		txtPIPCoef.setBounds(194, 30, 72, 20);
+		txtPIPCoef.setBounds(188, 30, 72, 20);
 		pnlGridConfig.add(txtPIPCoef);
 
 		chkPIP = new JCheckBox("Progr. price increase");
-		chkPIP.setBounds(116, 7, 151, 23);
+		chkPIP.setBounds(110, 7, 151, 23);
 		pnlGridConfig.add(chkPIP);
 
 		pnlLinks = new JPanel();
@@ -1022,11 +1032,11 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		else
 			generateGridStandard();
 
-		if (positionSide != null)
+		if (gridSide != null)
 		{
-			if (positionSide.equals(PositionSide.SHORT))
+			if (gridSide.equals(GridSide.SHORT))
 				createShort();
-			else if (positionSide.equals(PositionSide.LONG))
+			else if (gridSide.equals(GridSide.LONG))
 				createLong();
 		}
 	}
@@ -1127,6 +1137,16 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			txtGPrice9.setText("");
 			txtGQty9.setText("");
 		}
+		if (iterations >= 10)
+		{
+			txtGPrice10.setText(Convert.toStrPercent(priceIncr));
+			txtGQty10.setText(Convert.toStrPercent(qtyIncr));
+		}
+		else
+		{
+			txtGPrice10.setText("");
+			txtGQty10.setText("");
+		}
 	}
 
 	private void generateGridPIP()
@@ -1218,13 +1238,23 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		if (iterations >= 9)
 		{
-			txtGPrice9.setText(Convert.toStrPercent(pipBase * Math.pow(pipCoef, 7)));
+			txtGPrice9.setText(Convert.toStrPercent(pipBase * Math.pow(pipCoef, 8)));
 			txtGQty9.setText(txtCoinsIncr.getText());
 		}
 		else
 		{
 			txtGPrice9.setText("");
 			txtGQty9.setText("");
+		}
+		if (iterations >= 10)
+		{
+			txtGPrice10.setText(Convert.toStrPercent(pipBase * Math.pow(pipCoef, 9)));
+			txtGQty10.setText(txtCoinsIncr.getText());
+		}
+		else
+		{
+			txtGPrice10.setText("");
+			txtGQty10.setText("");
 		}
 	}
 
@@ -1315,97 +1345,59 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			Convert.strPercentToDbl(txtGPrice9.getText()),
 			Convert.strPercentToDbl(txtGQty9.getText())));
 
+		if (isNullOrEmpty(txtGPrice10.getText()) || isNullOrEmpty(txtGQty10.getText()))
+		{
+			return lstPriceQty;
+		}
+
+		lstPriceQty.add(new PriceQty(
+			Convert.strPercentToDbl(txtGPrice10.getText()),
+			Convert.strPercentToDbl(txtGQty10.getText())));
+
 		return lstPriceQty;
 	}
 
-	private Position acquireArguments(PositionSide side) throws Exception
+	private GridPosition acquireArguments(GridSide gridSide) throws Exception
 	{
-		Double distBeforeSL = Convert.strPercentToDbl(txtStopLoss.getText());
-		Double tProfit = Convert.strPercentToDbl(txtTProfit.getText());
+		Double stopLoss = Convert.strPercentToDbl(txtStopLoss.getText());
+		Double takeProfit = Convert.strPercentToDbl(txtTProfit.getText());
 		List<PriceQty> lstPriceQty = acquireGrid();
 
-		Position position = new Position(symbol, side, distBeforeSL, tProfit, lstPriceQty);
-		position.setPriceIncrType(rbArithmetic.isSelected() ? PriceIncrType.ARITHMETIC : PriceIncrType.GEOMETRIC);
-		position.setQtyIncrType(rbOverLastOrder.isSelected() ? QtyIncrType.ORDER : QtyIncrType.POSITION);
+		GridPosition gridPosition = new GridPosition(symbol, gridSide, stopLoss, takeProfit, lstPriceQty);
+		gridPosition.setPriceIncrType(rbArithmetic.isSelected() ? PriceIncrType.ARITHMETIC : PriceIncrType.GEOMETRIC);
+		gridPosition.setQtyIncrType(rbOverLastOrder.isSelected() ? QtyIncrType.ORDER : QtyIncrType.POSITION);
 
-		Double inPrice = getInPrice();
-		position.setInPrice(inPrice);
-		position.setMarkPrice(chkLastPrice.isSelected());
-
-		Double inQty = getInQty(inPrice);
-		position.setInQty(inQty);
-
-		return position;
-	}
-
-	private Double getInPrice() throws Exception
-	{
-		if (isOpenPosition)
+		if (chkLastPrice.isSelected())
 		{
-			double price = Double.valueOf(txtInPrice.getText());
-			return price;
-		}
-		else if (chkLastPrice.isSelected())
-		{
-			BigDecimal lastPrice = PriceService.getLastPrice(symbol);
-			return lastPrice.doubleValue();
+			gridPosition.withLastPrice();
 		}
 		else
 		{
-			if (NumberUtils.isCreatable(txtInPrice.getText()))
-			{
-				double price = Double.valueOf(txtInPrice.getText());
-				return price;
-			}
+			gridPosition.withInPrice(Double.valueOf(txtInPrice.getText()));
 		}
 
-		ERROR("Invalid price");
-		return null;
-	}
-
-	private Double getInQty(double inPrice)
-	{
-		final double minUsdAmount = ApiConfig.MIN_USD_AMOUNT;
-
-		if (isOpenPosition)
+		if (cmbQtyType.getSelectedItem().equals(QuantityType.USD))
 		{
-			double qty = Math.abs(Double.valueOf(txtInQty.getText()));
-			return qty;
-		}
-		if (cmbQtyType.getSelectedItem().equals(QuantityType.COIN))
-		{
-			if (NumberUtils.isCreatable(txtInQty.getText()))
-			{
-				double qty = Double.valueOf(txtInQty.getText());
-				return qty;
-			}
+			double usd = Double.valueOf(txtInQty.getText());
+			gridPosition.withUsdAmount(usd);
 		}
 		else if (cmbQtyType.getSelectedItem().equals(QuantityType.BALANCE))
 		{
-			if (NumberUtils.isCreatable(txtInQty.getText()))
-			{
-				double balancePercent = Convert.strPercentToDbl(txtInQty.getText());
-				AccountBalance accBalance = BalanceFuturesService.getAccountBalance();
-				double balance = accBalance.getBalance().doubleValue();
-				return DoubleRounder.round(Math.max(minUsdAmount, balance * balancePercent) / inPrice, symbol.getQtyPrecision(), RoundingMode.CEILING);
-			}
+			double balancePercent = Convert.strPercentToDbl(txtInQty.getText());
+			gridPosition.withBalancePercent(balancePercent);
 		}
-		else if (cmbQtyType.getSelectedItem().equals(QuantityType.USD))
+		else
 		{
-			if (NumberUtils.isCreatable(txtInQty.getText()))
-			{
-				double usd = Double.valueOf(txtInQty.getText());
-				return DoubleRounder.round(usd / inPrice, symbol.getQtyPrecision(), RoundingMode.CEILING);
-			}
+			double inQty = Double.valueOf(txtInQty.getText());
+			gridPosition.withInQty(inQty);
 		}
 
-		ERROR("Invalid quantity");
-		return null;
+		return gridPosition;
 	}
 
 	private static boolean isNullOrEmpty(String txt)
 	{
-		return (txt == null || txt.isEmpty());
+		return (txt == null || txt.isBlank());
 	}
 
 	// ------------------------------------------------------------------------
@@ -1421,14 +1413,14 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		INFO("");
 		try
 		{
-			positionSide = PositionSide.SHORT;
-			Position position = acquireArguments(PositionSide.SHORT);
-			gridTrade = new GridTrade(position);
+			gridSide = GridSide.SHORT;
+			GridPosition gridPosition = acquireArguments(GridSide.SHORT);
+			gridTrade = new GridTrade(gridPosition);
 			gridTrade.createShort();
 
 			//-----------------------------------------------------------------
 			txtResult.setForeground(Styles.COLOR_TEXT_SHORT);
-			txtResult.setText(position.toString());
+			txtResult.setText(gridPosition.toString());
 
 			btnPostFirst.setEnabled(!isOpenPosition);
 			btnPostOthers.setEnabled(isOpenPosition);
@@ -1450,14 +1442,14 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		INFO("");
 		try
 		{
-			positionSide = PositionSide.LONG;
-			Position position = acquireArguments(PositionSide.LONG);
-			gridTrade = new GridTrade(position);
+			gridSide = GridSide.LONG;
+			GridPosition gridPosition = acquireArguments(GridSide.LONG);
+			gridTrade = new GridTrade(gridPosition);
 			gridTrade.createLong();
 
 			//-----------------------------------------------------------------
 			txtResult.setForeground(Styles.COLOR_TEXT_LONG);
-			txtResult.setText(position.toString());
+			txtResult.setText(gridPosition.toString());
 
 			btnPostFirst.setEnabled(!isOpenPosition);
 			btnPostOthers.setEnabled(isOpenPosition);
@@ -1470,7 +1462,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 	private void clean()
 	{
-		positionSide = null;
+		gridSide = null;
 		gridTrade = null;
 		INFO("");
 		txtResult.setText("");
@@ -1496,9 +1488,9 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 				ERROR(result);
 			}
 
-			txtResult.setForeground(gridTrade.getPosition().getSide() == PositionSide.SHORT ? Styles.COLOR_TEXT_SHORT : Styles.COLOR_TEXT_LONG);
-			txtResult.setText(gridTrade.getPosition().toString());
-			save(symbol.getPair() + "_" + gridTrade.getPosition().getSide().name());
+			txtResult.setForeground(gridTrade.getGridPosition().getSide() == GridSide.SHORT ? Styles.COLOR_TEXT_SHORT : Styles.COLOR_TEXT_LONG);
+			txtResult.setText(gridTrade.getGridPosition().toString());
+			save(symbol.getPair() + "_" + gridTrade.getGridPosition().getSide().name());
 
 			// ------------------------------------------------------------
 			btnPostFirst.setEnabled(false);
@@ -1530,16 +1522,6 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		catch (IOException e)
 		{
 			LogService.error(e);
-		}
-	}
-
-	// ------------------------------------------------------------------------
-
-	public static void createDirectory(File fileProcessPath)
-	{
-		if (!fileProcessPath.exists())
-		{
-			fileProcessPath.mkdirs();
 		}
 	}
 

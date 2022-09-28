@@ -29,6 +29,7 @@ public final class Styles
 	public static ImageIcon IMAGE_REDO = new FlatSVGIcon(Styles.class.getResource("/resources/redo.svg"));
 	public static ImageIcon IMAGE_EXPAND = new FlatSVGIcon(Styles.class.getResource("/resources/expand-alt.svg"));
 	public static ImageIcon IMAGE_KEY = new FlatSVGIcon(Styles.class.getResource("/resources/key.svg"));
+	public static ImageIcon IMAGE_FLASK = new FlatSVGIcon(Styles.class.getResource("/resources/flask.svg"));
 
 	public static Color COLOR_BORDER_LINE;
 	public static Color COLOR_LINK;

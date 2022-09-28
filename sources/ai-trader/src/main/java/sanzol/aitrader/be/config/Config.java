@@ -50,7 +50,7 @@ public class Config
 	private static final Double TAKE_PROFIT = 0.02;
 
 	private static final QuantityType QUANTITY_TYPE = QuantityType.USD;
-	private static final Double IN_QTY = 100.0;
+	private static final Double IN_QTY = 30.0;
 
 
 	// Positions
