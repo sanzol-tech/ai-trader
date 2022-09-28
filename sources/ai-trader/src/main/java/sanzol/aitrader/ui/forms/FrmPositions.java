@@ -12,7 +12,6 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -20,10 +19,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import sanzol.aitrader.be.config.Constants;
-import sanzol.aitrader.be.service.PositionListener;
 import sanzol.aitrader.be.service.PositionFuturesService;
+import sanzol.aitrader.be.service.PositionListener;
 import sanzol.aitrader.ui.config.Styles;
-import sanzol.util.ExceptionUtils;
 import sanzol.util.log.LogService;
 
 public class FrmPositions extends JFrame implements PositionListener
@@ -37,7 +35,7 @@ public class FrmPositions extends JFrame implements PositionListener
 	private JScrollPane scrollPane;
 	private JTextArea textArea;
 
-	private JLabel lblError;
+	private CtrlError ctrlError;
 
 	private JCheckBox chkIncludeOrders;
 
@@ -58,7 +56,7 @@ public class FrmPositions extends JFrame implements PositionListener
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmGrid.class.getResource("/resources/monitor.png")));
 		setLocationRelativeTo(null);
 
-        lblError = new JLabel();
+        ctrlError = new CtrlError();
 
         textArea = new JTextArea();
 		textArea.setBackground(Styles.COLOR_TEXT_AREA_BG);
@@ -83,7 +81,7 @@ public class FrmPositions extends JFrame implements PositionListener
                 .addGroup(layout.createParallelGroup(Alignment.LEADING)
                     .addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 760, Short.MAX_VALUE)
                     .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(lblError, GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
+                        .addComponent(ctrlError, GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
                         .addComponent(chkIncludeOrders)))
                 .addContainerGap())
@@ -95,7 +93,7 @@ public class FrmPositions extends JFrame implements PositionListener
                 .addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
                 .addPreferredGap(ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(lblError, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ctrlError, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
                     .addComponent(chkIncludeOrders))
                 .addContainerGap())
         );
@@ -126,7 +124,7 @@ public class FrmPositions extends JFrame implements PositionListener
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -156,25 +154,6 @@ public class FrmPositions extends JFrame implements PositionListener
 				}
 			}
 		});
-	}
-
-	// ------------------------------------------------------------------------
-
-	public void ERROR(Exception e)
-	{
-		ERROR(ExceptionUtils.getMessage(e));
-	}
-
-	public void ERROR(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_ERROR);
-		lblError.setText(" " + msg);
-	}
-
-	public void INFO(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_INFO);
-		lblError.setText(" " + msg);
 	}
 
 }

@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -32,10 +33,8 @@ import sanzol.aitrader.be.model.Symbol;
 import sanzol.aitrader.be.service.SignalListener;
 import sanzol.aitrader.be.service.SignalService;
 import sanzol.aitrader.ui.config.Styles;
-import sanzol.util.ExceptionUtils;
 import sanzol.util.log.LogService;
 import sanzol.util.price.PriceUtil;
-import javax.swing.SwingConstants;
 
 public class FrmSignals extends JFrame implements SignalListener
 {
@@ -48,7 +47,7 @@ public class FrmSignals extends JFrame implements SignalListener
 	private DefaultTableModel tableModelShort;
 	private DefaultTableModel tableModelLong;
 
-	private JLabel lblError;
+	private CtrlError ctrlError;
 
 	private JPanel pnlContent;
 	private JPanel pnlStatusBar;
@@ -85,7 +84,7 @@ public class FrmSignals extends JFrame implements SignalListener
 		pnlStatusBar = new JPanel();
 		pnlStatusBar.setBorder(Styles.BORDER_UP);
 
-		lblError = new JLabel();
+		ctrlError = new CtrlError();
 
         scrollShort = new JScrollPane();
         scrollLong = new JScrollPane();
@@ -181,14 +180,14 @@ public class FrmSignals extends JFrame implements SignalListener
 			pnlStatusBarLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(Alignment.LEADING, pnlStatusBarLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(lblError, GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE)
+					.addComponent(ctrlError, GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE)
 					.addContainerGap())
 		);
 		pnlStatusBarLayout.setVerticalGroup(
 			pnlStatusBarLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(pnlStatusBarLayout.createSequentialGroup()
 					.addGap(7)
-					.addComponent(lblError, GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
+					.addComponent(ctrlError, GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
 					.addGap(7))
 		);
 		pnlStatusBar.setLayout(pnlStatusBarLayout);
@@ -282,7 +281,7 @@ public class FrmSignals extends JFrame implements SignalListener
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -366,7 +365,7 @@ public class FrmSignals extends JFrame implements SignalListener
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
     }
 
@@ -423,7 +422,7 @@ public class FrmSignals extends JFrame implements SignalListener
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 
 		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -457,22 +456,4 @@ public class FrmSignals extends JFrame implements SignalListener
 		});
 	}
 
-	// ------------------------------------------------------------------------
-
-	public void ERROR(Exception e)
-	{
-		ERROR(ExceptionUtils.getMessage(e));
-	}
-
-	public void ERROR(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_ERROR);
-		lblError.setText(" " + msg);
-	}
-
-	public void INFO(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_INFO);
-		lblError.setText(" " + msg);
-	}
 }

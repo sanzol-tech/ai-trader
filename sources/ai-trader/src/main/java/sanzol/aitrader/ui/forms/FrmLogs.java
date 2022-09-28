@@ -22,7 +22,6 @@ import javax.swing.table.DefaultTableModel;
 
 import sanzol.aitrader.be.config.Constants;
 import sanzol.aitrader.ui.config.Styles;
-import sanzol.util.ExceptionUtils;
 import sanzol.util.log.LogListener;
 import sanzol.util.log.LogService;
 
@@ -36,7 +35,7 @@ public class FrmLogs extends JFrame implements LogListener
 
     DefaultTableModel tableModel;
 
-    private JLabel lblError;
+    private CtrlError ctrlError;
 
 	private JPanel pnlContent;
 	private JPanel pnlStatusBar;
@@ -71,7 +70,7 @@ public class FrmLogs extends JFrame implements LogListener
 		txtWithdrawal.setForeground(Styles.COLOR_TEXT_ALT1);
 		txtWithdrawal.setEditable(false);
 
-		lblError = new JLabel();
+		ctrlError = new CtrlError();
 
         JScrollPane scrollPane = new JScrollPane();
 
@@ -122,14 +121,14 @@ public class FrmLogs extends JFrame implements LogListener
 			pnlStatusBarLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(Alignment.LEADING, pnlStatusBarLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(lblError, GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE)
+					.addComponent(ctrlError, GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE)
 					.addContainerGap())
 		);
 		pnlStatusBarLayout.setVerticalGroup(
 			pnlStatusBarLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(pnlStatusBarLayout.createSequentialGroup()
 					.addGap(7)
-					.addComponent(lblError, GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
+					.addComponent(ctrlError, GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
 					.addGap(7))
 		);
 		pnlStatusBar.setLayout(pnlStatusBarLayout);
@@ -182,25 +181,6 @@ public class FrmLogs extends JFrame implements LogListener
 				}
 			}
 		});
-	}
-
-	// ------------------------------------------------------------------------
-
-	public void ERROR(Exception e)
-	{
-		ERROR(ExceptionUtils.getMessage(e));
-	}
-
-	public void ERROR(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_ERROR);
-		lblError.setText(" " + msg);
-	}
-
-	public void INFO(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_INFO);
-		lblError.setText(" " + msg);
 	}
 
 }

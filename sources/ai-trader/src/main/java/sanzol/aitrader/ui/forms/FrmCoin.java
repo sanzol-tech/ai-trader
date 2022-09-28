@@ -53,14 +53,13 @@ import sanzol.aitrader.be.model.Symbol;
 import sanzol.aitrader.be.model.SymbolInfo;
 import sanzol.aitrader.be.service.DepthCache;
 import sanzol.aitrader.be.service.OrderBookService;
-import sanzol.aitrader.be.service.PriceListener;
-import sanzol.aitrader.be.service.PriceService;
 import sanzol.aitrader.be.service.OrderBookService.BBType;
 import sanzol.aitrader.be.service.OrderBookService.WAType;
+import sanzol.aitrader.be.service.PriceListener;
+import sanzol.aitrader.be.service.PriceService;
 import sanzol.aitrader.ui.config.Styles;
 import sanzol.util.BeepUtils;
 import sanzol.util.Convert;
-import sanzol.util.ExceptionUtils;
 import sanzol.util.log.LogService;
 import sanzol.util.price.PriceUtil;
 
@@ -75,7 +74,7 @@ public class FrmCoin extends JFrame implements PriceListener
 	private boolean beepDone = false;
 
 	private JPanel contentPane;
-	private JLabel lblError;
+	private CtrlError ctrlError;
 
 	private JScrollPane scrollOBookAsk;
 	private JScrollPane scrollOBookBid;
@@ -189,10 +188,10 @@ public class FrmCoin extends JFrame implements PriceListener
 		pnlBottom.setLayout(new BorderLayout(0, 0));
 		contentPane.add(pnlBottom);
 
-		lblError = new JLabel();
-		lblError.setMinimumSize(new Dimension(100, 20));
-		lblError.setBorder(new EmptyBorder(5, 0, 5, 5));
-		pnlBottom.add(lblError, BorderLayout.CENTER);
+		ctrlError = new CtrlError();
+		ctrlError.setMinimumSize(new Dimension(100, 20));
+		ctrlError.setBorder(new EmptyBorder(5, 0, 5, 5));
+		pnlBottom.add(ctrlError, BorderLayout.CENTER);
 
 		btnSearch = new JButton(Styles.IMAGE_SEARCH);
 		btnSearch.setOpaque(true);
@@ -529,6 +528,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		contentPane.add(btnExport);
 
 		btnMore = new JButton(Styles.IMAGE_FLASK);
+		btnMore.setToolTipText("See more lab numbers");
 		btnMore.setOpaque(true);
 		btnMore.setBounds(530, 24, 40, 22);
 		contentPane.add(btnMore);
@@ -730,7 +730,7 @@ public class FrmCoin extends JFrame implements PriceListener
 				}
 				catch (Exception ex)
 				{
-					ERROR(ex);
+					ctrlError.ERROR(ex);
 				}
 			}
 		});
@@ -742,7 +742,7 @@ public class FrmCoin extends JFrame implements PriceListener
 				}
 				catch (Exception ex)
 				{
-					ERROR(ex);
+					ctrlError.ERROR(ex);
 				}
 			}
 		});
@@ -820,7 +820,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -842,7 +842,7 @@ public class FrmCoin extends JFrame implements PriceListener
 
 	private void search()
 	{
-		INFO("");
+		ctrlError.CLEAN();
 		try
 		{
 			txtSymbolLeft.setText(txtSymbolLeft.getText().toUpperCase());
@@ -865,12 +865,12 @@ public class FrmCoin extends JFrame implements PriceListener
 			}
 			else
 			{
-				ERROR("Symbol not found");
+				ctrlError.ERROR("Symbol not found");
 			}
 		}
 		catch(Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -1010,7 +1010,7 @@ public class FrmCoin extends JFrame implements PriceListener
 			{
 				if(!beepDone)
 				{
-					INFO(String.format("SHORT %f", obService.getAskFixedPoint1()));
+					ctrlError.INFO(String.format("SHORT %f", obService.getAskFixedPoint1()));
 
 					BeepUtils.beep();
 					beepDone = true;
@@ -1020,7 +1020,7 @@ public class FrmCoin extends JFrame implements PriceListener
 			{
 				if(!beepDone)
 				{
-					INFO(String.format("LONG %f", obService.getBidFixedPoint1()));
+					ctrlError.INFO(String.format("LONG %f", obService.getBidFixedPoint1()));
 
 					BeepUtils.beep();
 					beepDone = true;
@@ -1033,7 +1033,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -1120,7 +1120,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 		finally
 		{
@@ -1144,11 +1144,11 @@ public class FrmCoin extends JFrame implements PriceListener
 			Desktop desktop = Desktop.getDesktop();
 			desktop.open(path);
 
-			INFO("Exported to " + path.getAbsolutePath());
+			ctrlError.INFO("Exported to " + path.getAbsolutePath());
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -1182,26 +1182,6 @@ public class FrmCoin extends JFrame implements PriceListener
 				}
 			}
 		});
-	}
-
-	// ----------------------------------------------------------------------------------
-
-	public void ERROR(Exception e)
-	{
-		ERROR(ExceptionUtils.getMessage(e));
-		e.printStackTrace();
-	}
-
-	public void ERROR(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_ERROR);
-		lblError.setText(" " + msg);
-	}
-
-	public void INFO(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_INFO);
-		lblError.setText(" " + msg);
 	}
 	
 }

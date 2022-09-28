@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.math.BigDecimal;
 
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
@@ -35,16 +34,15 @@ import sanzol.aitrader.be.enums.QtyIncrType;
 import sanzol.aitrader.be.enums.QuantityType;
 import sanzol.aitrader.ui.config.Styles;
 import sanzol.util.Convert;
-import sanzol.util.ExceptionUtils;
 import sanzol.util.log.LogService;
 
 public class FrmConfig extends JFrame
 {
 	private static final long serialVersionUID = 1L;
-
+	
 	private static FrmConfig myJFrame = null;
 
-	private JLabel lblError;
+	private CtrlError ctrlError;
 
 	private JButton btnSaveConfig;
 
@@ -100,7 +98,7 @@ public class FrmConfig extends JFrame
 		pnlStatusBar = new JPanel();
 		pnlStatusBar.setBorder(Styles.BORDER_UP);
 
-		lblError = new JLabel();
+		ctrlError = new CtrlError();
 
 		// --------------------------------------------------------------------
 		GroupLayout pnlTopBarLayout = new GroupLayout(pnlTopBar);
@@ -382,14 +380,14 @@ public class FrmConfig extends JFrame
 			pnlStatusBarLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(Alignment.LEADING, pnlStatusBarLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(lblError, GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE)
+					.addComponent(ctrlError, GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE)
 					.addContainerGap())
 		);
 		pnlStatusBarLayout.setVerticalGroup(
 			pnlStatusBarLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(pnlStatusBarLayout.createSequentialGroup()
 					.addGap(16)
-					.addComponent(lblError)
+					.addComponent(ctrlError)
 					.addContainerGap(16, Short.MAX_VALUE))
 		);
 		pnlStatusBar.setLayout(pnlStatusBarLayout);
@@ -423,7 +421,7 @@ public class FrmConfig extends JFrame
 		}
 		catch(Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -431,20 +429,20 @@ public class FrmConfig extends JFrame
 	{
 		txtFavCoins.setText(Config.getFavoriteSymbols());
 
-		txtBSMinVolume.setText(BigDecimal.valueOf(Config.getBetterSymbolsMinVolume()).toPlainString());
-		txtBSMaxChange24h.setText(String.valueOf(Config.getBetterSymbolsMaxChange()));
+		txtBSMinVolume.setText(toString(Config.getBetterSymbolsMinVolume()));
+		txtBSMaxChange24h.setText(toString(Config.getBetterSymbolsMaxChange()));
 
-		txtBlocksToAnalyzeBB.setText(String.valueOf(Config.getBlocksToAnalizeBB()));
-		txtBlocksToAnalyzeWA.setText(String.valueOf(Config.getBlocksToAnalizeWA()));
+		txtBlocksToAnalyzeBB.setText(toString(Config.getBlocksToAnalizeBB()));
+		txtBlocksToAnalyzeWA.setText(toString(Config.getBlocksToAnalizeWA()));
 
-		txtIterations.setText(String.valueOf(Config.getIterations()));
+		txtIterations.setText(toString(Config.getIterations()));
 		rbArithmetic.setSelected(Config.getPriceIncrType() == PriceIncrType.ARITHMETIC);
 		rbGeometric.setSelected(Config.getPriceIncrType() == PriceIncrType.GEOMETRIC);
 		rbOverLastOrder.setSelected(Config.getQtyIncrType() == QtyIncrType.ORDER);
 		rbOverPosition.setSelected(Config.getQtyIncrType() == QtyIncrType.POSITION);
 		chkPIP.setSelected(false);
-		txtPIPBase.setText(String.valueOf(Config.getPipBase()));
-		txtPIPCoef.setText(String.valueOf(Config.getPipCoef()));
+		txtPIPBase.setText(Convert.toStrPercent(Config.getPipBase()));
+		txtPIPCoef.setText(Convert.toStrPercent(Config.getPipCoef()));
 		txtPriceIncr.setText(Convert.toStrPercent(Config.getPriceIncr()));
 		txtCoinsIncr.setText(Convert.toStrPercent(Config.getQtyIncr()));
 		txtStopLoss.setText(Convert.toStrPercent(Config.getStopLoss()));
@@ -456,9 +454,14 @@ public class FrmConfig extends JFrame
 		txtInQtyUsd.setText(rbQtyUsd.isSelected() ? Config.getInQty().toString() : "");
 		txtInQtyBalance.setText(rbQtyBalance.isSelected() ? Convert.toStrPercent(Config.getInQty()) : "");
 
-		txtLeverage.setText(String.valueOf(Config.getLeverage()));
-		txtPositionsMax.setText(String.valueOf(Config.getPositionsMax()));
+		txtLeverage.setText(toString(Config.getLeverage()));
+		txtPositionsMax.setText(toString(Config.getPositionsMax()));
 		txtBalanceMinAvailable.setText(Convert.toStrPercent(Config.getBalanceMinAvailable()));
+	}
+
+	private static String toString(Number value)
+	{
+		return value == null ? "" : String.valueOf(value);
 	}
 
 	public static void launch()
@@ -490,7 +493,7 @@ public class FrmConfig extends JFrame
 
 	private void saveConfig()
 	{
-		INFO("");
+		ctrlError.CLEAN();
 		try
 		{
 			Config.setFavoriteSymbols(txtFavCoins.getText());
@@ -525,31 +528,12 @@ public class FrmConfig extends JFrame
 			Config.setBalanceMinAvailable(Convert.strPercentToDbl(txtBalanceMinAvailable.getText()));
 
 			Config.save();
-			INFO("CONFIG SAVED");
+			ctrlError.INFO("CONFIG SAVED");
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
-	}
-
-	// ------------------------------------------------------------------------
-
-	public void ERROR(Exception e)
-	{
-		ERROR(ExceptionUtils.getMessage(e));
-	}
-
-	public void ERROR(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_ERROR);
-		lblError.setText(" " + msg);
-	}
-
-	public void INFO(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_INFO);
-		lblError.setText(" " + msg);
 	}
 
 }

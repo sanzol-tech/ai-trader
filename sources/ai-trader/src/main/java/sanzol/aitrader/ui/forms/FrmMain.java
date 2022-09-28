@@ -50,8 +50,8 @@ import sanzol.aitrader.be.model.Signal;
 import sanzol.aitrader.be.model.Symbol;
 import sanzol.aitrader.be.service.AlertListener;
 import sanzol.aitrader.be.service.AlertService;
-import sanzol.aitrader.be.service.BalanceListener;
 import sanzol.aitrader.be.service.BalanceFuturesService;
+import sanzol.aitrader.be.service.BalanceListener;
 import sanzol.aitrader.be.service.LastCandlestickListener;
 import sanzol.aitrader.be.service.LastCandlestickService;
 import sanzol.aitrader.be.service.PositionFuturesService;
@@ -63,7 +63,6 @@ import sanzol.aitrader.be.service.SignalService;
 import sanzol.aitrader.ui.config.Styles;
 import sanzol.util.BeepUtils;
 import sanzol.util.Convert;
-import sanzol.util.ExceptionUtils;
 import sanzol.util.log.LogService;
 
 public class FrmMain extends JFrame implements PriceListener, SignalListener, AlertListener, BalanceListener, LastCandlestickListener, PositionListener
@@ -91,7 +90,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 	private JCheckBox chkOnlyFavorites;
 	private JCheckBox chkOnlyBetters;
 
-	private JLabel lblError;
+	private CtrlError ctrlError;
 	private JLabel lnkGitHub;
 
 	private JList<String> listFavorites;
@@ -214,7 +213,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 		txtWithdrawal.setForeground(Styles.COLOR_TEXT_ALT1);
 		txtWithdrawal.setEditable(false);
 
-		lblError = new JLabel();
+		ctrlError = new CtrlError();
 
 		JScrollPane scrollFavorites = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollFavorites.setBorder(UIManager.getBorder("TextField.border"));
@@ -472,7 +471,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 			pnlStatusBarLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(pnlStatusBarLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(lblError, GroupLayout.DEFAULT_SIZE, 572, Short.MAX_VALUE)
+					.addComponent(ctrlError, GroupLayout.DEFAULT_SIZE, 572, Short.MAX_VALUE)
 					.addGap(18)
 					.addComponent(lblPair)
 					.addGap(10)
@@ -511,7 +510,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 							.addComponent(txtWithdrawal, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 						.addGroup(pnlStatusBarLayout.createSequentialGroup()
 							.addGap(16)
-							.addComponent(lblError)))
+							.addComponent(ctrlError)))
 					.addContainerGap(13, Short.MAX_VALUE))
 		);
 		pnlStatusBar.setLayout(pnlStatusBarLayout);
@@ -684,7 +683,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 		}
 		catch(Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -731,7 +730,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -778,7 +777,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -791,7 +790,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -808,13 +807,13 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 		{
 			if (alert != null)
 			{
-				INFO (alert.getSymbol().getPair() + " " + alert.getAlertState());
+				ctrlError.INFO (alert.getSymbol().getPair() + " " + alert.getAlertState());
 				BeepUtils.beep4();
 			}
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -828,7 +827,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -848,7 +847,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -895,7 +894,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -990,26 +989,6 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 		};
 
 		return listModel;
-	}
-
-	// ------------------------------------------------------------------------
-
-	public void ERROR(Exception e)
-	{
-		e.printStackTrace();
-		ERROR(ExceptionUtils.getMessage(e));
-	}
-
-	public void ERROR(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_ERROR);
-		lblError.setText(" " + msg);
-	}
-
-	public void INFO(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_INFO);
-		lblError.setText(" " + msg);
 	}
 
 }

@@ -34,7 +34,6 @@ import sanzol.aitrader.be.service.BotListener;
 import sanzol.aitrader.be.service.BotService;
 import sanzol.aitrader.ui.config.Styles;
 import sanzol.util.Convert;
-import sanzol.util.ExceptionUtils;
 import sanzol.util.log.LogService;
 
 public class FrmBot extends JFrame implements BotListener
@@ -45,7 +44,7 @@ public class FrmBot extends JFrame implements BotListener
 
 	private static FrmBot myJFrame = null;
 
-	private JLabel lblError;
+	private CtrlError ctrlError;
 
 	private JPanel pnlContent;
 	private JPanel pnlStatusBar;
@@ -91,7 +90,7 @@ public class FrmBot extends JFrame implements BotListener
 		pnlStatusBar = new JPanel();
 		pnlStatusBar.setBorder(Styles.BORDER_UP);
 
-		lblError = new JLabel();
+		ctrlError = new CtrlError();
 
 		// --------------------------------------------------------------------
 		GroupLayout layout = new GroupLayout(getContentPane());
@@ -217,14 +216,14 @@ public class FrmBot extends JFrame implements BotListener
 			pnlStatusBarLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(Alignment.LEADING, pnlStatusBarLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(lblError, GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE)
+					.addComponent(ctrlError, GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE)
 					.addContainerGap())
 		);
 		pnlStatusBarLayout.setVerticalGroup(
 			pnlStatusBarLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(pnlStatusBarLayout.createSequentialGroup()
 					.addGap(7)
-					.addComponent(lblError, GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
+					.addComponent(ctrlError, GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
 					.addGap(7))
 		);
 		pnlStatusBar.setLayout(pnlStatusBarLayout);
@@ -281,7 +280,7 @@ public class FrmBot extends JFrame implements BotListener
 		}
 		catch(Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -290,7 +289,7 @@ public class FrmBot extends JFrame implements BotListener
 	private void saveBotConfig()
 	{
 		BotService.info("BOT under construction !");
-		INFO("BOT under construction !");
+		ctrlError.INFO("BOT under construction !");
 	}
 
 	private void saveTPConfig()
@@ -298,13 +297,13 @@ public class FrmBot extends JFrame implements BotListener
 		BigDecimal value = Convert.strPercentToBigDecimal(txtTProfit.getText());
 		if (value.doubleValue() <= 0 || value.doubleValue() > 100)
 		{
-			ERROR("TP rearrangement is not valid");
+			ctrlError.ERROR("TP rearrangement is not valid");
 			return;
 		}
 
 		BotService.setTpPercent(value);
 		BotService.setTpRearrangement(chkTPRearrangement.isSelected());
-		INFO("TP rearrangement updated !");
+		ctrlError.INFO("TP rearrangement updated !");
 	}
 
 	private void saveSLConfig()
@@ -313,13 +312,13 @@ public class FrmBot extends JFrame implements BotListener
 		BigDecimal value = new BigDecimal(txtSlUsd.getText());
 		if (value.doubleValue() <= 0 || value.doubleValue() > maxValue.doubleValue())
 		{
-			ERROR("SL rearrangement is not valid");
+			ctrlError.ERROR("SL rearrangement is not valid");
 			return;
 		}
 
 		BotService.setSlUsd(value);
 		BotService.setSlRearrangement(chkSLRearrangement.isSelected());
-		INFO("SL rearrangement updated !");
+		ctrlError.INFO("SL rearrangement updated !");
 	}
 
 	// ----------------------------------------------------------------------------------
@@ -354,25 +353,6 @@ public class FrmBot extends JFrame implements BotListener
 				}
 			}
 		});
-	}
-
-	// ----------------------------------------------------------------------------------
-
-	public void ERROR(Exception e)
-	{
-		ERROR(ExceptionUtils.getMessage(e));
-	}
-
-	public void ERROR(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_ERROR);
-		lblError.setText(" " + msg);
-	}
-
-	public void INFO(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_INFO);
-		lblError.setText(" " + msg);
 	}
 
 }

@@ -37,7 +37,6 @@ import sanzol.aitrader.be.service.AlertService;
 import sanzol.aitrader.be.service.PriceService;
 import sanzol.aitrader.ui.config.Styles;
 import sanzol.util.DateTimeUtils;
-import sanzol.util.ExceptionUtils;
 
 public class FrmAlerts extends JFrame implements AlertListener
 {
@@ -53,7 +52,7 @@ public class FrmAlerts extends JFrame implements AlertListener
 
     private DefaultTableModel tableModel;
 
-	private JLabel lblError;
+	private CtrlError ctrlError;
 
 	private JPanel pnlContent;
 	private JPanel pnlStatusBar;
@@ -97,7 +96,7 @@ public class FrmAlerts extends JFrame implements AlertListener
 		pnlStatusBar = new JPanel();
 		pnlStatusBar.setBorder(Styles.BORDER_UP);
 
-		lblError = new JLabel();
+		ctrlError = new CtrlError();
 
         table = new JTable();
         table.setShowHorizontalLines(true);
@@ -244,14 +243,14 @@ public class FrmAlerts extends JFrame implements AlertListener
 			pnlStatusBarLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(Alignment.LEADING, pnlStatusBarLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(lblError, GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
+					.addComponent(ctrlError, GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
 					.addContainerGap())
 		);
 		pnlStatusBarLayout.setVerticalGroup(
 			pnlStatusBarLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(pnlStatusBarLayout.createSequentialGroup()
 					.addGap(7)
-					.addComponent(lblError, GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
+					.addComponent(ctrlError, GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
 					.addGap(7))
 		);
 		pnlStatusBar.setLayout(pnlStatusBarLayout);
@@ -298,7 +297,7 @@ public class FrmAlerts extends JFrame implements AlertListener
 
 	private void search()
 	{
-		INFO("");
+		ctrlError.CLEAN();
 		try
 		{
 			txtSymbolLeft.setText(txtSymbolLeft.getText().toUpperCase());
@@ -318,18 +317,18 @@ public class FrmAlerts extends JFrame implements AlertListener
 			}
 			else
 			{
-				ERROR("Symbol not found");
+				ctrlError.ERROR("Symbol not found");
 			}
 		}
 		catch(Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
 	private void addAlert()
 	{
-		INFO("");
+		ctrlError.CLEAN();
 		try
 		{
 			BigDecimal shortAlert = new BigDecimal(txtShortAlert.getText());
@@ -360,7 +359,7 @@ public class FrmAlerts extends JFrame implements AlertListener
 			}
 			if (!msg.isEmpty())
 			{
-				ERROR(msg);
+				ctrlError.ERROR(msg);
 				return;
 			}
 
@@ -371,7 +370,7 @@ public class FrmAlerts extends JFrame implements AlertListener
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -394,7 +393,7 @@ public class FrmAlerts extends JFrame implements AlertListener
 	{
 		if (alert != null)
 		{
-			INFO (alert.getSymbol().getPair() + " " + alert.getAlertState());
+			ctrlError.INFO (alert.getSymbol().getPair() + " " + alert.getAlertState());
 		}
 	}
 
@@ -441,7 +440,7 @@ public class FrmAlerts extends JFrame implements AlertListener
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
     }
 
@@ -474,7 +473,7 @@ public class FrmAlerts extends JFrame implements AlertListener
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 
 		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -507,25 +506,6 @@ public class FrmAlerts extends JFrame implements AlertListener
 				}
 			}
 		});
-	}
-
-	// ------------------------------------------------------------------------
-
-	public void ERROR(Exception e)
-	{
-		ERROR(ExceptionUtils.getMessage(e));
-	}
-
-	public void ERROR(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_ERROR);
-		lblError.setText(" " + msg);
-	}
-
-	public void INFO(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_INFO);
-		lblError.setText(" " + msg);
 	}
 
 }

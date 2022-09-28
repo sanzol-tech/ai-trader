@@ -40,7 +40,6 @@ import sanzol.aitrader.be.service.PriceService;
 import sanzol.aitrader.be.trade.SimpleTrade;
 import sanzol.aitrader.ui.config.Styles;
 import sanzol.util.Convert;
-import sanzol.util.ExceptionUtils;
 
 public class FrmShoot extends JFrame implements PriceListener
 {
@@ -52,7 +51,7 @@ public class FrmShoot extends JFrame implements PriceListener
 
 	private Symbol symbol;
 
-	private JLabel lblError;
+	private CtrlError ctrlError;
 	private JPanel pnlContent;
 	private JPanel pnlStatusBar;
 
@@ -108,7 +107,7 @@ public class FrmShoot extends JFrame implements PriceListener
 		pnlStatusBar = new JPanel();
 		pnlStatusBar.setBorder(Styles.BORDER_UP);
 
-		lblError = new JLabel();
+		ctrlError = new CtrlError();
 
 
 		txtShootPrice = new JTextField();
@@ -358,14 +357,14 @@ public class FrmShoot extends JFrame implements PriceListener
 			pnlStatusBarLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(Alignment.LEADING, pnlStatusBarLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(lblError, GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
+					.addComponent(ctrlError, GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
 					.addContainerGap())
 		);
 		pnlStatusBarLayout.setVerticalGroup(
 			pnlStatusBarLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(pnlStatusBarLayout.createSequentialGroup()
 					.addGap(7)
-					.addComponent(lblError, GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
+					.addComponent(ctrlError, GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
 					.addGap(7))
 		);
 		pnlStatusBar.setLayout(pnlStatusBarLayout);
@@ -487,7 +486,7 @@ public class FrmShoot extends JFrame implements PriceListener
 
 	private void search()
 	{
-		INFO("");
+		ctrlError.CLEAN();
 		try
 		{
 			clean();
@@ -543,19 +542,19 @@ public class FrmShoot extends JFrame implements PriceListener
 			}
 			else
 			{
-				ERROR("Symbol not found");
+				ctrlError.ERROR("Symbol not found");
 			}
 
 		}
 		catch(Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
 	private void calc(BigDecimal x)
 	{
-		INFO("");
+		ctrlError.CLEAN();
 		try
 		{
 			String side = rbLong.isSelected() ? "BUY" : "SELL";
@@ -596,7 +595,7 @@ public class FrmShoot extends JFrame implements PriceListener
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -611,7 +610,7 @@ public class FrmShoot extends JFrame implements PriceListener
 
 	private void exec()
 	{
-		INFO("");
+		ctrlError.CLEAN();
 		try
 		{
 			String side = rbLong.isSelected() ? "LONG" : "SHORT";
@@ -621,7 +620,7 @@ public class FrmShoot extends JFrame implements PriceListener
 			// ----------------------------------------------------------------
 			if (insufficientBalance(price.doubleValue() * coins.doubleValue()))
 			{
-				ERROR("Insufficient withdrawal available");
+				ctrlError.ERROR("Insufficient withdrawal available");
 				return;
 			}
 
@@ -641,12 +640,12 @@ public class FrmShoot extends JFrame implements PriceListener
 				// String result = String.format("Post order %s  /  %s  /  %s  /  %s", coin.getName(), side.name(), coin.priceToStr(price), coin.coinsToStr(coins));
 				String result = SimpleTrade.postOrder(symbol, side, price, coins);
 
-				INFO(result);
+				ctrlError.INFO(result);
 			}
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -671,7 +670,7 @@ public class FrmShoot extends JFrame implements PriceListener
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -699,25 +698,6 @@ public class FrmShoot extends JFrame implements PriceListener
 				}
 			}
 		});
-	}
-
-	// ----------------------------------------------------------------------------------
-
-	public void ERROR(Exception e)
-	{
-		ERROR(ExceptionUtils.getMessage(e));
-	}
-
-	public void ERROR(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_ERROR);
-		lblError.setText(" " + msg);
-	}
-
-	public void INFO(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_INFO);
-		lblError.setText(" " + msg);
 	}
 
 }

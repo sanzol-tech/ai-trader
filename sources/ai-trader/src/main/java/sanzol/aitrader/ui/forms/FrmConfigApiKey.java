@@ -21,7 +21,6 @@ import javax.swing.border.EmptyBorder;
 import sanzol.aitrader.be.config.Constants;
 import sanzol.aitrader.be.config.PrivateConfig;
 import sanzol.aitrader.ui.config.Styles;
-import sanzol.util.ExceptionUtils;
 
 public class FrmConfigApiKey extends JFrame
 {
@@ -30,7 +29,7 @@ public class FrmConfigApiKey extends JFrame
 	private static FrmConfigApiKey myJFrame = null;
 
 	private JPanel contentPane;
-	private JLabel lblError;
+	private CtrlError ctrlError;
 
 	private JPasswordField txtApiKey;
 	private JPasswordField txtSecretKey;
@@ -52,7 +51,7 @@ public class FrmConfigApiKey extends JFrame
 		}
 		catch(Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -100,10 +99,10 @@ public class FrmConfigApiKey extends JFrame
 		pnlBottom.setLayout(new BorderLayout(0, 0));
 		contentPane.add(pnlBottom);
 
-		lblError = new JLabel();
-		lblError.setMinimumSize(new Dimension(100, 20));
-		lblError.setBorder(new EmptyBorder(5, 0, 5, 5));
-		pnlBottom.add(lblError, BorderLayout.CENTER);
+		ctrlError = new CtrlError();
+		ctrlError.setMinimumSize(new Dimension(100, 20));
+		ctrlError.setBorder(new EmptyBorder(5, 0, 5, 5));
+		pnlBottom.add(ctrlError, BorderLayout.CENTER);
 
 		// ---------------------------------------------------------------------
 
@@ -126,7 +125,7 @@ public class FrmConfigApiKey extends JFrame
 
 	private void save()
 	{
-		INFO("");
+		ctrlError.CLEAN();
 		try
 		{
 			int resultOption = JOptionPane.showConfirmDialog(null, "Are you sure you want to continue ?", "Confirm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -136,12 +135,12 @@ public class FrmConfigApiKey extends JFrame
 				String secretKey = String.valueOf(txtSecretKey.getPassword());
 
 				PrivateConfig.setKey(apiKey, secretKey);
-				INFO("KEY SAVED. PLEASE RESTART !!!");
+				ctrlError.INFO("KEY SAVED. PLEASE RESTART !!!");
 			}
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -169,26 +168,6 @@ public class FrmConfigApiKey extends JFrame
 				}
 			}
 		});
-	}
-
-	// ----------------------------------------------------------------------------------
-
-	public void ERROR(Exception e)
-	{
-		ERROR(ExceptionUtils.getMessage(e));
-		e.printStackTrace();
-	}
-
-	public void ERROR(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_ERROR);
-		lblError.setText(" " + msg);
-	}
-
-	public void INFO(String msg)
-	{
-		lblError.setForeground(Styles.COLOR_TEXT_INFO);
-		lblError.setText(" " + msg);
 	}
 
 }

@@ -17,11 +17,13 @@ public class FrmMonitor extends JFrame
 {
 	private static final long serialVersionUID = 1L;
 
+	private static final String TITLE = Constants.APP_NAME + " - Monitor";
+	
 	private JTextArea txtResult;
 
 	public FrmMonitor()
 	{
-		setTitle(Constants.APP_NAME + " - Monitor");
+		setTitle(TITLE);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 640, 480);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmCoin.class.getResource("/resources/monitor.png")));
@@ -43,7 +45,7 @@ public class FrmMonitor extends JFrame
 		scrollPane.setViewportView(txtResult);
 	}
 
-	public static void launch(String title, String text)
+	public static void launch(String subtitle, String text)
 	{
 		EventQueue.invokeLater(new Runnable()
 		{
@@ -53,7 +55,7 @@ public class FrmMonitor extends JFrame
 				{
 					FrmMonitor frame = new FrmMonitor();
 					frame.setVisible(true);
-					frame.setTitle(Constants.APP_NAME + " - Monitor - " + title);
+					frame.setTitle(TITLE + " - " + subtitle);
 					frame.txtResult.setText(text);
 				}
 				catch (Exception e)

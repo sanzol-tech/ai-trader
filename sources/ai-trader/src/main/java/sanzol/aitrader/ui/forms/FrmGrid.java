@@ -61,7 +61,6 @@ import sanzol.aitrader.ui.config.CharConstants;
 import sanzol.aitrader.ui.config.Styles;
 import sanzol.util.BeepUtils;
 import sanzol.util.Convert;
-import sanzol.util.ExceptionUtils;
 import sanzol.util.log.LogService;
 
 public class FrmGrid extends JFrame implements PriceListener, PositionListener
@@ -81,6 +80,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	private JPanel pnlLinks;
 
 	private JButton btnSearch;
+	private JButton btnGenGrid;
 	private JButton btnShort;
 	private JButton btnLong;
 	private JButton btnPostFirst;
@@ -132,7 +132,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	private JTextField txtGQty9;
 	private JTextField txtGQty10;
 
-	private JTextField txtError;
+	private CtrlError ctrlError;
 
 	private JTextField txtInQty;
 	private JTextField txtInPrice;
@@ -169,15 +169,9 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		contentPane.setLayout(null);
 		setContentPane(contentPane);
 
-		JButton btnGenGrid = new JButton(CharConstants.ARROW_DOWN);
+		btnGenGrid = new JButton(CharConstants.ARROW_DOWN);
 		btnGenGrid.setBounds(546, 118, 45, 26);
 		contentPane.add(btnGenGrid);
-
-		btnGenGrid.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				generateGrid();
-			}
-		});
 
 		btnLong = new JButton("LONG");
 		btnLong.setFont(new Font("Tahoma", Font.PLAIN, 12));
@@ -202,13 +196,9 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		scroll.setBorder(UIManager.getBorder("TextField.border"));
 		contentPane.add(scroll);
 
-		txtError = new JTextField();
-		txtError.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
-		txtError.setEditable(false);
-		txtError.setBounds(16, 570, 998, 20);
-		contentPane.add(txtError);
-		txtError.setColumns(10);
+		ctrlError = new CtrlError();
+		ctrlError.setBounds(16, 570, 998, 20);
+		contentPane.add(ctrlError);
 
 		btnPostOthers = new JButton("Others");
 		btnPostOthers.setIcon(Styles.IMAGE_EXECUTE);
@@ -674,6 +664,12 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			}
 		});
 
+		btnGenGrid.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				generateGrid();
+			}
+		});
+		
 		btnPostFirst.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int resultOption = JOptionPane.showConfirmDialog(null, "Do you like post this position ?", "Confirm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -684,6 +680,16 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			}
 		});
 
+		btnPostOthers.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int resultOption = JOptionPane.showConfirmDialog(null, "Do you like post orders ?", "Confirm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if (resultOption == 0)
+				{
+					post(PostStyle.OTHERS);
+				}
+			}
+		});
+		
 		btnShort.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				createShort();
@@ -693,16 +699,6 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		btnLong.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				createLong();
-			}
-		});
-
-		btnPostOthers.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int resultOption = JOptionPane.showConfirmDialog(null, "Do you like post orders ?", "Confirm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-				if (resultOption == 0)
-				{
-					post(PostStyle.OTHERS);
-				}
 			}
 		});
 
@@ -774,7 +770,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 				}
 				catch (Exception e)
 				{
-					frame.ERROR(e);
+					frame.ctrlError.ERROR(e);
 				}
 			}
 		});
@@ -801,7 +797,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -817,7 +813,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -825,7 +821,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 
 	private void search()
 	{
-		INFO("");
+		ctrlError.CLEAN();
 		try
 		{
 			txtSymbolLeft.setText(txtSymbolLeft.getText().toUpperCase());
@@ -845,13 +841,13 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			}
 			else
 			{
-				ERROR("Symbol not found");
+				ctrlError.ERROR("Symbol not found");
 			}
 
 		}
 		catch(Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -937,7 +933,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -960,7 +956,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -995,7 +991,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		catch (Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -1406,11 +1402,11 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	{
 		if (symbol == null)
 		{
-			ERROR("Select symbol");
+			ctrlError.ERROR("Select symbol");
 			return;
 		}
 
-		INFO("");
+		ctrlError.CLEAN();
 		try
 		{
 			gridSide = GridSide.SHORT;
@@ -1427,7 +1423,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		catch(Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -1435,11 +1431,11 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	{
 		if (symbol == null)
 		{
-			ERROR("Select symbol");
+			ctrlError.ERROR("Select symbol");
 			return;
 		}
 
-		INFO("");
+		ctrlError.CLEAN();
 		try
 		{
 			gridSide = GridSide.LONG;
@@ -1456,7 +1452,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		catch(Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 	}
 
@@ -1464,7 +1460,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	{
 		gridSide = null;
 		gridTrade = null;
-		INFO("");
+		ctrlError.CLEAN();
 		txtResult.setText("");
 
 		btnShort.setEnabled(true);
@@ -1479,13 +1475,13 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 	{
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-		INFO("");
+		ctrlError.CLEAN();
 		try
 		{
 			String result = gridTrade.post(postStyle);
 			if (result != null)
 			{
-				ERROR(result);
+				ctrlError.ERROR(result);
 			}
 
 			txtResult.setForeground(gridTrade.getGridPosition().getSide() == GridSide.SHORT ? Styles.COLOR_TEXT_SHORT : Styles.COLOR_TEXT_LONG);
@@ -1498,7 +1494,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 		catch(Exception e)
 		{
-			ERROR(e);
+			ctrlError.ERROR(e);
 		}
 
 		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -1525,22 +1521,4 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
-	public void ERROR(Exception e)
-	{
-		ERROR(ExceptionUtils.getMessage(e));
-	}
-
-	public void ERROR(String msg)
-	{
-		txtError.setForeground(Styles.COLOR_TEXT_ERROR);
-		txtError.setText(" " + msg);
-	}
-
-	public void INFO(String msg)
-	{
-		txtError.setForeground(Styles.COLOR_TEXT_INFO);
-		txtError.setText(" " + msg);
-	}
 }
