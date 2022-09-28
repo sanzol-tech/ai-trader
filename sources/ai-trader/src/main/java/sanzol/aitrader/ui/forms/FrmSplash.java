@@ -1,12 +1,12 @@
 package sanzol.aitrader.ui.forms;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.lang.reflect.InvocationTargetException;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -14,7 +14,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import api.client.impl.config.ApiConfig;
-import sanzol.aitrader.be.config.Constants;
 
 public class FrmSplash extends JFrame
 {
@@ -23,6 +22,7 @@ public class FrmSplash extends JFrame
 	private static FrmSplash frame;
 
 	private JPanel contentPane;
+	private JLabel lblLogo;
 	private JLabel lblTitle;
 
 	public FrmSplash()
@@ -32,20 +32,27 @@ public class FrmSplash extends JFrame
 		setUndecorated(true);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmSplash.class.getResource("/resources/logo.png")));
 		setLocationRelativeTo(null);
-		setResizable(false);
 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(new BorderLayout(0, 0));
 		contentPane.setBackground(new Color(20, 29, 45));
 
 		setContentPane(contentPane);
+		contentPane.setLayout(null);
 
-		lblTitle = new JLabel(Constants.APP_NAME);
-		lblTitle.setForeground(new Color(89, 221, 255));
-		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
-		contentPane.add(lblTitle, BorderLayout.CENTER);
+		lblLogo = new JLabel(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/resources/aitrader.png"))));
+		lblLogo.setBounds(60, 80, 260, 80);
+		lblLogo.setForeground(new Color(89, 221, 255));
+		lblLogo.setHorizontalAlignment(SwingConstants.CENTER);
+		contentPane.add(lblLogo);
+
+		lblTitle = new JLabel("market");
+		lblTitle.setBounds(199, 165, 120, 24);
+		lblTitle.setBorder(new EmptyBorder(0, 0, 5, 10));
+		lblTitle.setForeground(new Color(145, 111, 111));
+		lblTitle.setFont(new Font("Arial", Font.ITALIC, 18));
+		lblTitle.setHorizontalAlignment(SwingConstants.RIGHT);
+		contentPane.add(lblTitle);
 	}
 
 	public static void close()
@@ -64,7 +71,7 @@ public class FrmSplash extends JFrame
 				try
 				{
 					frame = new FrmSplash();
-					frame.lblTitle.setText(Constants.APP_NAME + " - " + ApiConfig.MARKET_TYPE);
+					frame.lblTitle.setText(ApiConfig.MARKET_TYPE.name());
 					frame.setVisible(true);
 				}
 				catch (Exception e)
