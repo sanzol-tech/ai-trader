@@ -1,4 +1,4 @@
-![aitrader](https://user-images.githubusercontent.com/68629815/192828339-3e2e9c8d-7d0d-43b9-b6b8-fcaaa710d02a.png)
+![aitrader_](https://user-images.githubusercontent.com/68629815/192880777-72bb07cc-84e1-42e1-84b9-249b9e105308.png)
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/1698016b6e03498583a8a8fa2ec0d9e3)](https://www.codacy.com/gh/sanzol-tech/ai-trader/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sanzol-tech/ai-trader&amp;utm_campaign=Badge_Grade)
 
