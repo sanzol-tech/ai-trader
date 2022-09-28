@@ -1,7 +1,9 @@
-# ai-trader 
-*for Binance futures*
-#
+![aitrader](https://user-images.githubusercontent.com/68629815/192822901-8b5537d6-b055-46e3-8add-86774f9da3d9.svg)
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/1698016b6e03498583a8a8fa2ec0d9e3)](https://www.codacy.com/gh/sanzol-tech/ai-trader/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sanzol-tech/ai-trader&amp;utm_campaign=Badge_Grade)
+
+
+- Binance futures
 - Trading signals
 - Price alerts
 - Automatic analysis of the order book
@@ -11,7 +13,7 @@
 - Powerful order forms
 - "Spot" coming soon
 
-### Screenshots
+## Screenshots
 
 ![image](https://user-images.githubusercontent.com/68629815/190016368-4d976df0-219b-486c-b0c6-69f0717c9b64.png)
 
