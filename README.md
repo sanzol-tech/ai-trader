@@ -1,7 +1,6 @@
-![aitrader](https://user-images.githubusercontent.com/68629815/192822901-8b5537d6-b055-46e3-8add-86774f9da3d9.svg)
+![aitrader](https://user-images.githubusercontent.com/68629815/192828339-3e2e9c8d-7d0d-43b9-b6b8-fcaaa710d02a.png)
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/1698016b6e03498583a8a8fa2ec0d9e3)](https://www.codacy.com/gh/sanzol-tech/ai-trader/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sanzol-tech/ai-trader&amp;utm_campaign=Badge_Grade)
-
 
 - Binance futures
 - Trading signals
