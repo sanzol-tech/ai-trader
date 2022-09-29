@@ -19,7 +19,7 @@ public class Cipher
 {
 	public enum Codec
 	{
-		Base64, Hex
+		BASE_64, HEX
 	};
 
 	private static final Logger LOG = LoggerFactory.getLogger(Cipher.class);
@@ -38,7 +38,7 @@ public class Cipher
 
 	public static String encrypt(String text)
 	{
-		return encrypt(text, Codec.Base64);
+		return encrypt(text, Codec.BASE_64);
 	}
 
 	public static String encrypt(String text, Codec codec)
@@ -53,7 +53,7 @@ public class Cipher
 
 			byte[] encrypted = cipher.doFinal(text.getBytes());
 
-			if (codec == Codec.Hex)
+			if (codec == Codec.HEX)
 				return Hex.encodeHexString(encrypted);
 			else
 				return Base64.getEncoder().withoutPadding().encodeToString(encrypted);
@@ -67,7 +67,7 @@ public class Cipher
 
 	public static String decrypt(String text)
 	{
-		return decrypt(text, Codec.Base64);
+		return decrypt(text, Codec.BASE_64);
 	}
 
 	public static String decrypt(String text, Codec codec)
@@ -80,7 +80,7 @@ public class Cipher
 			javax.crypto.Cipher cipher = javax.crypto.Cipher.getInstance("AES/PCBC/pkcs5padding");
 			cipher.init(javax.crypto.Cipher.DECRYPT_MODE, skeySpec, iv);
 
-			byte[] bytes = (codec == Codec.Hex) ? Hex.decodeHex(text) : Base64.getDecoder().decode(text);
+			byte[] bytes = (codec == Codec.HEX) ? Hex.decodeHex(text) : Base64.getDecoder().decode(text);
 			byte[] original = cipher.doFinal(bytes);
 			return new String(original);
 		}

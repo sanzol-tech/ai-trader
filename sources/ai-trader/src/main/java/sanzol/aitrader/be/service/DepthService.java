@@ -141,9 +141,9 @@ public class DepthService
 				// ---- GET SNAPSHOOT -----------------------------------------
 				Depth depth;
 				if (ApiConfig.MARKET_TYPE == MarketType.futures)
-					depth = SyncFuturesClient.getDepth(symbolPair.toUpperCase(), null);
+					depth = SyncFuturesClient.getDepth(symbolPair.toUpperCase());
 				else
-					depth = SyncSpotClient.getDepth(symbolPair.toUpperCase(), null);
+					depth = SyncSpotClient.getDepth(symbolPair.toUpperCase());
 
 				depthService.mapAsks = depth.getMapAsks();
 				depthService.mapBids = depth.getMapBids();

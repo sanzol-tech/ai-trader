@@ -9,7 +9,7 @@ import sanzol.util.log.LogService;
 
 public class BeepUtils
 {
-	public static float SAMPLE_RATE = 8000f;
+	private static final float SAMPLE_RATE = 8000f;
 
 	public static void tone(int hz, int msecs)
 	{

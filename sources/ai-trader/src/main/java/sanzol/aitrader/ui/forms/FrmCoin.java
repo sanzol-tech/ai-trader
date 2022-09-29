@@ -616,7 +616,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		rbBBDisplaced.setBounds(216, 130, 76, 23);
 		contentPane.add(rbBBDisplaced);
 
-		ButtonGroup bg1 = new javax.swing.ButtonGroup();
+		ButtonGroup bg1 = new ButtonGroup();
 		bg1.add(rbBBClassic);
 		bg1.add(rbBBDisplaced);
 
@@ -645,7 +645,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		rbWAPrevious.setBounds(216, 314, 76, 23);
 		contentPane.add(rbWAPrevious);
 
-		ButtonGroup bg2 = new javax.swing.ButtonGroup();
+		ButtonGroup bg2 = new ButtonGroup();
 		bg2.add(rbWAPrice);
 		bg2.add(rbWAPrevious);
 

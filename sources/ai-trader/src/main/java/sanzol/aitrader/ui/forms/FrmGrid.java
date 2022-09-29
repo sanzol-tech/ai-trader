@@ -476,7 +476,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		rbOverPosition.setBounds(112, 77, 140, 23);
 		pnlGridConfig.add(rbOverPosition);
 
-		ButtonGroup bg4 = new javax.swing.ButtonGroup();
+		ButtonGroup bg4 = new ButtonGroup();
 		bg4.add(rbOverLastOrder);
 		bg4.add(rbOverPosition);
 

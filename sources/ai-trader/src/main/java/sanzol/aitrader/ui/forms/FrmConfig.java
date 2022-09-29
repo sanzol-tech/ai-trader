@@ -48,7 +48,6 @@ public class FrmConfig extends JFrame
 
 	private JPanel pnlContent;
 	private JPanel pnlStatusBar;
-	private JPanel pnlTopBar;
 
 	private JRadioButton rbArithmetic;
 	private JRadioButton rbGeometric;
@@ -84,48 +83,31 @@ public class FrmConfig extends JFrame
 
 	private void initComponents()
 	{
-		setTitle(Constants.APP_NAME);
+		setTitle(Constants.APP_NAME + " - Config");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmConfig.class.getResource("/resources/wrench.png")));
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 860, 600);
 		setLocationRelativeTo(null);
 		setResizable(false);
 
-		pnlTopBar = new JPanel();
-		pnlTopBar.setBorder(Styles.BORDER_UP);
 		pnlContent = new JPanel();
-		pnlContent.setBorder(Styles.BORDER_DOWN);
+
 		pnlStatusBar = new JPanel();
 		pnlStatusBar.setBorder(Styles.BORDER_UP);
 
 		ctrlError = new CtrlError();
 
 		// --------------------------------------------------------------------
-		GroupLayout pnlTopBarLayout = new GroupLayout(pnlTopBar);
-		pnlTopBarLayout.setHorizontalGroup(
-			pnlTopBarLayout.createParallelGroup(Alignment.TRAILING)
-				.addGap(0, 840, Short.MAX_VALUE)
-		);
-		pnlTopBarLayout.setVerticalGroup(
-			pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
-				.addGap(0, 46, Short.MAX_VALUE)
-		);
-		pnlTopBar.setLayout(pnlTopBarLayout);
-
-		// --------------------------------------------------------------------
 		GroupLayout layout = new GroupLayout(getContentPane());
 		layout.setHorizontalGroup(
 			layout.createParallelGroup(Alignment.LEADING)
-				.addComponent(pnlTopBar, GroupLayout.DEFAULT_SIZE, 840, Short.MAX_VALUE)
 				.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 840, Short.MAX_VALUE)
 				.addComponent(pnlStatusBar, GroupLayout.DEFAULT_SIZE, 840, Short.MAX_VALUE)
 		);
 		layout.setVerticalGroup(
 			layout.createParallelGroup(Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
-					.addComponent(pnlTopBar, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)
+					.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 384, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(pnlStatusBar, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE))
 		);
@@ -135,14 +117,14 @@ public class FrmConfig extends JFrame
 
 		JPanel pnlSymbols = new JPanel();
 		pnlSymbols.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Symbols ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlSymbols.setBounds(15, 11, 490, 145);
-		pnlContent.add(pnlSymbols);
+		pnlSymbols.setBounds(15, 25, 490, 145);
 		pnlSymbols.setLayout(null);
+		pnlContent.add(pnlSymbols);
 
 		JLabel lblFavCoins = new JLabel("Favorite coins");
 		lblFavCoins.setBounds(24, 27, 90, 14);
-		pnlSymbols.add(lblFavCoins);
 		lblFavCoins.setHorizontalAlignment(SwingConstants.LEFT);
+		pnlSymbols.add(lblFavCoins);
 
 		txtFavCoins = new JTextArea();
 		txtFavCoins.setLineWrap(true);
@@ -155,14 +137,14 @@ public class FrmConfig extends JFrame
 
 		JPanel pnlGrid = new JPanel();
 		pnlGrid.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Grid ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlGrid.setBounds(15, 174, 490, 145);
-		pnlContent.add(pnlGrid);
+		pnlGrid.setBounds(15, 188, 490, 145);
 		pnlGrid.setLayout(null);
+		pnlContent.add(pnlGrid);
 
 		JLabel lblItarations = new JLabel("Iterations");
 		lblItarations.setBounds(24, 27, 80, 14);
-		pnlGrid.add(lblItarations);
 		lblItarations.setHorizontalAlignment(SwingConstants.LEFT);
+		pnlGrid.add(lblItarations);
 
 		JLabel lblPriceIncr = new JLabel("Price Incr %");
 		lblPriceIncr.setBounds(310, 27, 80, 14);
@@ -219,7 +201,7 @@ public class FrmConfig extends JFrame
 		rbGeometric.setBounds(23, 98, 90, 23);
 		pnlGrid.add(rbGeometric);
 
-		ButtonGroup bg1 = new javax.swing.ButtonGroup();
+		ButtonGroup bg1 = new ButtonGroup();
 		bg1.add(rbArithmetic);
 		bg1.add(rbGeometric);
 
@@ -231,7 +213,7 @@ public class FrmConfig extends JFrame
 		rbOverPosition.setBounds(124, 99, 140, 23);
 		pnlGrid.add(rbOverPosition);
 
-		ButtonGroup bg2 = new javax.swing.ButtonGroup();
+		ButtonGroup bg2 = new ButtonGroup();
 		bg2.add(rbOverLastOrder);
 		bg2.add(rbOverPosition);
 
@@ -258,7 +240,7 @@ public class FrmConfig extends JFrame
 
 		JPanel pnlOBook = new JPanel();
 		pnlOBook.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " O.Book ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlOBook.setBounds(675, 11, 150, 145);
+		pnlOBook.setBounds(675, 25, 150, 145);
 		pnlContent.add(pnlOBook);
 		pnlOBook.setLayout(null);
 
@@ -278,12 +260,12 @@ public class FrmConfig extends JFrame
 
 		txtBlocksToAnalyzeBB = new JTextField();
 		txtBlocksToAnalyzeBB.setBounds(24, 46, 86, 20);
-		pnlOBook.add(txtBlocksToAnalyzeBB);
 		txtBlocksToAnalyzeBB.setHorizontalAlignment(SwingConstants.TRAILING);
 		txtBlocksToAnalyzeBB.setColumns(10);
+		pnlOBook.add(txtBlocksToAnalyzeBB);
 
 		JPanel panelPositions = new JPanel();
-		panelPositions.setBounds(515, 174, 310, 145);
+		panelPositions.setBounds(515, 188, 310, 145);
 		panelPositions.setLayout(null);
 		panelPositions.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Balance / Positions ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		pnlContent.add(panelPositions);
@@ -334,18 +316,18 @@ public class FrmConfig extends JFrame
 		rbQtyBalance.setBounds(214, 78, 90, 23);
 		panelPositions.add(rbQtyBalance);
 
-		ButtonGroup bg3 = new javax.swing.ButtonGroup();
+		ButtonGroup bg3 = new ButtonGroup();
 		bg3.add(rbQtyUsd);
 		bg3.add(rbQtyBalance);
 
 		txtInQtyBalance = new JTextField();
 		txtInQtyBalance.setBounds(216, 101, 72, 20);
-		panelPositions.add(txtInQtyBalance);
 		txtInQtyBalance.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtInQtyBalance.setColumns(10);
+		panelPositions.add(txtInQtyBalance);
 
 		JPanel pnlBetterSymbols = new JPanel();
-		pnlBetterSymbols.setBounds(515, 11, 150, 145);
+		pnlBetterSymbols.setBounds(515, 25, 150, 145);
 		pnlBetterSymbols.setLayout(null);
 		pnlBetterSymbols.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Better symbols ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		pnlContent.add(pnlBetterSymbols);
@@ -361,18 +343,19 @@ public class FrmConfig extends JFrame
 		txtBSMaxChange24h = new JTextField();
 		txtBSMaxChange24h.setHorizontalAlignment(SwingConstants.TRAILING);
 		txtBSMaxChange24h.setBounds(24, 97, 86, 20);
-		pnlBetterSymbols.add(txtBSMaxChange24h);
 		txtBSMaxChange24h.setColumns(10);
+		pnlBetterSymbols.add(txtBSMaxChange24h);
 
 		txtBSMinVolume = new JTextField();
 		txtBSMinVolume.setHorizontalAlignment(SwingConstants.TRAILING);
 		txtBSMinVolume.setBounds(24, 46, 86, 20);
-		pnlBetterSymbols.add(txtBSMinVolume);
 		txtBSMinVolume.setColumns(10);
+		pnlBetterSymbols.add(txtBSMinVolume);
+
 		btnSaveConfig = new JButton();
-		btnSaveConfig.setBounds(753, 332, 72, 22);
-		pnlContent.add(btnSaveConfig);
+		btnSaveConfig.setBounds(753, 350, 72, 22);
 		btnSaveConfig.setText("SAVE");
+		pnlContent.add(btnSaveConfig);
 
 		// --------------------------------------------------------------------
 		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);

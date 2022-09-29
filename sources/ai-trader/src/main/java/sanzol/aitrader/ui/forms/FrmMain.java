@@ -853,14 +853,14 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 
 	public void btcInfo() throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
-		final String BTC_PAIR_SYMBOL = "BTC" + Config.DEFAULT_SYMBOL_RIGHT;
-		Symbol coin = Symbol.fromPair(BTC_PAIR_SYMBOL);
+		final String btcSymbolPair = "BTC" + Config.DEFAULT_SYMBOL_RIGHT;
+		Symbol coin = Symbol.fromPair(btcSymbolPair);
 		if (!PriceService.getMapTickers().containsKey(coin.getPair()))
 		{
 			return;
 		}
 
-		SymbolTickerEvent ticker = PriceService.getMapTickers().get(BTC_PAIR_SYMBOL);
+		SymbolTickerEvent ticker = PriceService.getMapTickers().get(btcSymbolPair);
 		txtBtcPrice.setText(coin.priceToStr(ticker.getLastPrice()));
 		txtChange24h.setText(String.format("%.2f %%", ticker.getPriceChangePercent()));
 		txtChange24h.setForeground(ticker.getPriceChangePercent().doubleValue() > 0 ? Styles.COLOR_TEXT_LONG : Styles.COLOR_TEXT_SHORT);

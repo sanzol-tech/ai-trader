@@ -126,7 +126,7 @@ public class FrmAlerts extends JFrame implements AlertListener
 		// --------------------------------------------------------------------
         JPanel panel = new JPanel();
 
-        javax.swing.GroupLayout pnlTopBarLayout = new javax.swing.GroupLayout(pnlTopBar);
+        GroupLayout pnlTopBarLayout = new GroupLayout(pnlTopBar);
         pnlTopBarLayout.setHorizontalGroup(
         	pnlTopBarLayout.createParallelGroup(Alignment.LEADING)
         		.addGroup(pnlTopBarLayout.createSequentialGroup()

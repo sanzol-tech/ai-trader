@@ -631,8 +631,8 @@ public class FrmShoot extends JFrame implements PriceListener
 			if (resultOption == 0)
 			{
 				BigDecimal mrkPrice = PriceService.getLastPrice(symbol);
-				if (("SHORT".equals(side) && mrkPrice.doubleValue() > price.doubleValue()) ||
-					("LONG".equals(side) && mrkPrice.doubleValue() < price.doubleValue()))
+				if ("SHORT".equals(side) && mrkPrice.doubleValue() > price.doubleValue() ||
+					"LONG".equals(side) && mrkPrice.doubleValue() < price.doubleValue())
 				{
 					price = mrkPrice;
 				}

@@ -85,11 +85,14 @@ public class SyncFuturesClient
 		return response.readEntity(new GenericType<List<SymbolTicker>>() {});
 	}
 
-	public static Depth getDepth(String symbol, Integer limit) throws KeyManagementException, NoSuchAlgorithmException
+	public static Depth getDepth(String symbol) throws KeyManagementException, NoSuchAlgorithmException
+	{
+		return getDepth(symbol, MAX_DEPTH_LIMIT);
+	}
+
+	public static Depth getDepth(String symbol, int limit) throws KeyManagementException, NoSuchAlgorithmException
 	{
 		final String path = "/fapi/v1/depth";
-
-		if (limit == null) limit = MAX_DEPTH_LIMIT;
 
 		Client client = CustomClient.getClient();
 		Response response = client

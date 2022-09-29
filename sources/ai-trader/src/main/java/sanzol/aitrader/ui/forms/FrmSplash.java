@@ -41,15 +41,15 @@ public class FrmSplash extends JFrame
 		contentPane.setLayout(null);
 
 		lblLogo = new JLabel(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/resources/aitrader.png"))));
-		lblLogo.setBounds(60, 80, 260, 80);
+		lblLogo.setBounds(60, 72, 260, 80);
 		lblLogo.setForeground(new Color(89, 221, 255));
 		lblLogo.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPane.add(lblLogo);
 
 		lblTitle = new JLabel("market");
-		lblTitle.setBounds(199, 165, 120, 24);
+		lblTitle.setBounds(199, 160, 120, 24);
 		lblTitle.setBorder(new EmptyBorder(0, 0, 5, 10));
-		lblTitle.setForeground(new Color(145, 111, 111));
+		lblTitle.setForeground(new Color(200, 200, 200));
 		lblTitle.setFont(new Font("Arial", Font.ITALIC, 18));
 		lblTitle.setHorizontalAlignment(SwingConstants.RIGHT);
 		contentPane.add(lblTitle);
