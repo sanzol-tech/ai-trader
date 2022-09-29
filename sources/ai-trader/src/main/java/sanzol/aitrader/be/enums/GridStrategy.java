@@ -4,9 +4,9 @@ import api.client.impl.config.ApiConfig;
 
 public enum GridStrategy
 {
-	DEFAULT("Default", null, null, null, null, null, null, null, null, null, null, null),
+	CUSTOM("Custom", null, null, null, null, null, null, null, null, null, null, null),
 	SIGNAL("Signal", QuantityType.USD, ApiConfig.MIN_USD_AMOUNT, 0, null, null, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.02, 1.0, null, null),
-	SIMPLE("Simple", QuantityType.USD, ApiConfig.MIN_USD_AMOUNT, 0, null, null, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.02, 1.0, 0.01, 0.02),
+	SIMPLE("Simple", QuantityType.USD, ApiConfig.MIN_USD_AMOUNT * 4, 0, null, null, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.02, 1.0, 0.01, 0.02),
 	BTC("Btc", QuantityType.USD, ApiConfig.MIN_USD_AMOUNT, 6, null, null, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.02, 0.8, 0.005, 0.02),
 	ALTCOIN("Altcoin", QuantityType.USD, ApiConfig.MIN_USD_AMOUNT, 10, null, null, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.025, 0.5, 0.005, 0.02),
 	CLASSIC6("Classic 6", QuantityType.USD, ApiConfig.MIN_USD_AMOUNT, 6, null, null, PriceIncrType.GEOMETRIC, QtyIncrType.ORDER, 0.02, 1.4, 0.005, 0.02),
@@ -14,7 +14,7 @@ public enum GridStrategy
 	INCREMENTAL1("Incremental 1", QuantityType.USD, ApiConfig.MIN_USD_AMOUNT, 6, 0.025, 1.1, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.025, 0.4, 0.01, 0.02),
 	INCREMENTAL2("Incremental 2", QuantityType.USD, ApiConfig.MIN_USD_AMOUNT, 7, 0.025, 1.1, PriceIncrType.GEOMETRIC, QtyIncrType.POSITION, 0.025, 0.5, 0.01, 0.02);
 
-	private final String name;
+	private final String strategyName;
 	private final QuantityType quantityType;
 	private final Double inQty;
 	private final Integer iterations;
@@ -27,11 +27,11 @@ public enum GridStrategy
 	private final Double stopLoss;
 	private final Double takeProfit;
 
-	private GridStrategy(String name, QuantityType quantityType, Double inQty, Integer iterations,
+	private GridStrategy(String strategyName, QuantityType quantityType, Double inQty, Integer iterations,
 						 Double pipBase, Double pipCoef, PriceIncrType priceIncrType, QtyIncrType qtyIncrType,
 						 Double priceIncr, Double qtyIncr, Double stopLoss, Double takeProfit)
 	{
-		this.name = name;
+		this.strategyName = strategyName;
 		this.quantityType = quantityType;
 		this.inQty = inQty;
 		this.iterations = iterations;
@@ -45,9 +45,9 @@ public enum GridStrategy
 		this.takeProfit = takeProfit;
 	}
 
-	public String getName()
+	public String getStrategyName()
 	{
-		return name;
+		return strategyName;
 	}
 
 	public QuantityType getQuantityType()
@@ -107,7 +107,7 @@ public enum GridStrategy
 
 	public String toString()
 	{
-		return name;
+		return strategyName;
 	}
 
 }

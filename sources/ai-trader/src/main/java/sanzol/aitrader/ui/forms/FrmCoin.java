@@ -703,22 +703,22 @@ public class FrmCoin extends JFrame implements PriceListener
 		});
 		btnShortBidPointBB1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtAskPointBB1.getText(), GridStrategy.DEFAULT, false);
+				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtAskPointBB1.getText(), GridStrategy.CUSTOM, false);
 			}
 		});
 		btnLongBidPointBB1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtBidPointBB1.getText(), GridStrategy.DEFAULT, false);
+				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtBidPointBB1.getText(), GridStrategy.CUSTOM, false);
 			}
 		});
 		btnShortBidPointWA1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtAskPointWA1.getText(), GridStrategy.DEFAULT, false);
+				FrmGrid.launch(symbol.getNameLeft(), "SHORT", txtAskPointWA1.getText(), GridStrategy.CUSTOM, false);
 			}
 		});
 		btnLongBidPointWA1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtBidPointWA1.getText(), GridStrategy.DEFAULT, false);
+				FrmGrid.launch(symbol.getNameLeft(), "LONG", txtBidPointWA1.getText(), GridStrategy.CUSTOM, false);
 			}
 		});
 

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Properties;
 
 import api.client.impl.config.ApiConfig;
+import sanzol.aitrader.be.enums.GridStrategy;
 import sanzol.aitrader.be.enums.PriceIncrType;
 import sanzol.aitrader.be.enums.QtyIncrType;
 import sanzol.aitrader.be.enums.QuantityType;
@@ -37,6 +38,8 @@ public class Config
 	// Order book
 	private static final int BLOCKS_TO_ANALYZE_BB = 8;
 	private static final int BLOCKS_TO_ANALYZE_WA = 8;
+
+	private static GridStrategy GRID_STRATEGY = GridStrategy.CUSTOM;
 
 	// Default Grid Strategy
 	private static final Integer ITERATIONS = 2;
@@ -68,6 +71,8 @@ public class Config
 	private static Integer blocksToAnalizeBB;
 	private static Integer blocksToAnalizeWA;
 
+	private static GridStrategy gridStrategy;
+	
 	// Grid Strategy
 	private static Integer iterations;
 	private static Double pipBase;
@@ -81,7 +86,6 @@ public class Config
 
 	private static QuantityType quantityType;
 	private static Double inQty;
-
 
 	private static Integer leverage;
 	private static Integer positionsMax;
@@ -142,6 +146,11 @@ public class Config
 	public static Double getBalanceMinAvailable()
 	{
 		return balanceMinAvailable != null ? balanceMinAvailable : BALANCE_MIN_AVAILABLE;
+	}
+
+	public static GridStrategy getGridStrategy()
+	{
+		return gridStrategy != null ? gridStrategy : GRID_STRATEGY;
 	}
 
 	public static Integer getIterations()
@@ -276,6 +285,11 @@ public class Config
 		Config.leverage = Integer.valueOf(leverage);
 	}
 
+	public static void setGridStrategy(GridStrategy gridStrategy)
+	{
+		Config.gridStrategy = gridStrategy;
+	}
+
 	public static void setIterations(Integer iterations)
 	{
 		Config.iterations = iterations;
@@ -404,6 +418,7 @@ public class Config
 			prop.setProperty("blocksToAnalizeBB", String.valueOf(getBlocksToAnalizeBB()));
 			prop.setProperty("blocksToAnalizeWA", String.valueOf(getBlocksToAnalizeWA()));
 
+			prop.setProperty("gridStrategy", getGridStrategy().name());
 			prop.setProperty("iterations", String.valueOf(getIterations()));
 			prop.setProperty("pipBase", String.valueOf(getPipBase()));
 			prop.setProperty("pipCoef", String.valueOf(getPipCoef()));
@@ -451,6 +466,9 @@ public class Config
 					blocksToAnalizeBB = Integer.valueOf(prop.getProperty("blocksToAnalizeBB"));
 				if (prop.containsKey("blocksToAnalizeWA"))
 					blocksToAnalizeWA = Integer.valueOf(prop.getProperty("blocksToAnalizeWA"));
+
+				if (prop.containsKey("gridStrategy"))
+					gridStrategy = GridStrategy.valueOf(prop.getProperty("gridStrategy"));
 
 				if (prop.containsKey("iterations"))
 					iterations = Integer.valueOf(prop.getProperty("iterations"));

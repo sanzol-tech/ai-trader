@@ -16,12 +16,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 
+import api.client.impl.model.enums.MarketType;
 import api.client.spot.impl.SyncSpotClient;
 import api.client.spot.model.Account;
 import api.client.spot.model.AssetBalance;
 import api.client.spot.model.Order;
 import api.client.spot.model.enums.OrderStatus;
 import sanzol.aitrader.be.config.PrivateConfig;
+import sanzol.aitrader.be.config.ServerApp;
 import sanzol.util.Convert;
 import sanzol.util.log.LogService;
 
@@ -249,7 +251,7 @@ public final class PositionSpotService
 
 	public static void main(String[] args) throws InterruptedException, KeyManagementException, NoSuchAlgorithmException, IOException, InvalidKeyException
 	{
-		//ServerApp.start(MarketType.spot);
+		ServerApp.start(MarketType.spot, (e) -> { System.out.println(e); });
 		PrivateConfig.loadKey();
 		getPositions();
 		//Thread.sleep(5000);

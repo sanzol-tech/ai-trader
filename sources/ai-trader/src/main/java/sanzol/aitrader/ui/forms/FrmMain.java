@@ -689,6 +689,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 
 	private void loadConfig()
 	{
+		cmbStrategy.setSelectedItem(Config.getGridStrategy());
 		txtPair.setText(Config.DEFAULT_SYMBOL_RIGHT);
 	}
 

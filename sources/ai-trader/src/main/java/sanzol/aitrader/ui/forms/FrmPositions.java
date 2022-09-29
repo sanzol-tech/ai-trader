@@ -5,17 +5,19 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Toolkit;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import sanzol.aitrader.be.config.Constants;
@@ -35,9 +37,11 @@ public class FrmPositions extends JFrame implements PositionListener
 	private JScrollPane scrollPane;
 	private JTextArea textArea;
 
+    private JRadioButton rbPositions;
+    private JRadioButton rbOnlyPositions;
+    private JRadioButton rbOrdersWithoutPosition;
+	
 	private CtrlError ctrlError;
-
-	private JCheckBox chkIncludeOrders;
 
 	public FrmPositions()
 	{
@@ -50,7 +54,7 @@ public class FrmPositions extends JFrame implements PositionListener
 	private void initComponents()
 	{
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 760, 500);
+		setBounds(100, 100, 778, 595);
 		setMinimumSize(new Dimension(760, 400));
 		setTitle(TITLE);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmGrid.class.getResource("/resources/monitor.png")));
@@ -67,36 +71,49 @@ public class FrmPositions extends JFrame implements PositionListener
 
         scrollPane = new JScrollPane();
         scrollPane.setViewportView(textArea);
+        
+        rbPositions = new JRadioButton("Positions with orders");
+        rbPositions.setSelected(true);
+        rbOnlyPositions = new JRadioButton("Only positions");
+        rbOrdersWithoutPosition = new JRadioButton("Orders without position");
 
-		chkIncludeOrders = new JCheckBox("Include orders");
-		chkIncludeOrders.setSelected(true);
-		chkIncludeOrders.setHorizontalAlignment(SwingConstants.RIGHT);
+        ButtonGroup bg1 = new javax.swing.ButtonGroup();
+		bg1.add(rbPositions);
+		bg1.add(rbOnlyPositions);
+		bg1.add(rbOrdersWithoutPosition);
 
         GroupLayout layout = new GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(Alignment.LEADING)
-                    .addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 760, Short.MAX_VALUE)
-                    .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(ctrlError, GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
-                        .addComponent(chkIncludeOrders)))
-                .addContainerGap())
+        	layout.createParallelGroup(Alignment.LEADING)
+        		.addGroup(layout.createSequentialGroup()
+        			.addContainerGap()
+        			.addGroup(layout.createParallelGroup(Alignment.TRAILING)
+        				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 740, Short.MAX_VALUE)
+        				.addGroup(layout.createSequentialGroup()
+        					.addComponent(ctrlError, GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+        					.addGap(18)
+        					.addComponent(rbPositions)
+        					.addPreferredGap(ComponentPlacement.UNRELATED)
+        					.addComponent(rbOnlyPositions)
+        					.addPreferredGap(ComponentPlacement.UNRELATED)
+        					.addComponent(rbOrdersWithoutPosition)))
+        			.addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(Alignment.LEADING)
-            .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
-                .addPreferredGap(ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(ctrlError, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(chkIncludeOrders))
-                .addContainerGap())
+        	layout.createParallelGroup(Alignment.TRAILING)
+        		.addGroup(layout.createSequentialGroup()
+        			.addContainerGap()
+        			.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+        			.addPreferredGap(ComponentPlacement.UNRELATED)
+        			.addGroup(layout.createParallelGroup(Alignment.LEADING)
+        				.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        					.addComponent(rbOrdersWithoutPosition)
+        					.addComponent(rbOnlyPositions)
+        					.addComponent(rbPositions))
+        				.addComponent(ctrlError, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE))
+        			.addContainerGap())
         );
+        getContentPane().setLayout(layout);
 
 		pack();
 
@@ -109,6 +126,22 @@ public class FrmPositions extends JFrame implements PositionListener
 				myJFrame = null;
 			}
 		});
+		
+        rbPositions.addItemListener(new ItemListener() {
+        	public void itemStateChanged(ItemEvent e) {
+        		onPositionUpdate();
+        	}
+        });
+        rbOnlyPositions.addItemListener(new ItemListener() {
+        	public void itemStateChanged(ItemEvent e) {
+        		onPositionUpdate();
+        	}
+        });
+        rbOrdersWithoutPosition.addItemListener(new ItemListener() {
+        	public void itemStateChanged(ItemEvent e) {
+        		onPositionUpdate();
+        	}
+        });
 
 	}
 
@@ -119,7 +152,15 @@ public class FrmPositions extends JFrame implements PositionListener
 	{
 		try
 		{
-			String text = PositionFuturesService.toStringPositions(chkIncludeOrders.isSelected());
+			String text;
+			
+			if (rbOrdersWithoutPosition.isSelected())
+				text = PositionFuturesService.toStringOrdersWithoutPosition();
+			else if (rbOnlyPositions.isSelected())
+				text = PositionFuturesService.toStringPositions(false);
+			else
+				text = PositionFuturesService.toStringPositions(true);
+
 			textArea.setText(text);
 		}
 		catch (Exception e)
@@ -155,5 +196,4 @@ public class FrmPositions extends JFrame implements PositionListener
 			}
 		});
 	}
-
 }

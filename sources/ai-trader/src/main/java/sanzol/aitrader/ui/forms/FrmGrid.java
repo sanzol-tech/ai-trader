@@ -746,7 +746,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 						if ("BTC".equals(symbolLeft))
 							frame.generateGrid(GridStrategy.BTC);
 						else
-							if (gridStrategy == GridStrategy.DEFAULT || gridStrategy == null)
+							if (gridStrategy == GridStrategy.CUSTOM || gridStrategy == null)
 								frame.generateGridDefault();
 							else
 								frame.generateGrid(gridStrategy);

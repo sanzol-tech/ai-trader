@@ -25,6 +25,7 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import sanzol.aitrader.be.config.Config;
 import sanzol.aitrader.be.config.Constants;
 import sanzol.aitrader.be.enums.GridStrategy;
 import sanzol.aitrader.be.model.Price;
@@ -64,6 +65,8 @@ public class FrmSignals extends JFrame implements SignalListener
 	{
 		initComponents();
 
+		cmbStrategy.setSelectedItem(Config.getGridStrategy());
+		
 		createTable();
 
 		SignalService.attachRefreshObserver(this);
@@ -227,7 +230,7 @@ public class FrmSignals extends JFrame implements SignalListener
         });
 
 	}
-
+	
 	// ------------------------------------------------------------------------
 
 	private void tradeFromSignal(String type, int index)

@@ -7,7 +7,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -86,6 +88,22 @@ public final class PositionFuturesService
 		return null;
 	}
 
+	public static Set<String> getPositionSymbols()
+	{
+		Set<String> set = new HashSet<String>();
+		if (lstPositionRisk != null && !lstPositionRisk.isEmpty())
+		{
+			for (PositionRisk entry : lstPositionRisk)
+			{
+				if (entry.getPositionAmt().abs().doubleValue() != 0)
+				{
+					set.add(entry.getSymbol());
+				}
+			}
+		}
+		return set;
+	}
+	
 	public static List<Order> getLstOpenOrders()
 	{
 		return lstOpenOrders;
@@ -99,6 +117,24 @@ public final class PositionFuturesService
 			for (Order entry : lstOpenOrders)
 			{
 				if (entry.getSymbol().equals(symbolName) && "NEW".equals(entry.getStatus()))
+				{
+					list.add(entry);
+				}
+			}
+		}
+		return list;
+	}
+
+	public static List<Order> getLstOrdersWithoutPosition()
+	{
+		Set<String> setPositionSymbols = getPositionSymbols();
+
+		List<Order> list = new ArrayList<Order>();
+		if (lstOpenOrders != null && !lstOpenOrders.isEmpty())
+		{
+			for (Order entry : lstOpenOrders)
+			{
+				if (!setPositionSymbols.contains(entry.getSymbol()) && "NEW".equals(entry.getStatus()))
 				{
 					list.add(entry);
 				}
@@ -242,6 +278,24 @@ public final class PositionFuturesService
 
 	// ------------------------------------------------------------------------
 
+	public static String toStringOrdersWithoutPosition()
+	{
+		StringBuilder sbBody = new StringBuilder();
+
+		for (Order entry : getLstOrdersWithoutPosition())
+		{
+			sbBody.append(String.format("%-18s %-6s %-13s %10s %14s %14s\n", entry.getSymbol(), entry.getSide(), entry.getType(), entry.getOrigQty(), entry.getPrice(), entry.getReduceOnly() ? "R.Only" : ""));
+		}
+
+		StringBuilder sb  = new StringBuilder();
+		sb.append(String.format("%-18s %-6s %-13s %10s %14s %14s\n", "SYMBOL", "SIDE", "TYPE", "QTY", "PRICE", ""));
+		sb.append(StringUtils.repeat("-", 82));
+		sb.append("\n");
+		sb.append(sbBody);
+
+		return sb.toString();
+	}
+
 	public static String toStringOrders(String symbolName)
 	{
 		StringBuilder sb = new StringBuilder();
@@ -332,10 +386,11 @@ public final class PositionFuturesService
 	public static void main(String[] args) throws InterruptedException, KeyManagementException, NoSuchAlgorithmException, IOException
 	{
 		ServerApp.start(MarketType.futures, (e) -> { System.out.println(e); });
+		getPositions();
 
-		Thread.sleep(5000);
-
-		System.out.println(toStringPositions(true));
+		System.out.println(toStringOrdersWithoutPosition());
+		// System.out.println(toStringPositions(false));
+		// System.out.println(toStringPositions(true));
 	}
 
 }

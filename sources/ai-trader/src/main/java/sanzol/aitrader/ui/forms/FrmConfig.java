@@ -10,6 +10,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -35,6 +36,8 @@ import sanzol.aitrader.be.enums.QuantityType;
 import sanzol.aitrader.ui.config.Styles;
 import sanzol.util.Convert;
 import sanzol.util.log.LogService;
+import javax.swing.JComboBox;
+import sanzol.aitrader.be.enums.GridStrategy;
 
 public class FrmConfig extends JFrame
 {
@@ -74,6 +77,8 @@ public class FrmConfig extends JFrame
 	private JCheckBox chkPIP;
 	private JTextField txtPIPBase;
 	private JTextField txtPIPCoef;
+
+	private JComboBox<GridStrategy> cmbStrategy;
 
 	public FrmConfig()
 	{
@@ -136,7 +141,7 @@ public class FrmConfig extends JFrame
 		pnlSymbols.add(scroll);
 
 		JPanel pnlGrid = new JPanel();
-		pnlGrid.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Grid ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		pnlGrid.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Custom Grid Strategy ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		pnlGrid.setBounds(15, 188, 490, 145);
 		pnlGrid.setLayout(null);
 		pnlContent.add(pnlGrid);
@@ -332,7 +337,7 @@ public class FrmConfig extends JFrame
 		pnlBetterSymbols.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Better symbols ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		pnlContent.add(pnlBetterSymbols);
 
-		JLabel lblVolume = new JLabel("Min Volume");
+		JLabel lblVolume = new JLabel("Min Volume 24h");
 		lblVolume.setBounds(24, 27, 100, 14);
 		pnlBetterSymbols.add(lblVolume);
 
@@ -356,6 +361,15 @@ public class FrmConfig extends JFrame
 		btnSaveConfig.setBounds(753, 350, 72, 22);
 		btnSaveConfig.setText("SAVE");
 		pnlContent.add(btnSaveConfig);
+		
+		JLabel lblStrategy = new JLabel("Default Grid Strategy");
+		lblStrategy.setBounds(20, 345, 120, 14);
+		pnlContent.add(lblStrategy);
+		
+		cmbStrategy = new JComboBox<GridStrategy>();
+		cmbStrategy.setBounds(142, 342, 116, 20);
+		cmbStrategy.setModel(new DefaultComboBoxModel<GridStrategy>(GridStrategy.values()));
+		pnlContent.add(cmbStrategy);
 
 		// --------------------------------------------------------------------
 		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);
@@ -417,6 +431,8 @@ public class FrmConfig extends JFrame
 
 		txtBlocksToAnalyzeBB.setText(toString(Config.getBlocksToAnalizeBB()));
 		txtBlocksToAnalyzeWA.setText(toString(Config.getBlocksToAnalizeWA()));
+
+		cmbStrategy.setSelectedItem(Config.getGridStrategy());
 
 		txtIterations.setText(toString(Config.getIterations()));
 		rbArithmetic.setSelected(Config.getPriceIncrType() == PriceIncrType.ARITHMETIC);
@@ -485,6 +501,8 @@ public class FrmConfig extends JFrame
 			Config.setBlocksToAnalizeBB(txtBlocksToAnalyzeBB.getText());
 			Config.setBlocksToAnalizeWA(txtBlocksToAnalyzeWA.getText());
 
+			Config.setGridStrategy((GridStrategy) cmbStrategy.getSelectedItem());
+
 			Config.setIterations(txtIterations.getText());
 			Config.setPipBase(Convert.strPercentToDbl(txtPIPBase.getText()));
 			Config.setPipCoef(Convert.strPercentToDbl(txtPIPCoef.getText()));
@@ -518,5 +536,4 @@ public class FrmConfig extends JFrame
 			ctrlError.ERROR(e);
 		}
 	}
-
 }
