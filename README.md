@@ -1,16 +1,18 @@
-![aitrader_](https://user-images.githubusercontent.com/68629815/192880777-72bb07cc-84e1-42e1-84b9-249b9e105308.png)
+![aitrader](https://user-images.githubusercontent.com/68629815/192935067-e05e98c0-636f-4fd9-9b76-4ac6db080f2d.png)
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/1698016b6e03498583a8a8fa2ec0d9e3)](https://www.codacy.com/gh/sanzol-tech/ai-trader/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sanzol-tech/ai-trader&amp;utm_campaign=Badge_Grade)
+![Badge](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
+![Badge](https://img.shields.io/badge/mac%20os-000000?style=for-the-badge&logo=apple&logoColor=white)
+![Badge](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
 
 - Binance futures
 - Trading signals
 - Price alerts
+- Powerful order forms
 - Automatic analysis of the order book
 - Automatic take profit rearrangement
 - Automatic stop loss rearrangement
 - Wallet Balances
-- Powerful order forms
-- "Spot" coming soon
+- Position report
 
 ## Screenshots
 
@@ -31,6 +33,8 @@
 ![image](https://user-images.githubusercontent.com/68629815/169203512-ebd084cb-85e3-4fa8-acb6-150b4d9b9c46.png)
 
 *:warning: THIS PROJECT IS UNDER CONSTRUCTION :warning:*
+
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/1698016b6e03498583a8a8fa2ec0d9e3)](https://www.codacy.com/gh/sanzol-tech/ai-trader/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sanzol-tech/ai-trader&amp;utm_campaign=Badge_Grade)
 
 ### Getting started
 > Download .jar
