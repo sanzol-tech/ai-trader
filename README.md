@@ -7,18 +7,20 @@
 - Binance futures
 - Trading signals
 - Price alerts
+- Telegram Bot
 - Powerful order forms
 - Automatic analysis of the order book
 - Automatic take profit rearrangement
 - Automatic stop loss rearrangement
 - Wallet Balances
 - Position report
+- Dark & Light mode
 
 ## Screenshots
 
 ![image](https://user-images.githubusercontent.com/68629815/190016368-4d976df0-219b-486c-b0c6-69f0717c9b64.png)
 
-![image](https://user-images.githubusercontent.com/68629815/192668089-d653afd6-ae8d-43ef-a3fa-a9fce36e1756.png)
+![image](https://user-images.githubusercontent.com/68629815/193384269-8d7f1e2e-1ee7-4ca3-baa9-15684745f4eb.png)
 
 ![image](https://user-images.githubusercontent.com/68629815/192667493-b2e3ae23-7949-4c34-a1f3-88997982eade.png)
 
@@ -28,7 +30,7 @@
 
 ![image](https://user-images.githubusercontent.com/68629815/190015296-88c061cf-49df-4b2c-b089-ceca9fb404ce.png)
 
-![image](https://user-images.githubusercontent.com/68629815/169188305-06d72c1a-52fe-4782-88e3-9cbe660e149a.png)
+![image](https://user-images.githubusercontent.com/68629815/193384351-83d5b6a6-c3d7-453c-8dfa-732acc8226b9.png)
 
 ![image](https://user-images.githubusercontent.com/68629815/169203512-ebd084cb-85e3-4fa8-acb6-150b4d9b9c46.png)
 
