@@ -112,6 +112,20 @@ public class Alert
 		this.timeOut = timeOut;
 	}
 
+	public String toMessage()
+	{
+		String price = "n/a";
+		if (alertState == AlertState.SHORT_ALERT || alertState == AlertState.SHORT_LIMIT)
+		{
+			price = symbol.priceToStr(shortLimit);
+		}
+		else if (alertState == AlertState.LONG_ALERT || alertState == AlertState.LONG_LIMIT)
+		{
+			price = symbol.priceToStr(longLimit);
+		}
+		return String.format("%s - %s - price: %s", symbol.getPair(), alertState.toString(), price);
+	}
+	
 	@Override
 	public String toString()
 	{

@@ -1,6 +1,5 @@
 package sanzol.aitrader.ui.forms;
 
-import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Toolkit;
@@ -15,6 +14,7 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,21 +23,20 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 
 import sanzol.aitrader.be.config.Config;
 import sanzol.aitrader.be.config.Constants;
+import sanzol.aitrader.be.enums.GridStrategy;
 import sanzol.aitrader.be.enums.PriceIncrType;
 import sanzol.aitrader.be.enums.QtyIncrType;
 import sanzol.aitrader.be.enums.QuantityType;
+import sanzol.aitrader.be.service.OrderBookService.FixPointsMode;
 import sanzol.aitrader.ui.config.Styles;
 import sanzol.util.Convert;
 import sanzol.util.log.LogService;
-import javax.swing.JComboBox;
-import sanzol.aitrader.be.enums.GridStrategy;
 
 public class FrmConfig extends JFrame
 {
@@ -59,26 +58,34 @@ public class FrmConfig extends JFrame
 	private JRadioButton rbQtyUsd;
 	private JRadioButton rbQtyBalance;
 
+	private JCheckBox chkPIP;
+	private JComboBox<FixPointsMode> cmbPointsMode;
+	private JComboBox<GridStrategy> cmbStrategy;
+	
 	private JTextArea txtFavCoins;
-	private JTextField txtBSMinVolume;
-	private JTextField txtBSMaxChange24h;
+	
+	private JTextField txtBalanceMinAvailable;
 	private JTextField txtBlocksToAnalyzeBB;
 	private JTextField txtBlocksToAnalyzeWA;
-	private JTextField txtIterations;
-	private JTextField txtPriceIncr;
+	private JTextField txtBSMaxChange24h;
+	private JTextField txtBSMaxChange24hS;
+	private JTextField txtBSMinVolume;
+	private JTextField txtBSMinVolumeS;
 	private JTextField txtCoinsIncr;
-	private JTextField txtStopLoss;
-	private JTextField txtTProfit;
-	private JTextField txtInQtyUsd;
 	private JTextField txtInQtyBalance;
+	private JTextField txtInQtyUsd;
+	private JTextField txtIterations;
 	private JTextField txtLeverage;
-	private JTextField txtPositionsMax;
-	private JTextField txtBalanceMinAvailable;
-	private JCheckBox chkPIP;
+	private JTextField txtMaxDistShLg;
+	private JTextField txtMinDistShLg;
+	private JTextField txtMinRatio;
 	private JTextField txtPIPBase;
 	private JTextField txtPIPCoef;
+	private JTextField txtPositionsMax;
+	private JTextField txtPriceIncr;
+	private JTextField txtStopLoss;
+	private JTextField txtTProfit;
 
-	private JComboBox<GridStrategy> cmbStrategy;
 
 	public FrmConfig()
 	{
@@ -112,7 +119,7 @@ public class FrmConfig extends JFrame
 		layout.setVerticalGroup(
 			layout.createParallelGroup(Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
-					.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 384, Short.MAX_VALUE)
+					.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(pnlStatusBar, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE))
 		);
@@ -120,29 +127,9 @@ public class FrmConfig extends JFrame
 		getContentPane().setLayout(layout);
 		pnlContent.setLayout(null);
 
-		JPanel pnlSymbols = new JPanel();
-		pnlSymbols.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Symbols ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlSymbols.setBounds(15, 25, 490, 145);
-		pnlSymbols.setLayout(null);
-		pnlContent.add(pnlSymbols);
-
-		JLabel lblFavCoins = new JLabel("Favorite coins");
-		lblFavCoins.setBounds(24, 27, 90, 14);
-		lblFavCoins.setHorizontalAlignment(SwingConstants.LEFT);
-		pnlSymbols.add(lblFavCoins);
-
-		txtFavCoins = new JTextArea();
-		txtFavCoins.setLineWrap(true);
-		txtFavCoins.setWrapStyleWord(true);
-
-		JScrollPane scroll = new JScrollPane(txtFavCoins, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scroll.setBorder(UIManager.getBorder("TextField.border"));
-		scroll.setBounds(24, 46, 440, 72);
-		pnlSymbols.add(scroll);
-
 		JPanel pnlGrid = new JPanel();
 		pnlGrid.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Custom Grid Strategy ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlGrid.setBounds(15, 188, 490, 145);
+		pnlGrid.setBounds(15, 225, 490, 145);
 		pnlGrid.setLayout(null);
 		pnlContent.add(pnlGrid);
 
@@ -222,11 +209,6 @@ public class FrmConfig extends JFrame
 		bg2.add(rbOverLastOrder);
 		bg2.add(rbOverPosition);
 
-		scroll = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scroll.setBorder(UIManager.getBorder("TextField.border"));
-		scroll.setBounds(37, -89, 437, 28);
-		pnlGrid.add(scroll);
-
 		chkPIP = new JCheckBox("Progr. price increase");
 		chkPIP.setBounds(122, 23, 142, 23);
 		pnlGrid.add(chkPIP);
@@ -243,34 +225,8 @@ public class FrmConfig extends JFrame
 		txtPIPCoef.setBounds(200, 46, 72, 20);
 		pnlGrid.add(txtPIPCoef);
 
-		JPanel pnlOBook = new JPanel();
-		pnlOBook.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " O.Book ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlOBook.setBounds(675, 25, 150, 145);
-		pnlContent.add(pnlOBook);
-		pnlOBook.setLayout(null);
-
-		JLabel lblBlocksToAnalyzeBB = new JLabel("Blocks to analyze BB");
-		lblBlocksToAnalyzeBB.setBounds(24, 27, 118, 14);
-		pnlOBook.add(lblBlocksToAnalyzeBB);
-
-		JLabel lblBlocksToAnalyzeWA = new JLabel("Blocks to analyze WA");
-		lblBlocksToAnalyzeWA.setBounds(24, 78, 118, 14);
-		pnlOBook.add(lblBlocksToAnalyzeWA);
-
-		txtBlocksToAnalyzeWA = new JTextField();
-		txtBlocksToAnalyzeWA.setHorizontalAlignment(SwingConstants.TRAILING);
-		txtBlocksToAnalyzeWA.setColumns(10);
-		txtBlocksToAnalyzeWA.setBounds(24, 97, 86, 20);
-		pnlOBook.add(txtBlocksToAnalyzeWA);
-
-		txtBlocksToAnalyzeBB = new JTextField();
-		txtBlocksToAnalyzeBB.setBounds(24, 46, 86, 20);
-		txtBlocksToAnalyzeBB.setHorizontalAlignment(SwingConstants.TRAILING);
-		txtBlocksToAnalyzeBB.setColumns(10);
-		pnlOBook.add(txtBlocksToAnalyzeBB);
-
 		JPanel panelPositions = new JPanel();
-		panelPositions.setBounds(515, 188, 310, 145);
+		panelPositions.setBounds(515, 225, 310, 145);
 		panelPositions.setLayout(null);
 		panelPositions.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Balance / Positions ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		pnlContent.add(panelPositions);
@@ -332,7 +288,7 @@ public class FrmConfig extends JFrame
 		panelPositions.add(txtInQtyBalance);
 
 		JPanel pnlBetterSymbols = new JPanel();
-		pnlBetterSymbols.setBounds(515, 25, 150, 145);
+		pnlBetterSymbols.setBounds(245, 23, 142, 188);
 		pnlBetterSymbols.setLayout(null);
 		pnlBetterSymbols.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " Better symbols ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		pnlContent.add(pnlBetterSymbols);
@@ -358,18 +314,121 @@ public class FrmConfig extends JFrame
 		pnlBetterSymbols.add(txtBSMinVolume);
 
 		btnSaveConfig = new JButton();
-		btnSaveConfig.setBounds(753, 350, 72, 22);
+		btnSaveConfig.setBounds(753, 387, 72, 22);
 		btnSaveConfig.setText("SAVE");
 		pnlContent.add(btnSaveConfig);
 		
 		JLabel lblStrategy = new JLabel("Default Grid Strategy");
-		lblStrategy.setBounds(20, 345, 120, 14);
+		lblStrategy.setBounds(20, 382, 120, 14);
 		pnlContent.add(lblStrategy);
 		
 		cmbStrategy = new JComboBox<GridStrategy>();
-		cmbStrategy.setBounds(142, 342, 116, 20);
+		cmbStrategy.setBounds(142, 379, 116, 22);
 		cmbStrategy.setModel(new DefaultComboBoxModel<GridStrategy>(GridStrategy.values()));
 		pnlContent.add(cmbStrategy);
+		
+		txtFavCoins = new JTextArea();
+		txtFavCoins.setLineWrap(true);
+		txtFavCoins.setWrapStyleWord(true);
+		
+		JScrollPane scroll = new JScrollPane(txtFavCoins, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.setBounds(20, 38, 210, 170);
+		pnlContent.add(scroll);
+		scroll.setBorder(UIManager.getBorder("TextField.border"));
+		
+		JLabel lblFavCoins = new JLabel("Favorite coins");
+		lblFavCoins.setBounds(22, 18, 90, 14);
+		pnlContent.add(lblFavCoins);
+		lblFavCoins.setHorizontalAlignment(SwingConstants.LEFT);
+
+		JPanel pnlSignals = new JPanel();
+		pnlSignals.setLayout(null);
+		pnlSignals.setBorder(new TitledBorder(UIManager.getBorder("TextField.border"), " O.Book Signals ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		pnlSignals.setBounds(397, 23, 428, 188);
+		pnlContent.add(pnlSignals);
+
+		JLabel lblMinDistShLg = new JLabel("Min Dist SH-LG");
+		lblMinDistShLg.setBounds(307, 29, 86, 14);
+		pnlSignals.add(lblMinDistShLg);
+
+		txtMinDistShLg = new JTextField();
+		txtMinDistShLg.setEnabled(false);
+		txtMinDistShLg.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtMinDistShLg.setColumns(10);
+		txtMinDistShLg.setBounds(307, 48, 86, 20);
+		pnlSignals.add(txtMinDistShLg);
+
+		JLabel lblBlocksToAnalyzeBB = new JLabel("Blocks to analyze BB");
+		lblBlocksToAnalyzeBB.setBounds(161, 29, 118, 14);
+		pnlSignals.add(lblBlocksToAnalyzeBB);
+
+		txtBlocksToAnalyzeBB = new JTextField();
+		txtBlocksToAnalyzeBB.setBounds(161, 48, 86, 20);
+		txtBlocksToAnalyzeBB.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtBlocksToAnalyzeBB.setColumns(10);
+		pnlSignals.add(txtBlocksToAnalyzeBB);
+
+		JLabel lblBlocksToAnalyzeWA = new JLabel("Blocks to analyze WA");
+		lblBlocksToAnalyzeWA.setBounds(161, 79, 118, 14);
+		pnlSignals.add(lblBlocksToAnalyzeWA);
+
+		txtBlocksToAnalyzeWA = new JTextField();
+		txtBlocksToAnalyzeWA.setBounds(161, 98, 86, 20);
+		txtBlocksToAnalyzeWA.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtBlocksToAnalyzeWA.setColumns(10);
+		pnlSignals.add(txtBlocksToAnalyzeWA);
+
+		cmbPointsMode = new JComboBox<FixPointsMode>();
+		cmbPointsMode.setBounds(161, 146, 86, 20);
+		pnlSignals.add(cmbPointsMode);
+
+		txtMaxDistShLg = new JTextField();
+		txtMaxDistShLg.setEnabled(false);
+		txtMaxDistShLg.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtMaxDistShLg.setColumns(10);
+		txtMaxDistShLg.setBounds(307, 98, 86, 20);
+		pnlSignals.add(txtMaxDistShLg);
+
+		JLabel lblMaxDistShLg = new JLabel("Max Dist SH-LG");
+		lblMaxDistShLg.setBounds(307, 79, 86, 14);
+		pnlSignals.add(lblMaxDistShLg);
+
+		JLabel lblPointsMode = new JLabel("Points Mode");
+		lblPointsMode.setBounds(161, 127, 86, 14);
+		pnlSignals.add(lblPointsMode);
+
+		JLabel lblVolumeS = new JLabel("Min Volume 24h");
+		lblVolumeS.setBounds(23, 29, 100, 14);
+		pnlSignals.add(lblVolumeS);
+
+		JLabel lblChangeS = new JLabel("Max Change 24h");
+		lblChangeS.setBounds(22, 79, 100, 14);
+		pnlSignals.add(lblChangeS);
+
+		JLabel lblMinRatio = new JLabel("Min Ratio");
+		lblMinRatio.setBounds(307, 127, 86, 14);
+		pnlSignals.add(lblMinRatio);
+
+		txtMinRatio = new JTextField();
+		txtMinRatio.setEnabled(false);
+		txtMinRatio.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtMinRatio.setColumns(10);
+		txtMinRatio.setBounds(307, 146, 86, 20);
+		pnlSignals.add(txtMinRatio);
+
+		txtBSMinVolumeS = new JTextField();
+		txtBSMinVolumeS.setEnabled(false);
+		txtBSMinVolumeS.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtBSMinVolumeS.setColumns(10);
+		txtBSMinVolumeS.setBounds(23, 48, 86, 20);
+		pnlSignals.add(txtBSMinVolumeS);
+
+		txtBSMaxChange24hS = new JTextField();
+		txtBSMaxChange24hS.setEnabled(false);
+		txtBSMaxChange24hS.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtBSMaxChange24hS.setColumns(10);
+		txtBSMaxChange24hS.setBounds(22, 98, 86, 20);
+		pnlSignals.add(txtBSMaxChange24hS);
 
 		// --------------------------------------------------------------------
 		GroupLayout pnlStatusBarLayout = new GroupLayout(pnlStatusBar);

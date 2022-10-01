@@ -2,28 +2,15 @@ package sanzol.aitrader.be.enums;
 
 public enum PriceIncrType
 {
-	ARITHMETIC("A"), GEOMETRIC("G");
+	ARITHMETIC, GEOMETRIC;
 
-	private final String code;
-
-	PriceIncrType(String code)
-	{
-		this.code = code;
-	}
-
-	public static PriceIncrType fromCode(String code)
+	public static PriceIncrType fromName(String name)
 	{
 		for (PriceIncrType e : PriceIncrType.values())
 		{
-			if (e.code.equals(code))
+			if (e.name().equals(name))
 				return e;
 		}
 		return null;
 	}
-
-	public String getCode()
-	{
-		return code;
-	}
-
 }

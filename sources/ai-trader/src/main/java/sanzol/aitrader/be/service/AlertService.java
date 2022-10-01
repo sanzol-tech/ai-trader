@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import sanzol.aitrader.be.model.Alert;
 import sanzol.util.log.LogService;
+import sanzol.util.telegram.TelegramHelper;
 
 public final class AlertService
 {
@@ -112,7 +113,11 @@ public final class AlertService
 		}
 		alert.setAlertState(alertState);
 
-		LogService.debug(alertState.toString() + " / " + alert.toString());
+		String message = alert.toMessage();
+
+		LogService.debug(message);
+
+		TelegramHelper.sendMessage(message);
 
 		notifyAllLogObservers(alert);
 	}

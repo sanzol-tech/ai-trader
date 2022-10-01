@@ -105,6 +105,17 @@ public enum GridStrategy
 		return takeProfit;
 	}
 
+	public static GridStrategy fromName(String name)
+	{
+		for (GridStrategy e : GridStrategy.values())
+		{
+			if (e.name().equals(name))
+				return e;
+		}
+		return null;
+	}
+	
+	@Override
 	public String toString()
 	{
 		return strategyName;

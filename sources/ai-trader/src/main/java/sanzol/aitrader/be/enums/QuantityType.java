@@ -2,28 +2,16 @@ package sanzol.aitrader.be.enums;
 
 public enum QuantityType
 {
-	USD("U"), COIN("C"), BALANCE("B");
+	USD, COIN, BALANCE;
 
-	private final String code;
-
-	QuantityType(String code)
-	{
-		this.code = code;
-	}
-
-	public static QuantityType fromCode(String code)
+	public static QuantityType fromName(String name)
 	{
 		for (QuantityType e : QuantityType.values())
 		{
-			if (e.code.equals(code))
+			if (e.name().equals(name))
 				return e;
 		}
 		return null;
-	}
-
-	public String getCode()
-	{
-		return code;
 	}
 
 }

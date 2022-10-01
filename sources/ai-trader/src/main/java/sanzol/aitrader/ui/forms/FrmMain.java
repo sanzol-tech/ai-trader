@@ -542,7 +542,7 @@ public class FrmMain extends JFrame implements PriceListener, SignalListener, Al
 
 		btnApiKey.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FrmConfigApiKey.launch();
+				FrmConfigSecure.launch();
 			}
 		});
 

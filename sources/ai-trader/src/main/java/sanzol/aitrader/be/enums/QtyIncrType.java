@@ -2,28 +2,16 @@ package sanzol.aitrader.be.enums;
 
 public enum QtyIncrType
 {
-	ORDER("O"), POSITION("P");
+	ORDER, POSITION;
 
-	private final String code;
-
-	QtyIncrType(String code)
-	{
-		this.code = code;
-	}
-
-	public static QtyIncrType fromCode(String code)
+	public static QtyIncrType fromName(String name)
 	{
 		for (QtyIncrType e : QtyIncrType.values())
 		{
-			if (e.code.equals(code))
+			if (e.name().equals(name))
 				return e;
 		}
 		return null;
-	}
-
-	public String getCode()
-	{
-		return code;
 	}
 
 }

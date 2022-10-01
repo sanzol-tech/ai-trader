@@ -164,12 +164,12 @@ public class SyncSpotClient
 			.queryParam("recvWindow", recvWindow)
 			.queryParam("timestamp", timestamp);
 
-		String signature = ApiSignature.createSignature(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, target.getUri().getQuery());
+		String signature = ApiSignature.createSignature(PrivateConfig.getApiKey(), PrivateConfig.getSecretKey(), target.getUri().getQuery());
 
 		Response response = target
 			.queryParam("signature", signature)
 			.request()
-			.header("X-MBX-APIKEY", PrivateConfig.API_KEY)
+			.header("X-MBX-APIKEY", PrivateConfig.getApiKey())
 			.accept(MediaType.TEXT_XML)
 			.get();
 
@@ -198,12 +198,12 @@ public class SyncSpotClient
 			.queryParam("recvWindow", recvWindow)
 			.queryParam("timestamp", timestamp);
 
-		String signature = ApiSignature.createSignature(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, target.getUri().getQuery());
+		String signature = ApiSignature.createSignature(PrivateConfig.getApiKey(), PrivateConfig.getSecretKey(), target.getUri().getQuery());
 
 		Response response = target
 			.queryParam("signature", signature)
 			.request()
-			.header("X-MBX-APIKEY", PrivateConfig.API_KEY)
+			.header("X-MBX-APIKEY", PrivateConfig.getApiKey())
 			.accept(MediaType.TEXT_XML)
 			.get();
 
@@ -228,12 +228,12 @@ public class SyncSpotClient
 			.queryParam("recvWindow", recvWindow)
 			.queryParam("timestamp", timestamp);
 
-		String signature = ApiSignature.createSignature(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, target.getUri().getQuery());
+		String signature = ApiSignature.createSignature(PrivateConfig.getApiKey(), PrivateConfig.getSecretKey(), target.getUri().getQuery());
 
 		Response response = target
 			.queryParam("signature", signature)
 			.request()
-			.header("X-MBX-APIKEY", PrivateConfig.API_KEY)
+			.header("X-MBX-APIKEY", PrivateConfig.getApiKey())
 			.accept(MediaType.TEXT_XML)
 			.get();
 
@@ -274,12 +274,12 @@ public class SyncSpotClient
 			.queryParam("recvWindow", recvWindow)
 			.queryParam("timestamp", timestamp);
 
-		String signature = ApiSignature.createSignature(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, target.getUri().getQuery());
+		String signature = ApiSignature.createSignature(PrivateConfig.getApiKey(), PrivateConfig.getSecretKey(), target.getUri().getQuery());
 
 		Response response = target
 			.queryParam("signature", signature)
 			.request()
-			.header("X-MBX-APIKEY", PrivateConfig.API_KEY)
+			.header("X-MBX-APIKEY", PrivateConfig.getApiKey())
 			.accept(MediaType.TEXT_XML)
 			.post(null);
 
@@ -306,12 +306,12 @@ public class SyncSpotClient
 			.queryParam("recvWindow", recvWindow)
 			.queryParam("timestamp", timestamp);
 
-		String signature = ApiSignature.createSignature(PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY, target.getUri().getQuery());
+		String signature = ApiSignature.createSignature(PrivateConfig.getApiKey(), PrivateConfig.getSecretKey(), target.getUri().getQuery());
 
 		Response response = target
 			.queryParam("signature", signature)
 			.request()
-			.header("X-MBX-APIKEY", PrivateConfig.API_KEY)
+			.header("X-MBX-APIKEY", PrivateConfig.getApiKey())
 			.accept(MediaType.TEXT_XML)
 			.delete();
 
@@ -324,7 +324,7 @@ public class SyncSpotClient
 
 	public static void main(String[] args) throws KeyManagementException, NoSuchAlgorithmException, IOException, InvalidKeyException
 	{
-		PrivateConfig.loadKey();
+		PrivateConfig.load();
 
 		Account acc = getAccountInformation();
 

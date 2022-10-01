@@ -393,7 +393,7 @@ public class FrmAlerts extends JFrame implements AlertListener
 	{
 		if (alert != null)
 		{
-			ctrlError.INFO (alert.getSymbol().getPair() + " " + alert.getAlertState());
+			ctrlError.INFO (alert.toMessage());
 		}
 	}
 

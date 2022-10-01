@@ -14,5 +14,6 @@ public final class Constants
 	public static final String PROPERTIES_FILENAME = "config.properties";
 	public static final String ALERTS_FILENAME = "alerts.csv";
 	public static final String SHOCKPOINTS_FILENAME = "shockpoints.csv";
+	public static final String TELEGRAM_FILENAME = "telegram.cfg";
 
 }

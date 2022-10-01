@@ -16,29 +16,23 @@ import sanzol.aitrader.be.service.PriceService;
 import sanzol.aitrader.be.service.SignalService;
 import sanzol.util.log.LogService;
 import sanzol.util.observable.Handler;
+import sanzol.util.telegram.TelegramConfig;
 
 public final class ServerApp
 {
-	private static boolean keyLoadedOK = false;
-
-	public static boolean isKeyLoadedOK()
-	{
-		return keyLoadedOK;
-	}
+	private static final int PORT_SPOT = 22723;
+	private static final int PORT_FUTURES = 22722;
 
 	@SuppressWarnings("resource")
 	private static void checkAnotherInstanceRunning(MarketType marketType)
 	{
-		final int portSpot = 22723;
-		final int portFutures = 22722;
-
 		new Thread(() -> {
 			try
 			{
 				if (marketType == MarketType.spot)
-					new ServerSocket(portSpot).accept();
+					new ServerSocket(PORT_SPOT).accept();
 				else
-					new ServerSocket(portFutures).accept();
+					new ServerSocket(PORT_FUTURES).accept();
 			}
 			catch (IOException e)
 			{
@@ -50,29 +44,21 @@ public final class ServerApp
 
 	private static void verifyFolders()
 	{
-		try
-		{
-			File basepath = new File(Constants.DEFAULT_USER_FOLDER, ApiConfig.MARKET_TYPE.toString());
+		File basepath = new File(Constants.DEFAULT_USER_FOLDER, ApiConfig.MARKET_TYPE.toString());
 
-			if (!basepath.exists())
-			{
-				basepath.mkdirs();
-			}
-			File pathLog = new File(basepath, Constants.DEFAULT_LOG_FOLDER);
-			if (!pathLog.exists())
-			{
-				pathLog.mkdirs();
-			}
-			File pathExport = new File(basepath, Constants.DEFAULT_EXPORT_FOLDER);
-			if (!pathExport.exists())
-			{
-				pathExport.mkdirs();
-			}
-		}
-		catch (Exception e)
+		if (!basepath.exists())
 		{
-			System.err.println(e.getMessage());
-			System.exit(-1);
+			basepath.mkdirs();
+		}
+		File pathLog = new File(basepath, Constants.DEFAULT_LOG_FOLDER);
+		if (!pathLog.exists())
+		{
+			pathLog.mkdirs();
+		}
+		File pathExport = new File(basepath, Constants.DEFAULT_EXPORT_FOLDER);
+		if (!pathExport.exists())
+		{
+			pathExport.mkdirs();
 		}
 	}
 
@@ -82,14 +68,16 @@ public final class ServerApp
 		{
 			checkAnotherInstanceRunning(marketType);
 			verifyFolders();
-			keyLoadedOK = PrivateConfig.loadKey();
+			PrivateConfig.load();
+			TelegramConfig.load();
 			Config.load();
 			servicesStart();
 			observer.handle("ServerApp started");
 		}
 		catch (Exception e)
 		{
-			LogService.error(e);
+			System.err.println(e.getMessage());
+			System.exit(-1);
 		}
 	}
 
@@ -109,7 +97,7 @@ public final class ServerApp
 				DepthCache.start();
 				SignalService.start();
 				AlertService.start();
-				if (keyLoadedOK)
+				if (PrivateConfig.isLoaded())
 				{
 					BalanceService.start();
 					PositionService.start();
@@ -151,11 +139,11 @@ public final class ServerApp
 			{
 				AlertService.close();
 			}
-			if (keyLoadedOK && alerts)
+			if (PrivateConfig.isLoaded() && alerts)
 			{
 				BalanceService.close();
 			}
-			if (keyLoadedOK && alerts)
+			if (PrivateConfig.isLoaded() && alerts)
 			{
 				PositionService.close();
 			}
@@ -181,11 +169,11 @@ public final class ServerApp
 			{
 				AlertService.start();
 			}
-			if (keyLoadedOK && alerts)
+			if (PrivateConfig.isLoaded() && alerts)
 			{
 				BalanceService.start();
 			}
-			if (keyLoadedOK && alerts)
+			if (PrivateConfig.isLoaded() && alerts)
 			{
 				PositionService.start();
 			}

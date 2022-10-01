@@ -252,7 +252,7 @@ public final class PositionSpotService
 	public static void main(String[] args) throws InterruptedException, KeyManagementException, NoSuchAlgorithmException, IOException, InvalidKeyException
 	{
 		ServerApp.start(MarketType.spot, (e) -> { System.out.println(e); });
-		PrivateConfig.loadKey();
+		PrivateConfig.load();
 		getPositions();
 		//Thread.sleep(5000);
 		System.out.println(toStringPositions(true));

@@ -4,8 +4,9 @@ import java.lang.reflect.InvocationTargetException;
 
 import api.client.impl.config.ApiConfig;
 import api.client.impl.model.enums.MarketType;
+import sanzol.aitrader.be.config.PrivateConfig;
 import sanzol.aitrader.be.config.ServerApp;
-import sanzol.aitrader.ui.forms.FrmConfigApiKey;
+import sanzol.aitrader.ui.forms.FrmConfigSecure;
 import sanzol.aitrader.ui.forms.FrmMain;
 import sanzol.aitrader.ui.forms.FrmSplash;
 import sanzol.util.log.LogService;
@@ -36,9 +37,9 @@ public final class Application
 		FrmMain.launch(false);
 		FrmSplash.close();
 
-		if (!ServerApp.isKeyLoadedOK())
+		if (!PrivateConfig.isLoaded())
 		{
-			FrmConfigApiKey.launch();
+			FrmConfigSecure.launch();
 		}
 	}
 

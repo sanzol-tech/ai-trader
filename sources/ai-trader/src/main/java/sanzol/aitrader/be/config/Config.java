@@ -1,21 +1,18 @@
 package sanzol.aitrader.be.config;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 import api.client.impl.config.ApiConfig;
 import sanzol.aitrader.be.enums.GridStrategy;
 import sanzol.aitrader.be.enums.PriceIncrType;
 import sanzol.aitrader.be.enums.QtyIncrType;
 import sanzol.aitrader.be.enums.QuantityType;
+import sanzol.util.Properties;
+import sanzol.util.log.LogService;
 
 public class Config
 {
@@ -130,7 +127,7 @@ public class Config
 
 	public static String getFavoriteSymbols()
 	{
-		return favoriteSymbols != null ? favoriteSymbols : String.join(",", FAVORITE_SYMBOLS);
+		return favoriteSymbols != null ? favoriteSymbols : String.join(", ", FAVORITE_SYMBOLS);
 	}
 
 	public static Integer getLeverage()
@@ -325,19 +322,9 @@ public class Config
 		Config.priceIncrType = priceIncrType;
 	}
 
-	public static void setPriceIncrType(String code)
-	{
-		Config.priceIncrType = PriceIncrType.fromCode(code);
-	}
-
 	public static void setQtyIncrType(QtyIncrType qtyIncrType)
 	{
 		Config.qtyIncrType = qtyIncrType;
-	}
-
-	public static void setQtyIncrType(String code)
-	{
-		Config.qtyIncrType = QtyIncrType.fromCode(code);
 	}
 
 	public static void setPriceIncr(Double priceIncr)
@@ -385,11 +372,6 @@ public class Config
 		Config.quantityType = quantityType;
 	}
 
-	public static void setQuantityType(String code)
-	{
-		Config.quantityType = QuantityType.fromCode(code);
-	}
-
 	public static void setInQty(Double inQty)
 	{
 		Config.inQty = inQty;
@@ -402,106 +384,67 @@ public class Config
 
 	// -----------------------------------------------------------------------
 
-	public static void save() throws FileNotFoundException, IOException
+	public static boolean load() throws IOException
 	{
-		File basepath = new File(Constants.DEFAULT_USER_FOLDER, ApiConfig.MARKET_TYPE.toString());
-		File file = new File(basepath, Constants.PROPERTIES_FILENAME);
-
-		try (OutputStream output = new FileOutputStream(file))
+		Path path = Paths.get(Constants.DEFAULT_USER_FOLDER, ApiConfig.MARKET_TYPE.toString(), Constants.PROPERTIES_FILENAME);
+		if (!path.toFile().exists())
 		{
-			Properties prop = new Properties();
-
-			prop.setProperty("isDarkMode", String.valueOf(isDarkMode()));
-			prop.setProperty("favoriteSymbols", getFavoriteSymbols());
-			prop.setProperty("betterSymbolsMinVolume", String.valueOf(getBetterSymbolsMinVolume()));
-			prop.setProperty("betterSymbolsMaxChange", String.valueOf(getBetterSymbolsMaxChange()));
-			prop.setProperty("blocksToAnalizeBB", String.valueOf(getBlocksToAnalizeBB()));
-			prop.setProperty("blocksToAnalizeWA", String.valueOf(getBlocksToAnalizeWA()));
-
-			prop.setProperty("gridStrategy", getGridStrategy().name());
-			prop.setProperty("iterations", String.valueOf(getIterations()));
-			prop.setProperty("pipBase", String.valueOf(getPipBase()));
-			prop.setProperty("pipCoef", String.valueOf(getPipCoef()));
-			prop.setProperty("priceIncrType", getPriceIncrType().getCode());
-			prop.setProperty("qtyIncrType", getQtyIncrType().getCode());
-			prop.setProperty("priceIncr", String.valueOf(getPriceIncr()));
-			prop.setProperty("qtyIncr", String.valueOf(getQtyIncr()));
-			prop.setProperty("stopLoss", String.valueOf(getStopLoss()));
-			prop.setProperty("takeProfit", String.valueOf(getTakeProfit()));
-			prop.setProperty("quantityType", getQuantityType().getCode());
-			prop.setProperty("inQty", String.valueOf(getInQty()));
-
-			prop.setProperty("leverage", String.valueOf(getLeverage()));
-			prop.setProperty("positionsMax", String.valueOf(getPositionsMax()));
-			prop.setProperty("balanceMinAvailable", String.valueOf(getBalanceMinAvailable()));
-
-			prop.store(output, null);
-
-			// prop.forEach((k, v) -> System.out.println("Key : " + k + ", Value : " + v));
+			LogService.error("File " + Constants.PRIVATEKEY_FILENAME + " does not exist");
+			return false;
 		}
+
+		Properties props = Properties.create(false).load(path);
+		isDarkMode = props.getBoolean("isDarkMode");
+		favoriteSymbols = props.getValue("favoriteSymbols");
+		betterSymbolsMinVolume = props.getLong("betterSymbolsMinVolume");
+		betterSymbolsMaxChange = props.getDouble("betterSymbolsMaxChange");
+		blocksToAnalizeBB = props.getInteger("blocksToAnalizeBB");
+		blocksToAnalizeWA = props.getInteger("blocksToAnalizeWA");
+		gridStrategy = GridStrategy.fromName(props.getValue("gridStrategy"));
+		iterations = props.getInteger("iterations");
+		pipBase = props.getDouble("pipBase");
+		pipCoef = props.getDouble("pipCoef");
+		priceIncrType = PriceIncrType.fromName(props.getValue("priceIncrType"));
+		qtyIncrType = QtyIncrType.fromName(props.getValue("qtyIncrType"));
+		priceIncr = props.getDouble("priceIncr");
+		qtyIncr = props.getDouble("qtyIncr");
+		stopLoss = props.getDouble("stopLoss");
+		takeProfit = props.getDouble("takeProfit");
+		quantityType = QuantityType.fromName(props.getValue("quantityType"));
+		inQty = props.getDouble("inQty");
+		leverage = props.getInteger("leverage");
+		positionsMax = props.getInteger("positionsMax");
+		balanceMinAvailable = props.getDouble("balanceMinAvailable");
+
+		return true;
 	}
 
-	public static void load() throws FileNotFoundException, IOException
+	public static void save() throws IOException
 	{
-		File basepath = new File(Constants.DEFAULT_USER_FOLDER, ApiConfig.MARKET_TYPE.toString());
-		File file = new File(basepath, Constants.PROPERTIES_FILENAME);
-
-		if (file.exists())
-		{
-			try (InputStream input = new FileInputStream(file))
-			{
-				Properties prop = new Properties();
-
-				prop.load(input);
-
-				if (prop.containsKey("isDarkMode"))
-					isDarkMode = "true".equalsIgnoreCase(prop.getProperty("isDarkMode"));
-				if (prop.containsKey("favoriteSymbols"))
-					favoriteSymbols = prop.getProperty("favoriteSymbols");
-				if (prop.containsKey("betterSymbolsMinVolume"))
-					betterSymbolsMinVolume = Long.valueOf(prop.getProperty("betterSymbolsMinVolume"));
-				if (prop.containsKey("betterSymbolsMaxChange"))
-					betterSymbolsMaxChange = Double.valueOf(prop.getProperty("betterSymbolsMaxChange"));
-				if (prop.containsKey("blocksToAnalizeBB"))
-					blocksToAnalizeBB = Integer.valueOf(prop.getProperty("blocksToAnalizeBB"));
-				if (prop.containsKey("blocksToAnalizeWA"))
-					blocksToAnalizeWA = Integer.valueOf(prop.getProperty("blocksToAnalizeWA"));
-
-				if (prop.containsKey("gridStrategy"))
-					gridStrategy = GridStrategy.valueOf(prop.getProperty("gridStrategy"));
-
-				if (prop.containsKey("iterations"))
-					iterations = Integer.valueOf(prop.getProperty("iterations"));
-				if (prop.containsKey("pipBase"))
-					pipBase = Double.valueOf(prop.getProperty("pipBase"));
-				if (prop.containsKey("pipCoef"))
-					pipCoef = Double.valueOf(prop.getProperty("pipCoef"));
-				if (prop.containsKey("priceIncrType"))
-					priceIncrType = PriceIncrType.fromCode(prop.getProperty("priceIncrType"));
-				if (prop.containsKey("qtyIncrType"))
-					qtyIncrType = QtyIncrType.fromCode(prop.getProperty("qtyIncrType"));
-				if (prop.containsKey("priceIncr"))
-					priceIncr = Double.valueOf(prop.getProperty("priceIncr"));
-				if (prop.containsKey("qtyIncr"))
-					qtyIncr = Double.valueOf(prop.getProperty("qtyIncr"));
-				if (prop.containsKey("stopLoss"))
-					stopLoss = Double.valueOf(prop.getProperty("stopLoss"));
-				if (prop.containsKey("takeProfit"))
-					takeProfit = Double.valueOf(prop.getProperty("takeProfit"));
-				if (prop.containsKey("quantityType"))
-					quantityType = QuantityType.fromCode(prop.getProperty("quantityType"));
-				if (prop.containsKey("inQty"))
-					inQty = Double.valueOf(prop.getProperty("inQty"));
-
-				if (prop.containsKey("leverage"))
-					leverage = Integer.valueOf(prop.getProperty("leverage"));
-				if (prop.containsKey("positionsMax"))
-					positionsMax = Integer.valueOf(prop.getProperty("positionsMax"));
-				if (prop.containsKey("balanceMinAvailable"))
-					balanceMinAvailable = Double.valueOf(prop.getProperty("balanceMinAvailable"));
-
-			}
-		}
+		Path path = Paths.get(Constants.DEFAULT_USER_FOLDER, ApiConfig.MARKET_TYPE.toString(), Constants.PROPERTIES_FILENAME);
+		Properties.create(false)
+			.put("isDarkMode", isDarkMode)
+			.put("favoriteSymbols", favoriteSymbols)
+			.put("betterSymbolsMinVolume", betterSymbolsMinVolume)
+			.put("betterSymbolsMaxChange", betterSymbolsMaxChange)
+			.put("blocksToAnalizeBB", blocksToAnalizeBB)
+			.put("blocksToAnalizeWA", blocksToAnalizeWA)
+			.put("gridStrategy", gridStrategy.name())
+			.put("iterations", iterations)
+			.put("pipBase", pipBase)
+			.put("pipCoef", pipCoef)
+			.put("priceIncrType", priceIncrType.name())
+			.put("qtyIncrType", qtyIncrType.name())
+			.put("priceIncr", priceIncr)
+			.put("qtyIncr", qtyIncr)
+			.put("stopLoss", stopLoss)
+			.put("takeProfit", takeProfit)
+			.put("quantityType", quantityType.name())
+			.put("inQty", inQty)
+			.put("leverage", leverage)
+			.put("positionsMax", positionsMax)
+			.put("balanceMinAvailable", balanceMinAvailable)
+			.save(path);
 	}
 
 }
