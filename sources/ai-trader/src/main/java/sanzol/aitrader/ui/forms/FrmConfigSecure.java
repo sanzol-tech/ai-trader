@@ -45,6 +45,7 @@ public class FrmConfigSecure extends JFrame
 
 	public FrmConfigSecure()
 	{
+		setResizable(false);
 		initComponents();
 		pageload();
 	}

@@ -1,5 +1,8 @@
 package sanzol.util;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 
@@ -75,6 +78,11 @@ public class DateTimeUtils
 		}
 
 		return text;
+	}
+
+	public static LocalDateTime toLocalDateTime(long value)
+	{
+		return LocalDateTime.ofInstant(Instant.ofEpochMilli(value), ZoneId.systemDefault());
 	}
 
 }

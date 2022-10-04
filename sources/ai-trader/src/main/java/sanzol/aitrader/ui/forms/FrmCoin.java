@@ -36,6 +36,8 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+import org.decimal4j.util.DoubleRounder;
+
 import api.client.futures.impl.SyncFuturesClient;
 import api.client.futures.model.enums.IntervalType;
 import api.client.impl.config.ApiConfig;
@@ -48,6 +50,7 @@ import sanzol.aitrader.be.config.Config;
 import sanzol.aitrader.be.config.Constants;
 import sanzol.aitrader.be.enums.DepthMode;
 import sanzol.aitrader.be.enums.GridStrategy;
+import sanzol.aitrader.be.indicators.RelativeStrengthIndex;
 import sanzol.aitrader.be.model.KlineMerge;
 import sanzol.aitrader.be.model.Symbol;
 import sanzol.aitrader.be.model.SymbolInfo;
@@ -1046,35 +1049,11 @@ public class FrmCoin extends JFrame implements PriceListener
 
 			StringBuilder sb = new StringBuilder();
 
-			// --- absolutes max / min prices ---------------------------------
-			sb.append("\n").append("- Between ---").append("\n");
-			sb.append("max price: " + obService.getMaxPrice()).append("\n");
-			sb.append("min price: " + obService.getMinPrice()).append("\n");
-
-			// --- Super blocks -----------------------------------------------
-			sb.append("\n").append("- Super Asks ---").append("\n");
-			List<DepthEntry> listSa = obService.searchSuperAskBlocks();
-			sb.append(obService.printSuperBlks(listSa)).append("\n");
-
-			sb.append("\n").append("- Super Bids ---").append("\n");
-			List<DepthEntry> listSb = obService.searchSuperBidBlocks();
-			sb.append(obService.printSuperBlks(listSb)).append("\n");
-
-			// --- Asks vs Bids ----------------------------------------------
-			sb.append("\n").append("- Asks vs Bids - Coin ---").append("\n");
-			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.03), false)).append("\n");
-			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.05), false)).append("\n");
-			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.15), false)).append("\n");
-			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.25), false)).append("\n");
-			sb.append(obService.calcDepthDiff(null, false)).append("\n");
-
-			sb.append("\n").append("- Asks vs Bids - Usd ---").append("\n");
-			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.03), true)).append("\n");
-			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.05), true)).append("\n");
-			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.15), true)).append("\n");
-			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.25), true)).append("\n");
-			sb.append(obService.calcDepthDiff(null, true)).append("\n");
-
+			Double rsi = RelativeStrengthIndex.calc(symbol);
+			sb.append("----------------------\n");
+			sb.append("RSI 2h 14p:    " + DoubleRounder.round(rsi * 100, 2) + " %").append("\n");
+			sb.append("----------------------\n");
+			
 			// --- Kline ------------------------------------------------------
 			List<Kline> lst1m;
 			List<Kline> lst1d;
@@ -1093,28 +1072,70 @@ public class FrmCoin extends JFrame implements PriceListener
 			List<Kline> lst3 = lst1m.subList(Math.max(lst1m.size() - 30, 0), lst1m.size());
 
 			KlineMerge klinePlus = KlineMerge.getInstance(lst1d);
-			sb.append("\n");
+			sb.append("\n------------------\n");
 			sb.append("chg  10d: " + Convert.toStrPercent(klinePlus.getPriceChangePercent()) + " %").append("\n");
 			sb.append("move 10d: " + Convert.toStrPercent(klinePlus.getPriceMove()) + " %").append("\n");
 			sb.append("vol  10d: " + PriceUtil.cashFormat(klinePlus.getQuoteVolume())).append("\n");
 
 			klinePlus = KlineMerge.getInstance(lst1m);
-			sb.append("\n");
+			sb.append("\n------------------\n");
 			sb.append("chg  12h: " + Convert.toStrPercent(klinePlus.getPriceChangePercent()) + " %").append("\n");
 			sb.append("move 12h: " + Convert.toStrPercent(klinePlus.getPriceMove()) + " %").append("\n");
 			sb.append("vol  12h: " + PriceUtil.cashFormat(klinePlus.getQuoteVolume())).append("\n");
 
 			klinePlus = KlineMerge.getInstance(lst2);
-			sb.append("\n");
+			sb.append("\n------------------\n");
 			sb.append("chg  4h:  " + Convert.toStrPercent(klinePlus.getPriceChangePercent()) + " %").append("\n");
 			sb.append("move 4h:  " + Convert.toStrPercent(klinePlus.getPriceMove()) + " %").append("\n");
 			sb.append("vol  4h:  " + PriceUtil.cashFormat(klinePlus.getQuoteVolume())).append("\n");
 
 			klinePlus = KlineMerge.getInstance(lst3);
-			sb.append("\n");
+			sb.append("\n------------------\n");
 			sb.append("chg  30m: " + Convert.toStrPercent(klinePlus.getPriceChangePercent()) + " %").append("\n");
 			sb.append("move 30m: " + Convert.toStrPercent(klinePlus.getPriceMove()) + " %").append("\n");
 			sb.append("vol  30m: " + PriceUtil.cashFormat(klinePlus.getQuoteVolume())).append("\n");
+
+			
+			// --- Asks vs Bids ----------------------------------------------
+			sb.append("\n\n");
+			sb.append("Asks vs Bids - Coin\n");
+			sb.append("-------------------------------------------\n");
+			sb.append("   dist         asks      diff         bids\n");
+			sb.append("-------------------------------------------\n");
+			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.03), false)).append("\n");
+			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.05), false)).append("\n");
+			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.15), false)).append("\n");
+			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.25), false)).append("\n");
+			sb.append(obService.calcDepthDiff(null, false)).append("\n\n");
+
+			sb.append("\n");
+			sb.append("Asks vs Bids - USD\n");
+			sb.append("-------------------------------------------\n");
+			sb.append("   dist         asks      diff         bids\n");
+			sb.append("-------------------------------------------\n");
+
+			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.03), true)).append("\n");
+			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.05), true)).append("\n");
+			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.15), true)).append("\n");
+			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.25), true)).append("\n");
+			sb.append(obService.calcDepthDiff(null, true)).append("\n\n");
+
+			// --- Super blocks -----------------------------------------------
+			sb.append("\n");
+			sb.append("Biggest blocks - Asks\n");
+			sb.append("--------------------------------------\n");
+			sb.append("PRICE                    QTY      DIST\n");
+			sb.append("--------------------------------------\n");
+			List<DepthEntry> listSa = obService.searchSuperAskBlocks(10);
+			sb.append(obService.printSuperBlks(listSa)).append("\n");
+
+			sb.append("\n");
+			sb.append("Biggest blocks - Bids\n");
+			sb.append("--------------------------------------\n");
+			sb.append("PRICE                    QTY      DIST\n");
+			sb.append("--------------------------------------\n");
+			List<DepthEntry> listSb = obService.searchSuperBidBlocks(10);
+			sb.append(obService.printSuperBlks(listSb)).append("\n");
 
 			FrmMonitor.launch(symbol.getNameLeft(), sb.toString());
 		}

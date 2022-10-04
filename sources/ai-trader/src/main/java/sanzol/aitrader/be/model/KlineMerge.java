@@ -17,10 +17,10 @@ public class KlineMerge extends Kline
 		super();
 	}
 
-	public KlineMerge(BigDecimal openPrice, BigDecimal highPrice, BigDecimal lowPrice, BigDecimal closePrice, BigDecimal volume, BigDecimal quoteVolume, Long count,
+	public KlineMerge(long openTime, BigDecimal openPrice, BigDecimal highPrice, BigDecimal lowPrice, BigDecimal closePrice, BigDecimal volume, BigDecimal quoteVolume, Long count,
 					  BigDecimal priceChange, BigDecimal priceChangePercent, BigDecimal priceMove, BigDecimal weightedAvgPrice)
 	{
-		super(openPrice, highPrice, lowPrice, closePrice, volume, quoteVolume, count);
+		super(openTime, openPrice, highPrice, lowPrice, closePrice, volume, quoteVolume, count);
 
 		this.priceChange = priceChange;
 		this.priceChangePercent = priceChangePercent;
@@ -34,6 +34,7 @@ public class KlineMerge extends Kline
 			return null;
 		}
 
+		long openTime = lst.get(0).getOpenTime();
 		BigDecimal openPrice = lst.get(0).getOpenPrice();
 		BigDecimal highPrice = lst.get(0).getHighPrice();
 		BigDecimal lowPrice = lst.get(0).getLowPrice();
@@ -60,7 +61,7 @@ public class KlineMerge extends Kline
 		BigDecimal priceMove = PriceUtil.priceChange(lowPrice, highPrice, false);
 		BigDecimal weightedAvgPrice = BigDecimal.ZERO;
 
-		KlineMerge klineMerge = new KlineMerge(openPrice, highPrice, lowPrice, closePrice, volume, quoteVolume, count, priceChange, priceChangePercent, priceMove, weightedAvgPrice);
+		KlineMerge klineMerge = new KlineMerge(openTime, openPrice, highPrice, lowPrice, closePrice, volume, quoteVolume, count, priceChange, priceChangePercent, priceMove, weightedAvgPrice);
 		return klineMerge;
 	}
 

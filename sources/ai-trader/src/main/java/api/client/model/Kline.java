@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Kline
 {
+	private long openTime;
 	private BigDecimal openPrice;
 	private BigDecimal highPrice;
 	private BigDecimal lowPrice;
@@ -20,8 +21,9 @@ public class Kline
 		//
 	}
 
-	public Kline(BigDecimal openPrice, BigDecimal highPrice, BigDecimal lowPrice, BigDecimal closePrice, BigDecimal volume, BigDecimal quoteVolume, Long count)
+	public Kline(long openTime, BigDecimal openPrice, BigDecimal highPrice, BigDecimal lowPrice, BigDecimal closePrice, BigDecimal volume, BigDecimal quoteVolume, Long count)
 	{
+		this.openPrice = openPrice;
 		this.openPrice = openPrice;
 		this.highPrice = highPrice;
 		this.lowPrice = lowPrice;
@@ -29,6 +31,16 @@ public class Kline
 		this.volume = volume;
 		this.quoteVolume = quoteVolume;
 		this.count = count;
+	}
+
+	public long getOpenTime()
+	{
+		return openTime;
+	}
+
+	public void setOpenTime(long openTime)
+	{
+		this.openTime = openTime;
 	}
 
 	public BigDecimal getOpenPrice()

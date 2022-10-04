@@ -134,6 +134,7 @@ public class SyncFuturesClient
 		{
 			Kline kline = new Kline();
 
+			kline.setOpenTime(Long.valueOf(entry.get(0)));
 			kline.setOpenPrice(new BigDecimal(entry.get(1)));
 			kline.setHighPrice(new BigDecimal(entry.get(2)));
 			kline.setLowPrice(new BigDecimal(entry.get(3)));

@@ -553,15 +553,17 @@ public class OrderBookService
 
 	public String calcDepthDiff(BigDecimal dist, boolean isUsd)
 	{
+		final BigDecimal _100 = BigDecimal.valueOf(100);
+
 		if (dist == null)
 		{
-			return "ALL  %  " + calcDepthDiff(minPrice, maxPrice, isUsd);
+			return "  ALL % " + calcDepthDiff(minPrice, maxPrice, isUsd);
 		}
 		else
 		{
 			BigDecimal minPrice = lastPrice.multiply(BigDecimal.ONE.subtract(dist));
 			BigDecimal maxPrice = lastPrice.multiply(BigDecimal.ONE.add(dist));
-			return dist + " %  " + calcDepthDiff(minPrice, maxPrice, isUsd);
+			return String.format(Locale.US, "%5.2f %% ", dist.multiply(_100)) + calcDepthDiff(minPrice, maxPrice, isUsd);
 		}
 	}
 
@@ -570,7 +572,7 @@ public class OrderBookService
 		BigDecimal totalAsks = sumQtyAsks(maxPrice, isUsd);
 		BigDecimal totalBids = sumQtyBids(minPrice, isUsd);
 		BigDecimal diff = (totalBids.subtract(totalAsks)).divide(totalBids.add(totalAsks), 4, RoundingMode.HALF_DOWN);
-		return String.format(Locale.US, "totalAsks: %12.2f  totalBids: %12.2f  diff: %7.2f %%", totalAsks, totalBids, diff.multiply(BigDecimal.valueOf(100)));
+		return String.format(Locale.US, "%12.2f %7.2f %% %12.2f", totalAsks, diff.multiply(BigDecimal.valueOf(100)), totalBids);
 	}
 
 	// ------------------------------------------------------------------------
@@ -675,7 +677,7 @@ public class OrderBookService
 
 	// ------------------------------------------------------------------------
 
-	public List<DepthEntry> searchSuperAskBlocks()
+	public List<DepthEntry> searchSuperAskBlocks(long maxSize)
 	{
 		List<DepthEntry> list = new ArrayList<DepthEntry>();
 
@@ -708,13 +710,13 @@ public class OrderBookService
 			list.add(new DepthEntry(e.getPrice(), e.getQty()));
 		}
 		Collections.sort(list, Comparator.comparing(DepthEntry::getQty).reversed());
-		list = list.stream().limit(10).collect(Collectors.toList());
+		list = list.stream().limit(maxSize).collect(Collectors.toList());
 		Collections.sort(list, Comparator.comparing(DepthEntry::getPrice).reversed());
 
 		return list;
 	}
 
-	public List<DepthEntry> searchSuperBidBlocks()
+	public List<DepthEntry> searchSuperBidBlocks(long maxSize)
 	{
 		List<DepthEntry> list = new ArrayList<DepthEntry>();
 
@@ -747,7 +749,7 @@ public class OrderBookService
 			list.add(new DepthEntry(e.getPrice(), e.getQty()));
 		}
 		Collections.sort(list, Comparator.comparing(DepthEntry::getQty).reversed());
-		list = list.stream().limit(10).collect(Collectors.toList());
+		list = list.stream().limit(maxSize).collect(Collectors.toList());
 		Collections.sort(list, Comparator.comparing(DepthEntry::getPrice).reversed());
 
 		return list;
@@ -984,11 +986,11 @@ public class OrderBookService
 		System.out.println("LONG W.AVG2:  " + obService.getBidWAvgPoint2().toPlainString());
 
 		System.out.println("");
-		List<DepthEntry> listSa = obService.searchSuperAskBlocks();
+		List<DepthEntry> listSa = obService.searchSuperAskBlocks(10);
 		System.out.println(obService.printSuperBlks(listSa));
 
 		System.out.println("");
-		List<DepthEntry> listSb = obService.searchSuperBidBlocks();
+		List<DepthEntry> listSb = obService.searchSuperBidBlocks(10);
 		System.out.println(obService.printSuperBlks(listSb));
 
 		System.out.println("min price: " + obService.minPrice);

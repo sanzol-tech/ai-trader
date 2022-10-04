@@ -61,7 +61,7 @@ public class CandlestickEvent
 	public class Kline
 	{
 		@JsonProperty("t")
-		private Long startTime;
+		private Long openTime;
 
 		@JsonProperty("T")
 		private Long closeTime;
@@ -111,14 +111,14 @@ public class CandlestickEvent
 		@JsonProperty("B")
 		private Long ignore;
 
-		public Long getStartTime()
+		public Long getOpenTime()
 		{
-			return startTime;
+			return openTime;
 		}
 
-		public void setStartTime(Long startTime)
+		public void setOpenTime(Long openTime)
 		{
-			this.startTime = startTime;
+			this.openTime = openTime;
 		}
 
 		public Long getCloseTime()

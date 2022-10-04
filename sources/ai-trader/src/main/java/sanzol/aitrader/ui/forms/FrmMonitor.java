@@ -25,7 +25,7 @@ public class FrmMonitor extends JFrame
 	{
 		setTitle(TITLE);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 640, 480);
+		setBounds(100, 100, 380, 620);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmCoin.class.getResource("/resources/monitor.png")));
 		setLocationRelativeTo(null);
 
@@ -57,6 +57,7 @@ public class FrmMonitor extends JFrame
 					frame.setVisible(true);
 					frame.setTitle(TITLE + " - " + subtitle);
 					frame.txtResult.setText(text);
+					frame.txtResult.setCaretPosition(0);
 				}
 				catch (Exception e)
 				{
