@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status.Family;
 
 import api.client.exception.ApiException;
+import api.client.exception.ResponseStatus;
 import api.client.impl.config.ApiConstants;
 import api.client.impl.utils.ApiSignature;
 import api.client.impl.utils.CustomClient;
@@ -29,7 +30,6 @@ import api.client.spot.model.Order;
 import api.client.spot.model.enums.IntervalType;
 import api.client.spot.model.enums.NewOrderRespType;
 import api.client.spot.model.enums.OrderSide;
-import api.client.spot.model.enums.OrderStatus;
 import api.client.spot.model.enums.OrderType;
 import api.client.spot.model.enums.TimeInForce;
 import sanzol.aitrader.be.config.PrivateConfig;
@@ -42,11 +42,13 @@ public class SyncSpotClient
 	{
 		if (response.getStatusInfo().getFamily() != Family.SUCCESSFUL)
 		{
-			System.out.println(response.getStatusInfo().getFamily().toString());
-			System.out.println(response.getStatusInfo().getStatusCode());
-			System.out.println(response.getStatusInfo().getReasonPhrase());
+			//System.out.println(response.getStatusInfo().getFamily().toString());
+			//System.out.println(response.getStatusInfo().getStatusCode());
+			//System.out.println(response.getStatusInfo().getReasonPhrase());
 
-			throw new ApiException(response.readEntity(String.class));
+			ResponseStatus status = response.readEntity(ResponseStatus.class);
+
+			throw new ApiException(status.getCode(), status.getMsg());
 		}
 	}
 
@@ -213,7 +215,7 @@ public class SyncSpotClient
 		return response.readEntity(new GenericType<List<Order>>() {});
 	}
 
-	public static List<Order> getFilledOrders(String symbol) throws KeyManagementException, NoSuchAlgorithmException, InvalidKeyException
+	public static List<Order> getAllOrders(String symbol) throws KeyManagementException, NoSuchAlgorithmException, InvalidKeyException
 	{
 		final String path = "/api/v3/allOrders";
 
@@ -239,11 +241,8 @@ public class SyncSpotClient
 			.get();
 
 		verifyResponseStatus(response);
-
+		
 		List<Order> lstOrders = response.readEntity(new GenericType<List<Order>>() {});
-
-		// Remove all no NEW
-		lstOrders.removeIf((Order entry) -> entry.getStatus() != OrderStatus.FILLED);
 
 		return lstOrders;
 	}

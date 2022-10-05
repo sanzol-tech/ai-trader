@@ -1136,8 +1136,11 @@ public class FrmCoin extends JFrame implements PriceListener
 			sb.append("--------------------------------------\n");
 			List<DepthEntry> listSb = obService.searchSuperBidBlocks(10);
 			sb.append(obService.printSuperBlks(listSb)).append("\n");
-
-			FrmMonitor.launch(symbol.getNameLeft(), sb.toString());
+			
+			int x = getX() + getWidth() - 20;
+			int y = getY();
+			
+			FrmMonitor.launch(symbol.getNameLeft(), sb.toString(), x, y);
 		}
 		catch (Exception e)
 		{

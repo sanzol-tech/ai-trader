@@ -1,5 +1,7 @@
 package api.client.spot.model;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import api.client.spot.model.enums.OrderSide;
@@ -15,14 +17,14 @@ public class Order
 	private Long orderId;
 	private String clientOrderId;
 	private String orderListId;
-	private String price;
-	private String origQty;
+	private BigDecimal price;
+	private BigDecimal origQty;
 	private String executedQty;
 	private OrderStatus status;
 	private TimeInForce timeInForce;
 	private OrderType type;
 	private OrderSide side;
-	private String stopPrice;
+	private BigDecimal stopPrice;
 	private String icebergQty;
 	private long time;
 	private String cummulativeQuoteQty;
@@ -70,22 +72,22 @@ public class Order
 		this.orderListId = orderListId;
 	}
 
-	public String getPrice()
+	public BigDecimal getPrice()
 	{
 		return price;
 	}
 
-	public void setPrice(String price)
+	public void setPrice(BigDecimal price)
 	{
 		this.price = price;
 	}
 
-	public String getOrigQty()
+	public BigDecimal getOrigQty()
 	{
 		return origQty;
 	}
 
-	public void setOrigQty(String origQty)
+	public void setOrigQty(BigDecimal origQty)
 	{
 		this.origQty = origQty;
 	}
@@ -140,12 +142,12 @@ public class Order
 		this.side = side;
 	}
 
-	public String getStopPrice()
+	public BigDecimal getStopPrice()
 	{
 		return stopPrice;
 	}
 
-	public void setStopPrice(String stopPrice)
+	public void setStopPrice(BigDecimal stopPrice)
 	{
 		this.stopPrice = stopPrice;
 	}

@@ -16,7 +16,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 
+import api.client.exception.ApiException;
 import api.client.impl.model.enums.MarketType;
+import api.client.model.ExchangeInfoEntry;
 import api.client.spot.impl.SyncSpotClient;
 import api.client.spot.model.Account;
 import api.client.spot.model.AssetBalance;
@@ -35,7 +37,6 @@ public final class PositionSpotService
 
 	private static List<AssetBalance> lstBalances = new ArrayList<AssetBalance>();
 	private static List<Order> lstOpenOrders = new ArrayList<Order>();
-	private static List<Order> lstFilledOrders = new ArrayList<Order>();
 
 	// ------------------------------------------------------------------------
 
@@ -109,7 +110,6 @@ public final class PositionSpotService
 
 		lstBalances = new ArrayList<AssetBalance>();
 		lstOpenOrders = new ArrayList<Order>();
-		lstFilledOrders = new ArrayList<Order>();
 
 		notifyAllLogObservers();
 	}
@@ -146,35 +146,57 @@ public final class PositionSpotService
 
 	// ------------------------------------------------------------------------
 
-	public static String toStringOrders(String symbolName)
+	public static String toStringOrders(String symbolName) throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
 		StringBuilder sb = new StringBuilder();
 
 		for (Order entry : getLstOpenOrders(symbolName))
 		{
-			sb.append(String.format("%-22s %-6s %-13s %14s %14s %14s\n", Convert.convertTime(entry.getUpdateTime()), entry.getSide(), entry.getType(), entry.getOrigQty(), entry.getPrice(), entry.getStopPrice()));
+			sb.append(String.format("%-22s %-6s %-13s %14s %14s %14s\n", entry.getSymbol(), entry.getSide(), entry.getType(), entry.getPrice(), entry.getOrigQty(), entry.getStatus()));
 		}
 
 		return sb.toString();
 	}
 
-	public static String toStringFilledOrders(String symbolLeft) throws KeyManagementException, InvalidKeyException, NoSuchAlgorithmException
+	public static String toStringAllOrders(String symbolLeft) throws KeyManagementException, InvalidKeyException, NoSuchAlgorithmException
 	{
+		List<Order> lstAlldOrders = new ArrayList<Order>();
+
 		try
 		{
-			lstFilledOrders = SyncSpotClient.getFilledOrders(symbolLeft + "BUSD");
-			Collections.sort(lstFilledOrders, Comparator.comparing(Order::getUpdateTime));
+			List<ExchangeInfoEntry> lstExInfoEntries = ExchangeInfoService.getSymbolsSatrtWith(symbolLeft);
+			for (ExchangeInfoEntry entry : lstExInfoEntries)
+			{
+				try
+				{
+					List<Order> lst = SyncSpotClient.getAllOrders(entry.getSymbol());
+					lstAlldOrders.addAll(lst);
+				}
+				catch(ApiException ex)
+				{
+					if (!ex.getErrCode().equals("-1121"))
+					{
+						return ex.getMessage();
+					}
+				}
+			}
+
+			// Remove all no FILLED or NEW
+			lstAlldOrders.removeIf((Order entry) -> entry.getStatus() != OrderStatus.FILLED && entry.getStatus() != OrderStatus.NEW);
+
+			//Sort
+			Collections.sort(lstAlldOrders, Comparator.comparing(Order::getStatus).reversed().thenComparing(Order::getUpdateTime).reversed());
 		}
 		catch(Exception ex)
 		{
-
+			return ex.getMessage();
 		}
 
 		StringBuilder sb = new StringBuilder();
 
-		for (Order entry : lstFilledOrders)
+		for (Order entry : lstAlldOrders)
 		{
-			sb.append(String.format("%-22s %-10s %-6s %-10s %14s %14s %14s\n", Convert.convertTime(entry.getUpdateTime()), entry.getSymbol(), entry.getSide(), entry.getType(), entry.getOrigQty(), entry.getPrice(), entry.getStatus()));
+			sb.append(String.format("%-22s %-10s %-6s %-16s %14s %14s %14s\n", Convert.convertTime(entry.getUpdateTime()), entry.getSymbol(), entry.getSide(), entry.getType(), entry.getPrice(), entry.getOrigQty(), entry.getStatus()));
 		}
 
 		return sb.toString();
@@ -192,33 +214,34 @@ public final class PositionSpotService
 		{
 			String side = "LONG";
 
-			sbBody.append(String.format("%-22s %-20s %14s %14s %14s\n",
+			sbBody.append(String.format("%-22s %-20s %14s %14s %14s %14s\n",
 										entry.getAsset(),
 										side,
+										"",
 										entry.getQuantity().toPlainString(),
 										entry.getFree().toPlainString(),
 										entry.getLocked().toPlainString()));
 
 			if (includeOrders)
 			{
-				sbBody.append(StringUtils.repeat("-",97));
+				sbBody.append(StringUtils.repeat("-",110));
 				sbBody.append("\n");
 				sbBody.append(toStringOrders(entry.getAsset()));
-				sbBody.append(StringUtils.repeat("-",97));
-				sbBody.append("\n");
+				sbBody.append("\n\n");
 			}
-/*
-			sbBody.append(StringUtils.repeat("-",97));
+
+			sbBody.append(StringUtils.repeat("-",110));
 			sbBody.append("\n");
-			sbBody.append(toStringFilledOrders(entry.getAsset()));
-			sbBody.append(StringUtils.repeat("-",97));
+			sbBody.append(toStringAllOrders(entry.getAsset()));
 			sbBody.append("\n");
-*/
+			sbBody.append(StringUtils.repeat("-",110));
+			sbBody.append("\n");
+
 		}
 
 		StringBuilder sb  = new StringBuilder();
-		sb.append(String.format("%-22s %-20s %14s %14s %14s\n", "SYMBOL", "TYPE", "QTY", "FREE", "LOCKED", "AVG PRICE"));
-		sb.append(StringUtils.repeat("-", 97));
+		sb.append(String.format("%-22s %-20s %14s %14s %14s %14s\n", "SYMBOL", "TYPE", "PRICE", "QTY", "FREE", "LOCKED"));
+		sb.append(StringUtils.repeat("-", 110));
 		sb.append("\n");
 		sb.append(sbBody);
 
@@ -253,11 +276,14 @@ public final class PositionSpotService
 	{
 		ServerApp.start(MarketType.spot, (e) -> { System.out.println(e); });
 		PrivateConfig.load();
+
 		getPositions();
 		//Thread.sleep(5000);
 		System.out.println(toStringPositions(true));
-		//System.out.println(toStringFilledOrders("FILBUSD"));
-		//System.out.println(toStringFilledOrders("ANKRBUSD"));
+
+		//System.out.println(toStringAllOrders("CELO"));
+		
+		System.exit(0);
 	}
 
 }
