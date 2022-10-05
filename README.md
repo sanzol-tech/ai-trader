@@ -1,4 +1,4 @@
-![aitrader](https://user-images.githubusercontent.com/68629815/192935067-e05e98c0-636f-4fd9-9b76-4ac6db080f2d.png)
+# AiTrader
 
 ![Badge](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
 ![Badge](https://img.shields.io/badge/mac%20os-000000?style=for-the-badge&logo=apple&logoColor=white)
