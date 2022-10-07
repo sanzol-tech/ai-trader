@@ -857,7 +857,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 		if (isOpenPosition)
 		{
 			txtInPrice.setText(symbol.priceToStr(positionRisk.getEntryPrice()));
-			double amt = positionRisk.getPositionAmt().doubleValue();
+			double amt = positionRisk.getPositionAmt().abs().doubleValue();
 			txtInQty.setText(symbol.qtyToStr(amt));
 			cmbQtyType.setSelectedItem(QuantityType.COIN);
 		}
@@ -867,7 +867,7 @@ public class FrmGrid extends JFrame implements PriceListener, PositionListener
 			if (isOpenPosition)
 			{
 				txtInPrice.setText(symbol.priceToStr(positionRisk.getEntryPrice()));
-				double amt = positionRisk.getPositionAmt().doubleValue();
+				double amt = positionRisk.getPositionAmt().abs().doubleValue();
 				txtInQty.setText(symbol.qtyToStr(amt));
 				cmbQtyType.setSelectedItem(QuantityType.COIN);
 
