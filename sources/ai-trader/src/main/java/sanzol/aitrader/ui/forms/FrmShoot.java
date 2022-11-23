@@ -39,6 +39,7 @@ import sanzol.aitrader.be.service.PriceListener;
 import sanzol.aitrader.be.service.PriceService;
 import sanzol.aitrader.be.trade.SimpleTrade;
 import sanzol.aitrader.ui.config.Styles;
+import sanzol.aitrader.ui.controls.CtrlError;
 import sanzol.util.Convert;
 
 public class FrmShoot extends JFrame implements PriceListener

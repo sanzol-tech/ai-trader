@@ -91,8 +91,8 @@ public final class TelegramHelper
 	public static void main(String[] args) throws IOException
 	{
 		TelegramConfig.load();
-		//String result = sendMessage("hello !!!");
-		String result = getUpdates(TelegramConfig.getApiToken());
+		String result = sendMessage(TelegramConfig.getApiToken(), "-1001877802568", "Hello ! Welcome to the AiTrader signals group");
+		//String result = getUpdates(TelegramConfig.getApiToken());
 		System.out.println(result);
 	}
 

@@ -24,6 +24,7 @@ import sanzol.aitrader.be.config.Constants;
 import sanzol.aitrader.be.service.PositionFuturesService;
 import sanzol.aitrader.be.service.PositionListener;
 import sanzol.aitrader.ui.config.Styles;
+import sanzol.aitrader.ui.controls.CtrlError;
 import sanzol.util.log.LogService;
 
 public class FrmPositions extends JFrame implements PositionListener

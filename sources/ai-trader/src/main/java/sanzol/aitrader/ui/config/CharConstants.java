@@ -9,5 +9,7 @@ public final class CharConstants
 	public static final String ARROW_RIGHT = "\u2192";
 	public static final String ARROW_UP_DOWN = ARROW_UP + ARROW_DOWN;
 	public static final String SIGNA = "Σ";
+	public static final String DOT = "●";
+	public static final String WARN = "\u26A0";
 
 }

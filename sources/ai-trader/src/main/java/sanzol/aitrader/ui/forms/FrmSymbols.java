@@ -31,6 +31,7 @@ import sanzol.aitrader.be.model.SymbolInfo;
 import sanzol.aitrader.be.service.PriceListener;
 import sanzol.aitrader.be.service.PriceService;
 import sanzol.aitrader.ui.config.Styles;
+import sanzol.aitrader.ui.controls.CtrlError;
 import sanzol.util.log.LogService;
 import sanzol.util.price.PriceUtil;
 
@@ -236,7 +237,7 @@ public class FrmSymbols extends JFrame implements PriceListener
 	    	tableModel.addColumn("");
 	    	tableModel.addColumn("CHANGE 24h");
 	    	tableModel.addColumn("");
-	    	tableModel.addColumn("MORE");
+	    	tableModel.addColumn("STOCH 24h");
 
 			table.setModel(tableModel);
 
@@ -289,7 +290,7 @@ public class FrmSymbols extends JFrame implements PriceListener
 					!entry.isLowVolume() ? "" : "< " + PriceUtil.cashFormat(Config.getBetterSymbolsMinVolume()),
     				String.format("%.2f %%", entry.getPriceChangePercent()),
 					!entry.isHighMove() ? "" : "RISKY",
-					entry.isBestShort() ? "24H HIGH" : entry.isBestLong() ? "24H LOW" : ""
+					String.format("%.2f %%", entry.getStochastic())
         		};
 
 			tableModel.addRow(row);

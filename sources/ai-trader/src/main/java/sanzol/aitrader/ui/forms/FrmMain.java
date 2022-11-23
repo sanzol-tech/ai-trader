@@ -61,6 +61,7 @@ import sanzol.aitrader.be.service.PriceService;
 import sanzol.aitrader.be.service.SignalListener;
 import sanzol.aitrader.be.service.SignalService;
 import sanzol.aitrader.ui.config.Styles;
+import sanzol.aitrader.ui.controls.CtrlError;
 import sanzol.util.BeepUtils;
 import sanzol.util.Convert;
 import sanzol.util.log.LogService;

@@ -23,6 +23,7 @@ import javax.swing.border.EmptyBorder;
 import sanzol.aitrader.be.config.Constants;
 import sanzol.aitrader.be.config.PrivateConfig;
 import sanzol.aitrader.ui.config.Styles;
+import sanzol.aitrader.ui.controls.CtrlError;
 import sanzol.util.telegram.TelegramConfig;
 
 public class FrmConfigSecure extends JFrame

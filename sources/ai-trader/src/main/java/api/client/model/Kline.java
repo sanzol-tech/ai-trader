@@ -1,6 +1,9 @@
 package api.client.model;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -113,6 +116,15 @@ public class Kline
 		this.count = count;
 	}
 
+	// ---- CALCULATED FIELDS -------------------------------------------------
+
+	public ZonedDateTime getOpenTimeZoned()
+	{
+		return ZonedDateTime.ofInstant(Instant.ofEpochMilli(openTime), ZoneOffset.UTC);
+	}
+
+	// ---- TO STRING ---------------------------------------------------------
+	
 	@Override
 	public String toString()
 	{

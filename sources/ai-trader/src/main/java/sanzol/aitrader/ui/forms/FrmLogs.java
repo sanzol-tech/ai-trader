@@ -22,6 +22,7 @@ import javax.swing.table.DefaultTableModel;
 
 import sanzol.aitrader.be.config.Constants;
 import sanzol.aitrader.ui.config.Styles;
+import sanzol.aitrader.ui.controls.CtrlError;
 import sanzol.util.log.LogListener;
 import sanzol.util.log.LogService;
 

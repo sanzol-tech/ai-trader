@@ -17,22 +17,19 @@ public class SymbolInfo
 {
 	private Symbol symbol;
 
-	private BigDecimal usdVolume;
-	private BigDecimal priceChangePercent;
+	private BigDecimal open;
 	private BigDecimal high;
 	private BigDecimal low;
-	private BigDecimal avgPrice;
-	private BigDecimal avgHigh;
-	private BigDecimal avgLow;
-
 	private BigDecimal lastPrice;
+
+	private BigDecimal usdVolume;
+	private BigDecimal priceChangePercent;
+	
+	private BigDecimal highLow;
+	private BigDecimal stochastic;
 
 	private boolean isLowVolume = false;
 	private boolean isHighMove = false;
-	private boolean isBestShort = false;
-	private boolean isBestLong = false;
-
-	private static final BigDecimal TWO = BigDecimal.valueOf(2);
 
 	public static SymbolInfo getInstance(SymbolTickerEvent symbolTickerEvent) throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
@@ -46,21 +43,19 @@ public class SymbolInfo
 
 		si.symbol = _symbol;
 
+		si.open = symbolTickerEvent.getOpenPrice();
+		si.high = symbolTickerEvent.getHighPrice();
+		si.low = symbolTickerEvent.getLowPrice();
 		si.lastPrice = symbolTickerEvent.getLastPrice();
 
 		si.usdVolume = symbolTickerEvent.getQuoteVolume();
 		si.priceChangePercent = symbolTickerEvent.getPriceChangePercent();
-		si.high = symbolTickerEvent.getHighPrice();
-		si.low = symbolTickerEvent.getLowPrice();
-		si.avgPrice = symbolTickerEvent.getWeightedAvgPrice();
 
-		si.avgHigh = (si.avgPrice.add(si.high)).divide(TWO, si.symbol.getPricePrecision(), RoundingMode.HALF_UP);
-		si.avgLow = (si.avgPrice.add(si.low)).divide(TWO, si.symbol.getPricePrecision(), RoundingMode.HALF_UP);
+		si.highLow = si.high.subtract(si.low).divide(si.low, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
+		si.stochastic = (si.lastPrice.subtract(si.low)).divide((si.high.subtract(si.low)), 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
 
 		si.isLowVolume = (si.usdVolume.doubleValue() < Config.getBetterSymbolsMinVolume());
 		si.isHighMove = (si.priceChangePercent.abs().doubleValue() > Config.getBetterSymbolsMaxChange());
-		si.isBestShort = (si.lastPrice.doubleValue() > si.avgHigh.doubleValue());
-		si.isBestLong = (si.lastPrice.doubleValue() < si.avgLow.doubleValue());
 
 		return si;
 	}
@@ -89,42 +84,15 @@ public class SymbolInfo
 	}
 
 	// ------------------------------------------------------------------------
-
-	public String getSymbolPair()
-	{
-		return symbol.getPair();
-	}
-
-	// ------------------------------------------------------------------------
-
+	
 	public Symbol getSymbol()
 	{
 		return symbol;
 	}
 
-	public void setSymbol(Symbol symbol)
+	public BigDecimal getOpen()
 	{
-		this.symbol = symbol;
-	}
-
-	public BigDecimal getUsdVolume()
-	{
-		return usdVolume;
-	}
-
-	public void setUsdVolume(BigDecimal usdVolume)
-	{
-		this.usdVolume = usdVolume;
-	}
-
-	public BigDecimal getPriceChangePercent()
-	{
-		return priceChangePercent;
-	}
-
-	public void setPriceChangePercent(BigDecimal priceChangePercent)
-	{
-		this.priceChangePercent = priceChangePercent;
+		return open;
 	}
 
 	public BigDecimal getHigh()
@@ -132,49 +100,9 @@ public class SymbolInfo
 		return high;
 	}
 
-	public void setHigh(BigDecimal high)
-	{
-		this.high = high;
-	}
-
 	public BigDecimal getLow()
 	{
 		return low;
-	}
-
-	public void setLow(BigDecimal low)
-	{
-		this.low = low;
-	}
-
-	public BigDecimal getAvgPrice()
-	{
-		return avgPrice;
-	}
-
-	public void setAvgPrice(BigDecimal avgPrice)
-	{
-		this.avgPrice = avgPrice;
-	}
-
-	public BigDecimal getAvgHigh()
-	{
-		return avgHigh;
-	}
-
-	public void setAvgHigh(BigDecimal avgHigh)
-	{
-		this.avgHigh = avgHigh;
-	}
-
-	public BigDecimal getAvgLow()
-	{
-		return avgLow;
-	}
-
-	public void setAvgLow(BigDecimal avgLow)
-	{
-		this.avgLow = avgLow;
 	}
 
 	public BigDecimal getLastPrice()
@@ -182,9 +110,24 @@ public class SymbolInfo
 		return lastPrice;
 	}
 
-	public void setLastPrice(BigDecimal lastPrice)
+	public BigDecimal getUsdVolume()
 	{
-		this.lastPrice = lastPrice;
+		return usdVolume;
+	}
+
+	public BigDecimal getPriceChangePercent()
+	{
+		return priceChangePercent;
+	}
+
+	public BigDecimal getHighLow()
+	{
+		return highLow;
+	}
+
+	public BigDecimal getStochastic()
+	{
+		return stochastic;
 	}
 
 	public boolean isLowVolume()
@@ -192,39 +135,16 @@ public class SymbolInfo
 		return isLowVolume;
 	}
 
-	public void setLowVolume(boolean isLowVolume)
-	{
-		this.isLowVolume = isLowVolume;
-	}
-
 	public boolean isHighMove()
 	{
 		return isHighMove;
 	}
 
-	public void setHighMove(boolean isHighMove)
-	{
-		this.isHighMove = isHighMove;
-	}
+	// ------------------------------------------------------------------------
 
-	public boolean isBestShort()
+	public String getSymbolPair()
 	{
-		return isBestShort;
-	}
-
-	public void setBestShort(boolean isBestShort)
-	{
-		this.isBestShort = isBestShort;
-	}
-
-	public boolean isBestLong()
-	{
-		return isBestLong;
-	}
-
-	public void setBestLong(boolean isBestLong)
-	{
-		this.isBestLong = isBestLong;
+		return symbol.getPair();
 	}
 
 }

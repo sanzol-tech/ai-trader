@@ -36,6 +36,7 @@ import sanzol.aitrader.be.service.AlertListener;
 import sanzol.aitrader.be.service.AlertService;
 import sanzol.aitrader.be.service.PriceService;
 import sanzol.aitrader.ui.config.Styles;
+import sanzol.aitrader.ui.controls.CtrlError;
 import sanzol.util.DateTimeUtils;
 
 public class FrmAlerts extends JFrame implements AlertListener

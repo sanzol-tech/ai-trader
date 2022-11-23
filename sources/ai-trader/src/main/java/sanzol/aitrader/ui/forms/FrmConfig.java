@@ -35,6 +35,7 @@ import sanzol.aitrader.be.enums.QtyIncrType;
 import sanzol.aitrader.be.enums.QuantityType;
 import sanzol.aitrader.be.service.OrderBookService.FixPointsMode;
 import sanzol.aitrader.ui.config.Styles;
+import sanzol.aitrader.ui.controls.CtrlError;
 import sanzol.util.Convert;
 import sanzol.util.log.LogService;
 

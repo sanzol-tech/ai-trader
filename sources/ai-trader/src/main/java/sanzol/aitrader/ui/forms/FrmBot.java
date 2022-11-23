@@ -33,6 +33,7 @@ import sanzol.aitrader.be.service.BalanceFuturesService;
 import sanzol.aitrader.be.service.BotListener;
 import sanzol.aitrader.be.service.BotService;
 import sanzol.aitrader.ui.config.Styles;
+import sanzol.aitrader.ui.controls.CtrlError;
 import sanzol.util.Convert;
 import sanzol.util.log.LogService;
 

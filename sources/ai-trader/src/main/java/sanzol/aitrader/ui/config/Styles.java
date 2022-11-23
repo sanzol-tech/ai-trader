@@ -30,6 +30,7 @@ public final class Styles
 	public static ImageIcon IMAGE_EXPAND = new FlatSVGIcon(Styles.class.getResource("/resources/expand-alt.svg"));
 	public static ImageIcon IMAGE_KEY = new FlatSVGIcon(Styles.class.getResource("/resources/key.svg"));
 	public static ImageIcon IMAGE_FLASK = new FlatSVGIcon(Styles.class.getResource("/resources/flask.svg"));
+	public static ImageIcon IMAGE_CHART = new FlatSVGIcon(Styles.class.getResource("/resources/chart.svg"));
 
 	public static Color COLOR_BORDER_LINE;
 	public static Color COLOR_LINK;

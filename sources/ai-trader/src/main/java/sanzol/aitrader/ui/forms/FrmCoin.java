@@ -29,6 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
@@ -36,22 +37,13 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import org.decimal4j.util.DoubleRounder;
-
-import api.client.futures.impl.SyncFuturesClient;
-import api.client.futures.model.enums.IntervalType;
 import api.client.impl.config.ApiConfig;
-import api.client.impl.model.enums.MarketType;
 import api.client.model.DepthEntry;
-import api.client.model.Kline;
 import api.client.model.event.SymbolTickerEvent;
-import api.client.spot.impl.SyncSpotClient;
 import sanzol.aitrader.be.config.Config;
 import sanzol.aitrader.be.config.Constants;
 import sanzol.aitrader.be.enums.DepthMode;
 import sanzol.aitrader.be.enums.GridStrategy;
-import sanzol.aitrader.be.indicators.RelativeStrengthIndex;
-import sanzol.aitrader.be.model.KlineMerge;
 import sanzol.aitrader.be.model.Symbol;
 import sanzol.aitrader.be.model.SymbolInfo;
 import sanzol.aitrader.be.service.DepthCache;
@@ -61,6 +53,7 @@ import sanzol.aitrader.be.service.OrderBookService.WAType;
 import sanzol.aitrader.be.service.PriceListener;
 import sanzol.aitrader.be.service.PriceService;
 import sanzol.aitrader.ui.config.Styles;
+import sanzol.aitrader.ui.controls.CtrlError;
 import sanzol.util.BeepUtils;
 import sanzol.util.Convert;
 import sanzol.util.log.LogService;
@@ -79,14 +72,11 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JPanel contentPane;
 	private CtrlError ctrlError;
 
-	private JScrollPane scrollOBookAsk;
-	private JScrollPane scrollOBookBid;
-
 	private JPanel pnlBB;
 	private JPanel pnlWA;
 
 	private JButton btnExport;
-	private JButton btnMore;
+	private JButton btnTechnical;
 	private JButton btnAsyncCache;
 	private JButton btnLongBidPointBB1;
 	private JButton btnLongBidPointWA1;
@@ -123,9 +113,6 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JLabel lblRatioWASh;
 	private JLabel lblRatioWALg;
 
-	private JTextArea txtOBookAsk;
-	private JTextArea txtOBookBid;
-
 	private JRadioButton rbBBClassic;
 	private JRadioButton rbBBDisplaced;
 	private JRadioButton rbWAPrice;
@@ -142,8 +129,9 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JTextField txtBidPointBB2Dist;
 	private JTextField txtHigh;
 	private JTextField txtLow;
-	private JTextField txtMarkPrice;
-	private JTextField txtSymbolInfo;
+	private JTextField txtMarkPrice1;
+	private JTextField txtMarkPrice2;
+	private JTextField txtStochastic;
 	private JTextField txtSymbolLeft;
 	private JTextField txtSymbolRight;
 	private JTextField txtVolume;
@@ -162,6 +150,13 @@ public class FrmCoin extends JFrame implements PriceListener
 	private JTextField txtBBBlocks;
 	private JTextField txtWABlocks;
 
+	private JTextArea txtOBookAsk;
+	private JTextArea txtOBookBid;
+	private JTextArea txtOBookAsk2;
+	private JTextArea txtOBookBid2;
+	private JTextArea txtOBookAsk3;
+	private JTextArea txtOBookBid3;
+	
 	public FrmCoin()
 	{
 		initComponents();
@@ -176,7 +171,7 @@ public class FrmCoin extends JFrame implements PriceListener
 		setTitle(TITLE);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 770, 620);
+		setBounds(100, 100, 842, 700);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(FrmCoin.class.getResource("/resources/monitor.png")));
 		setLocationRelativeTo(null);
 
@@ -187,7 +182,7 @@ public class FrmCoin extends JFrame implements PriceListener
 
 		JPanel pnlBottom = new JPanel();
 		pnlBottom.setBorder(Styles.BORDER_UP);
-		pnlBottom.setBounds(30, 550, 700, 22);
+		pnlBottom.setBounds(30, 630, 765, 22);
 		pnlBottom.setLayout(new BorderLayout(0, 0));
 		contentPane.add(pnlBottom);
 
@@ -198,7 +193,7 @@ public class FrmCoin extends JFrame implements PriceListener
 
 		btnSearch = new JButton(Styles.IMAGE_SEARCH);
 		btnSearch.setOpaque(true);
-		btnSearch.setBounds(30, 69, 178, 22);
+		btnSearch.setBounds(30, 69, 133, 22);
 		contentPane.add(btnSearch);
 
 		txtSymbolLeft = new JTextField();
@@ -217,50 +212,10 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtSymbolRight.setBounds(122, 41, 86, 20);
 		contentPane.add(txtSymbolRight);
 
-		txtMarkPrice = new JTextField();
-		txtMarkPrice.setFont(new Font("Courier New", Font.BOLD, 12));
-		txtMarkPrice.setEditable(false);
-		txtMarkPrice.setForeground(Styles.COLOR_TEXT_ALT1);
-		txtMarkPrice.setColumns(10);
-		txtMarkPrice.setBounds(430, 284, 147, 20);
-		contentPane.add(txtMarkPrice);
-
-		txtSymbolInfo = new JTextField();
-		txtSymbolInfo.setHorizontalAlignment(SwingConstants.TRAILING);
-		txtSymbolInfo.setFont(new Font("Courier New", Font.BOLD, 12));
-		txtSymbolInfo.setEditable(false);
-		txtSymbolInfo.setColumns(10);
-		txtSymbolInfo.setBounds(583, 284, 147, 20);
-		contentPane.add(txtSymbolInfo);
-
-		scrollOBookAsk = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollOBookAsk.setBounds(430, 54, 300, 220);
-		scrollOBookAsk.setBorder(UIManager.getBorder("TextField.border"));
-		contentPane.add(scrollOBookAsk);
-
-		txtOBookAsk = new JTextArea();
-		txtOBookAsk.setBackground(Styles.COLOR_TEXT_AREA_BG);
-		txtOBookAsk.setForeground(Styles.COLOR_TEXT_SHORT);
-		txtOBookAsk.setFont(new Font("Courier New", Font.PLAIN, 12));
-		txtOBookAsk.setEditable(false);
-		scrollOBookAsk.setViewportView(txtOBookAsk);
-
-		scrollOBookBid = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollOBookBid.setBounds(430, 314, 300, 220);
-		scrollOBookBid.setBorder(UIManager.getBorder("TextField.border"));
-		contentPane.add(scrollOBookBid);
-
-		txtOBookBid = new JTextArea();
-		txtOBookBid.setBackground(Styles.COLOR_TEXT_AREA_BG);
-		txtOBookBid.setForeground(Styles.COLOR_TEXT_LONG);
-		txtOBookBid.setFont(new Font("Courier New", Font.PLAIN, 12));
-		txtOBookBid.setEditable(false);
-		scrollOBookBid.setViewportView(txtOBookBid);
-
 		pnlBB = new JPanel();
 		pnlBB.setLayout(null);
 		pnlBB.setBorder(UIManager.getBorder("TextField.border"));
-		pnlBB.setBounds(30, 156, 370, 144);
+		pnlBB.setBounds(30, 198, 370, 144);
 		contentPane.add(pnlBB);
 
 		txtAskPointBB1 = new JTextField();
@@ -358,17 +313,17 @@ public class FrmCoin extends JFrame implements PriceListener
 		pnlBB.add(lblBid_1);
 
 		lblTitlePoints0 = new JLabel("Biggest block");
-		lblTitlePoints0.setBounds(30, 134, 86, 16);
+		lblTitlePoints0.setBounds(30, 176, 86, 16);
 		contentPane.add(lblTitlePoints0);
 
 		lblTitlePoints2 = new JLabel("Weighted average");
-		lblTitlePoints2.setBounds(30, 318, 100, 16);
+		lblTitlePoints2.setBounds(30, 360, 100, 16);
 		contentPane.add(lblTitlePoints2);
 
 		pnlWA = new JPanel();
 		pnlWA.setLayout(null);
 		pnlWA.setBorder(UIManager.getBorder("TextField.border"));
-		pnlWA.setBounds(30, 340, 370, 194);
+		pnlWA.setBounds(30, 382, 370, 194);
 		contentPane.add(pnlWA);
 
 		txtAskPointWA1 = new JTextField();
@@ -527,18 +482,18 @@ public class FrmCoin extends JFrame implements PriceListener
 
 		btnExport = new JButton("Export");
 		btnExport.setOpaque(true);
-		btnExport.setBounds(430, 24, 87, 22);
+		btnExport.setBounds(425, 582, 120, 22);
 		contentPane.add(btnExport);
 
-		btnMore = new JButton(Styles.IMAGE_FLASK);
-		btnMore.setToolTipText("See more lab numbers");
-		btnMore.setOpaque(true);
-		btnMore.setBounds(530, 24, 40, 22);
-		contentPane.add(btnMore);
+		btnTechnical = new JButton(Styles.IMAGE_CHART);
+		btnTechnical.setToolTipText("Technical indicators");
+		btnTechnical.setOpaque(true);
+		btnTechnical.setBounds(168, 69, 40, 22);
+		contentPane.add(btnTechnical);
 
 		btnAsyncCache = new JButton("Async cache");
 		btnAsyncCache.setOpaque(true);
-		btnAsyncCache.setBounds(583, 24, 147, 22);
+		btnAsyncCache.setBounds(675, 582, 120, 22);
 		contentPane.add(btnAsyncCache);
 
 		lbl24Hs = new JLabel("24h %");
@@ -592,17 +547,29 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtHigh.setColumns(10);
 		txtHigh.setBounds(314, 72, 86, 20);
 		contentPane.add(txtHigh);
+		
+		JLabel lblStochastic = new JLabel("Stochastic");
+		lblStochastic.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblStochastic.setBounds(240, 125, 62, 14);
+		contentPane.add(lblStochastic);
 
+		txtStochastic = new JTextField();
+		txtStochastic.setBounds(314, 122, 86, 20);
+		txtStochastic.setHorizontalAlignment(SwingConstants.TRAILING);
+		txtStochastic.setForeground(Styles.COLOR_TEXT_ALT1);
+		txtStochastic.setEditable(false);
+		txtStochastic.setColumns(10);
+		contentPane.add(txtStochastic);
+		
 		lnkBinance = new JLabel("Binance");
 		lnkBinance.setForeground(Styles.COLOR_LINK);
-		lnkBinance.setBounds(30, 96, 87, 16);
+		lnkBinance.setBounds(30, 102, 133, 16);
 		lnkBinance.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		contentPane.add(lnkBinance);
 
 		lnkTradingview = new JLabel("TradingView");
-		lnkTradingview.setHorizontalAlignment(SwingConstants.TRAILING);
 		lnkTradingview.setForeground(Styles.COLOR_LINK);
-		lnkTradingview.setBounds(121, 96, 87, 16);
+		lnkTradingview.setBounds(30, 123, 133, 16);
 		lnkTradingview.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		contentPane.add(lnkTradingview);
 
@@ -610,13 +577,13 @@ public class FrmCoin extends JFrame implements PriceListener
 		rbBBClassic.setToolTipText("round number blocks");
 		rbBBClassic.setHorizontalAlignment(SwingConstants.TRAILING);
 		rbBBClassic.setSelected(true);
-		rbBBClassic.setBounds(136, 130, 76, 23);
+		rbBBClassic.setBounds(136, 172, 76, 23);
 		contentPane.add(rbBBClassic);
 
 		rbBBDisplaced = new JRadioButton("displaced");
 		rbBBDisplaced.setToolTipText("blocks from last price");
 		rbBBDisplaced.setHorizontalAlignment(SwingConstants.TRAILING);
-		rbBBDisplaced.setBounds(216, 130, 76, 23);
+		rbBBDisplaced.setBounds(216, 172, 76, 23);
 		contentPane.add(rbBBDisplaced);
 
 		ButtonGroup bg1 = new ButtonGroup();
@@ -626,26 +593,26 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtBBBlocks = new JTextField();
 		txtBBBlocks.setText("0");
 		txtBBBlocks.setHorizontalAlignment(SwingConstants.TRAILING);
-		txtBBBlocks.setBounds(300, 131, 50, 20);
+		txtBBBlocks.setBounds(300, 173, 50, 20);
 		contentPane.add(txtBBBlocks);
 
 		btnCalcBB = new JButton(Styles.IMAGE_REFRESH);
 		btnCalcBB.setToolTipText("recalculate");
 		btnCalcBB.setOpaque(true);
-		btnCalcBB.setBounds(360, 130, 40, 22);
+		btnCalcBB.setBounds(360, 172, 40, 22);
 		contentPane.add(btnCalcBB);
 
 		rbWAPrice = new JRadioButton("price");
 		rbWAPrice.setToolTipText("average since last price");
 		rbWAPrice.setHorizontalAlignment(SwingConstants.TRAILING);
 		rbWAPrice.setSelected(true);
-		rbWAPrice.setBounds(136, 314, 76, 23);
+		rbWAPrice.setBounds(136, 356, 76, 23);
 		contentPane.add(rbWAPrice);
 
 		rbWAPrevious = new JRadioButton("previous");
 		rbWAPrevious.setToolTipText("average since previous point");
 		rbWAPrevious.setHorizontalAlignment(SwingConstants.TRAILING);
-		rbWAPrevious.setBounds(216, 314, 76, 23);
+		rbWAPrevious.setBounds(216, 356, 76, 23);
 		contentPane.add(rbWAPrevious);
 
 		ButtonGroup bg2 = new ButtonGroup();
@@ -655,15 +622,129 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtWABlocks = new JTextField();
 		txtWABlocks.setText("0");
 		txtWABlocks.setHorizontalAlignment(SwingConstants.TRAILING);
-		txtWABlocks.setBounds(298, 315, 50, 20);
+		txtWABlocks.setBounds(298, 357, 50, 20);
 		contentPane.add(txtWABlocks);
 
 		btnCalcWA = new JButton(Styles.IMAGE_REFRESH);
 		btnCalcWA.setToolTipText("recalculate");
 		btnCalcWA.setOpaque(true);
-		btnCalcWA.setBounds(360, 314, 40, 22);
+		btnCalcWA.setBounds(360, 356, 40, 22);
 		contentPane.add(btnCalcWA);
 
+
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		//tabbedPane.setBorder(UIManager.getBorder("TextField.border"));
+		tabbedPane.setBounds(425, 16, 370, 560);
+		contentPane.add(tabbedPane);
+
+		JPanel pnlOBook = new JPanel();
+		pnlOBook.setBorder(UIManager.getBorder("TextField.border"));
+		tabbedPane.addTab("Order Book", null, pnlOBook, null);
+		pnlOBook.setLayout(null);
+		{
+			JScrollPane scrollOBookAsk = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			scrollOBookAsk.setBounds(30, 23, 300, 220);
+			pnlOBook.add(scrollOBookAsk);
+			scrollOBookAsk.setBorder(UIManager.getBorder("TextField.border"));
+
+			txtOBookAsk = new JTextArea();
+			txtOBookAsk.setBackground(Styles.COLOR_TEXT_AREA_BG);
+			txtOBookAsk.setForeground(Styles.COLOR_TEXT_SHORT);
+			txtOBookAsk.setFont(new Font("Courier New", Font.PLAIN, 12));
+			txtOBookAsk.setEditable(false);
+			scrollOBookAsk.setViewportView(txtOBookAsk);
+
+			JScrollPane scrollOBookBid = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			scrollOBookBid.setBounds(30, 285, 300, 220);
+			pnlOBook.add(scrollOBookBid);
+			scrollOBookBid.setBorder(UIManager.getBorder("TextField.border"));
+
+			txtOBookBid = new JTextArea();
+			txtOBookBid.setBackground(Styles.COLOR_TEXT_AREA_BG);
+			txtOBookBid.setForeground(Styles.COLOR_TEXT_LONG);
+			txtOBookBid.setFont(new Font("Courier New", Font.PLAIN, 12));
+			txtOBookBid.setEditable(false);
+			scrollOBookBid.setViewportView(txtOBookBid);		
+
+			
+			txtMarkPrice1 = new JTextField();
+			txtMarkPrice1.setBounds(30, 254, 300, 20);
+			txtMarkPrice1.setFont(new Font("Courier New", Font.BOLD, 12));
+			txtMarkPrice1.setEditable(false);
+			txtMarkPrice1.setForeground(Styles.COLOR_TEXT_ALT1);
+			txtMarkPrice1.setColumns(10);
+			pnlOBook.add(txtMarkPrice1);
+		}
+
+		JPanel pnlBiggest = new JPanel();
+		pnlBiggest.setBorder(UIManager.getBorder("TextField.border"));
+		tabbedPane.addTab("Biggest", null, pnlBiggest, null);
+		pnlBiggest.setLayout(null);
+		{
+			JScrollPane scrollOBookAsk2 = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			scrollOBookAsk2.setBounds(30, 24, 300, 220);
+			pnlBiggest.add(scrollOBookAsk2);
+			scrollOBookAsk2.setBorder(UIManager.getBorder("TextField.border"));
+
+			txtOBookAsk2 = new JTextArea();
+			txtOBookAsk2.setBackground(Styles.COLOR_TEXT_AREA_BG);
+			txtOBookAsk2.setForeground(Styles.COLOR_TEXT_SHORT);
+			txtOBookAsk2.setFont(new Font("Courier New", Font.PLAIN, 12));
+			txtOBookAsk2.setEditable(false);
+			scrollOBookAsk2.setViewportView(txtOBookAsk2);
+
+			JScrollPane scrollOBookBid2 = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			scrollOBookBid2.setBounds(30, 285, 300, 220);
+			pnlBiggest.add(scrollOBookBid2);
+			scrollOBookBid2.setBorder(UIManager.getBorder("TextField.border"));
+
+			txtOBookBid2 = new JTextArea();
+			txtOBookBid2.setBackground(Styles.COLOR_TEXT_AREA_BG);
+			txtOBookBid2.setForeground(Styles.COLOR_TEXT_LONG);
+			txtOBookBid2.setFont(new Font("Courier New", Font.PLAIN, 12));
+			txtOBookBid2.setEditable(false);
+			scrollOBookBid2.setViewportView(txtOBookBid2);
+
+			txtMarkPrice2 = new JTextField();
+			txtMarkPrice2.setBounds(30, 254, 300, 20);
+			txtMarkPrice2.setFont(new Font("Courier New", Font.BOLD, 12));
+			txtMarkPrice2.setEditable(false);
+			txtMarkPrice2.setForeground(Styles.COLOR_TEXT_ALT1);
+			txtMarkPrice2.setColumns(10);
+			pnlBiggest.add(txtMarkPrice2);
+		}
+
+		JPanel pnlAsksVsBids = new JPanel();
+		pnlAsksVsBids.setBorder(UIManager.getBorder("TextField.border"));
+		tabbedPane.addTab("Balance", null, pnlAsksVsBids, null);
+		pnlAsksVsBids.setLayout(null);
+		{
+			JScrollPane scrollOBookAsk3 = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			scrollOBookAsk3.setBounds(14, 12, 340, 152);
+			pnlAsksVsBids.add(scrollOBookAsk3);
+			scrollOBookAsk3.setBorder(UIManager.getBorder("TextField.border"));
+
+			txtOBookAsk3 = new JTextArea();
+			txtOBookAsk3.setBackground(Styles.COLOR_TEXT_AREA_BG);
+			txtOBookAsk3.setFont(new Font("Courier New", Font.PLAIN, 12));
+			txtOBookAsk3.setEditable(false);
+			scrollOBookAsk3.setViewportView(txtOBookAsk3);
+
+			JScrollPane scrollOBookBid3 = new JScrollPane((Component) null, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			scrollOBookBid3.setBounds(14, 178, 340, 152);
+			pnlAsksVsBids.add(scrollOBookBid3);
+			scrollOBookBid3.setBorder(UIManager.getBorder("TextField.border"));
+
+			txtOBookBid3 = new JTextArea();
+			txtOBookBid3.setBackground(Styles.COLOR_TEXT_AREA_BG);
+			txtOBookBid3.setFont(new Font("Courier New", Font.PLAIN, 12));
+			txtOBookBid3.setEditable(false);
+			scrollOBookBid3.setViewportView(txtOBookBid3);
+		}
+		
+		
+		
+		
 		// ---------------------------------------------------------------------
 
 		FrmCoin thisFrm = this;
@@ -692,7 +773,7 @@ public class FrmCoin extends JFrame implements PriceListener
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
-					Desktop.getDesktop().browse(new URI("https://es.tradingview.com/chart/?symbol=BINANCE%3A" + symbol.getPair()));
+					Desktop.getDesktop().browse(new URI("https://es.tradingview.com/chart/?symbol=BINANCE%3A" + symbol.getPair() + "PERP"));
 				} catch (Exception ex) {
 					LogService.error(ex);
 				}
@@ -756,7 +837,7 @@ public class FrmCoin extends JFrame implements PriceListener
 			}
 		});
 
-		btnMore.addActionListener(new ActionListener() {
+		btnTechnical.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				more();
 			}
@@ -805,10 +886,13 @@ public class FrmCoin extends JFrame implements PriceListener
 					SymbolInfo symbolInfo = SymbolInfo.getInstance(symbolTicker);
 
 					BigDecimal mrkPrice = symbolInfo.getLastPrice();
-					txtMarkPrice.setText(symbol.priceToStr(mrkPrice));
-					txtSymbolInfo.setText(symbolInfo.isBestShort() ? "24H HIGH" : symbolInfo.isBestLong() ? "24H LOW" : "");
+					txtMarkPrice1.setText(symbol.priceToStr(mrkPrice));
+					txtMarkPrice2.setText(symbol.priceToStr(mrkPrice));
 
-					String priceChangePercent = String.format("%.2f", symbolInfo.getPriceChangePercent());
+					String stochastic = String.format("%.2f %%", symbolInfo.getStochastic());
+					txtStochastic.setText(stochastic);
+
+					String priceChangePercent = String.format("%.2f %%", symbolInfo.getPriceChangePercent());
 					txt24h.setText(priceChangePercent);
 
 					BigDecimal usdVolume24h = symbolInfo.getUsdVolume();
@@ -846,6 +930,10 @@ public class FrmCoin extends JFrame implements PriceListener
 	private void search()
 	{
 		ctrlError.CLEAN();
+
+		btnTechnical.setEnabled(false);
+		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		
 		try
 		{
 			txtSymbolLeft.setText(txtSymbolLeft.getText().toUpperCase());
@@ -875,6 +963,11 @@ public class FrmCoin extends JFrame implements PriceListener
 		{
 			ctrlError.ERROR(e);
 		}
+		finally
+		{
+			btnTechnical.setEnabled(true);
+			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		}		
 	}
 
 	private void loadOBook() throws KeyManagementException, NoSuchAlgorithmException
@@ -882,6 +975,44 @@ public class FrmCoin extends JFrame implements PriceListener
 		txtOBookAsk.setText(obService.printAsksGrp());
 		txtOBookBid.setText(obService.printBidsGrp());
 		txtOBookBid.setCaretPosition(0);
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("PRICE                    QTY      DIST\n");
+		sb.append("--------------------------------------\n");
+		List<DepthEntry> listSa = obService.searchSuperAskBlocks(12);
+		sb.append(obService.printSuperBlks(listSa));
+		txtOBookAsk2.setText(sb.toString());
+		
+		sb = new StringBuilder();
+		sb.append("PRICE                    QTY      DIST\n");
+		sb.append("--------------------------------------\n");
+		List<DepthEntry> listSb = obService.searchSuperBidBlocks(12);
+		sb.append(obService.printSuperBlks(listSb));
+		txtOBookBid2.setText(sb.toString());
+
+		sb = new StringBuilder();
+		sb.append("Asks vs Bids - Coin\n");
+		sb.append("-------------------------------------------\n");
+		sb.append("   dist         asks      diff         bids\n");
+		sb.append("-------------------------------------------\n");
+		sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.03), false)).append("\n");
+		sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.05), false)).append("\n");
+		sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.15), false)).append("\n");
+		sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.25), false)).append("\n");
+		sb.append(obService.calcDepthDiff(null, false));
+		txtOBookAsk3.setText(sb.toString());
+
+		sb = new StringBuilder();
+		sb.append("Asks vs Bids - USD\n");
+		sb.append("-------------------------------------------\n");
+		sb.append("   dist         asks      diff         bids\n");
+		sb.append("-------------------------------------------\n");
+		sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.03), true)).append("\n");
+		sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.05), true)).append("\n");
+		sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.15), true)).append("\n");
+		sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.25), true)).append("\n");
+		sb.append(obService.calcDepthDiff(null, true));
+		txtOBookBid3.setText(sb.toString());
 	}
 
 	private void loadPoints()
@@ -1042,116 +1173,7 @@ public class FrmCoin extends JFrame implements PriceListener
 
 	private void more()
 	{
-		try
-		{
-			btnMore.setEnabled(false);
-			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-			StringBuilder sb = new StringBuilder();
-
-			Double rsi = RelativeStrengthIndex.calc(symbol);
-			sb.append("----------------------\n");
-			sb.append("RSI 2h 14p:    " + DoubleRounder.round(rsi * 100, 2) + " %").append("\n");
-			sb.append("----------------------\n");
-			
-			// --- Kline ------------------------------------------------------
-			List<Kline> lst1m;
-			List<Kline> lst1d;
-			if (ApiConfig.MARKET_TYPE == MarketType.futures)
-			{
-				lst1m = SyncFuturesClient.getKlines(symbol.getPair(), IntervalType._1m, 720);
-				lst1d = SyncFuturesClient.getKlines(symbol.getPair(), IntervalType._1d, 10);
-			}
-			else
-			{
-				lst1m = SyncSpotClient.getKlines(symbol.getPair(), api.client.spot.model.enums.IntervalType._1m, 720);
-				lst1d = SyncSpotClient.getKlines(symbol.getPair(), api.client.spot.model.enums.IntervalType._1d, 10);
-			}
-
-			List<Kline> lst2 = lst1m.subList(Math.max(lst1m.size() - 240, 0), lst1m.size());
-			List<Kline> lst3 = lst1m.subList(Math.max(lst1m.size() - 30, 0), lst1m.size());
-
-			KlineMerge klinePlus = KlineMerge.getInstance(lst1d);
-			sb.append("\n------------------\n");
-			sb.append("chg  10d: " + Convert.toStrPercent(klinePlus.getPriceChangePercent()) + " %").append("\n");
-			sb.append("move 10d: " + Convert.toStrPercent(klinePlus.getPriceMove()) + " %").append("\n");
-			sb.append("vol  10d: " + PriceUtil.cashFormat(klinePlus.getQuoteVolume())).append("\n");
-
-			klinePlus = KlineMerge.getInstance(lst1m);
-			sb.append("\n------------------\n");
-			sb.append("chg  12h: " + Convert.toStrPercent(klinePlus.getPriceChangePercent()) + " %").append("\n");
-			sb.append("move 12h: " + Convert.toStrPercent(klinePlus.getPriceMove()) + " %").append("\n");
-			sb.append("vol  12h: " + PriceUtil.cashFormat(klinePlus.getQuoteVolume())).append("\n");
-
-			klinePlus = KlineMerge.getInstance(lst2);
-			sb.append("\n------------------\n");
-			sb.append("chg  4h:  " + Convert.toStrPercent(klinePlus.getPriceChangePercent()) + " %").append("\n");
-			sb.append("move 4h:  " + Convert.toStrPercent(klinePlus.getPriceMove()) + " %").append("\n");
-			sb.append("vol  4h:  " + PriceUtil.cashFormat(klinePlus.getQuoteVolume())).append("\n");
-
-			klinePlus = KlineMerge.getInstance(lst3);
-			sb.append("\n------------------\n");
-			sb.append("chg  30m: " + Convert.toStrPercent(klinePlus.getPriceChangePercent()) + " %").append("\n");
-			sb.append("move 30m: " + Convert.toStrPercent(klinePlus.getPriceMove()) + " %").append("\n");
-			sb.append("vol  30m: " + PriceUtil.cashFormat(klinePlus.getQuoteVolume())).append("\n");
-
-			
-			// --- Asks vs Bids ----------------------------------------------
-			sb.append("\n\n");
-			sb.append("Asks vs Bids - Coin\n");
-			sb.append("-------------------------------------------\n");
-			sb.append("   dist         asks      diff         bids\n");
-			sb.append("-------------------------------------------\n");
-			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.03), false)).append("\n");
-			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.05), false)).append("\n");
-			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.15), false)).append("\n");
-			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.25), false)).append("\n");
-			sb.append(obService.calcDepthDiff(null, false)).append("\n\n");
-
-			sb.append("\n");
-			sb.append("Asks vs Bids - USD\n");
-			sb.append("-------------------------------------------\n");
-			sb.append("   dist         asks      diff         bids\n");
-			sb.append("-------------------------------------------\n");
-
-			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.03), true)).append("\n");
-			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.05), true)).append("\n");
-			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.15), true)).append("\n");
-			sb.append(obService.calcDepthDiff(BigDecimal.valueOf(0.25), true)).append("\n");
-			sb.append(obService.calcDepthDiff(null, true)).append("\n\n");
-
-			// --- Super blocks -----------------------------------------------
-			sb.append("\n");
-			sb.append("Biggest blocks - Asks\n");
-			sb.append("--------------------------------------\n");
-			sb.append("PRICE                    QTY      DIST\n");
-			sb.append("--------------------------------------\n");
-			List<DepthEntry> listSa = obService.searchSuperAskBlocks(10);
-			sb.append(obService.printSuperBlks(listSa)).append("\n");
-
-			sb.append("\n");
-			sb.append("Biggest blocks - Bids\n");
-			sb.append("--------------------------------------\n");
-			sb.append("PRICE                    QTY      DIST\n");
-			sb.append("--------------------------------------\n");
-			List<DepthEntry> listSb = obService.searchSuperBidBlocks(10);
-			sb.append(obService.printSuperBlks(listSb)).append("\n");
-			
-			int x = getX() + getWidth() - 20;
-			int y = getY();
-			
-			FrmMonitor.launch(symbol.getNameLeft(), sb.toString(), x, y);
-		}
-		catch (Exception e)
-		{
-			ctrlError.ERROR(e);
-		}
-		finally
-		{
-			btnMore.setEnabled(true);
-			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		}
-
+		FrmCoinTech.launch(symbol);
 	}
 
 	// ----------------------------------------------------------------------------------
@@ -1207,5 +1229,4 @@ public class FrmCoin extends JFrame implements PriceListener
 			}
 		});
 	}
-	
 }
