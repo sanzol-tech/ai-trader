@@ -29,7 +29,7 @@ public class SymbolInfo
 	private BigDecimal stochastic;
 
 	private boolean isLowVolume = false;
-	private boolean isHighMove = false;
+	private boolean isHighChange = false;
 
 	public static SymbolInfo getInstance(SymbolTickerEvent symbolTickerEvent) throws KeyManagementException, NoSuchAlgorithmException, IOException
 	{
@@ -55,7 +55,7 @@ public class SymbolInfo
 		si.stochastic = (si.lastPrice.subtract(si.low)).divide((si.high.subtract(si.low)), 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
 
 		si.isLowVolume = (si.usdVolume.doubleValue() < Config.getBetterSymbolsMinVolume());
-		si.isHighMove = (si.priceChangePercent.abs().doubleValue() > Config.getBetterSymbolsMaxChange());
+		si.isHighChange = (si.priceChangePercent.abs().doubleValue() > Config.getBetterSymbolsMaxChange());
 
 		return si;
 	}
@@ -72,7 +72,7 @@ public class SymbolInfo
 		for (SymbolTickerEvent entry : lstSymbolTickerEvent)
 		{
 			SymbolInfo symbolInfo = getInstance(entry);
-			if (symbolInfo != null && !symbolInfo.isLowVolume() && !symbolInfo.isHighMove())
+			if (symbolInfo != null && !symbolInfo.isLowVolume() && !symbolInfo.isHighChange())
 			{
 				lstSymbols.add(symbolInfo.getSymbol().getNameLeft());
 			}
@@ -135,9 +135,9 @@ public class SymbolInfo
 		return isLowVolume;
 	}
 
-	public boolean isHighMove()
+	public boolean isHighChange()
 	{
-		return isHighMove;
+		return isHighChange;
 	}
 
 	// ------------------------------------------------------------------------

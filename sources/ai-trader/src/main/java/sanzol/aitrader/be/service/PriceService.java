@@ -81,7 +81,7 @@ public class PriceService
 				continue;
 			}
 
-			if (onlyBetters && (symbolInfo.isLowVolume() || symbolInfo.isHighMove()))
+			if (onlyBetters && (symbolInfo.isLowVolume() || symbolInfo.isHighChange()))
 			{
 				continue;
 			}

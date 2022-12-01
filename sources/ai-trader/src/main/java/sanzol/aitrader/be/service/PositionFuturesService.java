@@ -24,6 +24,7 @@ import sanzol.aitrader.be.config.ServerApp;
 import sanzol.aitrader.be.model.Symbol;
 import sanzol.util.Convert;
 import sanzol.util.log.LogService;
+import sanzol.util.price.PriceUtil;
 
 public final class PositionFuturesService
 {
@@ -284,12 +285,28 @@ public final class PositionFuturesService
 
 		for (Order entry : getLstOrdersWithoutPosition())
 		{
-			sbBody.append(String.format("%-18s %-6s %-13s %10s %14s %14s\n", entry.getSymbol(), entry.getSide(), entry.getType(), entry.getOrigQty(), entry.getPrice(), entry.getReduceOnly() ? "R.Only" : ""));
+			BigDecimal lastPrice = BigDecimal.ZERO;
+			BigDecimal dist = BigDecimal.ZERO;
+			try
+			{
+				lastPrice = PriceService.getLastPrice(Symbol.fromPair(entry.getSymbol()));
+				if ("SELL".equals(entry.getSide()))
+					dist = PriceUtil.priceDistUp(lastPrice, entry.getPrice(), true);
+				else if ("BUY".equals(entry.getSide()))
+					dist = PriceUtil.priceDistDown(lastPrice, entry.getPrice(), true);
+			}
+			catch (KeyManagementException | NoSuchAlgorithmException | IOException e)
+			{
+				LogService.error(e);
+			}
+
+			BigDecimal usd = entry.getOrigQty().multiply(entry.getPrice());
+			sbBody.append(String.format("%-18s %-6s %-13s %10s %14s %14.2f %8.2f %%\n", entry.getSymbol(), entry.getSide(), entry.getType(), entry.getOrigQty(), entry.getPrice(), usd, dist));
 		}
 
 		StringBuilder sb  = new StringBuilder();
-		sb.append(String.format("%-18s %-6s %-13s %10s %14s %14s\n", "SYMBOL", "SIDE", "TYPE", "QTY", "PRICE", ""));
-		sb.append(StringUtils.repeat("-", 82));
+		sb.append(String.format("%-18s %-6s %-13s %10s %14s %14s %10s\n", "SYMBOL", "SIDE", "TYPE", "QTY", "PRICE", "USD", "DIST"));
+		sb.append(StringUtils.repeat("-", 91));
 		sb.append("\n");
 		sb.append(sbBody);
 

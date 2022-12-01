@@ -30,6 +30,7 @@ import sanzol.aitrader.be.config.Constants;
 import sanzol.aitrader.be.model.SymbolInfo;
 import sanzol.aitrader.be.service.PriceListener;
 import sanzol.aitrader.be.service.PriceService;
+import sanzol.aitrader.ui.config.CharConstants;
 import sanzol.aitrader.ui.config.Styles;
 import sanzol.aitrader.ui.controls.CtrlError;
 import sanzol.util.log.LogService;
@@ -238,6 +239,7 @@ public class FrmSymbols extends JFrame implements PriceListener
 	    	tableModel.addColumn("CHANGE 24h");
 	    	tableModel.addColumn("");
 	    	tableModel.addColumn("STOCH 24h");
+	    	tableModel.addColumn("");
 
 			table.setModel(tableModel);
 
@@ -258,17 +260,20 @@ public class FrmSymbols extends JFrame implements PriceListener
 	        table.getColumnModel().getColumn(2).setPreferredWidth((int)(tableWidth * 0.125));
 	
 	        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(3).setPreferredWidth((int)(tableWidth * 0.08));
+	        table.getColumnModel().getColumn(3).setPreferredWidth((int)(tableWidth * 0.06));
 	
 	        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
 	        table.getColumnModel().getColumn(4).setPreferredWidth((int)(tableWidth * 0.125));
 	
 	        table.getColumnModel().getColumn(5).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(5).setPreferredWidth((int)(tableWidth * 0.08));
+	        table.getColumnModel().getColumn(5).setPreferredWidth((int)(tableWidth * 0.06));
 
 	        table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
 	        table.getColumnModel().getColumn(6).setPreferredWidth((int)(tableWidth * 0.125));
 
+	        table.getColumnModel().getColumn(7).setCellRenderer(centerRenderer);
+	        table.getColumnModel().getColumn(7).setPreferredWidth((int)(tableWidth * 0.04));
+	        
 	        //table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		}
 		catch (Exception e)
@@ -277,20 +282,38 @@ public class FrmSymbols extends JFrame implements PriceListener
 		}
     }
 
+	private static String stochStatus(double n)
+	{
+		if (n > 80)
+			return CharConstants.ARROW_UP;
+		else if (n > 90)
+			return CharConstants.ARROW_UP + CharConstants.ARROW_UP;
+		else if (n < 20)
+			return CharConstants.ARROW_DOWN;
+		else if (n < 10)
+			return CharConstants.ARROW_DOWN + CharConstants.ARROW_DOWN;
+		else
+			return "";
+	}
+
     private void loadTable(List<SymbolInfo> lstSymbolsInfo)
 	{
     	tableModel.setRowCount(0);
 
 		for (SymbolInfo entry : lstSymbolsInfo)
 		{
+			boolean isHighChange = (entry.getPriceChangePercent().abs().doubleValue() > 8);
+			String change = String.format("%.2f %%", entry.getPriceChangePercent());
+
         	Object row[] = {
     				entry.getSymbol().getNameLeft(),
 					entry.getSymbol().priceToStr(entry.getLastPrice()),
     				PriceUtil.cashFormat(entry.getUsdVolume()),
 					!entry.isLowVolume() ? "" : "< " + PriceUtil.cashFormat(Config.getBetterSymbolsMinVolume()),
-    				String.format("%.2f %%", entry.getPriceChangePercent()),
-					!entry.isHighMove() ? "" : "RISKY",
-					String.format("%.2f %%", entry.getStochastic())
+					change,
+					isHighChange ? change : "",
+					String.format("%.2f %%", entry.getStochastic()),
+					stochStatus(entry.getStochastic().doubleValue())
         		};
 
 			tableModel.addRow(row);
