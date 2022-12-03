@@ -238,6 +238,7 @@ public class FrmSymbols extends JFrame implements PriceListener
 	    	tableModel.addColumn("");
 	    	tableModel.addColumn("CHANGE 24h");
 	    	tableModel.addColumn("");
+	    	tableModel.addColumn("HIGH/LOW");
 	    	tableModel.addColumn("STOCH 24h");
 	    	tableModel.addColumn("");
 
@@ -251,29 +252,32 @@ public class FrmSymbols extends JFrame implements PriceListener
 
 	        int tableWidth = table.getWidth();
 	
-	        table.getColumnModel().getColumn(0).setPreferredWidth((int)(tableWidth * 0.17));
+	        table.getColumnModel().getColumn(0).setPreferredWidth((int)(tableWidth * 0.12));
 
 	        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(1).setPreferredWidth((int)(tableWidth * 0.17));
+	        table.getColumnModel().getColumn(1).setPreferredWidth((int)(tableWidth * 0.12));
 
 	        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(2).setPreferredWidth((int)(tableWidth * 0.125));
+	        table.getColumnModel().getColumn(2).setPreferredWidth((int)(tableWidth * 0.12));
 	
 	        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(3).setPreferredWidth((int)(tableWidth * 0.06));
+	        table.getColumnModel().getColumn(3).setPreferredWidth((int)(tableWidth * 0.08));
 	
 	        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(4).setPreferredWidth((int)(tableWidth * 0.125));
+	        table.getColumnModel().getColumn(4).setPreferredWidth((int)(tableWidth * 0.12));
 	
 	        table.getColumnModel().getColumn(5).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(5).setPreferredWidth((int)(tableWidth * 0.06));
+	        table.getColumnModel().getColumn(5).setPreferredWidth((int)(tableWidth * 0.12));
 
 	        table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(6).setPreferredWidth((int)(tableWidth * 0.125));
+	        table.getColumnModel().getColumn(6).setPreferredWidth((int)(tableWidth * 0.12));
 
 	        table.getColumnModel().getColumn(7).setCellRenderer(centerRenderer);
-	        table.getColumnModel().getColumn(7).setPreferredWidth((int)(tableWidth * 0.04));
-	        
+	        table.getColumnModel().getColumn(7).setPreferredWidth((int)(tableWidth * 0.12));
+
+	        table.getColumnModel().getColumn(8).setCellRenderer(centerRenderer);
+	        table.getColumnModel().getColumn(8).setPreferredWidth((int)(tableWidth * 0.08));
+
 	        //table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		}
 		catch (Exception e)
@@ -312,6 +316,7 @@ public class FrmSymbols extends JFrame implements PriceListener
 					!entry.isLowVolume() ? "" : "< " + PriceUtil.cashFormat(Config.getBetterSymbolsMinVolume()),
 					change,
 					isHighChange ? change : "",
+					String.format("%.2f %%", entry.getHighLow()),
 					String.format("%.2f %%", entry.getStochastic()),
 					stochStatus(entry.getStochastic().doubleValue())
         		};

@@ -41,6 +41,7 @@ import sanzol.aitrader.be.trade.SimpleTrade;
 import sanzol.aitrader.ui.config.Styles;
 import sanzol.aitrader.ui.controls.CtrlError;
 import sanzol.util.Convert;
+import sanzol.util.price.PriceUtil;
 
 public class FrmShoot extends JFrame implements PriceListener
 {
@@ -61,6 +62,7 @@ public class FrmShoot extends JFrame implements PriceListener
 	private JButton btnCalc125;
 	private JButton btnCalc150;
 	private JButton btnCalc;
+	private JButton btnMagic;
 	private JButton btnX1;
 	private JButton btnX2;
 	private JButton btnPost;
@@ -277,10 +279,16 @@ public class FrmShoot extends JFrame implements PriceListener
 		pnlContent.add(btnX2);
 
 		btnCalc = new JButton("CALC");
-		btnCalc.setBounds(31, 332, 226, 23);
+		btnCalc.setBounds(31, 332, 180, 23);
 		btnCalc.setOpaque(true);
 		pnlContent.add(btnCalc);
 
+		btnMagic = new JButton("!");
+		btnMagic.setToolTipText("Position is increased 0.5 every 1% of distance");
+		btnMagic.setBounds(220, 332, 37, 23);
+		btnMagic.setOpaque(true);
+		pnlContent.add(btnMagic);
+		
 		btnPost = new JButton("POST ORDER");
 		btnPost.setIcon(Styles.IMAGE_EXECUTE);
 		btnPost.setBounds(327, 305, 162, 40);
@@ -443,6 +451,12 @@ public class FrmShoot extends JFrame implements PriceListener
 			}
 		});
 
+		btnMagic.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				calc(getMagicCoef());
+			}
+		});
+
 		btnPost.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				exec();
@@ -480,6 +494,7 @@ public class FrmShoot extends JFrame implements PriceListener
 		btnX1.setEnabled(isPosition);
 		btnX2.setEnabled(isPosition);
 		btnCalc.setEnabled(isPosition);
+		btnMagic.setEnabled(isPosition);
 
 		rbShort.setEnabled(!isPosition);
 		rbLong.setEnabled(!isPosition);
@@ -553,6 +568,41 @@ public class FrmShoot extends JFrame implements PriceListener
 		}
 	}
 
+	private BigDecimal getMagicCoef()
+	{
+		// --- POSITION ---------------------------------------------------
+		BigDecimal posPrice = new BigDecimal(txtPositionPrice.getText());
+
+		// --- SHOOT ------------------------------------------------------
+		BigDecimal shootPrice;
+		if (txtShootPrice.getText() != null && !txtShootPrice.getText().isEmpty())
+			shootPrice = new BigDecimal(txtShootPrice.getText());
+		else
+			shootPrice = PriceService.getLastPrice(symbol);
+
+		BigDecimal dist;
+		if (rbShort.isSelected() && posPrice.doubleValue() < shootPrice.doubleValue())
+		{
+			dist = PriceUtil.priceDistUp(posPrice, shootPrice, true);
+		}
+		else if (rbLong.isSelected() && posPrice.doubleValue() > shootPrice.doubleValue())
+		{
+			dist = PriceUtil.priceDistDown(posPrice, shootPrice, true);
+		}
+		else
+		{
+			return BigDecimal.ZERO;
+		}
+
+		BigDecimal coef = dist.divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP);
+
+		System.out.println (dist);
+		
+		System.out.println (coef);
+		
+		return coef;
+	}
+
 	private void calc(BigDecimal x)
 	{
 		ctrlError.CLEAN();
@@ -572,6 +622,7 @@ public class FrmShoot extends JFrame implements PriceListener
 				shootPrice = PriceService.getLastPrice(symbol);
 
 			BigDecimal shootQty;
+			
 			if (x == null)
 				shootQty = new BigDecimal(txtShootQty.getText());
 			else

@@ -1,7 +1,6 @@
 package sanzol.aitrader.be.service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,9 +25,9 @@ import api.client.impl.config.ApiConfig;
 import api.client.model.event.SymbolTickerEvent;
 import sanzol.aitrader.be.config.Constants;
 import sanzol.aitrader.be.enums.DepthMode;
+import sanzol.aitrader.be.model.Signal;
 import sanzol.aitrader.be.model.SignalPoint;
 import sanzol.aitrader.be.model.Symbol;
-import sanzol.aitrader.be.model.Signal;
 import sanzol.aitrader.be.model.SymbolInfo;
 import sanzol.util.log.LogService;
 import sanzol.util.price.PriceUtil;
@@ -37,7 +36,8 @@ public final class SignalService
 {
 	private static final double MIN_SHLG_DIST = 0.8;
 	private static final double MAX_SHLG_DIST = 12.0;
-	private static final double MIN_RATIO = 1.8;
+	//private static final double MIN_RATIO = 1.8;
+	private static final double MIN_RATIO = 1.0;
 
 	private static boolean isStarted = false;
 
@@ -291,10 +291,13 @@ public final class SignalService
 				{
 					continue;
 				}
+				
+				SymbolInfo symbolInfo = SymbolInfo.getInstance(symbolTickerEvent);
 
-				BigDecimal markPrice = symbolTickerEvent.getLastPrice();
-				BigDecimal volume = symbolTickerEvent.getQuoteVolume();
-				BigDecimal change24h = symbolTickerEvent.getPriceChangePercent();
+				BigDecimal markPrice = symbolInfo.getLastPrice();
+				BigDecimal volume = symbolInfo.getUsdVolume();
+				BigDecimal change24h = symbolInfo.getPriceChangePercent();
+				BigDecimal stochastic = symbolInfo.getStochastic();
 
 				BigDecimal distShort = PriceUtil.priceDistUp(markPrice, entry.getShortPrice(), true);
 				BigDecimal distLong = PriceUtil.priceDistDown(markPrice, entry.getLongPrice(), true);
@@ -315,18 +318,18 @@ public final class SignalService
 					continue;
 				}
 
-				BigDecimal high = symbolTickerEvent.getHighPrice();
-				BigDecimal low = symbolTickerEvent.getLowPrice();
-				BigDecimal avgPrice = symbolTickerEvent.getWeightedAvgPrice();
-				BigDecimal avgHigh = (avgPrice.add(high)).divide(BigDecimal.valueOf(2), entry.getSymbol().getPricePrecision(), RoundingMode.HALF_UP);
-				BigDecimal avgLow = (avgPrice.add(low)).divide(BigDecimal.valueOf(2), entry.getSymbol().getPricePrecision(), RoundingMode.HALF_UP);
-				boolean isBestShort = (markPrice.doubleValue() > avgHigh.doubleValue());
-				boolean isBestLong = (markPrice.doubleValue() < avgLow.doubleValue());
-				String bestSide = isBestShort ? "24H HIGH" : isBestLong ? "24H LOW" : "";
+				//BigDecimal high = symbolTickerEvent.getHighPrice();
+				//BigDecimal low = symbolTickerEvent.getLowPrice();
+				//BigDecimal avgPrice = symbolTickerEvent.getWeightedAvgPrice();
+				//BigDecimal avgHigh = (avgPrice.add(high)).divide(BigDecimal.valueOf(2), entry.getSymbol().getPricePrecision(), RoundingMode.HALF_UP);
+				//BigDecimal avgLow = (avgPrice.add(low)).divide(BigDecimal.valueOf(2), entry.getSymbol().getPricePrecision(), RoundingMode.HALF_UP);
+				//boolean isBestShort = (markPrice.doubleValue() > avgHigh.doubleValue());
+				//boolean isBestLong = (markPrice.doubleValue() < avgLow.doubleValue());
+				//String bestSide = isBestShort ? "24H HIGH" : isBestLong ? "24H LOW" : "";
 
 				if (entry.getShortRatio().doubleValue() > MIN_RATIO)
 				{
-					Signal shortSignal = new Signal("SHORT", entry.getSymbol(), markPrice, change24h, volume, bestSide, entry.getShortPrice(), distShort, entry.getShortTProfit(), entry.getShortSLoss(), entry.getShortRatio());
+					Signal shortSignal = new Signal("SHORT", entry.getSymbol(), markPrice, change24h, volume, stochastic, entry.getShortPrice(), distShort, entry.getShortTProfit(), entry.getShortSLoss(), entry.getShortRatio());
 					lstShorts.add(shortSignal);
 				}
 				//else
@@ -336,7 +339,7 @@ public final class SignalService
 
 				if (entry.getLongRatio().doubleValue() > MIN_RATIO)
 				{
-					Signal longSignal = new Signal("LONG", entry.getSymbol(), markPrice, change24h, volume, bestSide, entry.getLongPrice(), distLong, entry.getLongTProfit(), entry.getLongTSLoss(), entry.getLongRatio());
+					Signal longSignal = new Signal("LONG", entry.getSymbol(), markPrice, change24h, volume, stochastic, entry.getLongPrice(), distLong, entry.getLongTProfit(), entry.getLongTSLoss(), entry.getLongRatio());
 					lstLongs.add(longSignal);
 				}
 				//else

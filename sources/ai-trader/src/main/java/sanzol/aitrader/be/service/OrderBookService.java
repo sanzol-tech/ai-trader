@@ -36,7 +36,8 @@ public class OrderBookService
 
 	private static final BBType DEFAULT_BB_TYPE = BBType.classic;
 	private static final WAType DEFAULT_WA_TYPE = WAType.price;
-	private static final FixPointsMode FIX_POINTS_MODE = FixPointsMode.BB;
+	//private static final FixPointsMode FIX_POINTS_MODE = FixPointsMode.BB;
+	private static final FixPointsMode FIX_POINTS_MODE = FixPointsMode.MIX;
 
 	private Symbol symbol;
 	private BigDecimal lastPrice;

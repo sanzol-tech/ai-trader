@@ -13,7 +13,7 @@ public class Signal
 	private BigDecimal markPrice;
 	private BigDecimal change24h;
 	private BigDecimal volume;
-	private String bestSide;
+	private BigDecimal stochastic;
 
 	private BigDecimal inPrice;
 	private BigDecimal distance;
@@ -26,7 +26,7 @@ public class Signal
 		//
 	}
 
-	public Signal(String type, Symbol symbol, BigDecimal markPrice, BigDecimal change24h, BigDecimal volume, String bestSide,
+	public Signal(String type, Symbol symbol, BigDecimal markPrice, BigDecimal change24h, BigDecimal volume, BigDecimal stochastic,
 				  BigDecimal inPrice, BigDecimal distance, BigDecimal takeProfit, BigDecimal stopLoss, BigDecimal ratio)
 	{
 		this.type = type;
@@ -34,7 +34,7 @@ public class Signal
 		this.markPrice = markPrice;
 		this.change24h = change24h;
 		this.volume = volume;
-		this.bestSide = bestSide;
+		this.stochastic = stochastic;
 		this.inPrice = inPrice;
 		this.distance = distance;
 		this.takeProfit = takeProfit;
@@ -92,14 +92,14 @@ public class Signal
 		this.volume = volume;
 	}
 
-	public String getBestSide()
+	public BigDecimal getStochastic()
 	{
-		return bestSide;
+		return stochastic;
 	}
 
-	public void setBestSide(String bestSide)
+	public void setStochastic(BigDecimal stochastic)
 	{
-		this.bestSide = bestSide;
+		this.stochastic = stochastic;
 	}
 
 	public BigDecimal getInPrice()

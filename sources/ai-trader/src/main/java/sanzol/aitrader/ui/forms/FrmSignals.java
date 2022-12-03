@@ -323,7 +323,7 @@ public class FrmSignals extends JFrame implements SignalListener
 	    	tableModelShort.addColumn("RATIO");
 	    	tableModelShort.addColumn("VOLUME 24h");
 	    	tableModelShort.addColumn("CHANGE 24h");
-	    	tableModelShort.addColumn("MORE");
+	    	tableModelShort.addColumn("STOCH 24h");
 			tableShort.setModel(tableModelShort);
 
 	    	tableModelLong = new TableModel();
@@ -335,7 +335,7 @@ public class FrmSignals extends JFrame implements SignalListener
 	    	tableModelLong.addColumn("RATIO");
 	    	tableModelLong.addColumn("VOLUME 24h");
 	    	tableModelLong.addColumn("CHANGE 24h");
-	    	tableModelLong.addColumn("MORE");
+	    	tableModelLong.addColumn("STOCH 24h");
 			tableLong.setModel(tableModelLong);
 
 	        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
@@ -388,7 +388,7 @@ public class FrmSignals extends JFrame implements SignalListener
     				String.format(Locale.US, "1 : %.1f", entry.getRatio()),
     				PriceUtil.cashFormat(entry.getVolume()),
     				String.format(Locale.US, "%.2f %%", entry.getChange24h()),
-    				entry.getBestSide()
+    				String.format(Locale.US, "%.2f %%", entry.getStochastic())
         		};
 
         	tableModelShort.addRow(row);
@@ -407,7 +407,7 @@ public class FrmSignals extends JFrame implements SignalListener
     				String.format(Locale.US, "1 : %.1f", entry.getRatio()),
     				PriceUtil.cashFormat(entry.getVolume()),
     				String.format(Locale.US, "%.2f %%", entry.getChange24h()),
-    				entry.getBestSide()
+    				String.format(Locale.US, "%.2f %%", entry.getStochastic())
         		};
 
         	tableModelLong.addRow(row);
