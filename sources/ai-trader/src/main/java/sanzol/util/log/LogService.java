@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
 public class LogService
 {
 	public enum LogType { DEBUG, INFO, WARN, ERROR }
@@ -26,7 +23,7 @@ public class LogService
 
 	public static String getLOG()
 	{
-		return StringUtils.join(logLines, "\n");
+		return String.join("\n", logLines);
 	}
 
 	public static void cleanLOG()
@@ -90,8 +87,20 @@ public class LogService
 		String simpleClassName = ste.getClassName().substring(ste.getClassName().lastIndexOf('.') + 1);
 		String path = simpleClassName + "." + ste.getMethodName();
 
-		log(LogType.ERROR, path + " : " + ExceptionUtils.getMessage(ex));
+		log(LogType.ERROR, path + " : " + getMessage(ex));
 	}
+
+	private static String getMessage(Exception e)
+	{
+		if (e.getClass().getName().equals("java.lang.Exception"))
+		{
+			return e.getMessage();
+		}
+		else
+		{
+			return e.getClass().getSimpleName() + " : " + e.getMessage();
+		}
+	}	
 
 	// ------------------------------------------------------------------------
 

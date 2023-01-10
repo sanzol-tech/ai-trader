@@ -314,6 +314,39 @@ public class SyncFuturesClient
 		return response.readEntity(Order.class);
 	}
 
+	// --- LEVERAGE------------------------------------------------------------
+
+	public static String setLeverage(String symbol, int leverage) throws KeyManagementException, NoSuchAlgorithmException, InvalidKeyException
+	{
+		final String path = "/fapi/v1/leverage";
+
+		Client client = CustomClient.getClient();
+
+		String recvWindow = Long.toString(60_000L);
+		String timestamp = Long.toString(System.currentTimeMillis());
+
+		WebTarget target = client
+			.target(ApiConstants.FUTURES_BASE_URL)
+			.path(path)
+			.queryParam("symbol", symbol)
+			.queryParam("leverage", leverage)
+			.queryParam("recvWindow", recvWindow)
+			.queryParam("timestamp", timestamp);
+
+		String signature = ApiSignature.createSignature(PrivateConfig.getApiKey(), PrivateConfig.getSecretKey(), target.getUri().getQuery());
+
+		Response response = target
+			.queryParam("signature", signature)
+			.request()
+			.header("X-MBX-APIKEY", PrivateConfig.getApiKey())
+			.accept(MediaType.TEXT_XML)
+			.post(null);
+
+		verifyResponseStatus(response);
+
+		return response.readEntity(String.class);
+	}
+
 	// ------------------------------------------------------------------------
 
 	public static void main(String[] args) throws KeyManagementException, NoSuchAlgorithmException, IOException, InvalidKeyException

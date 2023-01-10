@@ -81,8 +81,11 @@ public class PriceService
 				continue;
 			}
 
-			if (onlyBetters && (symbolInfo.isLowVolume() || symbolInfo.isHighChange()))
-			{
+			boolean isStochOK = (symbolInfo.getStochastic().doubleValue() > 80 || symbolInfo.getStochastic().doubleValue() < 20);
+			boolean isVolOK = (symbolInfo.getUsdVolume().doubleValue() > 10000000);
+			boolean isChgOK = (Math.abs(symbolInfo.getHighLow().doubleValue()) > 2);
+			
+			if (onlyBetters && (!isStochOK || !isVolOK || !isChgOK)) {
 				continue;
 			}
 

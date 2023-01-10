@@ -37,7 +37,7 @@ public final class SignalService
 	private static final double MIN_SHLG_DIST = 0.8;
 	private static final double MAX_SHLG_DIST = 12.0;
 	//private static final double MIN_RATIO = 1.8;
-	private static final double MIN_RATIO = 1.0;
+	private static final double MIN_RATIO = 0;
 
 	private static boolean isStarted = false;
 
@@ -327,7 +327,7 @@ public final class SignalService
 				//boolean isBestLong = (markPrice.doubleValue() < avgLow.doubleValue());
 				//String bestSide = isBestShort ? "24H HIGH" : isBestLong ? "24H LOW" : "";
 
-				if (entry.getShortRatio().doubleValue() > MIN_RATIO)
+				if (entry.getShortRatio().doubleValue() >= MIN_RATIO)
 				{
 					Signal shortSignal = new Signal("SHORT", entry.getSymbol(), markPrice, change24h, volume, stochastic, entry.getShortPrice(), distShort, entry.getShortTProfit(), entry.getShortSLoss(), entry.getShortRatio());
 					lstShorts.add(shortSignal);
@@ -337,7 +337,7 @@ public final class SignalService
 				//	LogService.info("DISCARD SHORT - " + entry.getSymbol().getNameLeft() + " - LOW RATIO 1:" + entry.getShortRatio().doubleValue());
 				//}
 
-				if (entry.getLongRatio().doubleValue() > MIN_RATIO)
+				if (entry.getLongRatio().doubleValue() >= MIN_RATIO)
 				{
 					Signal longSignal = new Signal("LONG", entry.getSymbol(), markPrice, change24h, volume, stochastic, entry.getLongPrice(), distLong, entry.getLongTProfit(), entry.getLongTSLoss(), entry.getLongRatio());
 					lstLongs.add(longSignal);

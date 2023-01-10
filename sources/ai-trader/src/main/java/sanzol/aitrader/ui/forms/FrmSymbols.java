@@ -116,6 +116,7 @@ public class FrmSymbols extends JFrame implements PriceListener
         pnlContent.setLayout(pnlContentLayout);
 
 		chkOnlyBetters = new JCheckBox("Only betters");
+		chkOnlyBetters.setSelected(true);
 		chkOnlyFavorites = new JCheckBox("Only favorites");
 
 		// --------------------------------------------------------------------
