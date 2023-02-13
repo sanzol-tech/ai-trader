@@ -3,180 +3,19 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>sanzol</groupId>
+
+	<groupId>sanzol.aitrader</groupId>
 	<artifactId>ai-trader</artifactId>
-	<version>1.0.0</version>
-	<packaging>jar</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
-    <properties>
-        <okhttp3.version>3.12.1</okhttp3.version>
-        <fastjson.version>1.2.47</fastjson.version>
-    </properties>
-
-	<dependencies>
-
-		<!-- servlets -->
-		<!-- 
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		-->
-
-		<!-- jersey -->
-		<dependency>
-		    <groupId>org.glassfish.jersey.containers</groupId>
-		    <artifactId>jersey-container-servlet-core</artifactId>
-		    <version>2.28</version>
-		</dependency>
-
-		<dependency>
-		    <groupId>org.glassfish.jersey.core</groupId>
-		    <artifactId>jersey-client</artifactId>
-		    <version>2.28</version>
-		</dependency>
-
-		<dependency>
-		    <groupId>org.glassfish.jersey.inject</groupId>
-		    <artifactId>jersey-hk2</artifactId>
-		    <version>2.28</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-json-jackson</artifactId>
-			<version>2.28</version>
-		</dependency>
-
-		<!-- jaxb -->
-		<dependency>
-		    <groupId>javax.xml.bind</groupId>
-		    <artifactId>jaxb-api</artifactId>
-		    <version>2.3.1</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.glassfish.jaxb</groupId>
-		    <artifactId>jaxb-runtime</artifactId>
-		    <version>2.3.1</version>
-		</dependency>
-		<dependency>
-		    <groupId>javax.activation</groupId>
-		    <artifactId>activation</artifactId>
-		    <version>1.1</version>
-		</dependency>
-
-		<!-- websocket -->
-		<dependency>
-			<groupId>org.java-websocket</groupId>
-			<artifactId>Java-WebSocket</artifactId>
-			<version>1.5.3</version>
-		</dependency>
-
-		<!-- Logging -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.30</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.30</version>
-		</dependency>
-		<dependency>
-		  <groupId>org.slf4j</groupId>
-		  <artifactId>jcl-over-slf4j</artifactId>
-		  <version>1.7.30</version>
-		</dependency>
-
-		<!-- Commons -->
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.13</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-collections4</artifactId>
-			<version>4.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-compress</artifactId>
-			<version>1.19</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.6</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.9</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-net</groupId>
-			<artifactId>commons-net</artifactId>
-			<version>3.6</version>
-		</dependency>
-
-		<dependency>
-		    <groupId>com.google.code.gson</groupId>
-		    <artifactId>gson</artifactId>
-		    <version>2.9.0</version>
-		</dependency>
-
-		<!--
-		<dependency>
-		    <groupId>com.jgoodies</groupId>
-		    <artifactId>jgoodies-forms</artifactId>
-		    <version>1.9.0</version>
-		</dependency>
-		-->
-
-		<dependency>
-			<groupId>com.formdev</groupId>
-			<artifactId>flatlaf</artifactId>
-			<version>2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.formdev</groupId>
-			<artifactId>flatlaf-intellij-themes</artifactId>
-			<version>2.1</version>
-		</dependency>
-		<dependency>
-		    <groupId>com.formdev</groupId>
-		    <artifactId>flatlaf-extras</artifactId>
-		    <version>2.2</version>
-		</dependency>
-
-		<dependency>
-		    <groupId>com.miglayout</groupId>
-		    <artifactId>miglayout-swing</artifactId>
-		    <version>4.2</version>
-		</dependency>
-
-		<dependency>
-		    <groupId>org.decimal4j</groupId>
-		    <artifactId>decimal4j</artifactId>
-		    <version>1.0.3</version>
-		</dependency>
-
-	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
-				<configuration>
-					<release>11</release>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+	<modules>
+		<module>ai-commons</module>
+		<module>ai-connector</module>
+		<module>ai-technicals</module>
+		<module>ai-trader-core</module>
+		<module>ai-trader-ui</module>
+		<module>ai-reports</module>
+	</modules>
 
 </project>

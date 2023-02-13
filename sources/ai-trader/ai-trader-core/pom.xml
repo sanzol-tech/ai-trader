@@ -1,0 +1,70 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>sanzol.aitrader</groupId>
+		<artifactId>ai-trader</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<groupId>sanzol.aitrader.core</groupId>
+	<artifactId>ai-trader-core</artifactId>
+  	<packaging>jar</packaging>
+
+	<dependencies>
+
+        <dependency>
+			<groupId>sanzol.aitrader.commons</groupId>
+			<artifactId>ai-commons</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>connector</groupId>
+            <artifactId>binance-futures-client</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>sanzol.aitrader</groupId>
+            <artifactId>ai-technicals</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+		<!-- Commons -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.9</version>
+		</dependency>
+
+		<dependency>
+		    <groupId>org.decimal4j</groupId>
+		    <artifactId>decimal4j</artifactId>
+		    <version>1.0.3</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+			</plugin>
+		</plugins>
+	</build>
+  
+</project>
